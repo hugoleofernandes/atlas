@@ -1,0 +1,95 @@
+# =========================
+# Environment files
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Docker
+# =========================
+docker-data/
+postgres_data/
+*.log
+
+# =========================
+# .NET / Build outputs
+# =========================
+bin/
+obj/
+artifacts/
+publish/
+*.nupkg
+*.snupkg
+*.binlog
+
+# Debug / Release folders
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# =========================
+# Visual Studio / Rider / VSCode
+# =========================
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.rsuser
+*.sln.docstates
+*.code-workspace
+
+# =========================
+# Test / Coverage
+# =========================
+TestResults/
+coverage*.json
+coverage*.xml
+*.coverage
+*.coveragexml
+BenchmarkDotNet.Artifacts/
+
+# =========================
+# Node (caso use no futuro)
+# =========================
+node_modules/
+dist/
+build/
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Windows / macOS
+# =========================
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# =========================
+# Temporary / cache files
+# =========================
+*.tmp
+*.cache
+*.swp
+*.stackdump
+
+# =========================
+# SQL Server local files (não usado agora, mas seguro manter)
+# =========================
+*.mdf
+*.ldf
+*.ndf
+
+# =========================
+# Misc
+# =========================
+_ReSharper*/
+_TeamCity*
+_NCrunch_*
