@@ -13,12 +13,12 @@ logs:
 ps:
 	$(COMPOSE) ps
 
-clean:
+reset:
 	$(COMPOSE) down -v
 
 
-# migrate:
-# 	dotnet ef database update --project source-code/src/Atlas.Infrastructure --startup-project source-code/src/Atlas.API
+migrate:
+	dotnet ef database update --project source-code/src/Atlas.Infrastructure --startup-project source-code/src/Atlas.API
 
 # test:
 # 	dotnet test
