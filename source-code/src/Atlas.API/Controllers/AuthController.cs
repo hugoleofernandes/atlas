@@ -55,46 +55,20 @@ public class AuthController(
         return Challenge(props, tenant);
     }
 
-    [HttpGet("logout")]
-    [Authorize]
-    public async Task<IActionResult> Logout()
-    {
-        var lab = HttpContext.Request.Cookies["mlab_lab"];
-
-        if (string.IsNullOrWhiteSpace(lab))
-            return Redirect(_frontConfig.BaseUrl);
-
-        lab = lab.ToLowerInvariant();
-
-        // 1) Remove cookie local (sessão do BFF)
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-        // 2) Logout federado no IdP (Azure Entra) pelo scheme do tenant/lab
-        await HttpContext.SignOutAsync(
-            lab,
-            new AuthenticationProperties
-            {
-                RedirectUri = "/auth/logged-out-callback"
-            });
-
-        // O middleware do OIDC vai cuidar do redirect para /auth/logged-out-callback
-        return new EmptyResult();
-    }
-
-    [AllowAnonymous]
-    [HttpGet("logged-out-callback")]
-    public IActionResult LoggedOutCallback()
-    {
-        // Depois do federated logout, o usuário foi removido do IdP corretamente.
-        // Agora podemos devolver a SPA.
-        return Redirect($"{_frontConfig.BaseUrl}/");
-    }
+    //[AllowAnonymous]
+    //[HttpGet("logged-out-callback")]
+    //public IActionResult LoggedOutCallback()
+    //{
+    //    // Depois do federated logout, o usuário foi removido do IdP corretamente.
+    //    // Agora podemos devolver a SPA.
+    //    return Redirect($"{_frontConfig.BaseUrl}/");
+    //}
 
     [HttpPost("logout-spa")]
     [Authorize]
     public async Task<IActionResult> LogoutSpa()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Ok(new { redirect = "/" });
+        return Ok(new { redirect = $"{_frontConfig.BaseUrl}/" });
     }
 }

@@ -1,70 +1,107 @@
 using Atlas.API.Configs;
 using Atlas.API.Security.Cors;
+using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
-using Atlas.Domain.Identity;
+using Atlas.API.Security.RateLimit;
 using Atlas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-
-
-
-
-//using Atlas.Domain.Identity;
-//using Atlas.Infrastructure.Persistence;
-//using Microsoft.EntityFrameworkCore;
-
-
-
-
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AtlasDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+// ============================
+// Database
+// ============================
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddDbContext<AtlasDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("Default")
+    )
+);
+
+// ============================
+// Core Services
+// ============================
+
+builder.Services.AddControllers();
+builder.Services.AddAuthorization();
+builder.Services.AddHealthChecks();
 builder.Services.AddOpenApi();
 
-builder.Services.AddHealthChecks();
+// ============================
+// Configuration
+// ============================
 
-// ==================== CORS ====================
+builder.Services.Configure<FrontendConfig>(
+    builder.Configuration.GetSection("Frontend")
+);
+
+// ============================
+// Security
+// ============================
+
 builder.Services.AddAppCors(builder.Configuration);
-
-// ==================== CONFIG ====================
-builder.Services.Configure<FrontendConfig>(builder.Configuration.GetSection("Frontend"));
-
-// ==================== AUTHENTICATION ====================
 builder.Services.AddOidcMultiTenantAuthentication(builder.Configuration);
+builder.Services.AddRateLimiting(builder.Configuration);
 
-// ==================== CONTROLLERS ====================
-builder.Services.AddControllers(options =>
+builder.Services.AddHsts(options =>
 {
-    // Adiciona o filtro global de CSRF
-    //options.Filters.Add<ValidateAntiCsrfFilter>();
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+    options.Preload = false; // Enable only after domain validation
 });
 
-
+// ============================
+// Build App
+// ============================
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ============================
+// Development Only
+// ============================
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
+// ============================
+// Production Security
+// ============================
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+// ============================
+// Middleware Pipeline
+// ============================
+
+// If running behind reverse proxy (Azure / K8s), add here:
+// app.UseForwardedHeadersDefaults();
+
+app.UseHttpsRedirection();
+
+app.UseSecurityHeaders();
+
+app.UseRateLimiter();
+
+app.UseCors("app");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+
 //app.UseHttpsRedirection();
-
-
 
 
 //app.MapHealthChecks("/health");
 
 //app.MapGet("/", () => "Atlas API is running.");
-
-
 
 
 //if (app.Environment.IsDevelopment())
@@ -73,13 +110,6 @@ if (app.Environment.IsDevelopment())
 //    var db = scope.ServiceProvider.GetRequiredService<AtlasDbContext>();
 //    db.Database.Migrate();
 //}
-
-
-
-
-
-
-
 
 
 //app.MapGet("/", () => "Atlas API is running.");
@@ -152,19 +182,6 @@ if (app.Environment.IsDevelopment())
 //    await db.SaveChangesAsync();
 //    return Results.NoContent();
 //});
-
-
-
-app.UseCors("app");
-
-
-app.MapControllers();
-
-
-
-
-app.Run();
-
 
 
 //record CreateTenantRequest(string Name);

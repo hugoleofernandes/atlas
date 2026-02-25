@@ -38,7 +38,7 @@ public class SessionController : ControllerBase
         {
             Name = name,
             Email = email,
-            Sub = sub
+            Sub = sub ?? ""
         };
 
         return Ok(dto);
