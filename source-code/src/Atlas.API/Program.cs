@@ -3,6 +3,8 @@ using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
+using Atlas.API.Security.Tenancy;
+using Atlas.Application.Tenancy;
 using Atlas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 // ============================
 // Database
 // ============================
+
+builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddScoped<ITenantProvider>(sp => (TenantContext)sp.GetRequiredService<ITenantContext>());
 
 builder.Services.AddDbContext<AtlasDbContext>(options =>
     options.UseNpgsql(
@@ -102,6 +107,9 @@ app.UseRateLimiter();
 app.UseCors("app");
 
 app.UseAuthentication();
+
+app.UseMiddleware<TenantResolverMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();

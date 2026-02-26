@@ -32,7 +32,7 @@ public static class OidcMultiTenantExtensions
 
         authBuilder.AddCookie(options =>
         {
-            options.Cookie.Name = AuthConstants.SessionCookie;
+            options.Cookie.Name = AuthConstants.AuthCookie;
             options.Cookie.HttpOnly = true;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             options.Cookie.SameSite = SameSiteMode.None;

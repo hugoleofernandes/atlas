@@ -8,7 +8,7 @@ namespace Atlas.API.Security.OIDC;
 
 /// <summary>
 /// Centralizes all OpenID Connect configuration for each tenant.
-/// 
+///
 /// Responsibilities:
 /// - Point the BFF to the correct identity provider for each tenant.
 /// - Generate the correct callback and logout URLs dynamically.
@@ -78,7 +78,7 @@ public static class OidcMultiTenantConfigurator
                 var tenantCurrent = ctx.Scheme.Name.ToLowerInvariant();
 
                 // Cookie with tenant info for the logout flow and token validation
-                http.Response.Cookies.Append(AuthConstants.SessionCookie, tenantCurrent, new CookieOptions
+                http.Response.Cookies.Append(AuthConstants.TenantHintCookie, tenantCurrent, new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
@@ -228,8 +228,9 @@ public static class OidcMultiTenantConfigurator
                 // -------------------------------------------------
                 if (ctx.Principal?.Identity is ClaimsIdentity identity)
                 {
-                    identity.AddClaim(new Claim("atlas_user_id", user.Id.ToString()));
-                    identity.AddClaim(new Claim("atlas_tenant", tenantSlug));
+                    identity.AddClaim(new Claim(ClaimConstants.TenantId, tenant.Id.ToString()));
+                    identity.AddClaim(new Claim(ClaimConstants.TenantSlug, tenantSlug));
+                    identity.AddClaim(new Claim(ClaimConstants.UserId, user.Id.ToString()));
 
                     // Se quiser, pode adicionar role:
                     var role = await db.TenantUsers
