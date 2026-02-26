@@ -56,6 +56,18 @@ builder.Services.AddHsts(options =>
 
 var app = builder.Build();
 
+// 🔹 APPLY MIGRATIONS + SEED
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AtlasDbContext>();
+
+        await db.Database.MigrateAsync();   // apply automaticaly migrations
+        await AtlasDbSeeder.SeedAsync(db);  // run initial seed
+    }
+}
+
 // ============================
 // Development Only
 // ============================

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using Atlas.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.API.Security.OIDC;
 
@@ -142,31 +144,132 @@ public static class OidcMultiTenantConfigurator
             //
             // ----- TOKEN RECEIVED -----
             //
-            OnTokenValidated = ctx =>
+            OnTokenValidated = async ctx =>
             {
                 var http = ctx.HttpContext;
-                var tenantCurrent = ctx.Scheme.Name.ToLowerInvariant();
+                var tenantSlug = ctx.Scheme.Name.ToLowerInvariant();
 
-                // adiciona a claim de tenant
-                if (ctx.Principal?.Identity is ClaimsIdentity id)
+                var oid = ctx.Principal?.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
+                var email = ctx.Principal?.FindFirst("preferred_username")?.Value;
+
+                if (string.IsNullOrWhiteSpace(oid) || string.IsNullOrWhiteSpace(email))
                 {
-                    id.AddClaim(new Claim(AuthConstants.Claim, tenantCurrent));
+                    ctx.Fail("Missing required identity claims.");
+                    return;
                 }
 
-                // XSRF token
-                //var xsrfToken = Guid.NewGuid().ToString("N");
-                //http.Response.Cookies.Append("XSRF-TOKEN", xsrfToken, new CookieOptions
-                //{
-                //    HttpOnly = false,
-                //    Secure = true,
-                //    SameSite = SameSiteMode.None,
-                //    Path = "/"
-                //});
+                var db = http.RequestServices.GetRequiredService<AtlasDbContext>();
 
-                Console.WriteLine($"🔹 Token validated → Scheme={tenantCurrent}");
+                // -------------------------------------------------
+                // 1️⃣ VALIDAR TENANT
+                // -------------------------------------------------
+                var tenant = await db.Tenants
+                    .FirstOrDefaultAsync(t => t.Slug == tenantSlug && t.IsActive);
 
-                return Task.CompletedTask;
+                if (tenant == null)
+                {
+                    ctx.Fail("Tenant not found or inactive.");
+                    return;
+                }
+
+                // -------------------------------------------------
+                // 2️⃣ TENTAR LOCALIZAR USER GLOBAL PELO OID
+                // -------------------------------------------------
+                var user = await db.Users
+                    .FirstOrDefaultAsync(u => u.ExternalId == oid && u.IsActive);
+
+                // =================================================
+                // 🔹 PRIMEIRO LOGIN (ainda não tem OID vinculado)
+                // =================================================
+                if (user == null)
+                {
+                    var tenantUser = await db.TenantUsers
+                        .Include(tu => tu.User)
+                        .FirstOrDefaultAsync(tu =>
+                            tu.TenantId == tenant.Id &&
+                            tu.IsActive &&
+                            tu.User.IsActive &&
+                            tu.User.ExternalId == null &&
+                            tu.Email.ToLower() == email.ToLower());
+
+                    if (tenantUser == null)
+                    {
+                        ctx.Fail("User not authorized in this tenant.");
+                        return;
+                    }
+
+                    // 🔗 Vincular OID ao User global
+                    tenantUser.User.SetExternalId(oid);
+
+                    await db.SaveChangesAsync();
+
+                    user = tenantUser.User;
+                }
+                else
+                {
+                    // =================================================
+                    // 🔹 LOGIN NORMAL
+                    // =================================================
+                    var membership = await db.TenantUsers
+                        .FirstOrDefaultAsync(tu =>
+                            tu.TenantId == tenant.Id &&
+                            tu.UserId == user.Id &&
+                            tu.IsActive);
+
+                    if (membership == null)
+                    {
+                        ctx.Fail("User not linked to this tenant.");
+                        return;
+                    }
+                }
+
+                // -------------------------------------------------
+                // 3️⃣ ENRIQUECER CLAIMS INTERNAS
+                // -------------------------------------------------
+                if (ctx.Principal?.Identity is ClaimsIdentity identity)
+                {
+                    identity.AddClaim(new Claim("atlas_user_id", user.Id.ToString()));
+                    identity.AddClaim(new Claim("atlas_tenant", tenantSlug));
+
+                    // Se quiser, pode adicionar role:
+                    var role = await db.TenantUsers
+                        .Where(tu => tu.TenantId == tenant.Id && tu.UserId == user.Id)
+                        .Select(tu => tu.Role)
+                        .FirstOrDefaultAsync();
+
+                    if (!string.IsNullOrWhiteSpace(role))
+                    {
+                        identity.AddClaim(new Claim(ClaimTypes.Role, role));
+                    }
+                }
+
+                Console.WriteLine($"✔ Login autorizado → Tenant={tenantSlug} | UserId={user.Id}");
             }
+            //OnTokenValidated = ctx =>
+            //{
+            //    var http = ctx.HttpContext;
+            //    var tenantCurrent = ctx.Scheme.Name.ToLowerInvariant();
+
+            //    // adiciona a claim de tenant
+            //    if (ctx.Principal?.Identity is ClaimsIdentity id)
+            //    {
+            //        id.AddClaim(new Claim(AuthConstants.Claim, tenantCurrent));
+            //    }
+
+            //    // XSRF token
+            //    //var xsrfToken = Guid.NewGuid().ToString("N");
+            //    //http.Response.Cookies.Append("XSRF-TOKEN", xsrfToken, new CookieOptions
+            //    //{
+            //    //    HttpOnly = false,
+            //    //    Secure = true,
+            //    //    SameSite = SameSiteMode.None,
+            //    //    Path = "/"
+            //    //});
+
+            //    Console.WriteLine($"🔹 Token validated → Scheme={tenantCurrent}");
+
+            //    return Task.CompletedTask;
+            //}
         };
     }
 }
