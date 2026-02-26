@@ -106,7 +106,18 @@ public class AtlasDbContext : DbContext
 
     private void ApplyTenantIdToNewEntities()
     {
-        var tenantId = CurrentTenantId; // lança se não setado
+        Guid tenantId;
+
+        try
+        {
+            tenantId = _tenantProvider.TenantId;
+        }
+        catch
+        {
+            // Tenant não resolvido → modo global (seed, migration)
+            // Não aplica tenant automaticamente
+            return;
+        }
 
         foreach (var entry in ChangeTracker.Entries<IMultiTenantEntity>())
         {

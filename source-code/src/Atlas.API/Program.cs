@@ -6,16 +6,18 @@ using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
 using Atlas.Application.Tenancy;
 using Atlas.Infrastructure.Persistence;
+using Atlas.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ============================
-// Database
-// ============================
+// ==========================================================
+// DATABASE & TENANCY
+// ==========================================================
 
-builder.Services.AddScoped<ITenantContext, TenantContext>();
-builder.Services.AddScoped<ITenantProvider>(sp => (TenantContext)sp.GetRequiredService<ITenantContext>());
+builder.Services.AddScoped<TenantContext>();
+builder.Services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
+builder.Services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantContext>());
 
 builder.Services.AddDbContext<AtlasDbContext>(options =>
     options.UseNpgsql(
@@ -23,26 +25,26 @@ builder.Services.AddDbContext<AtlasDbContext>(options =>
     )
 );
 
-// ============================
-// Core Services
-// ============================
+// ==========================================================
+// CORE SERVICES
+// ==========================================================
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
 builder.Services.AddHealthChecks();
 builder.Services.AddOpenApi();
 
-// ============================
-// Configuration
-// ============================
+// ==========================================================
+// CONFIGURATION
+// ==========================================================
 
 builder.Services.Configure<FrontendConfig>(
     builder.Configuration.GetSection("Frontend")
 );
 
-// ============================
-// Security
-// ============================
+// ==========================================================
+// SECURITY
+// ==========================================================
 
 builder.Services.AddAppCors(builder.Configuration);
 builder.Services.AddOidcMultiTenantAuthentication(builder.Configuration);
@@ -52,64 +54,68 @@ builder.Services.AddHsts(options =>
 {
     options.MaxAge = TimeSpan.FromDays(365);
     options.IncludeSubDomains = true;
-    options.Preload = false; // Enable only after domain validation
+    options.Preload = false;
 });
 
-// ============================
-// Build App
-// ============================
+// ==========================================================
+// SEEDING PIPELINE
+// ==========================================================
+
+builder.Services.AddScoped<ISeeder, GlobalIdentitySeeder>();
+builder.Services.AddScoped<ISeeder, TestEntitySeeder>();
+builder.Services.AddScoped<SeederPipeline>();
+
+// ==========================================================
+// BUILD APP
+// ==========================================================
 
 var app = builder.Build();
 
-// 🔹 APPLY MIGRATIONS + SEED
+// ==========================================================
+// MIGRATIONS + SEED (DEV ONLY)
+// ==========================================================
+
 if (app.Environment.IsDevelopment())
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var db = scope.ServiceProvider.GetRequiredService<AtlasDbContext>();
+    using var scope = app.Services.CreateScope();
 
-        await db.Database.MigrateAsync();   // apply automaticaly migrations
-        await AtlasDbSeeder.SeedAsync(db);  // run initial seed
-    }
+    var db = scope.ServiceProvider.GetRequiredService<AtlasDbContext>();
+    await db.Database.MigrateAsync();
+
+    var pipeline = scope.ServiceProvider.GetRequiredService<SeederPipeline>();
+    await pipeline.RunAsync(db, scope.ServiceProvider);
 }
 
-// ============================
-// Development Only
-// ============================
+// ==========================================================
+// DEVELOPMENT ENDPOINTS
+// ==========================================================
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-// ============================
-// Production Security
-// ============================
+// ==========================================================
+// PRODUCTION SECURITY
+// ==========================================================
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
 }
 
-// ============================
-// Middleware Pipeline
-// ============================
-
-// If running behind reverse proxy (Azure / K8s), add here:
-// app.UseForwardedHeadersDefaults();
+// ==========================================================
+// MIDDLEWARE PIPELINE
+// ==========================================================
 
 app.UseHttpsRedirection();
 
 app.UseSecurityHeaders();
-
 app.UseRateLimiter();
-
 app.UseCors("app");
 
 app.UseAuthentication();
-
 app.UseMiddleware<TenantResolverMiddleware>();
-
 app.UseAuthorization();
 
 app.MapControllers();
