@@ -4,9 +4,11 @@ using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
-using Atlas.Application.Tenancy;
-using Atlas.Infrastructure.Persistence;
-using Atlas.Infrastructure.Persistence.Seed;
+using Atlas.Identity.Application.Abstractions;
+using Atlas.Identity.Application.Common;
+using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
+using Atlas.Identity.Infrastructure.Persistence;
+using Atlas.Identity.Infrastructure.Persistence.Seed;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +66,14 @@ builder.Services.AddHsts(options =>
 builder.Services.AddScoped<ISeeder, GlobalIdentitySeeder>();
 builder.Services.AddScoped<ISeeder, TestEntitySeeder>();
 builder.Services.AddScoped<SeederPipeline>();
+
+
+builder.Services.AddScoped<IAuthorizeTenantLoginUseCase, AuthorizeTenantLoginUseCase>();
+
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+builder.Services.AddScoped<IIdentityUserRepository, IdentityUserRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 // ==========================================================
 // BUILD APP

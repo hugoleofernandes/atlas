@@ -1,6 +1,4 @@
-﻿using Atlas.Domain.Identity;
-
-namespace Atlas.API.Security.OIDC;
+﻿namespace Atlas.API.Security.OIDC;
 
 /// <summary>
 /// Defines application-wide constants used by the BFF, such as cookie names and

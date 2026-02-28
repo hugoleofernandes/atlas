@@ -18,10 +18,10 @@ reset:
 
 
 migrate:
-	dotnet ef database update --project source-code/src/Atlas.Infrastructure --startup-project source-code/src/Atlas.API
+	dotnet ef database update --project source-code/src/Atlas.Identity.Infrastructure --startup-project source-code/src/Atlas.API
 
 add-migration:
-	dotnet ef migrations add $(name) --project source-code/src/Atlas.Infrastructure --startup-project source-code/src/Atlas.API
+	dotnet ef migrations add $(name) --project source-code/src/Atlas.Identity.Infrastructure --startup-project source-code/src/Atlas.API
 
 # sample usage:
 # make add-migration name=InitialIdentity

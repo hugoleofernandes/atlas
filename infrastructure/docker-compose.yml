@@ -18,16 +18,16 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
-    build:
-      context: ../source-code
-      dockerfile: src/Atlas.API/Dockerfile
-    container_name: atlas-api
-    restart: unless-stopped
-    depends_on:
-      - postgres
-    networks:
-      - atlas-network
+  # api:
+  #   build:
+  #     context: ../source-code
+  #     dockerfile: src/Atlas.API/Dockerfile
+  #   container_name: atlas-api
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - atlas-network
 
 volumes:
   postgres_data:

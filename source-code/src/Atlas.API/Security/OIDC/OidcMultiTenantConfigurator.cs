@@ -1,8 +1,10 @@
-﻿using Atlas.Infrastructure.Persistence;
+﻿using Atlas.Identity.Application.Common;
+using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
+using Atlas.Identity.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.API.Security.OIDC;
 
@@ -147,10 +149,16 @@ public static class OidcMultiTenantConfigurator
             OnTokenValidated = async ctx =>
             {
                 var http = ctx.HttpContext;
+
                 var tenantSlug = ctx.Scheme.Name.ToLowerInvariant();
 
-                var oid = ctx.Principal?.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
-                var email = ctx.Principal?.FindFirst("preferred_username")?.Value;
+                var oid = ctx.Principal?
+                    .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
+                    ?.Value;
+
+                var email = ctx.Principal?
+                    .FindFirst("preferred_username")
+                    ?.Value;
 
                 if (string.IsNullOrWhiteSpace(oid) || string.IsNullOrWhiteSpace(email))
                 {
@@ -158,119 +166,34 @@ public static class OidcMultiTenantConfigurator
                     return;
                 }
 
-                var db = http.RequestServices.GetRequiredService<AtlasDbContext>();
+                var useCase = http.RequestServices
+                    .GetRequiredService<IAuthorizeTenantLoginUseCase>();
 
-                // -------------------------------------------------
-                // 1️⃣ VALIDAR TENANT
-                // -------------------------------------------------
-                var tenant = await db.Tenants
-                    .FirstOrDefaultAsync(t => t.Slug == tenantSlug && t.IsActive);
+                AuthorizeTenantLoginResult result;
 
-                if (tenant == null)
+                try
                 {
-                    ctx.Fail("Tenant not found or inactive.");
+                    result = await useCase.ExecuteAsync(
+                        new AuthorizeTenantLoginCommand(
+                            tenantSlug,
+                            oid,
+                            email),
+                        ctx.HttpContext.RequestAborted);
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    ctx.Fail(ex.Message);
                     return;
                 }
 
-                // -------------------------------------------------
-                // 2️⃣ TENTAR LOCALIZAR USER GLOBAL PELO OID
-                // -------------------------------------------------
-                var user = await db.Users
-                    .FirstOrDefaultAsync(u => u.ExternalId == oid && u.IsActive);
-
-                // =================================================
-                // 🔹 PRIMEIRO LOGIN (ainda não tem OID vinculado)
-                // =================================================
-                if (user == null)
-                {
-                    var tenantUser = await db.TenantUsers
-                        .Include(tu => tu.User)
-                        .FirstOrDefaultAsync(tu =>
-                            tu.TenantId == tenant.Id &&
-                            tu.IsActive &&
-                            tu.User.IsActive &&
-                            tu.User.ExternalId == null &&
-                            tu.Email.ToLower() == email.ToLower());
-
-                    if (tenantUser == null)
-                    {
-                        ctx.Fail("User not authorized in this tenant.");
-                        return;
-                    }
-
-                    // 🔗 Vincular OID ao User global
-                    tenantUser.User.SetExternalId(oid);
-
-                    await db.SaveChangesAsync();
-
-                    user = tenantUser.User;
-                }
-                else
-                {
-                    // =================================================
-                    // 🔹 LOGIN NORMAL
-                    // =================================================
-                    var membership = await db.TenantUsers
-                        .FirstOrDefaultAsync(tu =>
-                            tu.TenantId == tenant.Id &&
-                            tu.UserId == user.Id &&
-                            tu.IsActive);
-
-                    if (membership == null)
-                    {
-                        ctx.Fail("User not linked to this tenant.");
-                        return;
-                    }
-                }
-
-                // -------------------------------------------------
-                // 3️⃣ ENRIQUECER CLAIMS INTERNAS
-                // -------------------------------------------------
                 if (ctx.Principal?.Identity is ClaimsIdentity identity)
                 {
-                    identity.AddClaim(new Claim(ClaimConstants.TenantId, tenant.Id.ToString()));
-                    identity.AddClaim(new Claim(ClaimConstants.TenantSlug, tenantSlug));
-                    identity.AddClaim(new Claim(ClaimConstants.UserId, user.Id.ToString()));
-
-                    // Se quiser, pode adicionar role:
-                    var role = await db.TenantUsers
-                        .Where(tu => tu.TenantId == tenant.Id && tu.UserId == user.Id)
-                        .Select(tu => tu.Role)
-                        .FirstOrDefaultAsync();
-
-                    if (!string.IsNullOrWhiteSpace(role))
-                    {
-                        identity.AddClaim(new Claim(ClaimTypes.Role, role));
-                    }
+                    identity.AddClaim(new Claim("tenant_id", result.TenantId.ToString()));
+                    identity.AddClaim(new Claim("tenant_slug", result.TenantSlug));
+                    identity.AddClaim(new Claim("user_id", result.IdentityUserId.ToString()));
+                    identity.AddClaim(new Claim(ClaimTypes.Role, result.Role));
                 }
-
-                Console.WriteLine($"✔ Login autorizado → Tenant={tenantSlug} | UserId={user.Id}");
             }
-            //OnTokenValidated = ctx =>
-            //{
-            //    var http = ctx.HttpContext;
-            //    var tenantCurrent = ctx.Scheme.Name.ToLowerInvariant();
-
-            //    // adiciona a claim de tenant
-            //    if (ctx.Principal?.Identity is ClaimsIdentity id)
-            //    {
-            //        id.AddClaim(new Claim(AuthConstants.Claim, tenantCurrent));
-            //    }
-
-            //    // XSRF token
-            //    //var xsrfToken = Guid.NewGuid().ToString("N");
-            //    //http.Response.Cookies.Append("XSRF-TOKEN", xsrfToken, new CookieOptions
-            //    //{
-            //    //    HttpOnly = false,
-            //    //    Secure = true,
-            //    //    SameSite = SameSiteMode.None,
-            //    //    Path = "/"
-            //    //});
-
-            //    Console.WriteLine($"🔹 Token validated → Scheme={tenantCurrent}");
-
-            //    return Task.CompletedTask;
-            //}
         };
     }
 }

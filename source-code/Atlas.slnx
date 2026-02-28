@@ -1,9 +1,13 @@
 <Solution>
-  <Folder Name="/src/">
+  <Folder Name="/src/" />
+  <Folder Name="/src/API/">
     <Project Path="src/Atlas.API/Atlas.API.csproj" />
-    <Project Path="src/Atlas.Application/Atlas.Application.csproj" />
-    <Project Path="src/Atlas.Domain/Atlas.Domain.csproj" />
-    <Project Path="src/Atlas.Infrastructure/Atlas.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Identity/">
+    <Project Path="src/Atlas.Identity.Application/Atlas.Identity.Application.csproj" />
+    <Project Path="src/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
+    <Project Path="src/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Atlas.Tests/Atlas.Tests.csproj" />
