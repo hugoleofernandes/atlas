@@ -1,8 +1,5 @@
-﻿using Atlas.Identity.Application.Common;
-using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
-using Atlas.Identity.Infrastructure.Persistence;
+﻿using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
 

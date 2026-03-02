@@ -1,15 +1,14 @@
-﻿using Atlas.Identity.Domain.Entities;
+﻿using Atlas.Staff.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Atlas.Identity.Infrastructure.Persistence.IdentityAuditLogs;
+namespace Atlas.Staff.Infrastructure.Persistence.StaffAuditLogs;
 
-public sealed class IdentityAuditLogConfig
-    : IEntityTypeConfiguration<IdentityAuditLog>
+public sealed class StaffAuditLogConfig : IEntityTypeConfiguration<StaffAuditLog>
 {
-    public void Configure(EntityTypeBuilder<IdentityAuditLog> b)
+    public void Configure(EntityTypeBuilder<StaffAuditLog> b)
     {
-        b.ToTable("identity_audit_logs");
+        b.ToTable("staff_audit_logs");
 
         b.HasKey(x => x.Id);
 
@@ -40,6 +39,7 @@ public sealed class IdentityAuditLogConfig
         b.Property(x => x.OccurredAtUtc)
             .IsRequired();
 
+        // Índices importantes (performance)
         b.HasIndex(x => x.TenantId);
         b.HasIndex(x => x.OccurredAtUtc);
         b.HasIndex(x => x.EntityName);

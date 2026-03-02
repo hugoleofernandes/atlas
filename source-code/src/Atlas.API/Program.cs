@@ -1,11 +1,12 @@
 using Atlas.API.Configs;
+using Atlas.API.Security;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
 using Atlas.BuildingBlocks.CQRS.Behaviors;
-using Atlas.Identity.Application.Common;
+using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
@@ -23,13 +24,22 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+
+services.AddScoped<RequestContext>();
+services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
+
+
 #region =====================================================
 // TENANCY
 #endregion
 
-services.AddScoped<TenantContext>();
-services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
-services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantContext>());
+//services.AddScoped<TenantContext>();
+//services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
+//services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantContext>());
+
+builder.Services.AddHttpContextAccessor();
+
+
 
 #region =====================================================
 // DATABASE
@@ -75,6 +85,10 @@ services.AddOpenApi();
 
 services.Configure<FrontendConfig>(
     configuration.GetSection("Frontend"));
+
+services.AddScoped<IAuthorizeTenantLoginUseCase, AuthorizeTenantLoginUseCase>();
+
+
 
 #region =====================================================
 // SECURITY
