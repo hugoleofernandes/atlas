@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="MediatR" Version="14.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3">
@@ -22,6 +24,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

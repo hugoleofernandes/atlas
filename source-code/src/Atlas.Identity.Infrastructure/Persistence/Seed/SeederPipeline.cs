@@ -9,7 +9,7 @@ public sealed class SeederPipeline
         _seeders = seeders;
     }
 
-    public async Task RunAsync(AtlasDbContext db, IServiceProvider services)
+    public async Task RunAsync(IdentityDbContext db, IServiceProvider services)
     {
         foreach (var seeder in _seeders)
         {

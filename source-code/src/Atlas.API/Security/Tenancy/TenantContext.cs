@@ -1,4 +1,5 @@
 ﻿using Atlas.Identity.Application.Common;
+using Atlas.SharedKernel.Application;
 
 namespace Atlas.API.Security.Tenancy;
 

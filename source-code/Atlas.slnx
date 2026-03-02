@@ -3,11 +3,22 @@
   <Folder Name="/src/API/">
     <Project Path="src/Atlas.API/Atlas.API.csproj" />
   </Folder>
-  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/">
+    <File Path="src/Atlas.SharedKernel/Application/CQRS/IQuery.cs" />
+  </Folder>
   <Folder Name="/src/Modules/Identity/">
     <Project Path="src/Atlas.Identity.Application/Atlas.Identity.Application.csproj" />
     <Project Path="src/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
     <Project Path="src/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Staff/">
+    <Project Path="src/Atlas.Staff.Application/Atlas.Staff.Application.csproj" />
+    <Project Path="src/Atlas.Staff.Domain/Atlas.Staff.Domain.csproj" />
+    <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="Atlas.BuildingBlocks.CQRS/Atlas.BuildingBlocks.CQRS.csproj" Id="a838b1fb-9db8-4332-99e0-e322735f975f" />
+    <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" Id="d352d400-dc2a-4f0f-97fc-599bccaf6d02" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Atlas.Tests/Atlas.Tests.csproj" />

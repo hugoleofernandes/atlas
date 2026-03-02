@@ -4,119 +4,135 @@ using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
-using Atlas.Identity.Application.Abstractions;
+using Atlas.BuildingBlocks.CQRS.Behaviors;
 using Atlas.Identity.Application.Common;
-using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
+using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
+using Atlas.SharedKernel.Application;
+using Atlas.Staff.Infrastructure.DI;
+using Atlas.Staff.Infrastructure.Persistence;
+using FluentValidation;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
+using IdentityAssemblyMarker = Atlas.Identity.Application.AssemblyMarker;
+using StaffAssemblyMarker = Atlas.Staff.Application.AssemblyMarker;
+
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-// ==========================================================
-// DATABASE & TENANCY
-// ==========================================================
+#region =====================================================
+// TENANCY
+#endregion
 
-builder.Services.AddScoped<TenantContext>();
-builder.Services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
-builder.Services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantContext>());
+services.AddScoped<TenantContext>();
+services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
+services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantContext>());
 
-builder.Services.AddDbContext<AtlasDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("Default")
-    )
-);
+#region =====================================================
+// DATABASE
+#endregion
 
-// ==========================================================
-// CORE SERVICES
-// ==========================================================
+services.AddDbContext<IdentityDbContext>(o =>
+    o.UseNpgsql(configuration.GetConnectionString("Default")));
 
-builder.Services.AddControllers();
-builder.Services.AddAuthorization();
-builder.Services.AddHealthChecks();
-builder.Services.AddOpenApi();
+services.AddDbContext<StaffDbContext>(o =>
+    o.UseNpgsql(configuration.GetConnectionString("Default")));
 
-// ==========================================================
-// CONFIGURATION
-// ==========================================================
+#region =====================================================
+// MODULE REGISTRATION
+#endregion
 
-builder.Services.Configure<FrontendConfig>(
-    builder.Configuration.GetSection("Frontend")
-);
+services.AddIdentityModule();   // Repos, UoW, etc
+services.AddStaffModule();
 
-// ==========================================================
+#region =====================================================
+// CQRS + MEDIATR
+#endregion
+
+services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(StaffAssemblyMarker).Assembly);
+});
+
+services.AddValidatorsFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
+services.AddValidatorsFromAssembly(typeof(StaffAssemblyMarker).Assembly);
+
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+
+#region =====================================================
+// API CORE
+#endregion
+
+services.AddControllers();
+services.AddAuthorization();
+services.AddHealthChecks();
+services.AddOpenApi();
+
+services.Configure<FrontendConfig>(
+    configuration.GetSection("Frontend"));
+
+#region =====================================================
 // SECURITY
-// ==========================================================
+#endregion
 
-builder.Services.AddAppCors(builder.Configuration);
-builder.Services.AddOidcMultiTenantAuthentication(builder.Configuration);
-builder.Services.AddRateLimiting(builder.Configuration);
+services.AddAppCors(configuration);
+services.AddOidcMultiTenantAuthentication(configuration);
+services.AddRateLimiting(configuration);
 
-builder.Services.AddHsts(options =>
+services.AddHsts(options =>
 {
     options.MaxAge = TimeSpan.FromDays(365);
     options.IncludeSubDomains = true;
     options.Preload = false;
 });
 
-// ==========================================================
-// SEEDING PIPELINE
-// ==========================================================
+#region =====================================================
+// SEEDING
+#endregion
 
-builder.Services.AddScoped<ISeeder, GlobalIdentitySeeder>();
-builder.Services.AddScoped<ISeeder, TestEntitySeeder>();
-builder.Services.AddScoped<SeederPipeline>();
+services.AddScoped<ISeeder, GlobalIdentitySeeder>();
+services.AddScoped<SeederPipeline>();
 
-
-builder.Services.AddScoped<IAuthorizeTenantLoginUseCase, AuthorizeTenantLoginUseCase>();
-
-builder.Services.AddScoped<ITenantRepository, TenantRepository>();
-builder.Services.AddScoped<IIdentityUserRepository, IdentityUserRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-
-// ==========================================================
-// BUILD APP
-// ==========================================================
+#region =====================================================
+// BUILD
+#endregion
 
 var app = builder.Build();
 
-// ==========================================================
-// MIGRATIONS + SEED (DEV ONLY)
-// ==========================================================
+#region =====================================================
+// MIGRATIONS (DEV ONLY)
+#endregion
 
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
 
-    var db = scope.ServiceProvider.GetRequiredService<AtlasDbContext>();
-    await db.Database.MigrateAsync();
+    var identityDb = scope.ServiceProvider
+        .GetRequiredService<IdentityDbContext>();
 
-    var pipeline = scope.ServiceProvider.GetRequiredService<SeederPipeline>();
-    await pipeline.RunAsync(db, scope.ServiceProvider);
-}
+    //await identityDb.Database.MigrateAsync();
 
-// ==========================================================
-// DEVELOPMENT ENDPOINTS
-// ==========================================================
+    var pipeline = scope.ServiceProvider
+        .GetRequiredService<SeederPipeline>();
 
-if (app.Environment.IsDevelopment())
-{
+    await pipeline.RunAsync(identityDb, scope.ServiceProvider);
+
     app.MapOpenApi();
 }
 
-// ==========================================================
-// PRODUCTION SECURITY
-// ==========================================================
+#region =====================================================
+// MIDDLEWARE
+#endregion
 
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
 }
-
-// ==========================================================
-// MIDDLEWARE PIPELINE
-// ==========================================================
 
 app.UseHttpsRedirection();
 
@@ -131,98 +147,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-//app.UseHttpsRedirection();
-
-
-//app.MapHealthChecks("/health");
-
-//app.MapGet("/", () => "Atlas API is running.");
-
-
-//if (app.Environment.IsDevelopment())
-//{
-//    using var scope = app.Services.CreateScope();
-//    var db = scope.ServiceProvider.GetRequiredService<AtlasDbContext>();
-//    db.Database.Migrate();
-//}
-
-
-//app.MapGet("/", () => "Atlas API is running.");
-//app.MapHealthChecks("/health");
-
-//app.MapPost("/dev/tenants", async (AtlasDbContext db, CreateTenantRequest req) =>
-//{
-//    var tenant = new Tenant { Id = Guid.NewGuid(), Name = req.Name.Trim() };
-//    db.Tenants.Add(tenant);
-//    await db.SaveChangesAsync();
-//    return Results.Created($"/dev/tenants/{tenant.Id}", tenant);
-//});
-
-//app.MapGet("/dev/tenants", async (AtlasDbContext db) =>
-//    await db.Tenants.OrderBy(x => x.Name).ToListAsync());
-
-//app.MapPatch("/dev/tenants/{id:guid}", async (AtlasDbContext db, Guid id, UpdateTenantRequest req) =>
-//{
-//    var tenant = await db.Tenants.FindAsync(id);
-//    if (tenant is null) return Results.NotFound();
-
-//    tenant.Name = req.Name.Trim();
-//    await db.SaveChangesAsync();
-//    return Results.Ok(tenant);
-//});
-
-//app.MapDelete("/dev/tenants/{id:guid}", async (AtlasDbContext db, Guid id) =>
-//{
-//    var tenant = await db.Tenants.FindAsync(id);
-//    if (tenant is null) return Results.NotFound();
-
-//    db.Tenants.Remove(tenant);
-//    await db.SaveChangesAsync();
-//    return Results.NoContent();
-//});
-
-//app.MapPost("/dev/users", async (AtlasDbContext db, CreateUserRequest req) =>
-//{
-//    var user = new User
-//    {
-//        Id = Guid.NewGuid(),
-//        Provider = req.Provider,
-//        ExternalId = req.ExternalId.Trim(),
-//        Email = req.Email.Trim(),
-//        DisplayName = req.DisplayName.Trim()
-//    };
-
-//    db.Users.Add(user);
-//    await db.SaveChangesAsync();
-//    return Results.Created($"/dev/users/{user.Id}", user);
-//});
-
-//app.MapPost("/dev/tenant-users", async (AtlasDbContext db, LinkTenantUserRequest req) =>
-//{
-//    var exists = await db.TenantUsers.AnyAsync(x => x.TenantId == req.TenantId && x.UserId == req.UserId);
-//    if (exists) return Results.Conflict("User already linked to this tenant.");
-
-//    var link = new TenantUser { TenantId = req.TenantId, UserId = req.UserId, Role = req.Role };
-//    db.TenantUsers.Add(link);
-//    await db.SaveChangesAsync();
-//    return Results.Created("/dev/tenant-users", link);
-//});
-
-//app.MapDelete("/dev/tenant-users", async (AtlasDbContext db, Guid tenantId, Guid userId) =>
-//{
-//    var link = await db.TenantUsers.FindAsync(tenantId, userId);
-//    if (link is null) return Results.NotFound();
-
-//    db.TenantUsers.Remove(link);
-//    await db.SaveChangesAsync();
-//    return Results.NoContent();
-//});
-
-
-//record CreateTenantRequest(string Name);
-//record UpdateTenantRequest(string Name);
-
-//record CreateUserRequest(AuthProvider Provider, string ExternalId, string Email, string DisplayName);
-
-//record LinkTenantUserRequest(Guid TenantId, Guid UserId, TenantRole Role);

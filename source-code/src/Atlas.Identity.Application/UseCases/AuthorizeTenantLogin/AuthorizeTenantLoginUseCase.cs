@@ -1,5 +1,6 @@
 ﻿using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Domain.Entities;
+using Atlas.SharedKernel.Application;
 
 namespace Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
 

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
+    <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

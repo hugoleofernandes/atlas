@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Domain.Common;
+﻿using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities;
 

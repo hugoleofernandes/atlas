@@ -2,5 +2,5 @@
 
 public interface ISeeder
 {
-    Task SeedAsync(AtlasDbContext db, IServiceProvider services);
+    Task SeedAsync(IdentityDbContext db, IServiceProvider services);
 }

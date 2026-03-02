@@ -1,6 +1,8 @@
-﻿namespace Atlas.Identity.Domain.Entities;
+﻿using Atlas.SharedKernel.Domain;
 
-public sealed class IdentityUser
+namespace Atlas.Identity.Domain.Entities;
+
+public sealed class IdentityUser : IAggregateRoot
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
     public string? ExternalId { get; private set; }

@@ -5,7 +5,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Seed;
 
 public sealed class GlobalIdentitySeeder : ISeeder
 {
-    public async Task SeedAsync(AtlasDbContext db, IServiceProvider services)
+    public async Task SeedAsync(IdentityDbContext db, IServiceProvider services)
     {
         if (await db.Tenants.AnyAsync())
             return;
