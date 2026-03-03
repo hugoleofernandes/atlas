@@ -3,6 +3,7 @@ using Atlas.SharedKernel.Application;
 using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Domain.Entities;
 
+
 namespace Atlas.Staff.Application.StaffMembers.Commands.Create;
 
 public sealed class Handler
@@ -26,7 +27,9 @@ public sealed class Handler
 
         if (exists)
             return Result<ResultDto>
-                .Failure("Staff already exists for this user.");
+                .Failure(
+                    "Staff already exists for this user.",
+                    ErrorCodes.Staff.AlreadyExists);
 
         var staff = new StaffMember(
             command.TenantId,

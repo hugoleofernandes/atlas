@@ -3,6 +3,8 @@ using Atlas.Staff.Application.StaffMembers.Queries.List;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
+namespace Atlas.API.Controllers.Staff;
+
 [ApiController]
 [Route("api/staff")]
 public class StaffController : ControllerBase
@@ -19,12 +21,7 @@ public class StaffController : ControllerBase
         [FromBody] Command command,
         CancellationToken ct)
     {
-        var result = await _mediator.Send(command, ct);
-
-        if (!result.Success)
-            return BadRequest(result);
-
-        return Ok(result);
+        return Ok(await _mediator.Send(command, ct));
     }
 
     [HttpGet]
@@ -32,7 +29,6 @@ public class StaffController : ControllerBase
         [FromQuery] Query query,
         CancellationToken ct)
     {
-        var result = await _mediator.Send(query, ct);
-        return Ok(result);
+        return Ok(await _mediator.Send(query, ct));
     }
 }

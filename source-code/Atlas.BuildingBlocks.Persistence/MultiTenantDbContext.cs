@@ -1,52 +1,45 @@
 ﻿using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace Atlas.BuildingBlocks.Persistence;
 
 public abstract class MultiTenantDbContext : DbContext
 {
-    private readonly Guid _tenantId;
+    private readonly Guid? _tenantId;
 
     protected MultiTenantDbContext(
         DbContextOptions options,
         IRequestContext requestContext)
         : base(options)
     {
-        if (requestContext.TenantId is null)
-            throw new InvalidOperationException("TenantId is required.");
-
-        _tenantId = requestContext.TenantId.Value;
+        _tenantId = requestContext?.TenantId;
     }
 
-    protected Guid CurrentTenantId => _tenantId;
+    protected Guid? CurrentTenantId => _tenantId;
 
     protected virtual string Schema => "atlas";
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
-
         ApplyMultiTenantFilters(modelBuilder);
-
         base.OnModelCreating(modelBuilder);
     }
 
     public override Task<int> SaveChangesAsync(
         CancellationToken cancellationToken = default)
     {
-        ApplyTenantIdToNewEntities();
-        return base.SaveChangesAsync(cancellationToken);
-    }
+        if (_tenantId is null)
+            return base.SaveChangesAsync(cancellationToken);
 
-    private void ApplyTenantIdToNewEntities()
-    {
         foreach (var entry in ChangeTracker.Entries<IMultiTenantEntity>())
         {
             if (entry.State == EntityState.Added)
-                entry.Entity.SetTenantId(_tenantId);
+                entry.Entity.SetTenantId(_tenantId.Value);
         }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 
     private void ApplyMultiTenantFilters(ModelBuilder modelBuilder)
@@ -56,24 +49,21 @@ public abstract class MultiTenantDbContext : DbContext
             if (!typeof(IMultiTenantEntity).IsAssignableFrom(entityType.ClrType))
                 continue;
 
-            var parameter = Expression.Parameter(entityType.ClrType, "e");
+            var method = typeof(MultiTenantDbContext)
+                .GetMethod(nameof(SetTenantFilter),
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Instance)!
+                .MakeGenericMethod(entityType.ClrType);
 
-            var tenantProperty = Expression.Property(
-                Expression.Convert(parameter, typeof(IMultiTenantEntity)),
-                nameof(IMultiTenantEntity.TenantId));
-
-            var tenantField = Expression.Field(
-                Expression.Constant(this),
-                nameof(_tenantId));
-
-            var equalsTenant = Expression.Equal(
-                tenantProperty,
-                tenantField);
-
-            var lambda = Expression.Lambda(equalsTenant, parameter);
-
-            modelBuilder.Entity(entityType.ClrType)
-                .HasQueryFilter(lambda);
+            method.Invoke(this, new object[] { modelBuilder });
         }
+    }
+
+    private void SetTenantFilter<TEntity>(ModelBuilder modelBuilder)
+        where TEntity : class, IMultiTenantEntity
+    {
+        modelBuilder.Entity<TEntity>()
+            .HasQueryFilter(e =>
+                !CurrentTenantId.HasValue || e.TenantId == CurrentTenantId.Value);
     }
 }

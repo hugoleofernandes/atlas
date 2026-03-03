@@ -1,4 +1,7 @@
 using Atlas.API.Configs;
+using Atlas.API.Errors;
+using Atlas.API.Filters;
+using Atlas.API.Observability;
 using Atlas.API.Security;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
@@ -16,148 +19,207 @@ using Atlas.Staff.Infrastructure.Persistence;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 using IdentityAssemblyMarker = Atlas.Identity.Application.AssemblyMarker;
 using StaffAssemblyMarker = Atlas.Staff.Application.AssemblyMarker;
 
-var builder = WebApplication.CreateBuilder(args);
-var services = builder.Services;
-var configuration = builder.Configuration;
+//
+// ==========================================
+// 🔹 SERILOG CONFIG (ANTES DO BUILDER)
+// ==========================================
+//
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    //.Enrich.WithMachineName()
+    .Enrich.WithThreadId()
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: "logs/log-.txt",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 7)
+    .CreateLogger();
 
-services.AddScoped<RequestContext>();
-services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
-
-
-#region =====================================================
-// TENANCY
-#endregion
-
-//services.AddScoped<TenantContext>();
-//services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
-//services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantContext>());
-
-builder.Services.AddHttpContextAccessor();
-
-
-
-#region =====================================================
-// DATABASE
-#endregion
-
-services.AddDbContext<IdentityDbContext>(o =>
-    o.UseNpgsql(configuration.GetConnectionString("Default")));
-
-services.AddDbContext<StaffDbContext>(o =>
-    o.UseNpgsql(configuration.GetConnectionString("Default")));
-
-#region =====================================================
-// MODULE REGISTRATION
-#endregion
-
-services.AddIdentityModule();   // Repos, UoW, etc
-services.AddStaffModule();
-
-#region =====================================================
-// CQRS + MEDIATR
-#endregion
-
-services.AddMediatR(cfg =>
+try
 {
-    cfg.RegisterServicesFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
-    cfg.RegisterServicesFromAssembly(typeof(StaffAssemblyMarker).Assembly);
-});
+    var builder = WebApplication.CreateBuilder(args);
 
-services.AddValidatorsFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
-services.AddValidatorsFromAssembly(typeof(StaffAssemblyMarker).Assembly);
+    builder.Host.UseSerilog();
 
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+    var services = builder.Services;
+    var configuration = builder.Configuration;
 
-#region =====================================================
-// API CORE
-#endregion
+    //
+    // ==========================================
+    // CORE SERVICES
+    // ==========================================
+    //
 
-services.AddControllers();
-services.AddAuthorization();
-services.AddHealthChecks();
-services.AddOpenApi();
+    services.AddScoped<RequestContext>();
+    services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
 
-services.Configure<FrontendConfig>(
-    configuration.GetSection("Frontend"));
+    services.AddHttpContextAccessor();
+    services.AddProblemDetails();
 
-services.AddScoped<IAuthorizeTenantLoginUseCase, AuthorizeTenantLoginUseCase>();
+    //
+    // ==========================================
+    // DATABASE
+    // ==========================================
+    //
 
+    services.AddDbContext<IdentityDbContext>(o =>
+        o.UseNpgsql(configuration.GetConnectionString("Default")));
 
+    services.AddDbContext<StaffDbContext>(o =>
+        o.UseNpgsql(configuration.GetConnectionString("Default")));
 
-#region =====================================================
-// SECURITY
-#endregion
+    //
+    // ==========================================
+    // MODULE REGISTRATION
+    // ==========================================
+    //
 
-services.AddAppCors(configuration);
-services.AddOidcMultiTenantAuthentication(configuration);
-services.AddRateLimiting(configuration);
+    services.AddIdentityModule();
+    services.AddStaffModule();
 
-services.AddHsts(options =>
-{
-    options.MaxAge = TimeSpan.FromDays(365);
-    options.IncludeSubDomains = true;
-    options.Preload = false;
-});
+    //
+    // ==========================================
+    // CQRS + MEDIATR
+    // ==========================================
+    //
 
-#region =====================================================
-// SEEDING
-#endregion
+    services.AddMediatR(cfg =>
+    {
+        cfg.RegisterServicesFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
+        cfg.RegisterServicesFromAssembly(typeof(StaffAssemblyMarker).Assembly);
+    });
 
-services.AddScoped<ISeeder, GlobalIdentitySeeder>();
-services.AddScoped<SeederPipeline>();
+    services.AddValidatorsFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
+    services.AddValidatorsFromAssembly(typeof(StaffAssemblyMarker).Assembly);
 
-#region =====================================================
-// BUILD
-#endregion
+    services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+    services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
-var app = builder.Build();
+    //
+    // ==========================================
+    // API CORE
+    // ==========================================
+    //
 
-#region =====================================================
-// MIGRATIONS (DEV ONLY)
-#endregion
+    services.AddControllers(options =>
+    {
+        options.Filters.Add<ResultToHttpFilter>();
+    }).ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory =
+            ValidationProblemDetailsFactory.Create;
+    });
 
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
+    services.AddAuthorization();
+    services.AddHealthChecks();
+    services.AddOpenApi();
 
-    var identityDb = scope.ServiceProvider
-        .GetRequiredService<IdentityDbContext>();
+    services.Configure<FrontendConfig>(
+        configuration.GetSection("Frontend"));
 
-    //await identityDb.Database.MigrateAsync();
+    services.AddScoped<IAuthorizeTenantLoginUseCase, AuthorizeTenantLoginUseCase>();
 
-    var pipeline = scope.ServiceProvider
-        .GetRequiredService<SeederPipeline>();
+    //
+    // ==========================================
+    // SECURITY
+    // ==========================================
+    //
 
-    await pipeline.RunAsync(identityDb, scope.ServiceProvider);
+    services.AddAppCors(configuration);
+    services.AddOidcMultiTenantAuthentication(configuration);
+    services.AddRateLimiting(configuration);
 
-    app.MapOpenApi();
+    services.AddHsts(options =>
+    {
+        options.MaxAge = TimeSpan.FromDays(365);
+        options.IncludeSubDomains = true;
+        options.Preload = false;
+    });
+
+    //
+    // ==========================================
+    // SEEDING
+    // ==========================================
+    //
+
+    services.AddScoped<ISeeder, GlobalIdentitySeeder>();
+    services.AddScoped<SeederPipeline>();
+
+    //
+    // ==========================================
+    // BUILD
+    // ==========================================
+    //
+
+    var app = builder.Build();
+
+    //
+    // ==========================================
+    // DEV MIGRATIONS
+    // ==========================================
+    //
+
+    if (app.Environment.IsDevelopment())
+    {
+        using var scope = app.Services.CreateScope();
+
+        var identityDb = scope.ServiceProvider
+            .GetRequiredService<IdentityDbContext>();
+
+        var pipeline = scope.ServiceProvider
+            .GetRequiredService<SeederPipeline>();
+
+        await pipeline.RunAsync(identityDb, scope.ServiceProvider);
+
+        app.MapOpenApi();
+    }
+
+    //
+    // ==========================================
+    // MIDDLEWARE PIPELINE
+    // ==========================================
+    //
+
+    if (!app.Environment.IsDevelopment())
+        app.UseHsts();
+
+    app.UseHttpsRedirection();
+
+    // 🔹 CorrelationId PRIMEIRO
+    app.UseMiddleware<CorrelationIdMiddleware>();
+
+    // 🔹 Serilog HTTP logging
+    app.UseSerilogRequestLogging();
+
+    // 🔹 Exception handling global
+    app.UseMiddleware<GlobalExceptionMiddleware>();
+
+    app.UseSecurityHeaders();
+    app.UseRateLimiter();
+    app.UseCors("app");
+
+    app.UseAuthentication();
+    app.UseMiddleware<TenantResolverMiddleware>();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
 }
-
-#region =====================================================
-// MIDDLEWARE
-#endregion
-
-if (!app.Environment.IsDevelopment())
+catch (Exception ex)
 {
-    app.UseHsts();
+    Log.Fatal(ex, "Application failed to start");
 }
-
-app.UseHttpsRedirection();
-
-app.UseSecurityHeaders();
-app.UseRateLimiter();
-app.UseCors("app");
-
-app.UseAuthentication();
-app.UseMiddleware<TenantResolverMiddleware>();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+finally
+{
+    Log.CloseAndFlush();
+}

@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
   "tenantId": "a9bc089b-9b88-40bd-88ce-4aa97424c5a6",
-  "identityUserId": "22222222-2222-2222-2222-222222222222",
-  "firstName": "João",
-  "lastName": "Silva",
+  "identityUserId": "12222222-2222-2222-2222-222222222222",
+  "firstName": "João1",
+  "lastName": "Silva1",
   "role": "Operator"
 }

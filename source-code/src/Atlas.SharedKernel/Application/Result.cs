@@ -1,21 +1,23 @@
 ﻿namespace Atlas.SharedKernel.Application;
 
-public sealed class Result<T>
+public sealed class Result<T> : IResult
 {
     public bool Success { get; }
-    public T? Data { get; }
-    public List<string> Errors { get; }
+    public string? Error { get; }
+    public string? ErrorCode { get; }
+    public T? Value { get; }
 
-    private Result(bool success, T? data, List<string> errors)
+    private Result(bool success, T? value, string? error, string? errorCode)
     {
         Success = success;
-        Data = data;
-        Errors = errors;
+        Value = value;
+        Error = error;
+        ErrorCode = errorCode;
     }
 
-    public static Result<T> Ok(T data)
-        => new(true, data, new());
+    public static Result<T> Ok(T value)
+        => new(true, value, null, null);
 
-    public static Result<T> Failure(params string[] errors)
-        => new(false, default, errors.ToList());
+    public static Result<T> Failure(string error, string errorCode)
+        => new(false, default, error, errorCode);
 }

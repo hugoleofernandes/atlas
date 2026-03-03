@@ -31,7 +31,7 @@ public abstract class AuditableDbContext<TAudit>
 
     private async Task AddAuditLogsAsync(CancellationToken ct)
     {
-        if (CurrentTenantId is not Guid tenantId)
+        if (CurrentTenantId is null)
             return; // ou throw se tenant for obrigatório
 
         ChangeTracker.DetectChanges();
@@ -75,7 +75,7 @@ public abstract class AuditableDbContext<TAudit>
                 entry.State.ToString(),
                 GetPrimaryKey(entry),
                 CurrentUserId?.ToString(),
-                tenantId,
+                CurrentTenantId.Value,
                 JsonSerializer.Serialize(changes)
             );
 
