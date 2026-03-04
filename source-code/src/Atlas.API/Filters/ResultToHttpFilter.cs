@@ -1,6 +1,6 @@
 ﻿using Atlas.API.Errors;
 using Atlas.API.Observability;
-using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -18,15 +18,18 @@ public sealed class ResultToHttpFilter : IResultFilter
 
         if (!result.Success)
         {
+            var error = result.ErrorDefinition!;
+
             var problem = new ApiProblemDetails
             {
-                Title = result.Error ?? "Application error",
-                Status = MapStatus(result.ErrorCode),
-                Detail = result.Error
+                Title = error.DefaultMessage,
+                Status = MapCategory(error.Category),
+                Detail = result.Error,
+                Type = $"https://docs.atlas/errors/{error.Code.ToLower()}"
             };
 
             problem.AddMetadata(
-                result.ErrorCode,
+                error.Code,
                 CorrelationIdMiddleware.Get(context.HttpContext),
                 TraceContextHelper.GetTraceId()
             );
@@ -40,27 +43,22 @@ public sealed class ResultToHttpFilter : IResultFilter
             return;
         }
 
-        // SUCCESS
-        var valueProperty = result.GetType().GetProperty("Value");
-        var value = valueProperty?.GetValue(result);
-
-        context.Result = new ObjectResult(value)
+        context.Result = new ObjectResult(result.GetValue())
         {
-            StatusCode = objectResult.StatusCode ?? 200
+            StatusCode = objectResult.StatusCode ?? StatusCodes.Status200OK
         };
     }
 
-    public void OnResultExecuted(ResultExecutedContext context)
-    {
-    }
+    public void OnResultExecuted(ResultExecutedContext context) { }
 
-    private static int MapStatus(string? errorCode)
-    {
-        return errorCode switch
+    private static int MapCategory(ErrorCategory category)
+        => category switch
         {
-            ErrorCodes.Staff.AlreadyExists => StatusCodes.Status409Conflict,
-            ErrorCodes.Common.ValidationFailed => StatusCodes.Status400BadRequest,
-            _ => StatusCodes.Status400BadRequest
+            ErrorCategory.Validation => 400,
+            ErrorCategory.Conflict => 409,
+            ErrorCategory.NotFound => 404,
+            ErrorCategory.Unauthorized => 401,
+            ErrorCategory.Unexpected => 500,
+            _ => 400
         };
-    }
 }

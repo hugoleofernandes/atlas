@@ -25,29 +25,38 @@ public static class SecurityHeadersExtensions
     {
         return app.Use(async (ctx, next) =>
         {
+            var env = ctx.RequestServices
+                .GetRequiredService<IWebHostEnvironment>();
+
             var h = ctx.Response.Headers;
 
-            // #1 Prevent clickjacking
+            // #1 Clickjacking
             h["X-Frame-Options"] = "DENY";
-            h["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none';";
-            //h["Content-Security-Policy"] =
-            //    "default-src 'self'; " +
-            //    "script-src 'self'; " +
-            //    "style-src 'self'; " +
-            //    "img-src 'self' data:; " +
-            //    "connect-src 'self' https://login.microsoftonline.com; " +
-            //    "frame-ancestors 'none';";
 
-            // #2 Prevent MIME sniffing
+            if (env.IsDevelopment())
+            {
+                // 🔓 Relaxed CSP for DEV (Scalar + Browser refresh)
+                h["Content-Security-Policy"] =
+                    "default-src 'self'; " +
+                    "script-src 'self' 'unsafe-inline'; " +
+                    "style-src 'self' 'unsafe-inline'; " +
+                    "font-src 'self' data:; " +
+                    "connect-src 'self' ws: wss:; " +
+                    "frame-ancestors 'none';";
+            }
+            else
+            {
+                // 🔐 Strict CSP for PROD
+                h["Content-Security-Policy"] =
+                    "default-src 'self'; " +
+                    "frame-ancestors 'none';";
+            }
+
             h["X-Content-Type-Options"] = "nosniff";
-
-            // #3 Restrict referrer leakage
             h["Referrer-Policy"] = "strict-origin-when-cross-origin";
+            h["Permissions-Policy"] =
+                "camera=(), microphone=(), geolocation=(), payment=()";
 
-            // #6 Restrict browser features
-            h["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()";
-
-            // #4 Prevent caching of authenticated responses
             if (ctx.User.Identity?.IsAuthenticated == true)
             {
                 h["Cache-Control"] = "no-store, no-cache, must-revalidate";

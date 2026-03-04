@@ -1,5 +1,5 @@
 ﻿using Atlas.API.Observability;
-using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Errors;
 
 namespace Atlas.API.Errors;
 
@@ -26,23 +26,42 @@ public sealed class GlobalExceptionMiddleware
         {
             _logger.LogError(ex, "Unhandled exception");
 
+            var error = new ErrorDefinition(
+                Code: "COMMON_999",
+                DefaultMessage: "Unexpected error",
+                Category: ErrorCategory.Unexpected
+            );
+
             var problem = new ApiProblemDetails
             {
-                Title = "Unexpected error",
-                Status = StatusCodes.Status500InternalServerError,
-                Detail = "An unexpected error occurred."
+                Title = error.DefaultMessage,
+                Status = MapCategory(error.Category),
+                Detail = "An unexpected error occurred.",
+                Type = $"https://docs.atlas/errors/{error.Code.ToLower()}"
             };
 
             problem.AddMetadata(
-                ErrorCodes.Common.UnexpectedError,
+                error.Code,
                 CorrelationIdMiddleware.Get(context),
                 TraceContextHelper.GetTraceId()
             );
 
-            context.Response.StatusCode = problem.Status.Value;
+            context.Response.StatusCode = problem.Status!.Value;
             context.Response.ContentType = "application/problem+json";
 
             await context.Response.WriteAsJsonAsync(problem);
         }
     }
+
+    private static int MapCategory(ErrorCategory category)
+        => category switch
+        {
+            ErrorCategory.Validation => StatusCodes.Status400BadRequest,
+            ErrorCategory.Business => StatusCodes.Status422UnprocessableEntity,
+            ErrorCategory.Conflict => StatusCodes.Status409Conflict,
+            ErrorCategory.NotFound => StatusCodes.Status404NotFound,
+            ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
+            ErrorCategory.Unexpected => StatusCodes.Status500InternalServerError,
+            _ => StatusCodes.Status500InternalServerError
+        };
 }

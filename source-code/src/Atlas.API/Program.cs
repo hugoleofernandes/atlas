@@ -2,6 +2,7 @@ using Atlas.API.Configs;
 using Atlas.API.Errors;
 using Atlas.API.Filters;
 using Atlas.API.Observability;
+using Atlas.API.OpenApi;
 using Atlas.API.Security;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
@@ -19,6 +20,7 @@ using Atlas.Staff.Infrastructure.Persistence;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 
@@ -121,7 +123,13 @@ try
 
     services.AddAuthorization();
     services.AddHealthChecks();
-    services.AddOpenApi();
+
+    services.AddOpenApi(options =>
+    {
+        options.AddOperationTransformer<ProblemDetailsOperationTransformer>();
+    });
+
+    services.AddEndpointsApiExplorer();
 
     services.Configure<FrontendConfig>(
         configuration.GetSection("Frontend"));
@@ -181,6 +189,7 @@ try
         await pipeline.RunAsync(identityDb, scope.ServiceProvider);
 
         app.MapOpenApi();
+        app.MapScalarApiReference();
     }
 
     //

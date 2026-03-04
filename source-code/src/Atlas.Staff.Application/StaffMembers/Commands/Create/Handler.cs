@@ -1,8 +1,8 @@
 ﻿using Atlas.BuildingBlocks.CQRS.Abstractions;
 using Atlas.SharedKernel.Application;
+using Atlas.Staff.Application.Errors;
 using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Domain.Entities;
-
 
 namespace Atlas.Staff.Application.StaffMembers.Commands.Create;
 
@@ -26,10 +26,12 @@ public sealed class Handler
             ct);
 
         if (exists)
-            return Result<ResultDto>
-                .Failure(
-                    "Staff already exists for this user.",
-                    ErrorCodes.Staff.AlreadyExists);
+        {
+            return Result<ResultDto>.Failure(
+                StaffErrors.AlreadyExists,
+                "Staff already exists for this user."
+            );
+        }
 
         var staff = new StaffMember(
             command.TenantId,
@@ -43,6 +45,8 @@ public sealed class Handler
 
         // SaveChanges será feito pelo TransactionBehavior
 
-        return Result<ResultDto>.Ok(new ResultDto(staff.Id));
+        return Result<ResultDto>.Ok(
+            new ResultDto(staff.Id)
+        );
     }
 }
