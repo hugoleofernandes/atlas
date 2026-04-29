@@ -67,8 +67,8 @@ update-staff:
 # =========================================
 
 migrate-all:
-	make migrate-identity name=$(name)
-	make migrate-staff name=$(name)
+	make migrate-identity name=$(name)_Identity
+	make migrate-staff name=$(name)_Staff
 
 update-all:
 	make update-identity

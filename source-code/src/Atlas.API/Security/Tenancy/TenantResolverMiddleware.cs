@@ -10,7 +10,7 @@ public sealed class TenantResolverMiddleware
 
     public TenantResolverMiddleware(RequestDelegate next) => _next = next;
 
-    public async Task Invoke(HttpContext context, IRequestContext requestContext)
+    public async Task Invoke(HttpContext context, IRequestContextSetter requestContextSetter)
     {
         // Só resolve tenant quando o usuário estiver autenticado
         if (context.User?.Identity?.IsAuthenticated == true)
@@ -22,7 +22,7 @@ public sealed class TenantResolverMiddleware
             if (Guid.TryParse(tenantIdRaw, out var tenantId) &&
                 Guid.TryParse(userIdRaw, out var userId))
             {
-                requestContext.Set(tenantId, tenantSlug!, userId);
+                requestContextSetter.Set(tenantId, tenantSlug!, userId);
             }
             //else 
             //{

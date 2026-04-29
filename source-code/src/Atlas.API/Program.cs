@@ -62,6 +62,7 @@ try
     //
 
     services.AddScoped<RequestContext>();
+    services.AddScoped<IRequestContextSetter, RequestContext>();
     services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
 
     services.AddHttpContextAccessor();

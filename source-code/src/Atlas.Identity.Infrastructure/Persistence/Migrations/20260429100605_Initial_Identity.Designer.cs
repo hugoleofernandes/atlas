@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260302183834_Initial")]
-    partial class Initial
+    [Migration("20260429100605_Initial_Identity")]
+    partial class Initial_Identity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("atlas")
+                .HasDefaultSchema("atlas_identity")
                 .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -67,24 +67,28 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("identity_audit_logs", "atlas");
+                    b.ToTable("identity_audit_logs", "atlas_identity");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.IdentityUser", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("ExternalId")
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
-                    b.ToTable("IdentityUsers", "atlas");
+                    b.HasIndex("ExternalId");
+
+                    b.HasIndex("IsActive");
+
+                    b.ToTable("identity_users", "atlas_identity");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenant", b =>
@@ -108,7 +112,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("tenants", "atlas");
+                    b.ToTable("tenants", "atlas_identity");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.TenantMembership", b =>
@@ -151,7 +155,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("\"IdentityUserId\" IS NOT NULL");
 
-                    b.ToTable("tenant_memberships", "atlas");
+                    b.ToTable("tenant_memberships", "atlas_identity");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.TenantMembership", b =>

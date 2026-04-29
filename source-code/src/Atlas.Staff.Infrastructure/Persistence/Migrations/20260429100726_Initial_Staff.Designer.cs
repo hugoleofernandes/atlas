@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(StaffDbContext))]
-    [Migration("20260302183843_Initial")]
-    partial class Initial
+    [Migration("20260429100726_Initial_Staff")]
+    partial class Initial_Staff
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("atlas")
+                .HasDefaultSchema("atlas_staff")
                 .HasAnnotation("ProductVersion", "10.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -67,7 +67,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("staff_audit_logs", "atlas");
+                    b.ToTable("staff_audit_logs", "atlas_staff");
                 });
 
             modelBuilder.Entity("Atlas.Staff.Domain.Entities.StaffMember", b =>
@@ -110,7 +110,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.HasIndex("TenantId", "IdentityUserId")
                         .IsUnique();
 
-                    b.ToTable("staff_members", "atlas");
+                    b.ToTable("staff_members", "atlas_staff");
                 });
 #pragma warning restore 612, 618
         }

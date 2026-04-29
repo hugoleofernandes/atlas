@@ -8,7 +8,7 @@ namespace Atlas.Identity.Infrastructure.Persistence;
 public sealed class IdentityDbContext
     : AuditableDbContext<IdentityAuditLog>
 {
-    protected override string Schema => "atlas";
+    protected override string Schema => "atlas_identity";
 
     public DbSet<IdentityUser> IdentityUsers => Set<IdentityUser>();
     public DbSet<Tenant> Tenants => Set<Tenant>();

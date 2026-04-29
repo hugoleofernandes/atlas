@@ -6,17 +6,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initial_Staff : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "atlas");
+                name: "atlas_staff");
 
             migrationBuilder.CreateTable(
                 name: "staff_audit_logs",
-                schema: "atlas",
+                schema: "atlas_staff",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -35,7 +35,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "staff_members",
-                schema: "atlas",
+                schema: "atlas_staff",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -54,25 +54,25 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_staff_audit_logs_EntityName",
-                schema: "atlas",
+                schema: "atlas_staff",
                 table: "staff_audit_logs",
                 column: "EntityName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_staff_audit_logs_OccurredAtUtc",
-                schema: "atlas",
+                schema: "atlas_staff",
                 table: "staff_audit_logs",
                 column: "OccurredAtUtc");
 
             migrationBuilder.CreateIndex(
                 name: "IX_staff_audit_logs_TenantId",
-                schema: "atlas",
+                schema: "atlas_staff",
                 table: "staff_audit_logs",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_staff_members_TenantId_IdentityUserId",
-                schema: "atlas",
+                schema: "atlas_staff",
                 table: "staff_members",
                 columns: new[] { "TenantId", "IdentityUserId" },
                 unique: true);
@@ -83,11 +83,11 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "staff_audit_logs",
-                schema: "atlas");
+                schema: "atlas_staff");
 
             migrationBuilder.DropTable(
                 name: "staff_members",
-                schema: "atlas");
+                schema: "atlas_staff");
         }
     }
 }

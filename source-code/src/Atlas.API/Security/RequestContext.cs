@@ -2,7 +2,7 @@
 
 namespace Atlas.API.Security;
 
-public sealed class RequestContext : IRequestContext
+public sealed class RequestContext : IRequestContext, IRequestContextSetter
 {
     private Guid? _tenantId;
     private string? _tenantSlug;

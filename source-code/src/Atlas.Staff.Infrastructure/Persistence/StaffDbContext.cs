@@ -8,7 +8,7 @@ namespace Atlas.Staff.Infrastructure.Persistence;
 public sealed class StaffDbContext
     : AuditableDbContext<StaffAuditLog>
 {
-    protected override string Schema => "atlas";
+    protected override string Schema => "atlas_staff";
     public DbSet<StaffMember> StaffMembers => Set<StaffMember>();
     public DbSet<StaffAuditLog> AuditLogs => Set<StaffAuditLog>();
 

@@ -6,17 +6,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initial_Identity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "atlas");
+                name: "atlas_identity");
 
             migrationBuilder.CreateTable(
                 name: "identity_audit_logs",
-                schema: "atlas",
+                schema: "atlas_identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -34,22 +34,22 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityUsers",
-                schema: "atlas",
+                name: "identity_users",
+                schema: "atlas_identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ExternalId = table.Column<string>(type: "text", nullable: true),
+                    ExternalId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_IdentityUsers", x => x.Id);
+                    table.PrimaryKey("PK_identity_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "tenants",
-                schema: "atlas",
+                schema: "atlas_identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -63,7 +63,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "tenant_memberships",
-                schema: "atlas",
+                schema: "atlas_identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -77,16 +77,16 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_tenant_memberships", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_tenant_memberships_IdentityUsers_IdentityUserId",
+                        name: "FK_tenant_memberships_identity_users_IdentityUserId",
                         column: x => x.IdentityUserId,
-                        principalSchema: "atlas",
-                        principalTable: "IdentityUsers",
+                        principalSchema: "atlas_identity",
+                        principalTable: "identity_users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_tenant_memberships_tenants_TenantId",
                         column: x => x.TenantId,
-                        principalSchema: "atlas",
+                        principalSchema: "atlas_identity",
                         principalTable: "tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -94,38 +94,50 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_identity_audit_logs_EntityName",
-                schema: "atlas",
+                schema: "atlas_identity",
                 table: "identity_audit_logs",
                 column: "EntityName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_identity_audit_logs_OccurredAtUtc",
-                schema: "atlas",
+                schema: "atlas_identity",
                 table: "identity_audit_logs",
                 column: "OccurredAtUtc");
 
             migrationBuilder.CreateIndex(
                 name: "IX_identity_audit_logs_TenantId",
-                schema: "atlas",
+                schema: "atlas_identity",
                 table: "identity_audit_logs",
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_identity_users_ExternalId",
+                schema: "atlas_identity",
+                table: "identity_users",
+                column: "ExternalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_identity_users_IsActive",
+                schema: "atlas_identity",
+                table: "identity_users",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tenant_memberships_IdentityUserId",
-                schema: "atlas",
+                schema: "atlas_identity",
                 table: "tenant_memberships",
                 column: "IdentityUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenant_memberships_TenantId_Email",
-                schema: "atlas",
+                schema: "atlas_identity",
                 table: "tenant_memberships",
                 columns: new[] { "TenantId", "Email" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenant_memberships_TenantId_IdentityUserId",
-                schema: "atlas",
+                schema: "atlas_identity",
                 table: "tenant_memberships",
                 columns: new[] { "TenantId", "IdentityUserId" },
                 unique: true,
@@ -133,7 +145,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenants_Slug",
-                schema: "atlas",
+                schema: "atlas_identity",
                 table: "tenants",
                 column: "Slug",
                 unique: true);
@@ -144,19 +156,19 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "identity_audit_logs",
-                schema: "atlas");
+                schema: "atlas_identity");
 
             migrationBuilder.DropTable(
                 name: "tenant_memberships",
-                schema: "atlas");
+                schema: "atlas_identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityUsers",
-                schema: "atlas");
+                name: "identity_users",
+                schema: "atlas_identity");
 
             migrationBuilder.DropTable(
                 name: "tenants",
-                schema: "atlas");
+                schema: "atlas_identity");
         }
     }
 }

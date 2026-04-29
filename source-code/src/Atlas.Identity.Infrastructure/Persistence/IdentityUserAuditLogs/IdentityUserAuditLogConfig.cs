@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Atlas.Identity.Infrastructure.Persistence.IdentityAuditLogs;
+namespace Atlas.Identity.Infrastructure.Persistence.IdentityUserAuditLogs;
 
-public sealed class IdentityAuditLogConfig
+public sealed class IdentityUserAuditLogConfig
     : IEntityTypeConfiguration<IdentityAuditLog>
 {
     public void Configure(EntityTypeBuilder<IdentityAuditLog> b)
