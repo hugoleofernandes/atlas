@@ -1,5 +1,25 @@
 ﻿namespace Atlas.Identity.Domain.Entities;
 
+/// <summary>
+/// Represents the association between a user (or invited email) and a tenant.
+///
+/// Entity (part of Tenant aggregate):
+/// - Lifecycle is controlled by Tenant.
+/// - Cannot exist independently.
+///
+/// Invariants:
+/// - Email is normalized and unique per tenant (enforced by Tenant).
+/// - A membership can be bound to at most one IdentityUser.
+/// - A membership can exist without a bound IdentityUser (invitation phase).
+///
+/// Design Decisions:
+/// - Supports invitation-first flow (email-based access before user creation).
+/// - IdentityUserId is nullable to allow pre-registration invitations.
+///
+/// Boundaries:
+/// - Does not validate authentication or identity provider data.
+/// - Does not enforce tenant-level rules (handled by Tenant).
+/// </summary>
 public sealed class TenantMembership
 {
     public Guid Id { get; private set; } = Guid.NewGuid();

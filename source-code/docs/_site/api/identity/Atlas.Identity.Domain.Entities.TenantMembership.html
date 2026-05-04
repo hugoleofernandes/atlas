@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Class TenantMembership | Atlas Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Class TenantMembership | Atlas Documentation ">
+    
+    <meta name="description" content="Represents the association between a user (or invited email) and a tenant. Entity (part of Tenant aggregate):  Lifecycle is controlled by Tenant. Cannot exist independently.  Invariants:  Email is normalized and unique per tenant (enforced by Tenant). A membership can be bound to at most one IdentityUser. A membership can exist without a bound IdentityUser (invitation phase).  Design Decisions:  Supports invitation-first flow (email-based access before user creation). IdentityUserId is nullable to allow pre-registration invitations.  Boundaries:  Does not validate authentication or identity provider data. Does not enforce tenant-level rules (handled by Tenant).">
+      <link rel="shortcut icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="Atlas">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Atlas.Identity.Domain.Entities.TenantMembership">
+
+
+
+  <h1 id="Atlas_Identity_Domain_Entities_TenantMembership" data-uid="Atlas.Identity.Domain.Entities.TenantMembership" class="text-break">Class TenantMembership</h1>
+  <div class="markdown level0 summary"><p>Represents the association between a user (or invited email) and a tenant.</p>
+<p>Entity (part of Tenant aggregate):</p>
+<ul>
+<li>Lifecycle is controlled by Tenant.</li>
+<li>Cannot exist independently.</li>
+</ul>
+<p>Invariants:</p>
+<ul>
+<li>Email is normalized and unique per tenant (enforced by Tenant).</li>
+<li>A membership can be bound to at most one IdentityUser.</li>
+<li>A membership can exist without a bound IdentityUser (invitation phase).</li>
+</ul>
+<p>Design Decisions:</p>
+<ul>
+<li>Supports invitation-first flow (email-based access before user creation).</li>
+<li>IdentityUserId is nullable to allow pre-registration invitations.</li>
+</ul>
+<p>Boundaries:</p>
+<ul>
+<li>Does not validate authentication or identity provider data.</li>
+<li>Does not enforce tenant-level rules (handled by Tenant).</li>
+</ul>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">TenantMembership</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Atlas.html">Atlas</a>.<a class="xref" href="Atlas.Identity.html">Identity</a>.<a class="xref" href="Atlas.Identity.Domain.html">Domain</a>.<a class="xref" href="Atlas.Identity.Domain.Entities.html">Entities</a></h6>
+  <h6><strong>Assembly</strong>: Atlas.Identity.Domain.dll</h6>
+  <h5 id="Atlas_Identity_Domain_Entities_TenantMembership_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class TenantMembership</code></pre>
+  </div>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_Email.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.Email%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L31">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_Email_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Email*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_Email" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Email">Email</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Email { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_Id.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.Id%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L25">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_Id_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Id*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_Id" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Id">Id</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Guid Id { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_IdentityUserId.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L29">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_IdentityUserId_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_IdentityUserId" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId">IdentityUserId</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Guid? IdentityUserId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a>?</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_IsActive.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.IsActive%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L35">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_IsActive_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.IsActive*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_IsActive" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.IsActive">IsActive</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsActive { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_Role.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.Role%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L33">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_Role_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Role*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_Role" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Role">Role</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Role { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_TenantId.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.TenantId%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L27">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_TenantId_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.TenantId*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_TenantId" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.TenantId">TenantId</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Guid TenantId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_BindIdentityUser_System_Guid_.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser(System.Guid)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L46">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_BindIdentityUser_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_BindIdentityUser_System_Guid_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser(System.Guid)">BindIdentityUser(Guid)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void BindIdentityUser(Guid identityUserId)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.guid">Guid</a></td>
+        <td><span class="parametername">identityUserId</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership_Deactivate.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership.Deactivate%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L54">View Source</a>
+  </span>
+  <a id="Atlas_Identity_Domain_Entities_TenantMembership_Deactivate_" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Deactivate*"></a>
+  <h4 id="Atlas_Identity_Domain_Entities_TenantMembership_Deactivate" data-uid="Atlas.Identity.Domain.Entities.TenantMembership.Deactivate">Deactivate()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Deactivate()</code></pre>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/hugoleofernandes/atlas/new/main/apiSpec/new?filename=Atlas_Identity_Domain_Entities_TenantMembership.md&amp;value=---%0Auid%3A%20Atlas.Identity.Domain.Entities.TenantMembership%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs/#L23" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

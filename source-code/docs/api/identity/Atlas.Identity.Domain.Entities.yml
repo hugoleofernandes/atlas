@@ -1,0 +1,83 @@
+### YamlMime:ManagedReference
+items:
+- uid: Atlas.Identity.Domain.Entities
+  commentId: N:Atlas.Identity.Domain.Entities
+  id: Atlas.Identity.Domain.Entities
+  children:
+  - Atlas.Identity.Domain.Entities.IdentityAuditLog
+  - Atlas.Identity.Domain.Entities.IdentityUser
+  - Atlas.Identity.Domain.Entities.Tenant
+  - Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: Atlas.Identity.Domain.Entities
+  nameWithType: Atlas.Identity.Domain.Entities
+  fullName: Atlas.Identity.Domain.Entities
+  type: Namespace
+  assemblies:
+  - Atlas.Identity.Domain
+references:
+- uid: Atlas.Identity.Domain.Entities.IdentityAuditLog
+  commentId: T:Atlas.Identity.Domain.Entities.IdentityAuditLog
+  href: Atlas.Identity.Domain.Entities.IdentityAuditLog.html
+  name: IdentityAuditLog
+  nameWithType: IdentityAuditLog
+  fullName: Atlas.Identity.Domain.Entities.IdentityAuditLog
+- uid: Atlas.Identity.Domain.Entities.IdentityUser
+  commentId: T:Atlas.Identity.Domain.Entities.IdentityUser
+  href: Atlas.Identity.Domain.Entities.IdentityUser.html
+  name: IdentityUser
+  nameWithType: IdentityUser
+  fullName: Atlas.Identity.Domain.Entities.IdentityUser
+- uid: Atlas.Identity.Domain.Entities.Tenant
+  commentId: T:Atlas.Identity.Domain.Entities.Tenant
+  href: Atlas.Identity.Domain.Entities.Tenant.html
+  name: Tenant
+  nameWithType: Tenant
+  fullName: Atlas.Identity.Domain.Entities.Tenant
+- uid: Atlas.Identity.Domain.Entities.TenantMembership
+  commentId: T:Atlas.Identity.Domain.Entities.TenantMembership
+  parent: Atlas.Identity.Domain.Entities
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html
+  name: TenantMembership
+  nameWithType: TenantMembership
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership
+- uid: Atlas.Identity.Domain.Entities
+  commentId: N:Atlas.Identity.Domain.Entities
+  href: Atlas.html
+  name: Atlas.Identity.Domain.Entities
+  nameWithType: Atlas.Identity.Domain.Entities
+  fullName: Atlas.Identity.Domain.Entities
+  spec.csharp:
+  - uid: Atlas
+    name: Atlas
+    href: Atlas.html
+  - name: .
+  - uid: Atlas.Identity
+    name: Identity
+    href: Atlas.Identity.html
+  - name: .
+  - uid: Atlas.Identity.Domain
+    name: Domain
+    href: Atlas.Identity.Domain.html
+  - name: .
+  - uid: Atlas.Identity.Domain.Entities
+    name: Entities
+    href: Atlas.Identity.Domain.Entities.html
+  spec.vb:
+  - uid: Atlas
+    name: Atlas
+    href: Atlas.html
+  - name: .
+  - uid: Atlas.Identity
+    name: Identity
+    href: Atlas.Identity.html
+  - name: .
+  - uid: Atlas.Identity.Domain
+    name: Domain
+    href: Atlas.Identity.Domain.html
+  - name: .
+  - uid: Atlas.Identity.Domain.Entities
+    name: Entities
+    href: Atlas.Identity.Domain.Entities.html

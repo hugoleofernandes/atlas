@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Identity Module | Atlas Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Identity Module | Atlas Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="Atlas">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="identity-module">Identity Module</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Identity module is responsible for:</p>
+<ul>
+<li>Tenant management</li>
+<li>User identity lifecycle</li>
+<li>Multi-tenant authorization</li>
+<li>External identity binding (OIDC)</li>
+</ul>
+<p>This module ensures that all operations are scoped within a tenant boundary.</p>
+<hr>
+<h2 id="core-concepts">Core Concepts</h2>
+<h3 id="tenant">Tenant</h3>
+<p>Represents an isolated business boundary.</p>
+<ul>
+<li>Each tenant has its own users and permissions</li>
+<li>Identified by a unique slug</li>
+<li>Controls access to the system</li>
+</ul>
+<h3 id="identity-user">Identity User</h3>
+<p>Represents a user authenticated via an external identity provider.</p>
+<ul>
+<li>Linked to an external provider (OIDC)</li>
+<li>Can belong to multiple tenants</li>
+</ul>
+<h3 id="membership">Membership</h3>
+<p>Defines the relationship between a user and a tenant.</p>
+<ul>
+<li>Contains role information</li>
+<li>Supports invitation-based onboarding</li>
+</ul>
+<hr>
+<h2 id="business-rules-invariants">Business Rules (Invariants)</h2>
+<ul>
+<li>A tenant cannot have duplicate active invitations for the same email</li>
+<li>A membership can only be bound to a single identity user</li>
+<li>A user must belong to a tenant to access protected resources</li>
+<li>Deactivated entities must not be used in active flows</li>
+</ul>
+<hr>
+<h2 id="key-flows">Key Flows</h2>
+<h3 id="tenant-invitation-flow">Tenant Invitation Flow</h3>
+<ol>
+<li>Tenant invites a user via email</li>
+<li>Membership is created without IdentityUser</li>
+<li>User authenticates via external provider</li>
+<li>System binds IdentityUser to membership</li>
+</ol>
+<hr>
+<h2 id="domain-model">Domain Model</h2>
+<h3 id="aggregates">Aggregates</h3>
+<ul>
+<li><a class="xref" href="../../api/identity/Atlas.Identity.Domain.Entities.Tenant.html">Tenant</a></li>
+<li><a class="xref" href="../../api/identity/Atlas.Identity.Domain.Entities.IdentityUser.html">IdentityUser</a></li>
+</ul>
+<h3 id="entities">Entities</h3>
+<ul>
+<li><a class="xref" href="../../api/identity/Atlas.Identity.Domain.Entities.TenantMembership.html">TenantMembership</a></li>
+</ul>
+<h3 id="audit">Audit</h3>
+<ul>
+<li><a class="xref" href="../../api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.html">IdentityAuditLog</a></li>
+</ul>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<p>Detailed API documentation for domain classes:</p>
+<p>👉 <a href="../../api/identity/">View Identity Domain API</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/hugoleofernandes/atlas/blob/main/source-code/docs/modules/identity/index.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

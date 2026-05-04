@@ -1,0 +1,30 @@
+### YamlMime:ManagedReference
+items:
+- uid: Atlas.Staff.Domain.Entities
+  commentId: N:Atlas.Staff.Domain.Entities
+  id: Atlas.Staff.Domain.Entities
+  children:
+  - Atlas.Staff.Domain.Entities.StaffAuditLog
+  - Atlas.Staff.Domain.Entities.StaffMember
+  langs:
+  - csharp
+  - vb
+  name: Atlas.Staff.Domain.Entities
+  nameWithType: Atlas.Staff.Domain.Entities
+  fullName: Atlas.Staff.Domain.Entities
+  type: Namespace
+  assemblies:
+  - Atlas.Staff.Domain
+references:
+- uid: Atlas.Staff.Domain.Entities.StaffAuditLog
+  commentId: T:Atlas.Staff.Domain.Entities.StaffAuditLog
+  href: Atlas.Staff.Domain.Entities.StaffAuditLog.html
+  name: StaffAuditLog
+  nameWithType: StaffAuditLog
+  fullName: Atlas.Staff.Domain.Entities.StaffAuditLog
+- uid: Atlas.Staff.Domain.Entities.StaffMember
+  commentId: T:Atlas.Staff.Domain.Entities.StaffMember
+  href: Atlas.Staff.Domain.Entities.StaffMember.html
+  name: StaffMember
+  nameWithType: StaffMember
+  fullName: Atlas.Staff.Domain.Entities.StaffMember

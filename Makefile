@@ -87,3 +87,32 @@ update-all:
 
 # make migrate-all name=Initial
 # make update-all
+
+
+# =========================================
+# DOCS (DOCFX)
+# =========================================
+
+SHELL := powershell.exe
+.SHELLFLAGS := -NoProfile -Command
+
+DOCS_DIR=source-code/docs
+
+docs-clean:
+	if (Test-Path "$(DOCS_DIR)\api") { Remove-Item -Recurse -Force "$(DOCS_DIR)\api" }
+	if (Test-Path "$(DOCS_DIR)\_site") { Remove-Item -Recurse -Force "$(DOCS_DIR)\_site" }
+
+docs-metadata:
+	cd $(DOCS_DIR); docfx metadata docfx.json
+
+docs-build:
+	cd $(DOCS_DIR); docfx build docfx.json
+
+docs-serve:
+	cd $(DOCS_DIR); docfx serve _site --port 9000
+
+docs: docs-clean docs-metadata docs-build
+
+docs-v: docs-clean
+	cd $(DOCS_DIR); docfx metadata docfx.json --logLevel verbose
+	cd $(DOCS_DIR); docfx build docfx.json --logLevel verbose

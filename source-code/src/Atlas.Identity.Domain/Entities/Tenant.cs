@@ -2,6 +2,27 @@
 
 namespace Atlas.Identity.Domain.Entities;
 
+/// <summary>
+/// Represents a tenant within the Identity domain.
+///
+/// Aggregate Root:
+/// - Controls access to memberships and user invitations.
+/// - Defines the boundary for user access within a tenant.
+///
+/// Invariants:
+/// - A tenant cannot have multiple active memberships for the same email.
+/// - Memberships are always associated with this tenant.
+/// - Email uniqueness is enforced among active memberships.
+///
+/// Design Decisions:
+/// - Users are invited via email before being linked to an IdentityUser.
+/// - IdentityUser binding is optional and occurs after authentication.
+/// - Slug is normalized to lowercase for consistency and lookup safety.
+///
+/// Boundaries:
+/// - Does not manage authentication (handled externally via OIDC).
+/// - Does not manage user lifecycle beyond tenant membership context.
+/// </summary>
 public sealed class Tenant : IAggregateRoot
 {
     public Guid Id { get; private set; } = Guid.NewGuid();

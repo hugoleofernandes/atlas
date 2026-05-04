@@ -1,0 +1,637 @@
+### YamlMime:ManagedReference
+items:
+- uid: Atlas.Staff.Domain.Entities.StaffAuditLog
+  commentId: T:Atlas.Staff.Domain.Entities.StaffAuditLog
+  id: StaffAuditLog
+  parent: Atlas.Staff.Domain.Entities
+  children:
+  - Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor
+  - Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor(System.String,System.String,System.String,System.String,System.Guid,System.String)
+  - Atlas.Staff.Domain.Entities.StaffAuditLog.Id
+  langs:
+  - csharp
+  - vb
+  name: StaffAuditLog
+  nameWithType: StaffAuditLog
+  fullName: Atlas.Staff.Domain.Entities.StaffAuditLog
+  type: Class
+  source:
+    remote:
+      path: source-code/src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: StaffAuditLog
+    path: ../src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+    startLine: 4
+  assemblies:
+  - Atlas.Staff.Domain
+  namespace: Atlas.Staff.Domain.Entities
+  syntax:
+    content: 'public sealed class StaffAuditLog : AuditLogBase, IAuditLog, IMultiTenantEntity'
+    content.vb: Public NotInheritable Class StaffAuditLog Inherits AuditLogBase Implements IAuditLog, IMultiTenantEntity
+  inheritance:
+  - System.Object
+  - Atlas.SharedKernel.Domain.AuditLogBase
+  implements:
+  - Atlas.SharedKernel.Domain.IAuditLog
+  - Atlas.SharedKernel.Domain.IMultiTenantEntity
+  inheritedMembers:
+  - Atlas.SharedKernel.Domain.AuditLogBase.EntityName
+  - Atlas.SharedKernel.Domain.AuditLogBase.Action
+  - Atlas.SharedKernel.Domain.AuditLogBase.EntityId
+  - Atlas.SharedKernel.Domain.AuditLogBase.UserId
+  - Atlas.SharedKernel.Domain.AuditLogBase.TenantId
+  - Atlas.SharedKernel.Domain.AuditLogBase.ChangesJson
+  - Atlas.SharedKernel.Domain.AuditLogBase.OccurredAtUtc
+  - Atlas.SharedKernel.Domain.AuditLogBase.SetTenantId(System.Guid)
+  - Atlas.SharedKernel.Domain.AuditLogBase.Initialize(System.String,System.String,System.String,System.String,System.Guid,System.String)
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Atlas.Staff.Domain.Entities.StaffAuditLog.Id
+  commentId: P:Atlas.Staff.Domain.Entities.StaffAuditLog.Id
+  id: Id
+  parent: Atlas.Staff.Domain.Entities.StaffAuditLog
+  langs:
+  - csharp
+  - vb
+  name: Id
+  nameWithType: StaffAuditLog.Id
+  fullName: Atlas.Staff.Domain.Entities.StaffAuditLog.Id
+  type: Property
+  source:
+    remote:
+      path: source-code/src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: Id
+    path: ../src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+    startLine: 6
+  assemblies:
+  - Atlas.Staff.Domain
+  namespace: Atlas.Staff.Domain.Entities
+  syntax:
+    content: public Guid Id { get; }
+    parameters: []
+    return:
+      type: System.Guid
+    content.vb: Public Property Id As Guid
+  overload: Atlas.Staff.Domain.Entities.StaffAuditLog.Id*
+- uid: Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor
+  commentId: M:Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor
+  id: '#ctor'
+  parent: Atlas.Staff.Domain.Entities.StaffAuditLog
+  langs:
+  - csharp
+  - vb
+  name: StaffAuditLog()
+  nameWithType: StaffAuditLog.StaffAuditLog()
+  fullName: Atlas.Staff.Domain.Entities.StaffAuditLog.StaffAuditLog()
+  type: Constructor
+  source:
+    remote:
+      path: source-code/src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: .ctor
+    path: ../src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+    startLine: 8
+  assemblies:
+  - Atlas.Staff.Domain
+  namespace: Atlas.Staff.Domain.Entities
+  syntax:
+    content: public StaffAuditLog()
+    content.vb: Public Sub New()
+  overload: Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor*
+  nameWithType.vb: StaffAuditLog.New()
+  fullName.vb: Atlas.Staff.Domain.Entities.StaffAuditLog.New()
+  name.vb: New()
+- uid: Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor(System.String,System.String,System.String,System.String,System.Guid,System.String)
+  commentId: M:Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor(System.String,System.String,System.String,System.String,System.Guid,System.String)
+  id: '#ctor(System.String,System.String,System.String,System.String,System.Guid,System.String)'
+  parent: Atlas.Staff.Domain.Entities.StaffAuditLog
+  langs:
+  - csharp
+  - vb
+  name: StaffAuditLog(string, string, string?, string?, Guid, string)
+  nameWithType: StaffAuditLog.StaffAuditLog(string, string, string?, string?, Guid, string)
+  fullName: Atlas.Staff.Domain.Entities.StaffAuditLog.StaffAuditLog(string, string, string?, string?, System.Guid, string)
+  type: Constructor
+  source:
+    remote:
+      path: source-code/src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: .ctor
+    path: ../src/Atlas.Staff.Domain/Entities/StaffAuditLog.cs
+    startLine: 13
+  assemblies:
+  - Atlas.Staff.Domain
+  namespace: Atlas.Staff.Domain.Entities
+  syntax:
+    content: public StaffAuditLog(string entityName, string action, string? entityId, string? userId, Guid tenantId, string changesJson)
+    parameters:
+    - id: entityName
+      type: System.String
+    - id: action
+      type: System.String
+    - id: entityId
+      type: System.String
+    - id: userId
+      type: System.String
+    - id: tenantId
+      type: System.Guid
+    - id: changesJson
+      type: System.String
+    content.vb: Public Sub New(entityName As String, action As String, entityId As String, userId As String, tenantId As Guid, changesJson As String)
+  overload: Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor*
+  nameWithType.vb: StaffAuditLog.New(String, String, String, String, Guid, String)
+  fullName.vb: Atlas.Staff.Domain.Entities.StaffAuditLog.New(String, String, String, String, System.Guid, String)
+  name.vb: New(String, String, String, String, Guid, String)
+references:
+- uid: Atlas.Staff.Domain.Entities
+  commentId: N:Atlas.Staff.Domain.Entities
+  href: Atlas.html
+  name: Atlas.Staff.Domain.Entities
+  nameWithType: Atlas.Staff.Domain.Entities
+  fullName: Atlas.Staff.Domain.Entities
+  spec.csharp:
+  - uid: Atlas
+    name: Atlas
+    href: Atlas.html
+  - name: .
+  - uid: Atlas.Staff
+    name: Staff
+    href: Atlas.Staff.html
+  - name: .
+  - uid: Atlas.Staff.Domain
+    name: Domain
+    href: Atlas.Staff.Domain.html
+  - name: .
+  - uid: Atlas.Staff.Domain.Entities
+    name: Entities
+    href: Atlas.Staff.Domain.Entities.html
+  spec.vb:
+  - uid: Atlas
+    name: Atlas
+    href: Atlas.html
+  - name: .
+  - uid: Atlas.Staff
+    name: Staff
+    href: Atlas.Staff.html
+  - name: .
+  - uid: Atlas.Staff.Domain
+    name: Domain
+    href: Atlas.Staff.Domain.html
+  - name: .
+  - uid: Atlas.Staff.Domain.Entities
+    name: Entities
+    href: Atlas.Staff.Domain.Entities.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: Atlas.SharedKernel.Domain.AuditLogBase
+  commentId: T:Atlas.SharedKernel.Domain.AuditLogBase
+  parent: Atlas.SharedKernel.Domain
+  name: AuditLogBase
+  nameWithType: AuditLogBase
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase
+- uid: Atlas.SharedKernel.Domain.IAuditLog
+  commentId: T:Atlas.SharedKernel.Domain.IAuditLog
+  parent: Atlas.SharedKernel.Domain
+  name: IAuditLog
+  nameWithType: IAuditLog
+  fullName: Atlas.SharedKernel.Domain.IAuditLog
+- uid: Atlas.SharedKernel.Domain.IMultiTenantEntity
+  commentId: T:Atlas.SharedKernel.Domain.IMultiTenantEntity
+  parent: Atlas.SharedKernel.Domain
+  name: IMultiTenantEntity
+  nameWithType: IMultiTenantEntity
+  fullName: Atlas.SharedKernel.Domain.IMultiTenantEntity
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.EntityName
+  commentId: P:Atlas.SharedKernel.Domain.AuditLogBase.EntityName
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  name: EntityName
+  nameWithType: AuditLogBase.EntityName
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.EntityName
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.Action
+  commentId: P:Atlas.SharedKernel.Domain.AuditLogBase.Action
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  name: Action
+  nameWithType: AuditLogBase.Action
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.Action
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.EntityId
+  commentId: P:Atlas.SharedKernel.Domain.AuditLogBase.EntityId
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  name: EntityId
+  nameWithType: AuditLogBase.EntityId
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.EntityId
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.UserId
+  commentId: P:Atlas.SharedKernel.Domain.AuditLogBase.UserId
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  name: UserId
+  nameWithType: AuditLogBase.UserId
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.UserId
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.TenantId
+  commentId: P:Atlas.SharedKernel.Domain.AuditLogBase.TenantId
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  name: TenantId
+  nameWithType: AuditLogBase.TenantId
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.TenantId
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.ChangesJson
+  commentId: P:Atlas.SharedKernel.Domain.AuditLogBase.ChangesJson
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  name: ChangesJson
+  nameWithType: AuditLogBase.ChangesJson
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.ChangesJson
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.OccurredAtUtc
+  commentId: P:Atlas.SharedKernel.Domain.AuditLogBase.OccurredAtUtc
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  name: OccurredAtUtc
+  nameWithType: AuditLogBase.OccurredAtUtc
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.OccurredAtUtc
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.SetTenantId(System.Guid)
+  commentId: M:Atlas.SharedKernel.Domain.AuditLogBase.SetTenantId(System.Guid)
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.guid
+  name: SetTenantId(Guid)
+  nameWithType: AuditLogBase.SetTenantId(Guid)
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.SetTenantId(System.Guid)
+  spec.csharp:
+  - uid: Atlas.SharedKernel.Domain.AuditLogBase.SetTenantId(System.Guid)
+    name: SetTenantId
+  - name: (
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: )
+  spec.vb:
+  - uid: Atlas.SharedKernel.Domain.AuditLogBase.SetTenantId(System.Guid)
+    name: SetTenantId
+  - name: (
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: )
+- uid: Atlas.SharedKernel.Domain.AuditLogBase.Initialize(System.String,System.String,System.String,System.String,System.Guid,System.String)
+  commentId: M:Atlas.SharedKernel.Domain.AuditLogBase.Initialize(System.String,System.String,System.String,System.String,System.Guid,System.String)
+  parent: Atlas.SharedKernel.Domain.AuditLogBase
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: Initialize(string, string, string, string, Guid, string)
+  nameWithType: AuditLogBase.Initialize(string, string, string, string, Guid, string)
+  fullName: Atlas.SharedKernel.Domain.AuditLogBase.Initialize(string, string, string, string, System.Guid, string)
+  nameWithType.vb: AuditLogBase.Initialize(String, String, String, String, Guid, String)
+  fullName.vb: Atlas.SharedKernel.Domain.AuditLogBase.Initialize(String, String, String, String, System.Guid, String)
+  name.vb: Initialize(String, String, String, String, Guid, String)
+  spec.csharp:
+  - uid: Atlas.SharedKernel.Domain.AuditLogBase.Initialize(System.String,System.String,System.String,System.String,System.Guid,System.String)
+    name: Initialize
+  - name: (
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: string
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+  spec.vb:
+  - uid: Atlas.SharedKernel.Domain.AuditLogBase.Initialize(System.String,System.String,System.String,System.String,System.Guid,System.String)
+    name: Initialize
+  - name: (
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: ','
+  - name: " "
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: ','
+  - name: " "
+  - uid: System.String
+    name: String
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.string
+  - name: )
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Atlas.SharedKernel.Domain
+  commentId: N:Atlas.SharedKernel.Domain
+  name: Atlas.SharedKernel.Domain
+  nameWithType: Atlas.SharedKernel.Domain
+  fullName: Atlas.SharedKernel.Domain
+  spec.csharp:
+  - uid: Atlas
+    name: Atlas
+  - name: .
+  - uid: Atlas.SharedKernel
+    name: SharedKernel
+  - name: .
+  - uid: Atlas.SharedKernel.Domain
+    name: Domain
+  spec.vb:
+  - uid: Atlas
+    name: Atlas
+  - name: .
+  - uid: Atlas.SharedKernel
+    name: SharedKernel
+  - name: .
+  - uid: Atlas.SharedKernel.Domain
+    name: Domain
+- uid: Atlas.Staff.Domain.Entities.StaffAuditLog.Id*
+  commentId: Overload:Atlas.Staff.Domain.Entities.StaffAuditLog.Id
+  href: Atlas.Staff.Domain.Entities.StaffAuditLog.html#Atlas_Staff_Domain_Entities_StaffAuditLog_Id
+  name: Id
+  nameWithType: StaffAuditLog.Id
+  fullName: Atlas.Staff.Domain.Entities.StaffAuditLog.Id
+- uid: System.Guid
+  commentId: T:System.Guid
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.guid
+  name: Guid
+  nameWithType: Guid
+  fullName: System.Guid
+- uid: Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor*
+  commentId: Overload:Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor
+  href: Atlas.Staff.Domain.Entities.StaffAuditLog.html#Atlas_Staff_Domain_Entities_StaffAuditLog__ctor
+  name: StaffAuditLog
+  nameWithType: StaffAuditLog.StaffAuditLog
+  fullName: Atlas.Staff.Domain.Entities.StaffAuditLog.StaffAuditLog
+  nameWithType.vb: StaffAuditLog.New
+  fullName.vb: Atlas.Staff.Domain.Entities.StaffAuditLog.New
+  name.vb: New
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String

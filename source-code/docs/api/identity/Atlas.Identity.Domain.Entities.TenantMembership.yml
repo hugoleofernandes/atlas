@@ -1,0 +1,685 @@
+### YamlMime:ManagedReference
+items:
+- uid: Atlas.Identity.Domain.Entities.TenantMembership
+  commentId: T:Atlas.Identity.Domain.Entities.TenantMembership
+  id: TenantMembership
+  parent: Atlas.Identity.Domain.Entities
+  children:
+  - Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser(System.Guid)
+  - Atlas.Identity.Domain.Entities.TenantMembership.Deactivate
+  - Atlas.Identity.Domain.Entities.TenantMembership.Email
+  - Atlas.Identity.Domain.Entities.TenantMembership.Id
+  - Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId
+  - Atlas.Identity.Domain.Entities.TenantMembership.IsActive
+  - Atlas.Identity.Domain.Entities.TenantMembership.Role
+  - Atlas.Identity.Domain.Entities.TenantMembership.TenantId
+  langs:
+  - csharp
+  - vb
+  name: TenantMembership
+  nameWithType: TenantMembership
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership
+  type: Class
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: TenantMembership
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 22
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  summary: >-
+    Represents the association between a user (or invited email) and a tenant.
+
+
+    Entity (part of Tenant aggregate):
+
+    - Lifecycle is controlled by Tenant.
+
+    - Cannot exist independently.
+
+
+    Invariants:
+
+    - Email is normalized and unique per tenant (enforced by Tenant).
+
+    - A membership can be bound to at most one IdentityUser.
+
+    - A membership can exist without a bound IdentityUser (invitation phase).
+
+
+    Design Decisions:
+
+    - Supports invitation-first flow (email-based access before user creation).
+
+    - IdentityUserId is nullable to allow pre-registration invitations.
+
+
+    Boundaries:
+
+    - Does not validate authentication or identity provider data.
+
+    - Does not enforce tenant-level rules (handled by Tenant).
+  example: []
+  syntax:
+    content: public sealed class TenantMembership
+    content.vb: Public NotInheritable Class TenantMembership
+  inheritance:
+  - System.Object
+  inheritedMembers:
+  - System.Object.Equals(System.Object)
+  - System.Object.Equals(System.Object,System.Object)
+  - System.Object.GetHashCode
+  - System.Object.GetType
+  - System.Object.ReferenceEquals(System.Object,System.Object)
+  - System.Object.ToString
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Id
+  commentId: P:Atlas.Identity.Domain.Entities.TenantMembership.Id
+  id: Id
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: Id
+  nameWithType: TenantMembership.Id
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Id
+  type: Property
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: Id
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 24
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public Guid Id { get; }
+    parameters: []
+    return:
+      type: System.Guid
+    content.vb: Public Property Id As Guid
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.Id*
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.TenantId
+  commentId: P:Atlas.Identity.Domain.Entities.TenantMembership.TenantId
+  id: TenantId
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: TenantId
+  nameWithType: TenantMembership.TenantId
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.TenantId
+  type: Property
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: TenantId
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 26
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public Guid TenantId { get; }
+    parameters: []
+    return:
+      type: System.Guid
+    content.vb: Public Property TenantId As Guid
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.TenantId*
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId
+  commentId: P:Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId
+  id: IdentityUserId
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: IdentityUserId
+  nameWithType: TenantMembership.IdentityUserId
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId
+  type: Property
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: IdentityUserId
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 28
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public Guid? IdentityUserId { get; }
+    parameters: []
+    return:
+      type: System.Nullable{System.Guid}
+    content.vb: Public Property IdentityUserId As Guid?
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId*
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Email
+  commentId: P:Atlas.Identity.Domain.Entities.TenantMembership.Email
+  id: Email
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: Email
+  nameWithType: TenantMembership.Email
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Email
+  type: Property
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: Email
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 30
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public string Email { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Email As String
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.Email*
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Role
+  commentId: P:Atlas.Identity.Domain.Entities.TenantMembership.Role
+  id: Role
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: Role
+  nameWithType: TenantMembership.Role
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Role
+  type: Property
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: Role
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 32
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public string Role { get; }
+    parameters: []
+    return:
+      type: System.String
+    content.vb: Public Property Role As String
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.Role*
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.IsActive
+  commentId: P:Atlas.Identity.Domain.Entities.TenantMembership.IsActive
+  id: IsActive
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: IsActive
+  nameWithType: TenantMembership.IsActive
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.IsActive
+  type: Property
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: IsActive
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 34
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public bool IsActive { get; }
+    parameters: []
+    return:
+      type: System.Boolean
+    content.vb: Public Property IsActive As Boolean
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.IsActive*
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser(System.Guid)
+  commentId: M:Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser(System.Guid)
+  id: BindIdentityUser(System.Guid)
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: BindIdentityUser(Guid)
+  nameWithType: TenantMembership.BindIdentityUser(Guid)
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser(System.Guid)
+  type: Method
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: BindIdentityUser
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 45
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public void BindIdentityUser(Guid identityUserId)
+    parameters:
+    - id: identityUserId
+      type: System.Guid
+    content.vb: Public Sub BindIdentityUser(identityUserId As Guid)
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser*
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Deactivate
+  commentId: M:Atlas.Identity.Domain.Entities.TenantMembership.Deactivate
+  id: Deactivate
+  parent: Atlas.Identity.Domain.Entities.TenantMembership
+  langs:
+  - csharp
+  - vb
+  name: Deactivate()
+  nameWithType: TenantMembership.Deactivate()
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Deactivate()
+  type: Method
+  source:
+    remote:
+      path: source-code/src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+      branch: main
+      repo: https://github.com/hugoleofernandes/atlas.git
+    id: Deactivate
+    path: ../src/Atlas.Identity.Domain/Entities/TenantMembership.cs
+    startLine: 53
+  assemblies:
+  - Atlas.Identity.Domain
+  namespace: Atlas.Identity.Domain.Entities
+  syntax:
+    content: public void Deactivate()
+    content.vb: Public Sub Deactivate()
+  overload: Atlas.Identity.Domain.Entities.TenantMembership.Deactivate*
+references:
+- uid: Atlas.Identity.Domain.Entities
+  commentId: N:Atlas.Identity.Domain.Entities
+  href: Atlas.html
+  name: Atlas.Identity.Domain.Entities
+  nameWithType: Atlas.Identity.Domain.Entities
+  fullName: Atlas.Identity.Domain.Entities
+  spec.csharp:
+  - uid: Atlas
+    name: Atlas
+    href: Atlas.html
+  - name: .
+  - uid: Atlas.Identity
+    name: Identity
+    href: Atlas.Identity.html
+  - name: .
+  - uid: Atlas.Identity.Domain
+    name: Domain
+    href: Atlas.Identity.Domain.html
+  - name: .
+  - uid: Atlas.Identity.Domain.Entities
+    name: Entities
+    href: Atlas.Identity.Domain.Entities.html
+  spec.vb:
+  - uid: Atlas
+    name: Atlas
+    href: Atlas.html
+  - name: .
+  - uid: Atlas.Identity
+    name: Identity
+    href: Atlas.Identity.html
+  - name: .
+  - uid: Atlas.Identity.Domain
+    name: Domain
+    href: Atlas.Identity.Domain.html
+  - name: .
+  - uid: Atlas.Identity.Domain.Entities
+    name: Entities
+    href: Atlas.Identity.Domain.Entities.html
+- uid: System.Object
+  commentId: T:System.Object
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object
+  name: object
+  nameWithType: object
+  fullName: object
+  nameWithType.vb: Object
+  fullName.vb: Object
+  name.vb: Object
+- uid: System.Object.Equals(System.Object)
+  commentId: M:System.Object.Equals(System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  name: Equals(object)
+  nameWithType: object.Equals(object)
+  fullName: object.Equals(object)
+  nameWithType.vb: Object.Equals(Object)
+  fullName.vb: Object.Equals(Object)
+  name.vb: Equals(Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.Equals(System.Object,System.Object)
+  commentId: M:System.Object.Equals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  name: Equals(object, object)
+  nameWithType: object.Equals(object, object)
+  fullName: object.Equals(object, object)
+  nameWithType.vb: Object.Equals(Object, Object)
+  fullName.vb: Object.Equals(Object, Object)
+  name.vb: Equals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.Equals(System.Object,System.Object)
+    name: Equals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.GetHashCode
+  commentId: M:System.Object.GetHashCode
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  name: GetHashCode()
+  nameWithType: object.GetHashCode()
+  fullName: object.GetHashCode()
+  nameWithType.vb: Object.GetHashCode()
+  fullName.vb: Object.GetHashCode()
+  spec.csharp:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetHashCode
+    name: GetHashCode
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gethashcode
+  - name: (
+  - name: )
+- uid: System.Object.GetType
+  commentId: M:System.Object.GetType
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  name: GetType()
+  nameWithType: object.GetType()
+  fullName: object.GetType()
+  nameWithType.vb: Object.GetType()
+  fullName.vb: Object.GetType()
+  spec.csharp:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.GetType
+    name: GetType
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.gettype
+  - name: (
+  - name: )
+- uid: System.Object.ReferenceEquals(System.Object,System.Object)
+  commentId: M:System.Object.ReferenceEquals(System.Object,System.Object)
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  name: ReferenceEquals(object, object)
+  nameWithType: object.ReferenceEquals(object, object)
+  fullName: object.ReferenceEquals(object, object)
+  nameWithType.vb: Object.ReferenceEquals(Object, Object)
+  fullName.vb: Object.ReferenceEquals(Object, Object)
+  name.vb: ReferenceEquals(Object, Object)
+  spec.csharp:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+  spec.vb:
+  - uid: System.Object.ReferenceEquals(System.Object,System.Object)
+    name: ReferenceEquals
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.referenceequals
+  - name: (
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: ','
+  - name: " "
+  - uid: System.Object
+    name: Object
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object
+  - name: )
+- uid: System.Object.ToString
+  commentId: M:System.Object.ToString
+  parent: System.Object
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  name: ToString()
+  nameWithType: object.ToString()
+  fullName: object.ToString()
+  nameWithType.vb: Object.ToString()
+  fullName.vb: Object.ToString()
+  spec.csharp:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+  spec.vb:
+  - uid: System.Object.ToString
+    name: ToString
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.object.tostring
+  - name: (
+  - name: )
+- uid: System
+  commentId: N:System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system
+  name: System
+  nameWithType: System
+  fullName: System
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Id*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.Id
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_Id
+  name: Id
+  nameWithType: TenantMembership.Id
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Id
+- uid: System.Guid
+  commentId: T:System.Guid
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.guid
+  name: Guid
+  nameWithType: Guid
+  fullName: System.Guid
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.TenantId*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.TenantId
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_TenantId
+  name: TenantId
+  nameWithType: TenantMembership.TenantId
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.TenantId
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_IdentityUserId
+  name: IdentityUserId
+  nameWithType: TenantMembership.IdentityUserId
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.IdentityUserId
+- uid: System.Nullable{System.Guid}
+  commentId: T:System.Nullable{System.Guid}
+  parent: System
+  definition: System.Nullable`1
+  href: https://learn.microsoft.com/dotnet/api/system.guid
+  name: Guid?
+  nameWithType: Guid?
+  fullName: System.Guid?
+  spec.csharp:
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: '?'
+  spec.vb:
+  - uid: System.Guid
+    name: Guid
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.guid
+  - name: '?'
+- uid: System.Nullable`1
+  commentId: T:System.Nullable`1
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  name: Nullable<T>
+  nameWithType: Nullable<T>
+  fullName: System.Nullable<T>
+  nameWithType.vb: Nullable(Of T)
+  fullName.vb: System.Nullable(Of T)
+  name.vb: Nullable(Of T)
+  spec.csharp:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: <
+  - name: T
+  - name: '>'
+  spec.vb:
+  - uid: System.Nullable`1
+    name: Nullable
+    isExternal: true
+    href: https://learn.microsoft.com/dotnet/api/system.nullable-1
+  - name: (
+  - name: Of
+  - name: " "
+  - name: T
+  - name: )
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Email*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.Email
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_Email
+  name: Email
+  nameWithType: TenantMembership.Email
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Email
+- uid: System.String
+  commentId: T:System.String
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.string
+  name: string
+  nameWithType: string
+  fullName: string
+  nameWithType.vb: String
+  fullName.vb: String
+  name.vb: String
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Role*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.Role
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_Role
+  name: Role
+  nameWithType: TenantMembership.Role
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Role
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.IsActive*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.IsActive
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_IsActive
+  name: IsActive
+  nameWithType: TenantMembership.IsActive
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.IsActive
+- uid: System.Boolean
+  commentId: T:System.Boolean
+  parent: System
+  isExternal: true
+  href: https://learn.microsoft.com/dotnet/api/system.boolean
+  name: bool
+  nameWithType: bool
+  fullName: bool
+  nameWithType.vb: Boolean
+  fullName.vb: Boolean
+  name.vb: Boolean
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_BindIdentityUser_System_Guid_
+  name: BindIdentityUser
+  nameWithType: TenantMembership.BindIdentityUser
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.BindIdentityUser
+- uid: Atlas.Identity.Domain.Entities.TenantMembership.Deactivate*
+  commentId: Overload:Atlas.Identity.Domain.Entities.TenantMembership.Deactivate
+  href: Atlas.Identity.Domain.Entities.TenantMembership.html#Atlas_Identity_Domain_Entities_TenantMembership_Deactivate
+  name: Deactivate
+  nameWithType: TenantMembership.Deactivate
+  fullName: Atlas.Identity.Domain.Entities.TenantMembership.Deactivate

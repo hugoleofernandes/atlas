@@ -1,0 +1,209 @@
+{
+  "source_base_path": "D:/git-repos/atlas/source-code/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Identity.Domain.Entities.IdentityAuditLog",
+      "Summary": "<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"1\">Represents an audit log entry for the Identity module.</p>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"3\">Purpose:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"4\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"4\">Tracks changes to entities for observability and traceability.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"6\">Invariants:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"7\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"7\">Each log entry must contain the entity name, action, and timestamp.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"8\">TenantId must always be present for multi-tenant isolation.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"10\">Design Decisions:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"11\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"11\">Uses JSON to store change details for flexibility.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"12\">Stored per module to maintain bounded context isolation.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"14\">Boundaries:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"15\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"15\">Does not enforce business rules.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityAuditLog.yml\" sourcestartlinenumber=\"16\">Used for auditing and diagnostics only.</li>\n</ul>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/identity/Atlas.Identity.Domain.Entities.IdentityUser.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Identity.Domain.Entities.IdentityUser",
+      "Summary": "<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"1\">Represents a user identity within the system.</p>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"3\">Aggregate Root:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"4\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"4\">Represents an authenticated user from an external identity provider.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"6\">Invariants:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"7\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"7\">ExternalId uniquely identifies the user in the identity provider.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"8\">A user can be deactivated but not deleted.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"10\">Design Decisions:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"11\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"11\">Authentication is delegated to external providers (OIDC).</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"12\">The system does not manage passwords or credentials.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"13\">IdentityUser is intentionally minimal and decoupled from domain-specific data.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"15\">Boundaries:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"16\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"16\">Does not manage tenant membership (handled by Tenant aggregate).</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.IdentityUser.yml\" sourcestartlinenumber=\"17\">Does not store profile or business-related data.</li>\n</ul>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/identity/Atlas.Identity.Domain.Entities.Tenant.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/identity/Atlas.Identity.Domain.Entities.Tenant.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Identity.Domain.Entities.Tenant",
+      "Summary": "<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"1\">Represents a tenant within the Identity domain.</p>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"3\">Aggregate Root:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"4\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"4\">Controls access to memberships and user invitations.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"5\">Defines the boundary for user access within a tenant.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"7\">Invariants:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"8\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"8\">A tenant cannot have multiple active memberships for the same email.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"9\">Memberships are always associated with this tenant.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"10\">Email uniqueness is enforced among active memberships.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"12\">Design Decisions:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"13\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"13\">Users are invited via email before being linked to an IdentityUser.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"14\">IdentityUser binding is optional and occurs after authentication.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"15\">Slug is normalized to lowercase for consistency and lookup safety.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"17\">Boundaries:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"18\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"18\">Does not manage authentication (handled externally via OIDC).</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.Tenant.yml\" sourcestartlinenumber=\"19\">Does not manage user lifecycle beyond tenant membership context.</li>\n</ul>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/identity/Atlas.Identity.Domain.Entities.TenantMembership.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Identity.Domain.Entities.TenantMembership",
+      "Summary": "<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"1\">Represents the association between a user (or invited email) and a tenant.</p>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"3\">Entity (part of Tenant aggregate):</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"4\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"4\">Lifecycle is controlled by Tenant.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"5\">Cannot exist independently.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"7\">Invariants:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"8\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"8\">Email is normalized and unique per tenant (enforced by Tenant).</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"9\">A membership can be bound to at most one IdentityUser.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"10\">A membership can exist without a bound IdentityUser (invitation phase).</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"12\">Design Decisions:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"13\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"13\">Supports invitation-first flow (email-based access before user creation).</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"14\">IdentityUserId is nullable to allow pre-registration invitations.</li>\n</ul>\n<p sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"16\">Boundaries:</p>\n<ul sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"17\">\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"17\">Does not validate authentication or identity provider data.</li>\n<li sourcefile=\"api/identity/Atlas.Identity.Domain.Entities.TenantMembership.yml\" sourcestartlinenumber=\"18\">Does not enforce tenant-level rules (handled by Tenant).</li>\n</ul>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/identity/Atlas.Identity.Domain.Entities.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/identity/Atlas.Identity.Domain.Entities.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Identity.Domain.Entities",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/identity/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/identity/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/identity/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/staff/Atlas.Staff.Domain.Entities.StaffAuditLog.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/staff/Atlas.Staff.Domain.Entities.StaffAuditLog.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Staff.Domain.Entities.StaffAuditLog",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/staff/Atlas.Staff.Domain.Entities.StaffMember.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/staff/Atlas.Staff.Domain.Entities.StaffMember.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Staff.Domain.Entities.StaffMember",
+      "Summary": null
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/staff/Atlas.Staff.Domain.Entities.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/staff/Atlas.Staff.Domain.Entities.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Atlas.Staff.Domain.Entities",
+      "Summary": null
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/staff/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/staff/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/staff/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "guidelines/ddd-comments.md",
+      "output": {
+        ".html": {
+          "relative_path": "guidelines/ddd-comments.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "guidelines/documentation-rules.md",
+      "output": {
+        ".html": {
+          "relative_path": "guidelines/documentation-rules.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "guides/docfx-usage.md",
+      "output": {
+        ".html": {
+          "relative_path": "guides/docfx-usage.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "modules/identity/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "modules/identity/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "overview.html"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

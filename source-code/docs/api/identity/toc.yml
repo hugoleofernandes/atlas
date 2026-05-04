@@ -1,0 +1,19 @@
+### YamlMime:TableOfContent
+items:
+- uid: Atlas.Identity.Domain.Entities
+  name: Atlas.Identity.Domain.Entities
+  type: Namespace
+  items:
+  - uid: Atlas.Identity.Domain.Entities.IdentityAuditLog
+    name: IdentityAuditLog
+    type: Class
+  - uid: Atlas.Identity.Domain.Entities.IdentityUser
+    name: IdentityUser
+    type: Class
+  - uid: Atlas.Identity.Domain.Entities.Tenant
+    name: Tenant
+    type: Class
+  - uid: Atlas.Identity.Domain.Entities.TenantMembership
+    name: TenantMembership
+    type: Class
+memberLayout: SamePage

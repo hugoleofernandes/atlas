@@ -1,0 +1,19 @@
+{
+  "Atlas.Staff.Domain.Entities": "Atlas.Staff.Domain.Entities.yml",
+  "Atlas.Staff.Domain.Entities.StaffAuditLog": "Atlas.Staff.Domain.Entities.StaffAuditLog.yml",
+  "Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor": "Atlas.Staff.Domain.Entities.StaffAuditLog.yml",
+  "Atlas.Staff.Domain.Entities.StaffAuditLog.#ctor(System.String,System.String,System.String,System.String,System.Guid,System.String)": "Atlas.Staff.Domain.Entities.StaffAuditLog.yml",
+  "Atlas.Staff.Domain.Entities.StaffAuditLog.Id": "Atlas.Staff.Domain.Entities.StaffAuditLog.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.#ctor(System.Guid,System.Guid,System.String,System.String,System.String)": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.CreatedAt": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.Deactivate": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.FirstName": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.Id": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.IdentityUserId": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.IsActive": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.LastName": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.Role": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.TenantId": "Atlas.Staff.Domain.Entities.StaffMember.yml",
+  "Atlas.Staff.Domain.Entities.StaffMember.UpdateProfile(System.String,System.String)": "Atlas.Staff.Domain.Entities.StaffMember.yml"
+}

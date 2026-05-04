@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Namespace Atlas.Identity.Domain.Entities | Atlas Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Namespace Atlas.Identity.Domain.Entities | Atlas Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="">
+      <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="Atlas">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Atlas.Identity.Domain.Entities">
+
+  <h1 id="Atlas_Identity_Domain_Entities" data-uid="Atlas.Identity.Domain.Entities" class="text-break">Namespace Atlas.Identity.Domain.Entities</h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="markdown level0 remarks"></div>
+    <h3 id="classes">
+Classes
+</h3>
+      <h4><a class="xref" href="Atlas.Identity.Domain.Entities.IdentityAuditLog.html">IdentityAuditLog</a></h4>
+      <section><p>Represents an audit log entry for the Identity module.</p>
+<p>Purpose:</p>
+<ul>
+<li>Tracks changes to entities for observability and traceability.</li>
+</ul>
+<p>Invariants:</p>
+<ul>
+<li>Each log entry must contain the entity name, action, and timestamp.</li>
+<li>TenantId must always be present for multi-tenant isolation.</li>
+</ul>
+<p>Design Decisions:</p>
+<ul>
+<li>Uses JSON to store change details for flexibility.</li>
+<li>Stored per module to maintain bounded context isolation.</li>
+</ul>
+<p>Boundaries:</p>
+<ul>
+<li>Does not enforce business rules.</li>
+<li>Used for auditing and diagnostics only.</li>
+</ul>
+</section>
+      <h4><a class="xref" href="Atlas.Identity.Domain.Entities.IdentityUser.html">IdentityUser</a></h4>
+      <section><p>Represents a user identity within the system.</p>
+<p>Aggregate Root:</p>
+<ul>
+<li>Represents an authenticated user from an external identity provider.</li>
+</ul>
+<p>Invariants:</p>
+<ul>
+<li>ExternalId uniquely identifies the user in the identity provider.</li>
+<li>A user can be deactivated but not deleted.</li>
+</ul>
+<p>Design Decisions:</p>
+<ul>
+<li>Authentication is delegated to external providers (OIDC).</li>
+<li>The system does not manage passwords or credentials.</li>
+<li>IdentityUser is intentionally minimal and decoupled from domain-specific data.</li>
+</ul>
+<p>Boundaries:</p>
+<ul>
+<li>Does not manage tenant membership (handled by Tenant aggregate).</li>
+<li>Does not store profile or business-related data.</li>
+</ul>
+</section>
+      <h4><a class="xref" href="Atlas.Identity.Domain.Entities.Tenant.html">Tenant</a></h4>
+      <section><p>Represents a tenant within the Identity domain.</p>
+<p>Aggregate Root:</p>
+<ul>
+<li>Controls access to memberships and user invitations.</li>
+<li>Defines the boundary for user access within a tenant.</li>
+</ul>
+<p>Invariants:</p>
+<ul>
+<li>A tenant cannot have multiple active memberships for the same email.</li>
+<li>Memberships are always associated with this tenant.</li>
+<li>Email uniqueness is enforced among active memberships.</li>
+</ul>
+<p>Design Decisions:</p>
+<ul>
+<li>Users are invited via email before being linked to an IdentityUser.</li>
+<li>IdentityUser binding is optional and occurs after authentication.</li>
+<li>Slug is normalized to lowercase for consistency and lookup safety.</li>
+</ul>
+<p>Boundaries:</p>
+<ul>
+<li>Does not manage authentication (handled externally via OIDC).</li>
+<li>Does not manage user lifecycle beyond tenant membership context.</li>
+</ul>
+</section>
+      <h4><a class="xref" href="Atlas.Identity.Domain.Entities.TenantMembership.html">TenantMembership</a></h4>
+      <section><p>Represents the association between a user (or invited email) and a tenant.</p>
+<p>Entity (part of Tenant aggregate):</p>
+<ul>
+<li>Lifecycle is controlled by Tenant.</li>
+<li>Cannot exist independently.</li>
+</ul>
+<p>Invariants:</p>
+<ul>
+<li>Email is normalized and unique per tenant (enforced by Tenant).</li>
+<li>A membership can be bound to at most one IdentityUser.</li>
+<li>A membership can exist without a bound IdentityUser (invitation phase).</li>
+</ul>
+<p>Design Decisions:</p>
+<ul>
+<li>Supports invitation-first flow (email-based access before user creation).</li>
+<li>IdentityUserId is nullable to allow pre-registration invitations.</li>
+</ul>
+<p>Boundaries:</p>
+<ul>
+<li>Does not validate authentication or identity provider data.</li>
+<li>Does not enforce tenant-level rules (handled by Tenant).</li>
+</ul>
+</section>
+
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In this article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      
+      <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

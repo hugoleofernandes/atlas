@@ -1,0 +1,13 @@
+### YamlMime:TableOfContent
+items:
+- uid: Atlas.Staff.Domain.Entities
+  name: Atlas.Staff.Domain.Entities
+  type: Namespace
+  items:
+  - uid: Atlas.Staff.Domain.Entities.StaffAuditLog
+    name: StaffAuditLog
+    type: Class
+  - uid: Atlas.Staff.Domain.Entities.StaffMember
+    name: StaffMember
+    type: Class
+memberLayout: SamePage

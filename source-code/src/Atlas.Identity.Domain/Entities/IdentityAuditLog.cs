@@ -2,6 +2,24 @@
 
 namespace Atlas.Identity.Domain.Entities;
 
+/// <summary>
+/// Represents an audit log entry for the Identity module.
+///
+/// Purpose:
+/// - Tracks changes to entities for observability and traceability.
+///
+/// Invariants:
+/// - Each log entry must contain the entity name, action, and timestamp.
+/// - TenantId must always be present for multi-tenant isolation.
+///
+/// Design Decisions:
+/// - Uses JSON to store change details for flexibility.
+/// - Stored per module to maintain bounded context isolation.
+///
+/// Boundaries:
+/// - Does not enforce business rules.
+/// - Used for auditing and diagnostics only.
+/// </summary>
 public sealed class IdentityAuditLog : AuditLogBase
 {
     public Guid Id { get; private set; }

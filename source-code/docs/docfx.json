@@ -1,0 +1,43 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../src/Atlas.Identity.Domain",
+          "files": [ "**/*.csproj" ]
+        }
+      ],
+      "dest": "api/identity"
+    },
+    {
+      "src": [
+        {
+          "src": "../src/Atlas.Staff.Domain",
+          "files": [ "**/*.csproj" ]
+        }
+      ],
+      "dest": "api/staff"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [ "**/*.md" ],
+        "exclude": [ "_site/**" ]
+      },
+      {
+        "files": [ "api/**.yml" ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [ "images/**" ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadata": {
+      "_appName": "Atlas",
+      "_appTitle": "Atlas Documentation"
+    }
+  }
+}
