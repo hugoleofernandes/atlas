@@ -22,7 +22,7 @@ public sealed class Handler
     {
         var exists = await _repository.ExistsAsync(
             command.TenantId,
-            command.IdentityUserId,
+            command.UserId,
             ct);
 
         if (exists)
@@ -35,7 +35,7 @@ public sealed class Handler
 
         var staff = new StaffMember(
             command.TenantId,
-            command.IdentityUserId,
+            command.UserId,
             command.FirstName,
             command.LastName,
             command.Role

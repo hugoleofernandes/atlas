@@ -9,7 +9,7 @@ public sealed class Validator : AbstractValidator<Command>
         RuleFor(x => x.TenantId)
             .NotEmpty();
 
-        RuleFor(x => x.IdentityUserId)
+        RuleFor(x => x.UserId)
             .NotEmpty();
 
         RuleFor(x => x.FirstName)

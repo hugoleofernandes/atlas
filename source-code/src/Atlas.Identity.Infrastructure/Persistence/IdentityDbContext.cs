@@ -1,19 +1,20 @@
 ﻿using Atlas.BuildingBlocks.Persistence;
-using Atlas.Identity.Domain.Entities;
+using Atlas.Identity.Domain.Tenants;
+using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence;
 
 public sealed class IdentityDbContext
-    : AuditableDbContext<IdentityAuditLog>
+    : AuditableDbContext<UserAuditLog>
 {
     protected override string Schema => "atlas_identity";
 
-    public DbSet<IdentityUser> IdentityUsers => Set<IdentityUser>();
+    public DbSet<User> IdentityUsers => Set<User>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
-    public DbSet<TenantMembership> TenantMemberships => Set<TenantMembership>();
-    public DbSet<IdentityAuditLog> AuditLogs => Set<IdentityAuditLog>();
+    public DbSet<Membership> TenantMemberships => Set<Membership>();
+    public DbSet<UserAuditLog> AuditLogs => Set<UserAuditLog>();
 
 
     public IdentityDbContext(

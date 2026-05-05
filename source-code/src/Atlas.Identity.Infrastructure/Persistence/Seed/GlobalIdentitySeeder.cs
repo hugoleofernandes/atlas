@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Domain.Entities;
+﻿using Atlas.Identity.Domain.Tenants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Seed;

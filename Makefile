@@ -3,11 +3,19 @@ COMPOSE=docker compose -p $(PROJECT) -f infrastructure/docker-compose.yml -f inf
 
 SRC=source-code/src
 API=$(SRC)/Atlas.API
-IDENTITY=$(SRC)/Atlas.Identity.Infrastructure
-STAFF=$(SRC)/Atlas.Staff.Infrastructure
 
-IDENTITY_CONTEXT=IdentityDbContext
-STAFF_CONTEXT=StaffDbContext
+# =========================================
+# CONTEXTS (GENERIC)
+# =========================================
+
+identity_PROJECT=$(SRC)/Atlas.Identity.Infrastructure
+identity_CONTEXT=IdentityDbContext
+
+staff_PROJECT=$(SRC)/Atlas.Staff.Infrastructure
+staff_CONTEXT=StaffDbContext
+
+TARGET_PROJECT=$($(context)_PROJECT)
+TARGET_CONTEXT=$($(context)_CONTEXT)
 
 # =========================================
 # DOCKER
@@ -29,65 +37,36 @@ reset:
 	$(COMPOSE) down -v
 
 # =========================================
-# IDENTITY
+# EF GENERIC COMMANDS
 # =========================================
 
-migrate-identity:
-	dotnet ef migrations add $(name) \
-	--project $(IDENTITY) \
-	--startup-project $(API) \
-	--context $(IDENTITY_CONTEXT) \
-	--output-dir Persistence/Migrations
+migrate:
+	dotnet ef migrations add $(name) --project $(TARGET_PROJECT) --startup-project $(API) --context $(TARGET_CONTEXT) --output-dir Persistence/Migrations
 
-update-identity:
-	dotnet ef database update \
-	--project $(IDENTITY) \
-	--startup-project $(API) \
-	--context $(IDENTITY_CONTEXT)
+update:
+	dotnet ef database update --project $(TARGET_PROJECT) --startup-project $(API) --context $(TARGET_CONTEXT)
 
-# =========================================
-# STAFF
-# =========================================
-
-migrate-staff:
-	dotnet ef migrations add $(name) \
-	--project $(STAFF) \
-	--startup-project $(API) \
-	--context $(STAFF_CONTEXT) \
-	--output-dir Persistence/Migrations
-
-update-staff:
-	dotnet ef database update \
-	--project $(STAFF) \
-	--startup-project $(API) \
-	--context $(STAFF_CONTEXT)
+# SAMPLE:
+# make migrate context=identity name=Initial
+# make migrate context=staff name=Initial
+# make update context=identity
+# make update context=staff
 
 # =========================================
 # GLOBAL
 # =========================================
 
 migrate-all:
-	make migrate-identity name=$(name)_Identity
-	make migrate-staff name=$(name)_Staff
+	make migrate context=identity name=$(name)_Identity
+	make migrate context=staff name=$(name)_Staff
 
 update-all:
-	make update-identity
-	make update-staff
+	make update context=identity
+	make update context=staff
 
-# sample usage:
-
-# test:
-# 	dotnet test
-
-# build:
-# 	dotnet build
-
-# make migrate-identity name=InitialIdentity
-# make migrate-staff name=InitialStaff
-
+# SAMPLE
 # make migrate-all name=Initial
 # make update-all
-
 
 # =========================================
 # DOCS (DOCFX)

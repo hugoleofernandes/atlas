@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
+﻿using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
@@ -164,14 +164,14 @@ public static class OidcMultiTenantConfigurator
                 }
 
                 var useCase = http.RequestServices
-                    .GetRequiredService<IAuthorizeTenantLoginUseCase>();
+                    .GetRequiredService<IResolveTenantAccessUseCase>();
 
-                AuthorizeTenantLoginResult result;
+                ResolveTenantAccessResult result;
 
                 try
                 {
                     result = await useCase.ExecuteAsync(
-                        new AuthorizeTenantLoginCommand(
+                        new ResolveTenantAccessCommand(
                             tenantSlug,
                             oid,
                             email),
@@ -187,7 +187,7 @@ public static class OidcMultiTenantConfigurator
                 {
                     identity.AddClaim(new Claim("tenant_id", result.TenantId.ToString()));
                     identity.AddClaim(new Claim("tenant_slug", result.TenantSlug));
-                    identity.AddClaim(new Claim("user_id", result.IdentityUserId.ToString()));
+                    identity.AddClaim(new Claim("user_id", result.UserId.ToString()));
                     identity.AddClaim(new Claim(ClaimTypes.Role, result.Role));
                 }
             }

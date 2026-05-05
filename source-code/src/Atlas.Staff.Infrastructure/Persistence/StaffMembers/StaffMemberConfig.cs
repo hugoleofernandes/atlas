@@ -27,7 +27,7 @@ public sealed class StaffMemberConfig : IEntityTypeConfiguration<StaffMember>
         b.Property(x => x.IsActive)
             .HasDefaultValue(true);
 
-        b.HasIndex(x => new { x.TenantId, x.IdentityUserId })
+        b.HasIndex(x => new { x.TenantId, x.UserId })
             .IsUnique();
     }
 }

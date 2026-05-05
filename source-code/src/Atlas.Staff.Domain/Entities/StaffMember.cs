@@ -6,7 +6,7 @@ public sealed class StaffMember
 
     public Guid TenantId { get; private set; }
 
-    public Guid IdentityUserId { get; private set; }
+    public Guid UserId { get; private set; }
 
     public string FirstName { get; private set; }
 
@@ -22,14 +22,14 @@ public sealed class StaffMember
 
     public StaffMember(
         Guid tenantId,
-        Guid identityUserId,
+        Guid UserId,
         string firstName,
         string lastName,
         string role)
     {
         Id = Guid.NewGuid();
         TenantId = tenantId;
-        IdentityUserId = identityUserId;
+        UserId = UserId;
         FirstName = firstName;
         LastName = lastName;
         Role = role;

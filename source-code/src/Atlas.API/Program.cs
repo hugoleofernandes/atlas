@@ -10,7 +10,7 @@ using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
 using Atlas.BuildingBlocks.CQRS.Behaviors;
-using Atlas.Identity.Application.UseCases.AuthorizeTenantLogin;
+using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
@@ -135,7 +135,7 @@ try
     services.Configure<FrontendConfig>(
         configuration.GetSection("Frontend"));
 
-    services.AddScoped<IAuthorizeTenantLoginUseCase, AuthorizeTenantLoginUseCase>();
+    services.AddScoped<IResolveTenantAccessUseCase, ResolveTenantAccessUseCase>();
 
     //
     // ==========================================

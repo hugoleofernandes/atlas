@@ -6,7 +6,7 @@ public interface IStaffMemberRepository
 {
     Task<bool> ExistsAsync(
         Guid tenantId,
-        Guid identityUserId,
+        Guid UserId,
         CancellationToken ct);
 
     Task AddAsync(

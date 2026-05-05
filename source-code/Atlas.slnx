@@ -7,7 +7,7 @@
   <Folder Name="/docs/api/" />
   <Folder Name="/docs/guidelines/">
     <File Path="docs/guidelines/ddd-comments.md" />
-    <File Path="docs/guidelines/documentation-rules.md" />
+    <File Path="docs/guidelines/documentation-guidelines.md" />
   </Folder>
   <Folder Name="/docs/guides/">
     <File Path="docs/guides/docfx-usage.md" />
@@ -41,6 +41,7 @@
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Tests.csproj" />
     <Project Path="tests/Atlas.Tests/Atlas.Tests.csproj" />
   </Folder>
 </Solution>

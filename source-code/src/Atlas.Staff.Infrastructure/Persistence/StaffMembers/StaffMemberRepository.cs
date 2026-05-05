@@ -15,13 +15,13 @@ public sealed class StaffMemberRepository : IStaffMemberRepository
 
     public Task<bool> ExistsAsync(
         Guid tenantId,
-        Guid identityUserId,
+        Guid UserId,
         CancellationToken ct)
     {
         return _db.Set<StaffMember>()
             .AnyAsync(x =>
                 x.TenantId == tenantId &&
-                x.IdentityUserId == identityUserId,
+                x.UserId == UserId,
                 ct);
     }
 
