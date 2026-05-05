@@ -18,7 +18,8 @@ public sealed class GlobalIdentitySeeder : ISeeder
         // 🔹 Convidar email (sem IdentityUser ainda)
         tenant.InviteUser(
             "hugoleofernandes@gmail.com",
-            "Admin"
+            "Admin",
+            TimeSpan.FromHours(24)
         );
 
         await db.SaveChangesAsync();

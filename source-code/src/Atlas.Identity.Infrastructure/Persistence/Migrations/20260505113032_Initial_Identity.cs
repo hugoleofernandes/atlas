@@ -21,24 +21,12 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Slug = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tenants", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "users",
-                schema: "atlas_identity",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ExternalId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -61,56 +49,67 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "memberships",
+                name: "invitations",
                 schema: "atlas_identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    Role = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false, defaultValue: "User"),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
+                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsUsed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_memberships", x => x.Id);
+                    table.PrimaryKey("PK_invitations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_memberships_tenants_TenantId",
+                        name: "FK_invitations_tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalSchema: "atlas_identity",
+                        principalTable: "tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "users",
+                schema: "atlas_identity",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ExternalId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TenantId1 = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_users_tenants_TenantId",
                         column: x => x.TenantId,
                         principalSchema: "atlas_identity",
                         principalTable: "tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_memberships_users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_users_tenants_TenantId1",
+                        column: x => x.TenantId1,
                         principalSchema: "atlas_identity",
-                        principalTable: "users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalTable: "tenants",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_memberships_TenantId_Email",
+                name: "IX_invitations_TenantId_Email",
                 schema: "atlas_identity",
-                table: "memberships",
-                columns: new[] { "TenantId", "Email" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_memberships_TenantId_UserId",
-                schema: "atlas_identity",
-                table: "memberships",
-                columns: new[] { "TenantId", "UserId" },
-                unique: true,
-                filter: "\"UserId\" IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_memberships_UserId",
-                schema: "atlas_identity",
-                table: "memberships",
-                column: "UserId");
+                table: "invitations",
+                columns: new[] { "TenantId", "Email" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenants_Slug",
@@ -124,6 +123,19 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 schema: "atlas_identity",
                 table: "users",
                 column: "ExternalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_TenantId_Email",
+                schema: "atlas_identity",
+                table: "users",
+                columns: new[] { "TenantId", "Email" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_TenantId1",
+                schema: "atlas_identity",
+                table: "users",
+                column: "TenantId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_audit_EntityName",
@@ -148,7 +160,11 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "memberships",
+                name: "invitations",
+                schema: "atlas_identity");
+
+            migrationBuilder.DropTable(
+                name: "users",
                 schema: "atlas_identity");
 
             migrationBuilder.DropTable(
@@ -157,10 +173,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "tenants",
-                schema: "atlas_identity");
-
-            migrationBuilder.DropTable(
-                name: "users",
                 schema: "atlas_identity");
         }
     }

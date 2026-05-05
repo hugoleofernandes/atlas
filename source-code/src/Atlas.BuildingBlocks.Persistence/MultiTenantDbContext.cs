@@ -23,7 +23,10 @@ public abstract class MultiTenantDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(Schema);
+        modelBuilder.Ignore<DomainEvent>();
+
         ApplyMultiTenantFilters(modelBuilder);
+
         base.OnModelCreating(modelBuilder);
     }
 
@@ -66,4 +69,19 @@ public abstract class MultiTenantDbContext : DbContext
             .HasQueryFilter(e =>
                 !CurrentTenantId.HasValue || e.TenantId == CurrentTenantId.Value);
     }
+
+    public IEnumerable<DomainEvent> GetDomainEvents()
+    {
+        return ChangeTracker
+            .Entries<BaseEntity>()
+            .SelectMany(e => e.Entity.DomainEvents)
+            .ToList();
+    }
+
+    public void ClearDomainEvents()
+    {
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            entry.Entity.ClearDomainEvents();
+    }
+
 }

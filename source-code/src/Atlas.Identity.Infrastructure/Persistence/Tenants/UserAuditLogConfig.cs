@@ -1,8 +1,8 @@
-﻿using Atlas.Identity.Domain.Users;
+﻿using Atlas.Identity.Domain.Tenants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Atlas.Identity.Infrastructure.Persistence.Users;
+namespace Atlas.Identity.Infrastructure.Persistence.Tenants;
 
 public sealed class UserAuditLogConfig
     : IEntityTypeConfiguration<UserAuditLog>

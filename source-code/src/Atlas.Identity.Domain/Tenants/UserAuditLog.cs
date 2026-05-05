@@ -1,6 +1,6 @@
 ﻿using Atlas.SharedKernel.Domain;
 
-namespace Atlas.Identity.Domain.Users;
+namespace Atlas.Identity.Domain.Tenants;
 
 /// <summary>
 /// Represents an audit log entry for the Identity module.

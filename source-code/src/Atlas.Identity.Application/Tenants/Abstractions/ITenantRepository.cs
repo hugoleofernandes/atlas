@@ -4,7 +4,5 @@ namespace Atlas.Identity.Application.Tenants.Abstractions;
 
 public interface ITenantRepository
 {
-    Task<Tenant?> GetBySlugWithMembershipsAsync(
-        string slug,
-        CancellationToken ct);
+    Task<Tenant?> GetBySlugWithUsersAndInvitationsAsync(string slug, CancellationToken ct);
 }

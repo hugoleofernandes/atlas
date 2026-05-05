@@ -1,6 +1,5 @@
 ﻿using Atlas.BuildingBlocks.Persistence;
 using Atlas.Identity.Domain.Tenants;
-using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +10,11 @@ public sealed class IdentityDbContext
 {
     protected override string Schema => "atlas_identity";
 
-    public DbSet<User> IdentityUsers => Set<User>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
-    public DbSet<Membership> TenantMemberships => Set<Membership>();
-    public DbSet<UserAuditLog> AuditLogs => Set<UserAuditLog>();
+    public DbSet<Invitation> Invitations => Set<Invitation>();
 
+    public DbSet<UserAuditLog> AuditLogs => Set<UserAuditLog>();
 
     public IdentityDbContext(
         DbContextOptions<IdentityDbContext> options,

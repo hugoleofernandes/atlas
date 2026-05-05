@@ -22,7 +22,17 @@ public sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         b.Property(x => x.IsActive)
             .HasDefaultValue(true);
 
-        b.HasMany(x => x.Memberships)
+        b.Property(x => x.CreatedAt)
+            .IsRequired();
+
+        // 🔹 USERS (1:N)
+        b.HasMany(x => x.Users)
+            .WithOne()
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // 🔹 INVITATIONS (1:N)
+        b.HasMany(x => x.Invitations)
             .WithOne()
             .HasForeignKey(x => x.TenantId)
             .OnDelete(DeleteBehavior.Cascade);

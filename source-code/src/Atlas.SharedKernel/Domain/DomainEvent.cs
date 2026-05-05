@@ -1,6 +1,8 @@
-﻿namespace Atlas.SharedKernel.Domain;
+﻿using MediatR;
 
-public abstract class DomainEvent
+namespace Atlas.SharedKernel.Domain;
+
+public abstract class DomainEvent : INotification
 {
     public DateTime OccurredOn { get; } = DateTime.UtcNow;
 }

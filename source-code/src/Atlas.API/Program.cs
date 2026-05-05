@@ -107,6 +107,8 @@ try
     services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
+    services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();    
+
     //
     // ==========================================
     // API CORE

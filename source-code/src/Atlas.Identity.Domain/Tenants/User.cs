@@ -1,6 +1,6 @@
 ﻿using Atlas.SharedKernel.Domain;
 
-namespace Atlas.Identity.Domain.Users;
+namespace Atlas.Identity.Domain.Tenants;
 
 /// <summary>
 /// Represents an external authenticated user identity provided by an identity provider (OIDC)..
@@ -21,18 +21,43 @@ namespace Atlas.Identity.Domain.Users;
 /// - Does not manage tenant membership (handled by Tenant aggregate).
 /// - Does not store profile or business-related data.
 /// </summary>
-public sealed class User : IAggregateRoot
+public sealed class User : IEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
+
+    public Guid TenantId { get; private set; }
+
     public string ExternalId { get; private set; }
 
-    public User() { }
+    public string Email { get; private set; }
 
-    public User(string externalId)
+    public string Role { get; private set; }
+
+    public bool IsActive { get; private set; } = true;
+    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+
+
+    private User() { }
+
+    public User(Guid tenantId, string externalId, string email, string role)
     {
         if (string.IsNullOrWhiteSpace(externalId))
             throw new ArgumentException("ExternalId is required.");
 
+        ChangeRole(role);
+
+        TenantId = tenantId;
         ExternalId = externalId;
+        Email = email.ToLowerInvariant();
     }
+
+    public void ChangeRole(string role)
+    {
+        if (string.IsNullOrWhiteSpace(role))
+            throw new ArgumentException("Role is required.");
+
+        Role = role;
+    }
+
+    public void Deactivate() => IsActive = false;
 }

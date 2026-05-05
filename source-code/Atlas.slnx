@@ -8,6 +8,7 @@
   <Folder Name="/docs/guidelines/">
     <File Path="docs/guidelines/ddd-comments.md" />
     <File Path="docs/guidelines/documentation-guidelines.md" />
+    <File Path="domain-design-playbook.md" />
   </Folder>
   <Folder Name="/docs/guides/">
     <File Path="docs/guides/docfx-usage.md" />
