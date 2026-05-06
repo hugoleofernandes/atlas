@@ -1,4 +1,5 @@
-﻿using Atlas.SharedKernel.Domain;
+﻿using Atlas.Identity.Domain.Tenants.Exceptions;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Tenants;
 
@@ -18,7 +19,9 @@ public sealed class Invitation : IEntity
 
     public bool IsUsed { get; private set; }
 
-    public bool IsValid => !IsUsed && DateTime.UtcNow <= ExpiresAt;
+    public bool IsExpired => DateTime.UtcNow > ExpiresAt;
+
+    public bool IsActive => !IsUsed && !IsExpired;
 
     private Invitation() { }
 
@@ -33,10 +36,10 @@ public sealed class Invitation : IEntity
     public void Use()
     {
         if (IsUsed)
-            throw new InvalidOperationException("Already used.");
+            throw new InvitationAlreadyUsedException(Email);
 
         if (DateTime.UtcNow > ExpiresAt)
-            throw new InvalidOperationException("Expired.");
+            throw new InvitationExpiredException(Email);
 
         IsUsed = true;
     }

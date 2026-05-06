@@ -16,13 +16,13 @@ public sealed class TenantResolverMiddleware
         if (context.User?.Identity?.IsAuthenticated == true)
         {
             var tenantIdRaw = context.User.FindFirst(ClaimConstants.TenantId)?.Value;
-            var tenantSlug = context.User.FindFirst(ClaimConstants.TenantSlug)?.Value;
+            var tenantName = context.User.FindFirst(ClaimConstants.TenantName)?.Value;
             var userIdRaw = context.User.FindFirst(ClaimConstants.UserId)?.Value;
 
             if (Guid.TryParse(tenantIdRaw, out var tenantId) &&
                 Guid.TryParse(userIdRaw, out var userId))
             {
-                requestContextSetter.Set(tenantId, tenantSlug!, userId);
+                requestContextSetter.Set(tenantId, tenantName!, userId);
             }
             //else 
             //{

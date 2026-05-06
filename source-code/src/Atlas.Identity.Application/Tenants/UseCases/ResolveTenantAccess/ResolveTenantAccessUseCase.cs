@@ -21,8 +21,8 @@ public sealed class ResolveTenantAccessUseCase : IResolveTenantAccessUseCase
     ResolveTenantAccessCommand command,
     CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(command.TenantSlug))
-            throw new ArgumentException("TenantSlug is required.");
+        if (string.IsNullOrWhiteSpace(command.TenantName))
+            throw new ArgumentException("TenantName is required.");
 
         if (string.IsNullOrWhiteSpace(command.ExternalOid))
             throw new ArgumentException("ExternalOid is required.");
@@ -31,7 +31,7 @@ public sealed class ResolveTenantAccessUseCase : IResolveTenantAccessUseCase
             throw new ArgumentException("Email is required.");
 
         var tenant = await _tenantRepository
-            .GetBySlugWithUsersAndInvitationsAsync(command.TenantSlug.ToLowerInvariant(), ct)
+            .GetByNameWithUsersAndInvitationsAsync(command.TenantName.ToLowerInvariant(), ct)
             ?? throw new UnauthorizedAccessException("Tenant not found.");
 
         var user = tenant.ResolveAccess(
@@ -42,7 +42,7 @@ public sealed class ResolveTenantAccessUseCase : IResolveTenantAccessUseCase
 
         return new ResolveTenantAccessResult(
             tenant.Id,
-            tenant.Slug,
+            tenant.Name,
             user.Id,
             user.Role);
     }

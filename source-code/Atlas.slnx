@@ -5,10 +5,16 @@
     <File Path="docs/overview.md" />
   </Folder>
   <Folder Name="/docs/api/" />
+  <Folder Name="/docs/architecture/">
+    <File Path="docs/architecture/technical-decisions-tooling.md" />
+  </Folder>
   <Folder Name="/docs/guidelines/">
-    <File Path="docs/guidelines/ddd-comments.md" />
+    <File Path="docs/guidelines/application-testing-guidelines.md" />
+    <File Path="docs/guidelines/DDD-commenting-guidelines.md" />
     <File Path="docs/guidelines/documentation-guidelines.md" />
-    <File Path="domain-design-playbook.md" />
+    <File Path="docs/guidelines/domain-design-playbook.md" />
+    <File Path="docs/guidelines/guideline-for-creating-guidelines.md" />
+    <File Path="docs/guidelines/unit-testing-guidelines.md" />
   </Folder>
   <Folder Name="/docs/guides/">
     <File Path="docs/guides/docfx-usage.md" />

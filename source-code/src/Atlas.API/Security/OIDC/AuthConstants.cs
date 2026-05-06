@@ -14,7 +14,7 @@ public static class AuthConstants
 
 public static class ClaimConstants
 {
-    public const string TenantSlug = "atlas_tenant_slug";
+    public const string TenantName = "atlas_tenant_name";
     public const string TenantId = "atlas_tenant_id";
     public const string UserId = "atlas_user_id";
     //public const string Claim = "atlas-api_claim";

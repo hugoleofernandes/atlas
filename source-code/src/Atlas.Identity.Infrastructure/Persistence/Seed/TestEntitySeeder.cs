@@ -13,7 +13,7 @@
 //            return;
 
 //        var tenantContext = services.GetRequiredService<ITenantContext>();
-//        tenantContext.Set(tenant.Id, tenant.Slug);
+//        tenantContext.Set(tenant.Id, tenant.Name);
 
 //        if (!await db.TestEntities.AnyAsync())
 //        {

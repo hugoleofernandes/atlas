@@ -147,7 +147,7 @@ public static class OidcMultiTenantConfigurator
             {
                 var http = ctx.HttpContext;
 
-                var tenantSlug = ctx.Scheme.Name.ToLowerInvariant();
+                var tenantName = ctx.Scheme.Name.ToLowerInvariant();
 
                 var oid = ctx.Principal?
                     .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
@@ -172,7 +172,7 @@ public static class OidcMultiTenantConfigurator
                 {
                     result = await useCase.ExecuteAsync(
                         new ResolveTenantAccessCommand(
-                            tenantSlug,
+                            tenantName,
                             oid,
                             email),
                         ctx.HttpContext.RequestAborted);
@@ -186,7 +186,7 @@ public static class OidcMultiTenantConfigurator
                 if (ctx.Principal?.Identity is ClaimsIdentity identity)
                 {
                     identity.AddClaim(new Claim("tenant_id", result.TenantId.ToString()));
-                    identity.AddClaim(new Claim("tenant_slug", result.TenantSlug));
+                    identity.AddClaim(new Claim("tenant_name", result.TenantName));
                     identity.AddClaim(new Claim("user_id", result.UserId.ToString()));
                     identity.AddClaim(new Claim(ClaimTypes.Role, result.Role));
                 }

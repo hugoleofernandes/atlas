@@ -32,6 +32,12 @@ public sealed class InvitationConfig : IEntityTypeConfiguration<Invitation>
         b.Property(x => x.IsUsed)
             .HasDefaultValue(false);
 
+        b.Property(x => x.IsActive)
+            .HasDefaultValue(true);
+
         b.HasIndex(x => new { x.TenantId, x.Email });
+
+        b.Ignore(x => x.IsActive);
+        b.Ignore(x => x.IsExpired);
     }
 }

@@ -2,7 +2,7 @@
 
 public sealed record ResolveTenantAccessResult(
     Guid TenantId,
-    string TenantSlug,
+    string TenantName,
     Guid UserId,
     string Role
 );

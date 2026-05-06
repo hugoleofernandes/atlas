@@ -12,11 +12,11 @@ public sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 
         b.HasKey(x => x.Id);
 
-        b.Property(x => x.Slug)
+        b.Property(x => x.Name)
             .IsRequired()
             .HasMaxLength(80);
 
-        b.HasIndex(x => x.Slug)
+        b.HasIndex(x => x.Name)
             .IsUnique();
 
         b.Property(x => x.IsActive)

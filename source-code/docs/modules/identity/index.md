@@ -20,7 +20,7 @@ This module ensures that all operations are scoped within a tenant boundary.
 Represents an isolated business boundary.
 
 - Each tenant has its own users and permissions
-- Identified by a unique slug
+- Identified by a unique name
 - Controls access to the system
 
 ### Identity User

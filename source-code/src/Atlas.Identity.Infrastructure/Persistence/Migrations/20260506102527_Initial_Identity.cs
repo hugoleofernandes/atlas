@@ -20,7 +20,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Slug = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
+                    Name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -84,8 +84,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TenantId1 = table.Column<Guid>(type: "uuid", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -97,12 +96,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         principalTable: "tenants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_users_tenants_TenantId1",
-                        column: x => x.TenantId1,
-                        principalSchema: "atlas_identity",
-                        principalTable: "tenants",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -112,10 +105,10 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 columns: new[] { "TenantId", "Email" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_tenants_Slug",
+                name: "IX_tenants_Name",
                 schema: "atlas_identity",
                 table: "tenants",
-                column: "Slug",
+                column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -130,12 +123,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 table: "users",
                 columns: new[] { "TenantId", "Email" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_users_TenantId1",
-                schema: "atlas_identity",
-                table: "users",
-                column: "TenantId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_audit_EntityName",

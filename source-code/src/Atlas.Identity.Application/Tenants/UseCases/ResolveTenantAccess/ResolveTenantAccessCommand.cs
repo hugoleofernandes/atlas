@@ -1,7 +1,7 @@
 ﻿namespace Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
 
 public sealed record ResolveTenantAccessCommand(
-    string TenantSlug,
+    string TenantName,
     string ExternalOid,
     string Email
 );

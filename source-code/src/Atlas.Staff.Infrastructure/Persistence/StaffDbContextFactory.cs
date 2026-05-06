@@ -25,7 +25,7 @@ public sealed class StaffDbContextFactory
     {
         public bool IsAuthenticated => false;
         public Guid? TenantId => null;
-        public string? TenantSlug => null;
+        public string? TenantName => null;
         public Guid? UserId => null;
     }
 }

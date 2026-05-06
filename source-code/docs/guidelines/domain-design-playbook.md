@@ -1,35 +1,24 @@
 # Domain Design Playbook (DDD + Clean Architecture)
 
-## Index
-- [Principles](#principles)
-- [Core Domain Concepts](#core-domain-concepts)
-- [Aggregate Design](#aggregate-design)
-- [Aggregate Boundaries](#aggregate-boundaries)
-- [Aggregate Invariants](#aggregate-invariants)
-- [Entities](#entities)
-- [Value Objects](#value-objects)
-- [Domain Services](#domain-services)
-- [Factories](#factories)
-- [Repositories](#repositories)
-- [Domain Events](#domain-events)
-- [Integration Events & Outbox](#integration-events--outbox)
-- [Use Cases](#use-cases)
-- [Consistency Rules](#consistency-rules)
-- [Event Storming](#event-storming)
-- [Domain Evolution](#domain-evolution)
-- [Anti-Patterns](#anti-patterns)
-- [Quality Checklist](#quality-checklist)
-- [AI Code Generation Rules](#ai-code-generation-rules)
+## Language Rule
+All documentation must be written in English.
+
+---
+
+## Purpose
+This playbook defines the rules, boundaries, and modeling principles for designing domain models using Domain‑Driven Design (DDD) and Clean Architecture.  
+Its goal is to ensure **consistency, correctness, clarity, and alignment with the ubiquitous language**, especially when domain models are generated or extended by AI.
 
 ---
 
 ## Principles
-
 1. Domain first  
 2. Behavior over data  
 3. Invariants define boundaries  
 4. Meaning over implementation  
 5. Consistency over normalization  
+6. Explicit boundaries and responsibilities  
+7. Deterministic and unambiguous modeling  
 
 ---
 
@@ -37,7 +26,7 @@
 
 ### Domain First Thinking
 - Model based on business rules  
-- Avoid database-driven design  
+- Avoid database‑driven design  
 - Prioritize meaning and behavior  
 
 ### Ubiquitous Language
@@ -61,7 +50,7 @@
 ### Hard Rules
 - ❌ No external mutation  
 - ❌ No partial updates  
-- ❌ No cross-aggregate coupling  
+- ❌ No cross‑aggregate coupling  
 - ❌ No business logic outside domain  
 
 ### Size Rule
@@ -70,7 +59,7 @@
 
 ### Transaction Boundary
 - One aggregate = one consistency boundary  
-- Cross-aggregate changes must be eventual consistency  
+- Cross‑aggregate changes must be eventual consistency  
 
 ---
 
@@ -103,12 +92,12 @@ Only the Aggregate Root enforces invariants.
 Entities inside aggregates must:
 - Represent domain concepts with identity  
 - Be controlled only by the Aggregate Root  
-- Not contain cross-aggregate logic  
+- Not contain cross‑aggregate logic  
 
 Allowed:
 - Internal state transitions  
 - Validation within entity scope  
-- Domain-specific rules  
+- Domain‑specific rules  
 
 Forbidden:
 - Calling repositories  
@@ -131,7 +120,7 @@ Examples:
 - Email  
 - Money  
 - Role  
-- Slug  
+- Name  
 
 ---
 
@@ -170,7 +159,7 @@ Repositories represent collections of aggregates.
 
 Rules:
 - One repository per aggregate root  
-- Return fully-loaded aggregates  
+- Return fully‑loaded aggregates  
 - Never return internal entities  
 - Never expose IQueryable  
 - Never contain business logic  
@@ -280,15 +269,15 @@ Rules for evolving the domain model:
 
 ---
 
-## Anti-Patterns
+## Anti‑Patterns
 
-- ❌ Anemic Domain Model  
-- ❌ Business logic in Application Layer  
-- ❌ God Aggregates  
-- ❌ Primitive Obsession  
-- ❌ Cross-Aggregate Coupling  
-- ❌ Repositories returning IQueryable  
-- ❌ Domain Events used as method calls  
+❌ Anemic Domain Model  
+❌ Business logic in Application Layer  
+❌ God Aggregates  
+❌ Primitive Obsession  
+❌ Cross‑Aggregate Coupling  
+❌ Repositories returning IQueryable  
+❌ Domain Events used as method calls  
 
 ---
 
@@ -297,7 +286,7 @@ Rules for evolving the domain model:
 - [ ] Aggregate enforces all invariants  
 - [ ] Business logic is inside domain  
 - [ ] Events represent real business facts  
-- [ ] No cross-aggregate coupling  
+- [ ] No cross‑aggregate coupling  
 - [ ] Value objects used correctly  
 - [ ] Naming reflects business language  
 - [ ] Repositories return aggregates only  
@@ -307,12 +296,31 @@ Rules for evolving the domain model:
 
 ---
 
-## AI Code Generation Rules
+## AI Usage Rules
 
-When generating domain code:
-- Identify Aggregate Root first  
-- Never place business logic in application layer  
-- Prefer domain events for side effects  
-- Use value objects when possible  
+When generating domain code, AI must:
+
+### Always:
+- Identify the Aggregate Root first  
 - Enforce invariants inside aggregates only  
-- Avoid anemic models completely  
+- Prefer domain events for side effects  
+- Use value objects whenever possible  
+- Keep domain behavior inside the domain  
+- Follow the ubiquitous language  
+- Follow all rules in this playbook  
+
+### Never:
+- Place business logic in application layer  
+- Generate anemic models  
+- Introduce cross‑aggregate coupling  
+- Invent domain rules  
+- Expose internal entities  
+- Use IQueryable in repositories  
+
+---
+
+## Final Notes
+The domain model is the heart of the system.  
+It must be expressive, consistent, intentional, and aligned with the business language.  
+This playbook ensures that all domain modeling follows the same principles and produces a coherent, maintainable, and evolvable domain.
+

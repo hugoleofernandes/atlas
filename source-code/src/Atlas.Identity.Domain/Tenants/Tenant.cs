@@ -1,13 +1,45 @@
 ﻿using Atlas.Identity.Domain.Tenants.Events;
+using Atlas.Identity.Domain.Tenants.Exceptions;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Tenants;
 
+/// <summary>
+/// Purpose:
+/// Represents an organizational boundary that owns users and invitations.
+/// Controls access resolution and invitation lifecycle.
+///
+/// Invariants:
+/// - A tenant cannot be inactive when performing domain operations.
+/// - A tenant cannot have two users with the same email.
+/// - A tenant cannot have two active invitations for the same email.
+/// - A user must always be created from a valid and active invitation.
+///
+/// Boundaries:
+/// - Does NOT validate external identity providers.
+/// - Does NOT send emails or notifications.
+/// - Does NOT persist data (handled by repositories/UoW).
+///
+/// Design Decisions:
+/// - Users and Invitations belong to the Tenant because their lifecycle
+///   and invariants depend on the tenant boundary.
+/// - Access resolution is part of the Tenant because it enforces invariants
+///   related to user creation and invitation usage.
+/// </summary>
 public sealed class Tenant : BaseEntity, IAggregateRoot
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
-    public string Slug { get; private set; }
+
+    /// <summary>
+    /// Name of the Microsoft Entra ID (Azure AD) tenant associated with this tenant.
+    /// This value comes from the authentication context and identifies the
+    /// Entra ID directory (e.g., "tenant01" or "tenant01.onmicrosoft.com").
+    /// Not intended to be a user-friendly display name.
+    /// </summary>
+    public string Name { get; private set; }
+
     public bool IsActive { get; private set; } = true;
+
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     private readonly List<User> _users = new();
@@ -18,34 +50,78 @@ public sealed class Tenant : BaseEntity, IAggregateRoot
 
     private Tenant() { }
 
-    public Tenant(string slug)
+    /// <summary>
+    /// Creates a new tenant.
+    ///
+    /// Invariants:
+    /// - Name must be provided and normalized.
+    /// </summary>
+    public Tenant(string name)
     {
-        if (string.IsNullOrWhiteSpace(slug))
-            throw new ArgumentException("Slug is required.");
+        if (string.IsNullOrWhiteSpace(name))
+            throw new TenantNameRequiredException();
 
-        Slug = slug.ToLowerInvariant();
+        Name = name.ToLowerInvariant();
     }
 
-    public void EnsureActive()
+    /// <summary>
+    /// Ensures the tenant is active before performing domain operations.
+    /// </summary>
+    private void EnsureActive()
     {
         if (!IsActive)
-            throw new InvalidOperationException("Tenant is inactive.");
+            throw new TenantInactiveException();
     }
 
-    public void Deactivate() => IsActive = false;
+    /// <summary>
+    /// Deactivates the tenant.
+    ///
+    /// Emits:
+    /// - TenantDeactivatedDomainEvent
+    /// </summary>
+    public void Deactivate()
+    {
+        if (!IsActive)
+            return;
+
+        IsActive = false;
+        AddDomainEvent(new TenantDeactivatedDomainEvent(Id));
+    }
 
     // =========================
     // DOMAIN BEHAVIOR
     // =========================
 
+    /// <summary>
+    /// Creates an invitation for a user within the tenant.
+    ///
+    /// Invariants:
+    /// - Tenant must be active.
+    /// - No two active invitations may exist for the same email.
+    /// - Invitations cannot be created for existing users.
+    ///
+    /// Emits:
+    /// - UserInvitedDomainEvent
+    ///
+    /// Throws:
+    /// - TenantInactiveException
+    /// - UserAlreadyExistsException
+    /// - DuplicateInvitationException
+    /// </summary>
     public Invitation InviteUser(string email, string role, TimeSpan ttl)
     {
         EnsureActive();
 
         email = email.ToLowerInvariant();
 
-        if (_invitations.Any(x => x.Email == email && !x.IsUsed))
-            throw new InvalidOperationException("User already invited.");
+        if (_users.Any(x => x.Email == email))
+            throw new UserAlreadyExistsException(email);
+
+        var activeInvitation = _invitations
+            .FirstOrDefault(x => x.Email == email && x.IsActive);
+
+        if (activeInvitation is not null)
+            throw new DuplicateInvitationException(email);
 
         var invitation = new Invitation(Id, email, role, ttl);
 
@@ -56,6 +132,29 @@ public sealed class Tenant : BaseEntity, IAggregateRoot
         return invitation;
     }
 
+    /// <summary>
+    /// Resolves access for a user within the tenant.
+    ///
+    /// Behavior:
+    /// - Returns an existing active user.
+    /// - Or creates a new user from a valid invitation.
+    ///
+    /// Invariants:
+    /// - Tenant must be active.
+    /// - A user must come from a valid and active invitation.
+    /// - No two users may share the same email.
+    ///
+    /// Emits:
+    /// - InvitationUsedDomainEvent
+    /// - UserCreatedFromInvitationDomainEvent
+    /// - UserAccessResolvedDomainEvent
+    ///
+    /// Throws:
+    /// - TenantInactiveException
+    /// - InvitationNotFoundException
+    /// - InvitationExpiredException
+    /// - UserAlreadyExistsException
+    /// </summary>
     public User ResolveAccess(string externalId, string email)
     {
         EnsureActive();
@@ -65,25 +164,42 @@ public sealed class Tenant : BaseEntity, IAggregateRoot
         var existingUser = _users.FirstOrDefault(x => x.Email == email && x.IsActive);
         if (existingUser is not null)
         {
+            if (existingUser.ExternalId != externalId)
+                throw new UserAlreadyExistsException(email);
+
             AddDomainEvent(new UserAccessResolvedDomainEvent(Id, existingUser.Id));
             return existingUser;
         }
 
         var invitation = _invitations.FirstOrDefault(x => x.Email == email)
-            ?? throw new InvalidOperationException("User not invited.");
+            ?? throw new InvitationNotFoundException(email);
+
+        if (!invitation.IsActive)
+            throw new InvitationExpiredException(email);
 
         invitation.Use();
         AddDomainEvent(new InvitationUsedDomainEvent(Id, invitation.Id, invitation.Email));
 
-        var user = new User(Id, externalId, email, invitation.Role);
+        if (_users.Any(x => x.Email == email))
+            throw new UserAlreadyExistsException(email);
 
-        _users.Add(user);
+        var user = CreateUserFromInvitation(invitation, externalId);
 
         AddDomainEvent(new UserCreatedFromInvitationDomainEvent(
             Id, user.Id, user.Email, user.Role));
 
         AddDomainEvent(new UserAccessResolvedDomainEvent(Id, user.Id));
 
+        return user;
+    }
+
+    /// <summary>
+    /// Creates a new user from a valid invitation.
+    /// </summary>
+    private User CreateUserFromInvitation(Invitation invitation, string externalId)
+    {
+        var user = new User(Id, externalId, invitation.Email, invitation.Role);
+        _users.Add(user);
         return user;
     }
 }

@@ -74,14 +74,14 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
-                    b.Property<string>("Slug")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug")
+                    b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("tenants", "atlas_identity");
@@ -118,14 +118,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("TenantId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ExternalId");
-
-                    b.HasIndex("TenantId1");
 
                     b.HasIndex("TenantId", "Email")
                         .IsUnique();
@@ -189,14 +184,10 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Atlas.Identity.Domain.Tenants.User", b =>
                 {
                     b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
-                        .WithMany("Users")
-                        .HasForeignKey("TenantId1");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Tenants.Tenant", b =>

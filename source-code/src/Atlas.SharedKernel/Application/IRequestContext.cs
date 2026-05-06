@@ -3,6 +3,6 @@ public interface IRequestContext
 {
     bool IsAuthenticated { get; }
     Guid? TenantId { get; }
-    string? TenantSlug { get; }
+    string? TenantName { get; }
     Guid? UserId { get; }
 }
