@@ -95,3 +95,10 @@ docs: docs-clean docs-metadata docs-build
 docs-v: docs-clean
 	cd $(DOCS_DIR); docfx metadata docfx.json --logLevel verbose
 	cd $(DOCS_DIR); docfx build docfx.json --logLevel verbose
+
+
+# =========================================
+# PROJECT STRUCTURE EXPORT
+# =========================================
+# tree "source-code/src" /F /A
+# tree "source-code/src" /F /A | clip

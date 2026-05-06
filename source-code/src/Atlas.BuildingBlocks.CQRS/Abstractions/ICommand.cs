@@ -1,7 +1,7 @@
-﻿using MediatR;
+﻿    using MediatR;
 
-namespace Atlas.BuildingBlocks.CQRS.Abstractions;
+    namespace Atlas.BuildingBlocks.CQRS.Abstractions;
 
-public interface ICommand<out TResult> : IRequest<TResult>
-{
-}
+    public interface ICommand<out TResult> : IRequest<TResult>
+    {
+    }

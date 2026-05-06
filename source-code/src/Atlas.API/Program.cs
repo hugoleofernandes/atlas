@@ -137,8 +137,6 @@ try
     services.Configure<FrontendConfig>(
         configuration.GetSection("Frontend"));
 
-    services.AddScoped<IResolveTenantAccessUseCase, ResolveTenantAccessUseCase>();
-
     //
     // ==========================================
     // SECURITY

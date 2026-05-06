@@ -1,4 +1,5 @@
-﻿using Atlas.Identity.Domain.Tenants;
+﻿
+using Atlas.Identity.Domain.Entities.Tenants;
 
 namespace Atlas.Identity.Application.Tenants.Abstractions;
 

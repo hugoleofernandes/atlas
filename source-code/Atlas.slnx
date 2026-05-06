@@ -6,6 +6,8 @@
   </Folder>
   <Folder Name="/docs/api/" />
   <Folder Name="/docs/architecture/">
+    <File Path="docs/architecture/building-blocks.md" />
+    <File Path="docs/architecture/cqrs-pipeline.md" />
     <File Path="docs/architecture/technical-decisions-tooling.md" />
   </Folder>
   <Folder Name="/docs/guidelines/">
@@ -48,7 +50,6 @@
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Tests.csproj" />
-    <Project Path="tests/Atlas.Tests/Atlas.Tests.csproj" />
+    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
   </Folder>
 </Solution>

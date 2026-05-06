@@ -1,5 +1,5 @@
 ﻿using Atlas.Identity.Application.Tenants.Abstractions;
-using Atlas.Identity.Domain.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Tenants;

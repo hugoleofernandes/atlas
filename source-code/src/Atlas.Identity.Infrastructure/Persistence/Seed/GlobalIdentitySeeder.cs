@@ -1,4 +1,5 @@
-﻿using Atlas.Identity.Domain.Tenants;
+﻿using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Seed;
@@ -10,16 +11,16 @@ public sealed class GlobalIdentitySeeder : ISeeder
         if (await db.Tenants.AnyAsync())
             return;
 
-        // 🔹 Criar Tenant
+        // 🔹 Create Tenant
         var tenant = new Tenant("tenant01");
 
         db.Tenants.Add(tenant);
 
-        // 🔹 Convidar email (sem IdentityUser ainda)
+        // 🔹 Invite email using Value Objects
         tenant.InviteUser(
-            "hugoleofernandes@gmail.com",
-            "Admin",
-            TimeSpan.FromHours(24)
+            Email.Create("hugoleofernandes@gmail.com"),
+            Role.Create("admin"),
+            InvitationTtl.Create(TimeSpan.FromHours(24))
         );
 
         await db.SaveChangesAsync();

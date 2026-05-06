@@ -1,5 +1,5 @@
 ﻿using Atlas.BuildingBlocks.Persistence;
-using Atlas.Identity.Domain.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 

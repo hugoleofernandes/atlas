@@ -1,7 +1,10 @@
-﻿using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
+
+using ResolveTenantAccessCommand = Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess.Command;
+
 
 namespace Atlas.API.Security.OIDC;
 
@@ -163,32 +166,26 @@ public static class OidcMultiTenantConfigurator
                     return;
                 }
 
-                var useCase = http.RequestServices
-                    .GetRequiredService<IResolveTenantAccessUseCase>();
+                var mediator = http.RequestServices.GetRequiredService<IMediator>();
 
-                ResolveTenantAccessResult result;
+                var result = await mediator.Send(
+                    new ResolveTenantAccessCommand(tenantName, oid, email),
+                    ctx.HttpContext.RequestAborted);
 
-                try
+                if (!result.Success)
                 {
-                    result = await useCase.ExecuteAsync(
-                        new ResolveTenantAccessCommand(
-                            tenantName,
-                            oid,
-                            email),
-                        ctx.HttpContext.RequestAborted);
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    ctx.Fail(ex.Message);
+                    ctx.Fail(result?.Error ?? "Failed to resolve tenant access.");
                     return;
                 }
 
+                var value = result.Value!;
+
                 if (ctx.Principal?.Identity is ClaimsIdentity identity)
                 {
-                    identity.AddClaim(new Claim("tenant_id", result.TenantId.ToString()));
-                    identity.AddClaim(new Claim("tenant_name", result.TenantName));
-                    identity.AddClaim(new Claim("user_id", result.UserId.ToString()));
-                    identity.AddClaim(new Claim(ClaimTypes.Role, result.Role));
+                    identity.AddClaim(new Claim("tenant_id", value.TenantId.ToString()));
+                    identity.AddClaim(new Claim("tenant_name", value.TenantName));
+                    identity.AddClaim(new Claim("user_id", value.UserId.ToString()));
+                    identity.AddClaim(new Claim(ClaimTypes.Role, value.Role));
                 }
             }
         };

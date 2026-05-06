@@ -1,4 +1,5 @@
-﻿using Atlas.Identity.Domain.Tenants;
+﻿using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,10 +17,18 @@ public sealed class InvitationConfig : IEntityTypeConfiguration<Invitation>
             .IsRequired();
 
         b.Property(x => x.Email)
+            .HasConversion(
+                email => email.Value,
+                value => Email.Create(value)
+            )
             .HasMaxLength(256)
             .IsRequired();
 
         b.Property(x => x.Role)
+            .HasConversion(
+                role => role.Value,
+                value => Role.Create(value)
+            )
             .HasMaxLength(50)
             .IsRequired();
 
