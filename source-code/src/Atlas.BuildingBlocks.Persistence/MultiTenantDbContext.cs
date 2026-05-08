@@ -73,14 +73,14 @@ public abstract class MultiTenantDbContext : DbContext
     public IEnumerable<DomainEvent> GetDomainEvents()
     {
         return ChangeTracker
-            .Entries<BaseEntity>()
+            .Entries<AggregateRootBase>()
             .SelectMany(e => e.Entity.DomainEvents)
             .ToList();
     }
 
     public void ClearDomainEvents()
     {
-        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        foreach (var entry in ChangeTracker.Entries<AggregateRootBase>())
             entry.Entity.ClearDomainEvents();
     }
 

@@ -1,31 +1,31 @@
+using Atlas.API;
 using Atlas.API.Configs;
 using Atlas.API.Errors;
 using Atlas.API.Filters;
 using Atlas.API.Observability;
 using Atlas.API.OpenApi;
 using Atlas.API.Security;
+using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
-using Atlas.BuildingBlocks.CQRS.Behaviors;
-using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
+using Atlas.BuildingBlocks.Persistence;
 using Atlas.Identity.Infrastructure.DI;
-using Atlas.Identity.Infrastructure.Persistence;
+using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
 using Atlas.SharedKernel.Application;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence;
 using FluentValidation;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 
 using IdentityAssemblyMarker = Atlas.Identity.Application.AssemblyMarker;
-using StaffAssemblyMarker = Atlas.Staff.Application.AssemblyMarker;
+using StaffApplicationAssemblyMarker = Atlas.Staff.Application.AssemblyMarker;
 
 //
 // ==========================================
@@ -89,25 +89,32 @@ try
     services.AddIdentityModule();
     services.AddStaffModule();
 
+    //services.AddScoped<IUnitOfWorkRegistry, UnitOfWorkRegistry>();
+    services.AddScoped<IIntegrationEventMapper, IntegrationEventMapper>();
+
+    services.AddScoped<IAuditService, AuditService>();
+
+    
+
     //
     // ==========================================
     // CQRS + MEDIATR
     // ==========================================
     //
 
-    services.AddMediatR(cfg =>
-    {
-        cfg.RegisterServicesFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
-        cfg.RegisterServicesFromAssembly(typeof(StaffAssemblyMarker).Assembly);
-    });
+    //services.AddMediatR(cfg =>
+    //{
+    //    cfg.RegisterServicesFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
+    //    cfg.RegisterServicesFromAssembly(typeof(StaffApplicationAssemblyMarker).Assembly);
+    //});
 
     services.AddValidatorsFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
-    services.AddValidatorsFromAssembly(typeof(StaffAssemblyMarker).Assembly);
+    services.AddValidatorsFromAssembly(typeof(StaffApplicationAssemblyMarker).Assembly);
 
-    services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-    services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
+    //services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+    //services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 
-    services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();    
+    //services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();    
 
     //
     // ==========================================
@@ -219,6 +226,7 @@ try
 
     app.UseAuthentication();
     app.UseMiddleware<TenantResolverMiddleware>();
+    app.UseMiddleware<UserBootstrapMiddleware>();
     app.UseAuthorization();
 
     app.MapControllers();

@@ -1,7 +1,4 @@
-﻿using Atlas.BuildingBlocks.CQRS.Abstractions;
-using Atlas.SharedKernel.Application;
-
-namespace Atlas.Staff.Application.StaffMembers.Commands.Create;
+﻿namespace Atlas.Staff.Application.StaffMembers.Commands.Create;
 
 public sealed record Command(
     Guid TenantId,
@@ -9,4 +6,4 @@ public sealed record Command(
     string FirstName,
     string LastName,
     string Role
-) : ICommand<Result<ResultDto>>;
+);

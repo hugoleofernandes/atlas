@@ -1,5 +1,6 @@
 ﻿using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Seed;

@@ -44,7 +44,6 @@
   </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Atlas.BuildingBlocks.Audit/Atlas.BuildingBlocks.Audit.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.CQRS/Atlas.BuildingBlocks.CQRS.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Validation/Atlas.BuildingBlocks.Validation.csproj" />
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />

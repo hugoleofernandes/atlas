@@ -1,52 +1,51 @@
-﻿using Atlas.BuildingBlocks.CQRS.Abstractions;
-using Atlas.SharedKernel.Application;
-using Atlas.Staff.Application.Errors;
-using Atlas.Staff.Application.StaffMemberApp.Persistence;
-using Atlas.Staff.Domain.Entities;
+﻿//using Atlas.SharedKernel.Application;
+//using Atlas.Staff.Application.Errors;
+//using Atlas.Staff.Application.StaffMemberApp.Persistence;
+//using Atlas.Staff.Domain.Entities;
 
-namespace Atlas.Staff.Application.StaffMembers.Commands.Create;
+//namespace Atlas.Staff.Application.StaffMembers.Commands.Create;
 
-public sealed class Handler
-    : ICommandHandler<Command, Result<ResultDto>>
-{
-    private readonly IStaffMemberRepository _repository;
+//public sealed class Handler
+//    : ICommandHandler<Command, Response<ResultDto>>
+//{
+//    private readonly IStaffMemberRepository _repository;
 
-    public Handler(IStaffMemberRepository repository)
-    {
-        _repository = repository;
-    }
+//    public Handler(IStaffMemberRepository repository)
+//    {
+//        _repository = repository;
+//    }
 
-    public async Task<Result<ResultDto>> Handle(
-        Command command,
-        CancellationToken ct)
-    {
-        var exists = await _repository.ExistsAsync(
-            command.TenantId,
-            command.UserId,
-            ct);
+//    public async Task<Response<ResultDto>> Handle(
+//        Command command,
+//        CancellationToken ct)
+//    {
+//        var exists = await _repository.ExistsAsync(
+//            command.TenantId,
+//            command.UserId,
+//            ct);
 
-        if (exists)
-        {
-            return Result<ResultDto>.Failure(
-                StaffErrors.AlreadyExists,
-                "Staff already exists for this user."
-            );
-        }
+//        if (exists)
+//        {
+//            return Response<ResultDto>.Failure(
+//                StaffErrors.AlreadyExists,
+//                "Staff already exists for this user."
+//            );
+//        }
 
-        var staff = new StaffMember(
-            command.TenantId,
-            command.UserId,
-            command.FirstName,
-            command.LastName,
-            command.Role
-        );
+//        var staff = new StaffMember(
+//            command.TenantId,
+//            command.UserId,
+//            command.FirstName,
+//            command.LastName,
+//            command.Role
+//        );
 
-        await _repository.AddAsync(staff, ct);
+//        await _repository.AddAsync(staff, ct);
 
-        // SaveChanges será feito pelo TransactionBehavior
+//        // SaveChanges será feito pelo TransactionBehavior
 
-        return Result<ResultDto>.Ok(
-            new ResultDto(staff.Id)
-        );
-    }
-}
+//        return Response<ResultDto>.Ok(
+//            new ResultDto(staff.Id)
+//        );
+//    }
+//}

@@ -1,9 +1,8 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
 
-using ResolveTenantAccessCommand = Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess.Command;
+using ResolveTenantAccessCommand = Atlas.Identity.Application.Tenants.Commands.ResolveAccess.UserCase.Command;
 
 
 namespace Atlas.API.Security.OIDC;
@@ -150,7 +149,6 @@ public static class OidcMultiTenantConfigurator
             {
                 var http = ctx.HttpContext;
 
-                var tenantName = ctx.Scheme.Name.ToLowerInvariant();
 
                 var oid = ctx.Principal?
                     .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
@@ -166,27 +164,33 @@ public static class OidcMultiTenantConfigurator
                     return;
                 }
 
-                var mediator = http.RequestServices.GetRequiredService<IMediator>();
-
-                var result = await mediator.Send(
-                    new ResolveTenantAccessCommand(tenantName, oid, email),
-                    ctx.HttpContext.RequestAborted);
-
-                if (!result.Success)
-                {
-                    ctx.Fail(result?.Error ?? "Failed to resolve tenant access.");
-                    return;
-                }
-
-                var value = result.Value!;
-
                 if (ctx.Principal?.Identity is ClaimsIdentity identity)
                 {
-                    identity.AddClaim(new Claim("tenant_id", value.TenantId.ToString()));
-                    identity.AddClaim(new Claim("tenant_name", value.TenantName));
-                    identity.AddClaim(new Claim("user_id", value.UserId.ToString()));
-                    identity.AddClaim(new Claim(ClaimTypes.Role, value.Role));
+                    var tenantName = ctx.Scheme.Name.ToLowerInvariant();
+                    identity.AddClaim(new Claim("tenant_name", tenantName));
                 }
+
+                //var mediator = http.RequestServices.GetRequiredService<IMediator>();
+
+                //var result = await mediator.Send(
+                //    new ResolveTenantAccessCommand(tenantName, oid, email),
+                //    ctx.HttpContext.RequestAborted);
+
+                //if (!result.Success)
+                //{
+                //    ctx.Fail(result?.Error ?? "Failed to resolve tenant access.");
+                //    return;
+                //}
+
+                //var value = result.Value!;
+
+                //if (ctx.Principal?.Identity is ClaimsIdentity identity)
+                //{
+                //    identity.AddClaim(new Claim("tenant_id", value.TenantId.ToString()));
+                //    identity.AddClaim(new Claim("tenant_name", value.TenantName));
+                //    identity.AddClaim(new Claim("user_id", value.UserId.ToString()));
+                //    identity.AddClaim(new Claim(ClaimTypes.Role, value.Role));
+                //}
             }
         };
     }

@@ -1,4 +1,4 @@
-﻿using Atlas.SharedKernel.Application;
+﻿using Atlas.Staff.Application.Abstractions;
 using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Application.StaffMembers.Queries.List;
 using Atlas.Staff.Infrastructure.Persistence;
@@ -14,7 +14,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IStaffMemberRepository, StaffMemberRepository>();
         services.AddScoped<IListStaffMembersReader, ListStaffMembersReader>();
-        services.AddScoped<IUnitOfWork, StaffUnitOfWork>();
+        services.AddScoped<IStaffUnitOfWork, StaffUnitOfWork>();
 
         return services;
     }

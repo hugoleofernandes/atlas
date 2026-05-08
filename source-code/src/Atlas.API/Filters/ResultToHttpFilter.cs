@@ -13,10 +13,10 @@ public sealed class ResultToHttpFilter : IResultFilter
         if (context.Result is not ObjectResult objectResult)
             return;
 
-        if (objectResult.Value is not SharedKernel.Application.IResult result)
+        if (objectResult.Value is not SharedKernel.Application.IResponse result)
             return;
 
-        if (!result.Success)
+        if (!result.IsSuccess)
         {
             var error = result.ErrorDefinition!;
 

@@ -1,4 +1,5 @@
 ﻿using Atlas.BuildingBlocks.Persistence;
+using Atlas.BuildingBlocks.Persistence.Outbox;
 using Atlas.SharedKernel.Application;
 using Atlas.Staff.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,9 @@ public sealed class StaffDbContext
     public DbSet<StaffMember> StaffMembers => Set<StaffMember>();
     public DbSet<StaffAuditLog> AuditLogs => Set<StaffAuditLog>();
 
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
+
     public StaffDbContext(
         DbContextOptions<StaffDbContext> options,
         IRequestContext requestContext)
@@ -21,8 +25,9 @@ public sealed class StaffDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(StaffDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StaffDbContext).Assembly);
+
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OutboxMessageConfiguration).Assembly);
 
         base.OnModelCreating(modelBuilder);
     }

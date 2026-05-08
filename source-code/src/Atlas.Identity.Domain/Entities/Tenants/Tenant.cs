@@ -27,7 +27,7 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 /// - Access resolution is part of the Tenant because it enforces invariants
 ///   related to user creation and invitation usage.
 /// </summary>
-public sealed class Tenant : BaseEntity, IAggregateRoot
+public sealed class Tenant : AggregateRootBase
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 

@@ -10,4 +10,11 @@ public static class TenantErrors
             DefaultMessage: "Tenant not found",
             Category: ErrorCategory.Conflict
         );
+
+    public static readonly ErrorDefinition ResolveAccess =
+    new(
+        Code: "TENANT_002",
+        DefaultMessage: "Failed to resolve access for tenant",
+        Category: ErrorCategory.Conflict
+    );
 }
