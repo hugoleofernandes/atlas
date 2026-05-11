@@ -1,5 +1,6 @@
 ﻿using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Domain.Events;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.BuildingBlocks.Persistence;

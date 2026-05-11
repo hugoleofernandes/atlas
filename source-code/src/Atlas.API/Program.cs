@@ -12,10 +12,14 @@ using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
 using Atlas.BuildingBlocks.Persistence;
+using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Events;
+using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.UseCases;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence;
 using FluentValidation;
@@ -23,9 +27,6 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
-
-using IdentityAssemblyMarker = Atlas.Identity.Application.AssemblyMarker;
-using StaffApplicationAssemblyMarker = Atlas.Staff.Application.AssemblyMarker;
 
 //
 // ==========================================
@@ -90,11 +91,19 @@ try
     services.AddStaffModule();
 
     //services.AddScoped<IUnitOfWorkRegistry, UnitOfWorkRegistry>();
-    services.AddScoped<IIntegrationEventMapper, IntegrationEventMapper>();
+    //services.AddScoped<IIntegrationEventMapper, IntegrationEventMapper>();
+    services.AddScoped<IIntegrationEventRegistry, IntegrationEventRegistry>();
+    services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
+    services.AddScoped<IIntegrationEventRegistry, IntegrationEventRegistry>();
+    services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
+    services.AddScoped<IDomainEventCollector, DomainEventCollector>();
+
+    services.AddValidatorsFromAssemblyContaining<ApplicationAssemblyMarker>();
+
 
     services.AddScoped<IAuditService, AuditService>();
+    services.AddScoped<IResultService, ResultService>();
 
-    
 
     //
     // ==========================================
@@ -108,8 +117,8 @@ try
     //    cfg.RegisterServicesFromAssembly(typeof(StaffApplicationAssemblyMarker).Assembly);
     //});
 
-    services.AddValidatorsFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
-    services.AddValidatorsFromAssembly(typeof(StaffApplicationAssemblyMarker).Assembly);
+    //services.AddValidatorsFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
+    //services.AddValidatorsFromAssembly(typeof(StaffApplicationAssemblyMarker).Assembly);
 
     //services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     //services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));

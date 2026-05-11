@@ -1,4 +1,6 @@
-﻿namespace Atlas.SharedKernel.Domain;
+﻿using Atlas.SharedKernel.Domain.Events;
+
+namespace Atlas.SharedKernel.Domain;
 
 public abstract class AggregateRootBase : IAggregateRoot
 {

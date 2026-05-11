@@ -1,4 +1,4 @@
-﻿using Atlas.SharedKernel.Application;
+﻿using Atlas.SharedKernel.Application.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,7 +9,7 @@ public sealed class OutboxMessageConfiguration
 {
     public void Configure(EntityTypeBuilder<OutboxMessage> b)
     {
-        b.ToTable("outbox_messages");
+        b.ToTable("outboxes");
 
         b.HasKey(x => x.Id);
 

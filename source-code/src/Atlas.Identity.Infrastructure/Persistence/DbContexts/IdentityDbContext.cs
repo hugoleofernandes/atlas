@@ -3,12 +3,13 @@ using Atlas.BuildingBlocks.Persistence.Outbox;
 using Atlas.Identity.Domain.Entities.Audits;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence.DbContexts;
 
 public sealed class IdentityDbContext
-    : AuditableDbContext<IdentityModuleAudit>
+    : MultiTenantDbContext
 {
     protected override string Schema => "atlas_identity";
 

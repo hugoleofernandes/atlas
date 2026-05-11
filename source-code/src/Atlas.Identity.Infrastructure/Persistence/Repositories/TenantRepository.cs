@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Application.Abstractions.Repositories;
+﻿using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;

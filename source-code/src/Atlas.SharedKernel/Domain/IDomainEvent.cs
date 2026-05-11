@@ -1,8 +1,6 @@
-﻿//using MediatR;
+﻿namespace Atlas.SharedKernel.Domain;
 
-namespace Atlas.SharedKernel.Domain;
-
-public interface IDomainEvent //: INotification
+public interface IDomainEvent
 {
     DateTime OccurredOn { get; }
 }

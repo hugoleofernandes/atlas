@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Abstractions\Tenants\Commands\ResolveTenantAccess\" />
+    <Folder Include="Tenants\Commands\" />
+    <Folder Include="Tenants\IntegrationEvents\" />
     <Folder Include="Tenants\Queries\" />
   </ItemGroup>
 

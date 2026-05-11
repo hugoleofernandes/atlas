@@ -1,4 +1,4 @@
-﻿using Atlas.SharedKernel.Domain;
+﻿using Atlas.SharedKernel.Domain.Events;
 
 namespace Atlas.Identity.Domain.Entities.Tenants.Events;
 

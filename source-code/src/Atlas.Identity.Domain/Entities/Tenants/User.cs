@@ -22,7 +22,7 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 /// - Does not manage tenant membership (handled by Tenant aggregate).
 /// - Does not store profile or business-related data.
 /// </summary>
-public sealed class User : IEntity
+public sealed class User
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 

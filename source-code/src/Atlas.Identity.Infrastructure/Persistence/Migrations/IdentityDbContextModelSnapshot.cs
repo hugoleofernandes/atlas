@@ -64,7 +64,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("identity_module_audit", "atlas_identity");
+                    b.ToTable("audits", "atlas_identity");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Invitation", b =>
@@ -172,7 +172,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("users", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessage", b =>
+            modelBuilder.Entity("Atlas.SharedKernel.Application.IntegrationEvents.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +218,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProcessedOn", "OccurredOn");
 
-                    b.ToTable("outbox_messages", "atlas_identity");
+                    b.ToTable("outboxes", "atlas_identity");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Invitation", b =>

@@ -16,6 +16,7 @@
     <File Path="docs/guidelines/documentation-guidelines.md" />
     <File Path="docs/guidelines/domain-design-playbook.md" />
     <File Path="docs/guidelines/guideline-for-creating-guidelines.md" />
+    <File Path="docs/guidelines/programming-principles-guide.md" />
     <File Path="docs/guidelines/unit-testing-guidelines.md" />
   </Folder>
   <Folder Name="/docs/guides/">
@@ -43,7 +44,6 @@
     <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/Shared/">
-    <Project Path="src/Atlas.BuildingBlocks.Audit/Atlas.BuildingBlocks.Audit.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Validation/Atlas.BuildingBlocks.Validation.csproj" />
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />

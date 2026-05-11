@@ -1,5 +1,5 @@
-﻿using Atlas.Identity.Application.Abstractions.Tenants.Commands.ResolveAccess;
-using Atlas.Identity.Application.Tenants.Commands.ResolveAccess.UserCase;
+﻿using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
+using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
@@ -31,7 +31,7 @@ public sealed class UserBootstrapMiddleware
 
     public async Task InvokeAsync(
     HttpContext context,
-    IResolveAccessWorkflow resolveAccessWorkflow)
+    IResolveTenantAccessWorkflow resolveAccessWorkflow)
     {
         //
         // ==========================================
@@ -127,8 +127,7 @@ public sealed class UserBootstrapMiddleware
             context.Response.StatusCode =
                 StatusCodes.Status403Forbidden;
 
-            await context.Response.WriteAsync(
-                result.Error ?? "Failed to resolve tenant access.");
+            await context.Response.WriteAsync(result.Error?.DefaultMessage ?? "Failed to resolve tenant access.");
 
             return;
         }

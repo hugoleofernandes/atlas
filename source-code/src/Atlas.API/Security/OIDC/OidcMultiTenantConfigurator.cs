@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
 
-using ResolveTenantAccessCommand = Atlas.Identity.Application.Tenants.Commands.ResolveAccess.UserCase.Command;
+using ResolveTenantAccessCommand = Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess.Command;
 
 
 namespace Atlas.API.Security.OIDC;
@@ -191,6 +191,7 @@ public static class OidcMultiTenantConfigurator
                 //    identity.AddClaim(new Claim("user_id", value.UserId.ToString()));
                 //    identity.AddClaim(new Claim(ClaimTypes.Role, value.Role));
                 //}
+            //todo: remover pq foi movido para um midlewre...
             }
         };
     }

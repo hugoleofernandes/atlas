@@ -23,7 +23,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessage", b =>
+            modelBuilder.Entity("Atlas.SharedKernel.Application.IntegrationEvents.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +69,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProcessedOn", "OccurredOn");
 
-                    b.ToTable("outbox_messages", "atlas_staff");
+                    b.ToTable("outboxes", "atlas_staff");
                 });
 
             modelBuilder.Entity("Atlas.Staff.Domain.Entities.StaffAuditLog", b =>

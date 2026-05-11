@@ -1,13 +1,14 @@
 ﻿using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.Outbox;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.Staff.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Staff.Infrastructure.Persistence;
 
 public sealed class StaffDbContext
-    : AuditableDbContext<StaffAuditLog>
+    : MultiTenantDbContext
 {
     protected override string Schema => "atlas_staff";
     public DbSet<StaffMember> StaffMembers => Set<StaffMember>();

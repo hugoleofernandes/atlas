@@ -1,6 +1,5 @@
 ﻿using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.ValueObjects;
-using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities.Tenants;
 
@@ -16,7 +15,7 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 /// - Controls the lifecycle of an invitation.
 /// - Ensures correct usage and expiration behavior.
 /// </summary>
-public sealed class Invitation : IEntity
+public sealed class Invitation
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
