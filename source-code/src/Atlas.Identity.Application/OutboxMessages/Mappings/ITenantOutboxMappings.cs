@@ -1,4 +1,4 @@
-﻿using Atlas.SharedKernel.Application.IntegrationEvents;
+﻿using Atlas.SharedKernel.Application.OutboxMessages;
 
 namespace Atlas.Identity.Application.OutboxMessages.Mappings;
 

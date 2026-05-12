@@ -19,6 +19,7 @@ using Atlas.Identity.Infrastructure.Persistence.Seed;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Events;
 using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Application.UseCases;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence;

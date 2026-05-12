@@ -4,11 +4,11 @@ namespace Atlas.SharedKernel.Domain;
 
 public abstract class AggregateRootBase : IAggregateRoot
 {
-    private readonly List<DomainEvent> _domainEvents = new();
+    private readonly List<IDomainEvent> _domainEvents = new();
 
-    public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents;
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents;
 
-    protected void AddDomainEvent(DomainEvent domainEvent)
+    protected void AddDomainEvent(IDomainEvent domainEvent)
         => _domainEvents.Add(domainEvent);
 
     public void ClearDomainEvents()

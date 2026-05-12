@@ -4,14 +4,14 @@ namespace Atlas.SharedKernel.Application.Events;
 
 public sealed class DomainEventCollector : IDomainEventCollector
 {
-    private readonly List<DomainEvent> _events = [];
+    private readonly List<IDomainEvent> _events = [];
 
-    public void Collect(IEnumerable<DomainEvent> events)
+    public void Collect(IEnumerable<IDomainEvent> events)
     {
         _events.AddRange(events);
     }
 
-    public IReadOnlyCollection<DomainEvent> GetAll()
+    public IReadOnlyCollection<IDomainEvent> GetAll()
         => _events.AsReadOnly();
 
     public void Clear()

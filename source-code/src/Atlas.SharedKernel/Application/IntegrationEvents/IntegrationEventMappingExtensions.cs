@@ -6,7 +6,7 @@ public static class IntegrationEventMappingExtensions
 {
     public static IReadOnlyList<IntegrationEventMapping> GetEvents<TEvent>(
         this IEnumerable<IntegrationEventMapping> mappings)
-        where TEvent : DomainEvent
+        where TEvent : IDomainEvent
     {
         return mappings
             .Where(x => x.Event is TEvent)

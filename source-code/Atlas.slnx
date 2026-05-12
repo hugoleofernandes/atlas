@@ -7,7 +7,8 @@
   <Folder Name="/docs/api/" />
   <Folder Name="/docs/architecture/">
     <File Path="docs/architecture/building-blocks.md" />
-    <File Path="docs/architecture/cqrs-pipeline.md" />
+    <File Path="docs/architecture/outbox-worker-design-architecture.md" />
+    <File Path="docs/architecture/outbox-worker-objective-and-scope.md" />
     <File Path="docs/architecture/technical-decisions-tooling.md" />
   </Folder>
   <Folder Name="/docs/guidelines/">
@@ -26,9 +27,7 @@
   <Folder Name="/docs/modules/identity/">
     <File Path="docs/modules/identity/index.md" />
   </Folder>
-  <Folder Name="/src/">
-    <File Path="docs/api/identity/toc.yml.bkp" />
-  </Folder>
+  <Folder Name="/src/" />
   <Folder Name="/src/API/">
     <Project Path="src/Atlas.API/Atlas.API.csproj" />
   </Folder>
@@ -47,6 +46,9 @@
     <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Validation/Atlas.BuildingBlocks.Validation.csproj" />
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/Workers/">
+    <Project Path="src/Atlas.OutboxWorker/Atlas.OutboxWorker.csproj" Id="e326b476-d435-43f0-b660-b959f84dee77" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />

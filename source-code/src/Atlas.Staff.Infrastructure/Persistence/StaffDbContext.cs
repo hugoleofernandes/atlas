@@ -1,7 +1,7 @@
 ﻿using Atlas.BuildingBlocks.Persistence;
-using Atlas.BuildingBlocks.Persistence.Outbox;
+using Atlas.BuildingBlocks.Persistence.OutboxMessages;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.Staff.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

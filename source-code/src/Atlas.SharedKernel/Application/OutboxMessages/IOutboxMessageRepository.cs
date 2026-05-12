@@ -1,4 +1,4 @@
-﻿namespace Atlas.SharedKernel.Application.IntegrationEvents;
+﻿namespace Atlas.SharedKernel.Application.OutboxMessages;
 
 public interface IOutboxMessageRepository
 {

@@ -15,12 +15,16 @@ namespace Atlas.Identity.Domain.Entities.Tenants.Events;
 /// Invariants communicated:
 /// - A tenant must be active to execute domain behavior.
 /// </summary>
-public sealed class TenantDeactivatedDomainEvent : DomainEvent
+public sealed class TenantDeactivatedDomainEvent : IDomainEvent
 {
     public Guid TenantId { get; }
+    //public Guid UserId { get; }
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
 
-    public TenantDeactivatedDomainEvent(Guid tenantId)
+
+    public TenantDeactivatedDomainEvent(Guid tenantId)//, Guid userId)
     {
         TenantId = tenantId;
+        //UserId = userId;
     }
 }

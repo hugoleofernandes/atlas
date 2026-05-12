@@ -2,10 +2,11 @@
 using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.SharedKernel.Application.Events;
 using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
 
-namespace Atlas.Identity.Application.Tenants.UseCases.TenantEventDispatcher;
+namespace Atlas.Identity.Application.Tenants.UseCases.TenantIntegrationEvents;
 
-public sealed class TenantEventDispatcher : ITenantEventDispatcher
+public sealed class TenantIntegrationEventsDispatcher : ITenantIntegrationEventsDispatcher
 {
     private readonly IDomainEventCollector _domainEventCollector;
     private readonly IOutboxMessageRepository _outboxMessageRepository;
@@ -13,7 +14,7 @@ public sealed class TenantEventDispatcher : ITenantEventDispatcher
     private readonly IIntegrationEventRegistry _integrationEventRegistry;
     private readonly ITenantOutboxMappings _tenantOutboxMappings;
 
-    public TenantEventDispatcher(IDomainEventCollector domainEventCollector, IOutboxMessageRepository outboxMessageRepository, 
+    public TenantIntegrationEventsDispatcher(IDomainEventCollector domainEventCollector, IOutboxMessageRepository outboxMessageRepository, 
             IOutboxMessageFactory outboxMessageFactory, IIntegrationEventRegistry integrationEventRegistry, ITenantOutboxMappings tenantOutboxMappings)
     {
         _domainEventCollector = domainEventCollector;
@@ -33,7 +34,10 @@ public sealed class TenantEventDispatcher : ITenantEventDispatcher
         var userCreatedEvent = MappedIntegrationEvents.GetEvents<UserCreatedFromInvitationDomainEvent>().FirstOrDefault();
 
         if (userCreatedEvent is not null)
-            await _outboxMessageRepository.AddAsync(_outboxMessageFactory.Create(userCreatedEvent.Event, userCreatedEvent.Definition)!, ct);
+        {
+            var outboxMessage = _outboxMessageFactory.Create(userCreatedEvent.Event, userCreatedEvent.Definition);
+            await _outboxMessageRepository.AddAsync(outboxMessage, ct);
+        }
 
         _domainEventCollector.Clear();
     }

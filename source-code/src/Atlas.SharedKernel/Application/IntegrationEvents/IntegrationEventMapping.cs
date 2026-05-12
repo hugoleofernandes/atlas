@@ -1,8 +1,9 @@
-﻿using Atlas.SharedKernel.Domain.Events;
+﻿using Atlas.SharedKernel.Application.OutboxMessages;
+using Atlas.SharedKernel.Domain.Events;
 
 namespace Atlas.SharedKernel.Application.IntegrationEvents;
 
 public sealed record IntegrationEventMapping(
-    DomainEvent Event,
+    IDomainEvent Event,
     OutboxEventDefinition Definition
 );

@@ -1,10 +1,11 @@
-﻿using Atlas.SharedKernel.Domain.Events;
+﻿using Atlas.SharedKernel.Application.OutboxMessages;
+using Atlas.SharedKernel.Domain.Events;
 
 namespace Atlas.SharedKernel.Application.IntegrationEvents;
 
 public sealed class IntegrationEventRegistry : IIntegrationEventRegistry
 {
-    public OutboxEventDefinition? Resolve(DomainEvent e, IOutboxMappings outboxMappings)
+    public OutboxEventDefinition? Resolve(IDomainEvent e, IOutboxMappings outboxMappings)
     {
         var type = e.GetType();
 
@@ -20,7 +21,7 @@ public sealed class IntegrationEventRegistry : IIntegrationEventRegistry
         );
     }
 
-    public IEnumerable<IntegrationEventMapping> ResolveAll(IEnumerable<DomainEvent> events, IOutboxMappings outboxMappings)
+    public IEnumerable<IntegrationEventMapping> ResolveAll(IEnumerable<IDomainEvent> events, IOutboxMappings outboxMappings)
     {
         var map = outboxMappings.All.ToDictionary(x => x.Type);
 

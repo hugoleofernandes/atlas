@@ -1,6 +1,6 @@
 ﻿using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
-using Atlas.Identity.Application.Tenants.UseCases.TenantEventDispatcher;
+using Atlas.Identity.Application.Tenants.UseCases.TenantIntegrationEvents;
 using Atlas.Identity.Domain.Entities.Audits;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.UseCases;
@@ -15,7 +15,7 @@ public sealed class ResolveTenantAccessWorkflow : IResolveTenantAccessWorkflow
     private readonly IAuditService _auditService;
     private readonly IIdentityUnitOfWork _uow;
     private readonly IResultService _result;
-    private readonly ITenantEventDispatcher _tenantEventDispatcher;
+    private readonly ITenantIntegrationEventsDispatcher _tenantEventDispatcher;
 
 
     public ResolveTenantAccessWorkflow(
@@ -24,7 +24,7 @@ public sealed class ResolveTenantAccessWorkflow : IResolveTenantAccessWorkflow
         IAuditService auditService,
         IIdentityUnitOfWork uow,
         IResultService result,
-        ITenantEventDispatcher tenantEventDispatcher)
+        ITenantIntegrationEventsDispatcher tenantEventDispatcher)
     {
         _validator = validator;
         _useCase = useCase;

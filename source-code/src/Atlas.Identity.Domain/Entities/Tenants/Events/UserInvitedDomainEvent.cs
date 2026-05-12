@@ -2,16 +2,23 @@
 
 namespace Atlas.Identity.Domain.Entities.Tenants.Events;
 
-public sealed class UserInvitedDomainEvent : DomainEvent
+public sealed class UserInvitedDomainEvent : IDomainEvent
 {
     public Guid TenantId { get; }
-    public string Email { get; }
-    public string Role { get; }
+    //public Guid UserId { get; }
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
 
-    public UserInvitedDomainEvent(Guid tenantId, string email, string role)
+
+    public string Email { get; }
+    
+    //public string Role { get; }
+
+
+    public UserInvitedDomainEvent(Guid tenantId, string email)//, Guid userId)//, string role)
     {
         TenantId = tenantId;
         Email = email;
-        Role = role;
+        //UserId = userId;
+        //Role = role;
     }
 }

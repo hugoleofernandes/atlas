@@ -1,5 +1,5 @@
 ﻿using Atlas.Identity.Domain.Entities.Tenants.Events;
-using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
 
 namespace Atlas.Identity.Application.OutboxMessages.Mappings;
 

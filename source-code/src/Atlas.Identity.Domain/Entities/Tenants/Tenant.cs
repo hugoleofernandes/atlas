@@ -126,7 +126,7 @@ public sealed class Tenant : AggregateRootBase
 
         _invitations.Add(invitation);
 
-        AddDomainEvent(new UserInvitedDomainEvent(Id, email.Value, role.Value));
+        AddDomainEvent(new UserInvitedDomainEvent(Id, email.Value));//, role.Value));
 
         return invitation;
     }

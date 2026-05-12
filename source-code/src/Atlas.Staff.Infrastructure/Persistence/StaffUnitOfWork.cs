@@ -1,5 +1,4 @@
-﻿using Atlas.BuildingBlocks.Persistence.Outbox;
-using Atlas.SharedKernel.Application;
+﻿using Atlas.SharedKernel.Application;
 using Atlas.Staff.Application.Abstractions;
 
 namespace Atlas.Staff.Infrastructure.Persistence;
@@ -18,24 +17,6 @@ public sealed class StaffUnitOfWork : IStaffUnitOfWork
 
     public async Task SaveChangesAsync(CancellationToken ct)
     {
-        var events = _db.GetDomainEvents();
-
-        //var messages = events.Select(e =>
-        //    new OutboxMessage(
-        //        type: e.GetType().AssemblyQualifiedName!,
-        //        payload: JsonSerializer.Serialize(e),
-        //        tenantId: _requestContext.TenantId,
-        //        //_db.RequestContext.TenantId,
-        //        userId: _requestContext.UserId,
-        //        //_db.RequestContext.UserId,
-        //        correlationId: String.Empty,
-        //        //_db.RequestContext.CorrelationId,
-        //        module: "identity"
-        //    )
-        //);
-
-        //_db.OutboxMessages.AddRange(messages);
-
         _db.ClearDomainEvents();
 
         await _db.SaveChangesAsync(ct);

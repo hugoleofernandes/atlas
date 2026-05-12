@@ -1,5 +1,5 @@
 ﻿using Atlas.Identity.Infrastructure.Persistence.DbContexts;
-using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Repositories;

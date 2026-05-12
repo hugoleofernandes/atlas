@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Atlas.SharedKernel.Application.IntegrationEvents;
+namespace Atlas.SharedKernel.Application.OutboxMessages;
 
 public sealed record OutboxEventDefinition(
     string Name,

@@ -1,7 +1,7 @@
-﻿using Atlas.SharedKernel.Domain;
+﻿using Atlas.SharedKernel.Domain.Events;
 using System.Text.Json;
 
-namespace Atlas.SharedKernel.Application.IntegrationEvents;
+namespace Atlas.SharedKernel.Application.OutboxMessages;
 
 public sealed class OutboxMessageFactory : IOutboxMessageFactory
 {
@@ -9,11 +9,12 @@ public sealed class OutboxMessageFactory : IOutboxMessageFactory
     {
     }
 
-    public OutboxMessage Create(IDomainEvent domainEvent, OutboxEventDefinition outboxEventDefinition)
+    public OutboxMessage Create<T>(T domainEvent, OutboxEventDefinition outboxEventDefinition)
+        where T: IDomainEvent
     {
         return new OutboxMessage(
             name: outboxEventDefinition.Name,
-            type: nameof(outboxEventDefinition.Type),
+            type: outboxEventDefinition.Type.ToString(),
             payload: JsonSerializer.Serialize(domainEvent),
             tenantId: Guid.Empty,// Get<Guid?>(e, "TenantId"),
             userId: Guid.Empty, // Get<Guid?>(e, "UserId"),

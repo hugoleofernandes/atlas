@@ -2,10 +2,12 @@
 
 namespace Atlas.Identity.Domain.Entities.Tenants.Events;
 
-public sealed class UserAccessResolvedDomainEvent : DomainEvent
+public sealed class UserAccessResolvedDomainEvent : IDomainEvent
 {
     public Guid TenantId { get; }
     public Guid UserId { get; }
+    public DateTime OccurredOn { get; } = DateTime.UtcNow;
+
 
     public UserAccessResolvedDomainEvent(Guid tenantId, Guid userId)
     {

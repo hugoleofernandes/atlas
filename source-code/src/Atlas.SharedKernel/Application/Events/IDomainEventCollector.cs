@@ -4,9 +4,9 @@ namespace Atlas.SharedKernel.Application.Events;
 
 public interface IDomainEventCollector
 {
-    void Collect(IEnumerable<DomainEvent> events);
+    void Collect(IEnumerable<IDomainEvent> events);
 
-    IReadOnlyCollection<DomainEvent> GetAll();
+    IReadOnlyCollection<IDomainEvent> GetAll();
 
     void Clear();
 }

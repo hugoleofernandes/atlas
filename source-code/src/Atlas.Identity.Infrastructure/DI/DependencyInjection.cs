@@ -2,12 +2,12 @@
 using Atlas.Identity.Application.OutboxMessages.Mappings;
 using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
-using Atlas.Identity.Application.Tenants.UseCases.TenantEventDispatcher;
+using Atlas.Identity.Application.Tenants.UseCases.TenantIntegrationEvents;
 using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Persistence.Repositories;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Atlas.Identity.Infrastructure.DI;
@@ -18,7 +18,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
 
-        services.AddScoped<ITenantEventDispatcher, TenantEventDispatcher>();
+        services.AddScoped<ITenantIntegrationEventsDispatcher, TenantIntegrationEventsDispatcher>();
         services.AddScoped<ITenantOutboxMappings, TenantOutboxMappings>();
 
 

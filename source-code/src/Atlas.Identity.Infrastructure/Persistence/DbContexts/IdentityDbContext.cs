@@ -1,9 +1,9 @@
 ﻿using Atlas.BuildingBlocks.Persistence;
-using Atlas.BuildingBlocks.Persistence.Outbox;
+using Atlas.BuildingBlocks.Persistence.OutboxMessages;
 using Atlas.Identity.Domain.Entities.Audits;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Persistence.DbContexts;
