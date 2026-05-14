@@ -8,7 +8,6 @@
   <Folder Name="/docs/architecture/">
     <File Path="docs/architecture/building-blocks.md" />
     <File Path="docs/architecture/outbox-worker-design-architecture.md" />
-    <File Path="docs/architecture/outbox-worker-objective-and-scope.md" />
     <File Path="docs/architecture/technical-decisions-tooling.md" />
   </Folder>
   <Folder Name="/docs/guidelines/">
