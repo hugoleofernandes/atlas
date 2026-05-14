@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260511101418_Initial_Identity")]
+    [Migration("20260514153624_Initial_Identity")]
     partial class Initial_Identity
     {
         /// <inheritdoc />
@@ -175,7 +175,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("users", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.SharedKernel.Application.IntegrationEvents.OutboxMessage", b =>
+            modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -185,6 +185,18 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<DateTime?>("DeadLetteredOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("LockId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("LockedUntil")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Module")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -192,7 +204,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("OccurredOn")
                         .HasColumnType("timestamp with time zone");
@@ -203,6 +216,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime?>("ProcessedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uuid");
@@ -217,9 +233,13 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Module");
+
                     b.HasIndex("TenantId");
 
-                    b.HasIndex("ProcessedOn", "OccurredOn");
+                    b.HasIndex("Type");
+
+                    b.HasIndex("ProcessedOn", "DeadLetteredOn", "LockedUntil", "OccurredOn");
 
                     b.ToTable("outboxes", "atlas_identity");
                 });

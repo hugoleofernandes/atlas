@@ -39,7 +39,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Type = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Payload = table.Column<string>(type: "jsonb", nullable: false),
                     OccurredOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -47,7 +47,12 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     TenantId = table.Column<Guid>(type: "uuid", nullable: true),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
                     CorrelationId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Module = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    Module = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    RetryCount = table.Column<int>(type: "integer", nullable: false),
+                    Error = table.Column<string>(type: "text", nullable: true),
+                    LockId = table.Column<Guid>(type: "uuid", nullable: true),
+                    LockedUntil = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeadLetteredOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -144,16 +149,28 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 columns: new[] { "TenantId", "Email" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_outboxes_ProcessedOn_OccurredOn",
+                name: "IX_outboxes_Module",
                 schema: "atlas_identity",
                 table: "outboxes",
-                columns: new[] { "ProcessedOn", "OccurredOn" });
+                column: "Module");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_outboxes_ProcessedOn_DeadLetteredOn_LockedUntil_OccurredOn",
+                schema: "atlas_identity",
+                table: "outboxes",
+                columns: new[] { "ProcessedOn", "DeadLetteredOn", "LockedUntil", "OccurredOn" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_outboxes_TenantId",
                 schema: "atlas_identity",
                 table: "outboxes",
                 column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_outboxes_Type",
+                schema: "atlas_identity",
+                table: "outboxes",
+                column: "Type");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenants_Name",

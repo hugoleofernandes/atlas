@@ -102,3 +102,19 @@ docs-v: docs-clean
 # =========================================
 # tree "source-code/src" /F /A
 # tree "source-code/src" /F /A | clip
+
+
+# =========================================
+# CLEAN MIGRATIONS
+# =========================================
+
+clean-migrations:
+	powershell -Command "if (Test-Path '$(TARGET_PROJECT)/Persistence/Migrations') { Remove-Item -Recurse -Force '$(TARGET_PROJECT)/Persistence/Migrations' }"
+
+# SAMPLE
+# make clean-migrations context=identity
+# make clean-migrations context=staff
+
+clean-migrations-all:
+	make clean-migrations context=identity
+	make clean-migrations context=staff
