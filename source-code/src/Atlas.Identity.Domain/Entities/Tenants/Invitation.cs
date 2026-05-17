@@ -1,5 +1,6 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.ValueObjects;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities.Tenants;
 
@@ -10,12 +11,12 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 /// - Invitation cannot be used more than once.
 /// - Invitation cannot be used after expiration.
 /// - Email, Role and TTL are validated by their respective value objects.
-/// 
+///
 /// Purpose:
 /// - Controls the lifecycle of an invitation.
 /// - Ensures correct usage and expiration behavior.
 /// </summary>
-public sealed class Invitation
+public sealed class Invitation : AuditableEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
@@ -24,8 +25,6 @@ public sealed class Invitation
     public Email Email { get; private set; }
 
     public Role Role { get; private set; }
-
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     public DateTime ExpiresAt { get; private set; }
 

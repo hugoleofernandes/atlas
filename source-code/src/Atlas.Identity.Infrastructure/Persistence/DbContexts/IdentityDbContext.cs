@@ -1,6 +1,5 @@
-﻿using Atlas.BuildingBlocks.Persistence;
-using Atlas.BuildingBlocks.Persistence.OutboxMessages;
-using Atlas.Identity.Domain.Entities.Audits;
+using Atlas.BuildingBlocks.Persistence.Audits;
+using Atlas.BuildingBlocks.Persistence.DbContexts;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -17,8 +16,7 @@ public sealed class IdentityDbContext
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<Invitation> Invitations => Set<Invitation>();
 
-    public DbSet<IdentityModuleAudit> IdentityModuleAudit => Set<IdentityModuleAudit>();
-
+    public DbSet<Audit> Audits => Set<Audit>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     public IdentityDbContext(
@@ -31,8 +29,7 @@ public sealed class IdentityDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityDbContext).Assembly);
-
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OutboxMessageConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuditConfiguration).Assembly);
 
         base.OnModelCreating(modelBuilder);
     }

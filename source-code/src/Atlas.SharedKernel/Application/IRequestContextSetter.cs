@@ -2,5 +2,5 @@
 
 public interface IRequestContextSetter
 {
-    void Set(Guid tenantId, string name, Guid userId);
+    void Set(Guid tenantId, string name, Guid userId, string? userEmail);
 }

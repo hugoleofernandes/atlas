@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Domain.ValueObjects;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities.Tenants;
@@ -22,7 +22,7 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 /// - Does not manage tenant membership (handled by Tenant aggregate).
 /// - Does not store profile or business-related data.
 /// </summary>
-public sealed class User
+public sealed class User : AuditableEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
@@ -35,8 +35,6 @@ public sealed class User
     public Role Role { get; private set; }
 
     public bool IsActive { get; private set; } = true;
-
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     private User() { }
 

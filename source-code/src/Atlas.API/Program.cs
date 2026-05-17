@@ -1,4 +1,3 @@
-using Atlas.API;
 using Atlas.API.Configs;
 using Atlas.API.Errors;
 using Atlas.API.Filters;
@@ -11,18 +10,20 @@ using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
+using Atlas.BuildingBlocks.Application.Commands;
+using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Persistence;
+using Atlas.BuildingBlocks.Persistence.Audits;
 using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.Events;
-using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.OutboxMessages;
-using Atlas.SharedKernel.Application.UseCases;
+using Atlas.Staff.Application;
 using Atlas.Staff.Infrastructure.DI;
-using Atlas.Staff.Infrastructure.Persistence;
+using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -38,6 +39,7 @@ using Serilog.Events;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
     .Enrich.FromLogContext()
     //.Enrich.WithMachineName()
     .Enrich.WithThreadId()
@@ -88,19 +90,22 @@ try
     // ==========================================
     //
 
-    services.AddIdentityModule();
-    services.AddStaffModule();
+    // IDENTITY 
+    services.AddIdentityModuleDependencies();
+    services.AddTenantDependencies();
+    services.AddIdentityOutboxWorkerSupport();
+    //
 
-    //services.AddScoped<IUnitOfWorkRegistry, UnitOfWorkRegistry>();
-    //services.AddScoped<IIntegrationEventMapper, IntegrationEventMapper>();
-    services.AddScoped<IIntegrationEventRegistry, IntegrationEventRegistry>();
+    // STAFF
+    services.AddStaffModuleDependencies();
+    services.AddStaffOutboxWorkerSupport();
+    //
+
     services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
-    services.AddScoped<IIntegrationEventRegistry, IntegrationEventRegistry>();
-    services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
-    services.AddScoped<IDomainEventCollector, DomainEventCollector>();
+    services.AddScoped<IOutboxMessageBuilder, OutboxMessageBuilder>();
 
-    services.AddValidatorsFromAssemblyContaining<ApplicationAssemblyMarker>();
-
+    services.AddValidatorsFromAssemblyContaining<IdentityApplicationAssemblyMarker>();
+    services.AddValidatorsFromAssemblyContaining<StaffApplicationAssemblyMarker>();
 
     services.AddScoped<IAuditService, AuditService>();
     services.AddScoped<IResultService, ResultService>();
@@ -240,6 +245,10 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+
+    // Pre-load OIDC metadata for all tenants in background right after startup,
+    // so the first login request doesn't pay the cold-start cost.
+    app.UseOidcMetadataWarmup(configuration);
 
     app.Run();
 }

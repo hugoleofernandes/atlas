@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Security.Claims;
 
-using ResolveTenantAccessCommand = Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess.Command;
+using ResolveTenantAccessCommand = Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess.Command;
 
 
 namespace Atlas.API.Security.OIDC;
@@ -39,6 +39,9 @@ public static class OidcMultiTenantConfigurator
 
         options.GetClaimsFromUserInfoEndpoint = true;
         options.SaveTokens = false;
+
+        // Fail fast if Azure AD is unreachable (default is 60s — too long for dev feedback).
+        options.BackchannelTimeout = TimeSpan.FromSeconds(10);
 
 
         //

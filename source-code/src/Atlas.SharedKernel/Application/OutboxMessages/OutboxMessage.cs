@@ -1,6 +1,12 @@
-﻿namespace Atlas.SharedKernel.Application.OutboxMessages;
+﻿using Atlas.SharedKernel.Domain;
 
-public sealed class OutboxMessage
+namespace Atlas.SharedKernel.Application.OutboxMessages;
+
+/// <summary>
+/// Implements INotAuditable — outbox messages are infrastructure,
+/// not business data, and should not generate audit log entries.
+/// </summary>
+public sealed class OutboxMessage : INotAuditable
 {
     public Guid Id { get; private set; }
 

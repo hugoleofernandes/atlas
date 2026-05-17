@@ -1,4 +1,4 @@
-﻿using Atlas.API.Security.OIDC;
+using Atlas.API.Security.OIDC;
 using Atlas.SharedKernel.Application;
 
 namespace Atlas.API.Security.Tenancy;
@@ -7,32 +7,22 @@ public sealed class TenantResolverMiddleware
 {
     private readonly RequestDelegate _next;
 
-
     public TenantResolverMiddleware(RequestDelegate next) => _next = next;
 
     public async Task Invoke(HttpContext context, IRequestContextSetter requestContextSetter)
     {
-        // Só resolve tenant quando o usuário estiver autenticado
         if (context.User?.Identity?.IsAuthenticated == true)
         {
             var tenantIdRaw = context.User.FindFirst(ClaimConstants.TenantId)?.Value;
-            var tenantName = context.User.FindFirst(ClaimConstants.TenantName)?.Value;
-            var userIdRaw = context.User.FindFirst(ClaimConstants.UserId)?.Value;
+            var tenantName  = context.User.FindFirst(ClaimConstants.TenantName)?.Value;
+            var userIdRaw   = context.User.FindFirst(ClaimConstants.UserId)?.Value;
+            var userEmail   = context.User.FindFirst(ClaimConstants.Email)?.Value;
 
             if (Guid.TryParse(tenantIdRaw, out var tenantId) &&
                 Guid.TryParse(userIdRaw, out var userId))
             {
-                requestContextSetter.Set(tenantId, tenantName!, userId);
+                requestContextSetter.Set(tenantId, tenantName!, userId, userEmail);
             }
-            //else 
-            //{
-            //    // Se isso acontecer, OnTokenValidated não adicionou as claims,
-            //    // ou o cookie/claims foram emitidos incompletos.
-            //    // Melhor falhar cedo para não vazar dados.
-            //    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            //    await context.Response.WriteAsync("Tenant context missing.");
-            //    return;
-            //}
         }
 
         await _next(context);

@@ -7,18 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <Compile Remove="Abstractions\Tenants\**" />
+    <EmbeddedResource Remove="Abstractions\Tenants\**" />
+    <None Remove="Abstractions\Tenants\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atlas.Contracts\Atlas.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Abstractions\Tenants\Commands\ResolveTenantAccess\" />
-    <Folder Include="Tenants\Commands\" />
-    <Folder Include="Tenants\IntegrationEvents\" />
     <Folder Include="Tenants\Queries\" />
   </ItemGroup>
 

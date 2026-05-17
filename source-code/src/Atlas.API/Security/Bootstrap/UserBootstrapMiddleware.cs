@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
+﻿using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

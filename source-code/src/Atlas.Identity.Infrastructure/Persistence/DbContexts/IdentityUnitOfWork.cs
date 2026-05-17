@@ -1,28 +1,31 @@
-﻿using Atlas.Identity.Application.Abstractions;
-using Atlas.SharedKernel.Application;
+using Atlas.BuildingBlocks.Persistence;
+using Atlas.Identity.Application.Abstractions;
+using Atlas.SharedKernel.Domain.Events;
 
 namespace Atlas.Identity.Infrastructure.Persistence.DbContexts;
 
 public sealed class IdentityUnitOfWork : IIdentityUnitOfWork
 {
     private readonly IdentityDbContext _db;
-    private readonly IRequestContext _requestContext;
+    private readonly IAuditService _auditService;
 
-    public IdentityUnitOfWork(IdentityDbContext db, IRequestContext requestContext)
+    public IdentityUnitOfWork(IdentityDbContext db, IAuditService auditService)
     {
         _db = db;
-        _requestContext = requestContext;
+        _auditService = auditService;
     }
 
     public async Task SaveChangesAsync(CancellationToken ct)
     {
-        _db.ClearDomainEvents();
+        await _auditService.AddAuditLogsAsync(_db, ct);
 
         await _db.SaveChangesAsync(ct);
+
+        _db.ClearDomainEvents();
     }
 
-    public Task<T> GetDbContext<T>() where T : class
+    public IEnumerable<IDomainEvent> GetDomainEvents()
     {
-        return Task.FromResult(_db as T ?? throw new InvalidOperationException());
+        return _db.GetDomainEvents();
     }
 }

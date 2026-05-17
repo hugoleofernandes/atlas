@@ -1,5 +1,5 @@
-﻿using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
-using Atlas.SharedKernel.Application.UseCases;
+﻿using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
+using Atlas.SharedKernel.Application.Commands;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 

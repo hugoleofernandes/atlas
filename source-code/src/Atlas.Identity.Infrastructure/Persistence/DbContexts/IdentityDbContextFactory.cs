@@ -27,5 +27,6 @@ public sealed class IdentityDbContextFactory
         public Guid? TenantId => null;
         public string? TenantName => null;
         public Guid? UserId => null;
+        public string? UserEmail => null;
     }
 }

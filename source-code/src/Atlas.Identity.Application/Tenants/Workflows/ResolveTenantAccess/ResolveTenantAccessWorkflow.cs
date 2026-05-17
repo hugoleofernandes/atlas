@@ -1,9 +1,7 @@
-﻿using Atlas.Identity.Application.Abstractions;
-using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
-using Atlas.Identity.Application.Tenants.UseCases.TenantIntegrationEvents;
-using Atlas.Identity.Domain.Entities.Audits;
-using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.UseCases;
+using Atlas.Identity.Application.Abstractions;
+using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
+using Atlas.SharedKernel.Application.Commands;
+using Atlas.SharedKernel.Application.IntegrationEvents;
 using FluentValidation;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
@@ -11,44 +9,40 @@ namespace Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 public sealed class ResolveTenantAccessWorkflow : IResolveTenantAccessWorkflow
 {
     private readonly IValidator<Command> _validator;
-    private readonly IResolveTenantAccessUseCase _useCase;
-    private readonly IAuditService _auditService;
+    private readonly ICommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
     private readonly IResultService _result;
-    private readonly ITenantIntegrationEventsDispatcher _tenantEventDispatcher;
-
+    private readonly IIntegrationEventEnqueuer _integrationEventEnqueuer;
 
     public ResolveTenantAccessWorkflow(
         IValidator<Command> validator,
-        IResolveTenantAccessUseCase useCase,
-        IAuditService auditService,
+        ICommandHandler commandHandler,
         IIdentityUnitOfWork uow,
         IResultService result,
-        ITenantIntegrationEventsDispatcher tenantEventDispatcher)
+        IIntegrationEventEnqueuer integrationEventEnqueuer)
     {
         _validator = validator;
-        _useCase = useCase;
-        _auditService = auditService;
+        _commandHandler = commandHandler;
         _uow = uow;
         _result = result;
-        _tenantEventDispatcher = tenantEventDispatcher;
+        _integrationEventEnqueuer = integrationEventEnqueuer;
     }
 
     public async Task<Result<Output>> ExecuteAsync(Command cmd, CancellationToken ct)
     {
         await _validator.ValidateAndThrowAsync(cmd, ct);
 
-        var useCaseResult = await _useCase.ExecuteAsync(cmd, ct);
+        var result = await _commandHandler.ExecuteAsync(cmd, ct);
 
-        if (!useCaseResult.IsSuccess)
-            return useCaseResult;
+        if (!result.IsSuccess)
+            return result;
 
-        await _tenantEventDispatcher.ExecuteAsync(ct);
+        var domainEvents = _uow.GetDomainEvents();
 
-        await _auditService.AddAuditLogsAsync<IdentityModuleAudit>(_uow, ct);
+        await _integrationEventEnqueuer.EnqueueAsync(domainEvents, ct);
 
         await _uow.SaveChangesAsync(ct);
 
-        return _result.Success(useCaseResult.Value!);
+        return _result.Success(result.Value!);
     }
 }
