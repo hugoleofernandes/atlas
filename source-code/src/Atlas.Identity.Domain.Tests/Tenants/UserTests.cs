@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -26,13 +26,12 @@ public sealed class UserTests
     // ------------------------------------------------------------
     // 1. Constructor Behavior
     // ------------------------------------------------------------
+
     [Fact]
     public void Constructor_ShouldCreateActiveUser_WithValidData()
     {
-        // Arrange
         var tenantId = Guid.NewGuid();
 
-        // Act
         var user = new User(
             tenantId,
             ExternalId.Create("oid-123"),
@@ -40,7 +39,6 @@ public sealed class UserTests
             Role.Create("admin")
         );
 
-        // Assert
         user.TenantId.Should().Be(tenantId);
         user.ExternalId.Value.Should().Be("oid-123");
         user.Email.Value.Should().Be("user@test.com");
@@ -51,49 +49,49 @@ public sealed class UserTests
     // ------------------------------------------------------------
     // 2. ChangeRole Behavior
     // ------------------------------------------------------------
+
     [Fact]
     public void ChangeRole_ShouldUpdateRole_WhenValidRoleProvided()
     {
-        // Arrange
         var user = UserBuilder.Create(role: "admin");
 
-        // Act
         user.ChangeRole(Role.Create("member"));
 
-        // Assert
         user.Role.Value.Should().Be("member");
+    }
+
+    [Fact]
+    public void ChangeRole_ShouldBeIdempotent_WhenSameRoleIsProvided()
+    {
+        var user = UserBuilder.Create(role: "admin");
+
+        user.ChangeRole(Role.Create("admin"));
+
+        user.Role.Value.Should().Be("admin");
     }
 
     // ------------------------------------------------------------
     // 3. Deactivate Behavior
     // ------------------------------------------------------------
+
     [Fact]
     public void Deactivate_ShouldSetIsActiveToFalse_WhenUserIsActive()
     {
-        // Arrange
         var user = UserBuilder.Create();
 
-        // Act
         user.Deactivate();
 
-        // Assert
         user.IsActive.Should().BeFalse();
     }
 
-    // ------------------------------------------------------------
-    // 4. Deactivate ShouldBeIdempotent
-    // ------------------------------------------------------------
     [Fact]
     public void Deactivate_ShouldRemainInactive_WhenCalledMultipleTimes()
     {
-        // Arrange
         var user = UserBuilder.Create();
 
-        // Act
         user.Deactivate();
         user.Deactivate();
 
-        // Assert
         user.IsActive.Should().BeFalse();
     }
 }

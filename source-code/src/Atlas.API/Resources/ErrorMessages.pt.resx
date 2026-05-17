@@ -11,6 +11,10 @@
   <data name="tenant.not_found" xml:space="preserve"><value>Tenant não encontrado.</value></data>
   <data name="tenant.inactive" xml:space="preserve"><value>Tenant está inativo.</value></data>
   <data name="tenant.name_required" xml:space="preserve"><value>O nome do tenant é obrigatório.</value></data>
+  <data name="tenant.invalid" xml:space="preserve"><value>Tenant inválido.</value></data>
+
+  <data name="claim.email_missing" xml:space="preserve"><value>Claim de e-mail ausente.</value></data>
+  <data name="claim.identity_missing" xml:space="preserve"><value>Claims de identidade obrigatórios ausentes.</value></data>
 
   <data name="user.already_exists" xml:space="preserve"><value>Já existe um usuário com este e-mail.</value></data>
 

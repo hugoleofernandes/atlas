@@ -63,6 +63,11 @@ Tenants/
  InvitationTests.cs
  TenantTests.cs
  UserTests.cs
+ValueObjects/
+ EmailTests.cs
+ ExternalIdTests.cs
+ InvitationTtlTests.cs
+ RoleTests.cs
 
 [metadataReferences]
 ../

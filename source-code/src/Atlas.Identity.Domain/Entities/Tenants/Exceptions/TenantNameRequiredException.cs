@@ -5,6 +5,8 @@ namespace Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 
 public sealed class TenantNameRequiredException : DomainException
 {
+    public const string ErrorCode = "tenant.name_required";
+
     public TenantNameRequiredException()
-        : base("tenant.name_required", ErrorCategory.Validation, "Tenant name is required.") { }
+        : base(ErrorCode, ErrorCategory.Validation, "Tenant name is required.") { }
 }

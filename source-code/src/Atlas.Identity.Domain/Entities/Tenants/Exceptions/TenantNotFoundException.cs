@@ -5,6 +5,8 @@ namespace Atlas.Identity.Domain.Exceptions;
 
 public sealed class TenantNotFoundException : DomainException
 {
+    public const string ErrorCode = "tenant.not_found";
+
     public TenantNotFoundException(string tenantName)
-        : base("tenant.not_found", ErrorCategory.NotFound, $"Tenant '{tenantName}' was not found.") { }
+        : base(ErrorCode, ErrorCategory.NotFound, $"Tenant '{tenantName}' was not found.") { }
 }

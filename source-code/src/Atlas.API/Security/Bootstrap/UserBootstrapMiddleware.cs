@@ -1,5 +1,8 @@
-﻿using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
+﻿using Atlas.API.Errors;
+using Atlas.API.Observability;
+using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
+using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
@@ -30,8 +33,9 @@ public sealed class UserBootstrapMiddleware
     }
 
     public async Task InvokeAsync(
-    HttpContext context,
-    IResolveTenantAccessWorkflow resolveAccessWorkflow)
+        HttpContext context,
+        IResolveTenantAccessWorkflow resolveAccessWorkflow,
+        ErrorMessageLocalizer errorLocalizer)
     {
         //
         // ==========================================
@@ -90,12 +94,7 @@ public sealed class UserBootstrapMiddleware
             string.IsNullOrWhiteSpace(email) ||
             string.IsNullOrWhiteSpace(tenantName))
         {
-            context.Response.StatusCode =
-                StatusCodes.Status401Unauthorized;
-
-            await context.Response.WriteAsync(
-                "Missing required identity claims.");
-
+            await WriteProblemAsync(context, AuthErrors.Claim.IdentityMissing, errorLocalizer);
             return;
         }
 
@@ -124,11 +123,8 @@ public sealed class UserBootstrapMiddleware
 
         if (!result.IsSuccess)
         {
-            context.Response.StatusCode =
-                StatusCodes.Status403Forbidden;
-
-            await context.Response.WriteAsync(result.Error ?? "Failed to resolve tenant access.");
-
+            var error = result.ErrorDefinition!;
+            await WriteProblemAsync(context, error, errorLocalizer);
             return;
         }
 
@@ -179,4 +175,39 @@ public sealed class UserBootstrapMiddleware
         await _next(context);
     }
 
+    private static int MapCategory(ErrorCategory category) => category switch
+    {
+        ErrorCategory.Validation   => StatusCodes.Status400BadRequest,
+        ErrorCategory.Business     => StatusCodes.Status422UnprocessableEntity,
+        ErrorCategory.Conflict     => StatusCodes.Status409Conflict,
+        ErrorCategory.NotFound     => StatusCodes.Status404NotFound,
+        ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
+        _                          => StatusCodes.Status500InternalServerError
+    };
+
+    private static async Task WriteProblemAsync(
+        HttpContext context,
+        ErrorDefinition error,
+        ErrorMessageLocalizer localizer)
+    {
+        var status = MapCategory(error.Category);
+
+        var problem = new ApiProblemDetails
+        {
+            Title = localizer.Localize(error),
+            Status = status,
+            Type = $"https://docs.atlas/errors/{error.Code}"
+        };
+
+        problem.AddMetadata(
+            error.Code,
+            CorrelationIdMiddleware.Get(context),
+            TraceContextHelper.GetTraceId()
+        );
+
+        context.Response.StatusCode = status;
+        context.Response.ContentType = "application/problem+json";
+
+        await context.Response.WriteAsJsonAsync(problem);
+    }
 }

@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.ValueObjects;
@@ -8,6 +8,21 @@ namespace Atlas.Identity.Tests.Tenants;
 
 public class TenantTests
 {
+    // ============================================================
+    // HELPER
+    // ============================================================
+
+    /// <summary>
+    /// Forces an invitation's ExpiresAt into the past via reflection.
+    /// Avoids Thread.Sleep — deterministic and fast in any environment.
+    /// </summary>
+    private static void ForceExpire(Invitation invitation)
+    {
+        typeof(Invitation)
+            .GetProperty(nameof(Invitation.ExpiresAt))!
+            .SetValue(invitation, DateTime.UtcNow.AddSeconds(-1));
+    }
+
     // ============================================================
     // 1. CONSTRUCTOR
     // ============================================================
@@ -51,6 +66,17 @@ public class TenantTests
 
         tenant.DomainEvents.Should().ContainSingle()
             .Which.Should().BeOfType<TenantDeactivatedDomainEvent>();
+    }
+
+    [Fact]
+    public void Deactivate_ShouldEmitEventWithCorrectTenantId()
+    {
+        var tenant = new Tenant("test");
+
+        tenant.Deactivate();
+
+        var evt = tenant.DomainEvents.OfType<TenantDeactivatedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
     }
 
     [Fact]
@@ -127,6 +153,31 @@ public class TenantTests
     }
 
     [Fact]
+    public void InviteUser_ShouldSucceed_WhenPreviousInvitationIsExpired()
+    {
+        // Invitation expires before the user ever accesses the system.
+        // The tenant should be allowed to send a fresh invitation.
+        var tenant = new Tenant("test");
+
+        tenant.InviteUser(
+            Email.Create("user@test.com"),
+            Role.Create("admin"),
+            InvitationTtl.Create(TimeSpan.FromHours(1))
+        );
+
+        ForceExpire(tenant.Invitations.Single());
+
+        var act = () => tenant.InviteUser(
+            Email.Create("user@test.com"),
+            Role.Create("member"),
+            InvitationTtl.Create(TimeSpan.FromHours(1))
+        );
+
+        act.Should().NotThrow();
+        tenant.Invitations.Should().HaveCount(2);
+    }
+
+    [Fact]
     public void InviteUser_ShouldEmitUserInvitedEvent_WhenValid()
     {
         var tenant = new Tenant("test");
@@ -139,6 +190,22 @@ public class TenantTests
 
         tenant.DomainEvents.Should().ContainSingle()
             .Which.Should().BeOfType<UserInvitedDomainEvent>();
+    }
+
+    [Fact]
+    public void InviteUser_ShouldEmitEventWithCorrectData_WhenValid()
+    {
+        var tenant = new Tenant("test");
+
+        tenant.InviteUser(
+            Email.Create("user@test.com"),
+            Role.Create("admin"),
+            InvitationTtl.Create(TimeSpan.FromHours(1))
+        );
+
+        var evt = tenant.DomainEvents.OfType<UserInvitedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.Email.Should().Be("user@test.com");
     }
 
     [Fact]
@@ -167,7 +234,7 @@ public class TenantTests
         tenant.InviteUser(
             Email.Create("user@test.com"),
             Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromDays(1)) // TTL maior
+            InvitationTtl.Create(TimeSpan.FromDays(1))
         );
 
         var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
@@ -210,10 +277,10 @@ public class TenantTests
         tenant.InviteUser(
             Email.Create("user@test.com"),
             Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromMilliseconds(1))
+            InvitationTtl.Create(TimeSpan.FromHours(1))
         );
 
-        Thread.Sleep(10);
+        ForceExpire(tenant.Invitations.Single());
 
         var act = () => tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
 
@@ -235,6 +302,27 @@ public class TenantTests
         tenant.ClearDomainEvents();
 
         var act = () => tenant.ResolveAccess(ExternalId.Create("oid-2"), Email.Create("user@test.com"));
+
+        act.Should().Throw<UserAlreadyExistsException>();
+    }
+
+    [Fact]
+    public void ResolveAccess_ShouldThrow_WhenExistingUserHasDifferentExternalId()
+    {
+        // Security invariant: same email but different OID means a different identity
+        // provider account is trying to claim the same user slot — must be rejected.
+        var tenant = new Tenant("test");
+
+        tenant.InviteUser(
+            Email.Create("user@test.com"),
+            Role.Create("admin"),
+            InvitationTtl.Create(TimeSpan.FromHours(1))
+        );
+
+        tenant.ResolveAccess(ExternalId.Create("oid-legitimate"), Email.Create("user@test.com"));
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.ResolveAccess(ExternalId.Create("oid-attacker"), Email.Create("user@test.com"));
 
         act.Should().Throw<UserAlreadyExistsException>();
     }
@@ -275,5 +363,31 @@ public class TenantTests
         tenant.DomainEvents.Should().Contain(e => e is InvitationUsedDomainEvent);
         tenant.DomainEvents.Should().Contain(e => e is UserCreatedFromInvitationDomainEvent);
         tenant.DomainEvents.Should().Contain(e => e is UserAccessResolvedDomainEvent);
+    }
+
+    [Fact]
+    public void ResolveAccess_ShouldEmitEventsWithCorrectData_WhenUserIsCreated()
+    {
+        var tenant = new Tenant("test");
+
+        tenant.InviteUser(
+            Email.Create("user@test.com"),
+            Role.Create("admin"),
+            InvitationTtl.Create(TimeSpan.FromHours(1))
+        );
+
+        tenant.ClearDomainEvents();
+
+        var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+
+        var createdEvt = tenant.DomainEvents.OfType<UserCreatedFromInvitationDomainEvent>().Single();
+        createdEvt.TenantId.Should().Be(tenant.Id);
+        createdEvt.UserId.Should().Be(user.Id);
+        createdEvt.Email.Should().Be("user@test.com");
+        createdEvt.Role.Should().Be("admin");
+
+        var resolvedEvt = tenant.DomainEvents.OfType<UserAccessResolvedDomainEvent>().Single();
+        resolvedEvt.TenantId.Should().Be(tenant.Id);
+        resolvedEvt.UserId.Should().Be(user.Id);
     }
 }

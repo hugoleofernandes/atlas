@@ -9,7 +9,10 @@
       "Bash(cat \"C:/Users/hugol/AppData/Roaming/Microsoft/UserSecrets/a75bf6d9-dca8-4164-b7f2-b6d774848cad/secrets.json\" 2>/dev/null || echo \"no user secrets\")",
       "Bash(xargs grep -l \"UserCreatedFromInvitation\")",
       "Bash(xargs cat)",
-      "Bash(for f *)"
+      "Bash(for f *)",
+      "Bash(grep -v \"//.*BadRequest\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\git-repos\\\\atlas\\\\source-code\" -Recurse -File -Filter \"docfx.json\")",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

@@ -5,6 +5,8 @@ namespace Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 
 public sealed class TenantInactiveException : DomainException
 {
+    public const string ErrorCode = "tenant.inactive";
+
     public TenantInactiveException()
-        : base("tenant.inactive", ErrorCategory.Business, "Tenant is inactive.") { }
+        : base(ErrorCode, ErrorCategory.Business, "Tenant is inactive.") { }
 }

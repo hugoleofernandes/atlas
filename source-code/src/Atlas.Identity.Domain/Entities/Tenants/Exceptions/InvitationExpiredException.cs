@@ -5,6 +5,8 @@ namespace Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 
 public sealed class InvitationExpiredException : DomainException
 {
+    public const string ErrorCode = "invitation.expired";
+
     public InvitationExpiredException(string email)
-        : base("invitation.expired", ErrorCategory.Business, $"The invitation for '{email}' has expired.") { }
+        : base(ErrorCode, ErrorCategory.Business, $"The invitation for '{email}' has expired.") { }
 }

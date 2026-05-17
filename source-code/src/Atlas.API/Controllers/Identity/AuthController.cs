@@ -1,4 +1,5 @@
 ﻿using Atlas.API.Configs;
+using Atlas.API.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -12,8 +13,9 @@ namespace Atlas.API.Controllers.Identity;
 public class AuthController(
     IConfiguration config,
     IOptions<FrontendConfig> frontOptions,
-    ILogger<AuthController> logger
-) : ControllerBase
+    ILogger<AuthController> logger,
+    ErrorMessageLocalizer errorLocalizer
+) : AtlasControllerBase(errorLocalizer)
 {
     private readonly IConfiguration _config = config;
     private readonly FrontendConfig _frontConfig = frontOptions.Value;
@@ -35,7 +37,7 @@ public class AuthController(
     public IActionResult Login([FromQuery] string tenant)
     {
         if (string.IsNullOrWhiteSpace(tenant))
-            return BadRequest("Tenant é obrigatório.");
+            return ErrorResult(AuthErrors.Tenant.NameRequired);
 
         var tenants = _config.GetSection("Tenants")
             .GetChildren()
@@ -43,7 +45,7 @@ public class AuthController(
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         if (!tenants.Contains(tenant))
-            return BadRequest("Tenant inválido.");
+            return ErrorResult(AuthErrors.Tenant.Invalid);
 
         var home = $"{_frontConfig.BaseUrl}/admin/home";
 

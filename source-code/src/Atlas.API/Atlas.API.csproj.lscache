@@ -56,12 +56,15 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [sourceFiles]
 Configs/FrontendConfig.cs
-Controllers/Identity/
- AuthController.cs
- SessionController.cs
-Controllers/Staff/StaffController.cs
+Controllers/
+ AtlasControllerBase.cs
+ Identity/
+  AuthController.cs
+  SessionController.cs
+ Staff/StaffController.cs
 Errors/
  ApiProblemDetails.cs
+ AuthErrors.cs
  ErrorMessageLocalizer.cs
  GlobalExceptionMiddleware.cs
  ValidationProblemDetailsFactory.cs
