@@ -54,7 +54,6 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
-Commands/ResultService.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Atlas.BuildingBlocks.Application.AssemblyInfo.cs
@@ -63,6 +62,7 @@ OutboxMessages/
  IntegrationEventEnqueuer.cs
  OutboxMessageBuilder.cs
  OutboxMessageFactory.cs
+Validation/ValidationResultExtensions.cs
 
 [metadataReferences]
 ../Atlas.SharedKernel/obj/Debug/net10.0/ref/Atlas.SharedKernel.dll
@@ -234,6 +234,7 @@ OutboxMessages/
  System.Xml.XPath.dll
  System.Xml.XPath.XDocument.dll
  WindowsBase.dll
+<NUGET>/fluentvalidation/12.1.1/lib/net8.0/FluentValidation.dll
 
 [analyzerReferences]
 <DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.8/analyzers/dotnet/cs/

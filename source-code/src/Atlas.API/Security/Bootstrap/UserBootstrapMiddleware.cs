@@ -127,7 +127,7 @@ public sealed class UserBootstrapMiddleware
             context.Response.StatusCode =
                 StatusCodes.Status403Forbidden;
 
-            await context.Response.WriteAsync(result.Error?.DefaultMessage ?? "Failed to resolve tenant access.");
+            await context.Response.WriteAsync(result.Error ?? "Failed to resolve tenant access.");
 
             return;
         }

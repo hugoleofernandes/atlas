@@ -1,4 +1,5 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 
@@ -8,5 +9,5 @@ namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 public sealed class InvalidExternalIdException : DomainException
 {
     public InvalidExternalIdException(string value)
-        : base($"Invalid external identity provider user identifier: '{value}'.") { }
+        : base("external_id.invalid", ErrorCategory.Validation, $"Invalid external identity provider user identifier: '{value}'.") { }
 }

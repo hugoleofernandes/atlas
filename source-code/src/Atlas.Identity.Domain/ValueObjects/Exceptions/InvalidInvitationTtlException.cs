@@ -1,4 +1,5 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 
@@ -8,5 +9,5 @@ namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 public sealed class InvalidInvitationTtlException : DomainException
 {
     public InvalidInvitationTtlException(TimeSpan ttl)
-        : base($"Invalid invitation TTL: '{ttl}'.") { }
+        : base("invitation_ttl.invalid", ErrorCategory.Validation, $"Invalid invitation TTL: '{ttl}'.") { }
 }

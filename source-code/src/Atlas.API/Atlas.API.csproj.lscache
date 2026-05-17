@@ -62,6 +62,7 @@ Controllers/Identity/
 Controllers/Staff/StaffController.cs
 Errors/
  ApiProblemDetails.cs
+ ErrorMessageLocalizer.cs
  GlobalExceptionMiddleware.cs
  ValidationProblemDetailsFactory.cs
 Filters/ResultToHttpFilter.cs
@@ -75,6 +76,7 @@ Observability/
  TraceContextHelper.cs
 OpenApi/ProblemDetailsOperationTransformer.cs
 Program.cs
+Resources/ErrorMessages.cs
 Security/
  AtlasClaims.cs
  Bootstrap/UserBootstrapMiddleware.cs
@@ -485,3 +487,6 @@ obj/Debug/net10.0/Atlas.API.GeneratedMSBuildEditorConfig.editorconfig
 
 [additionalFiles]
 ../Atlas.Identity.Domain/bin/Debug/net10.0/Atlas.Identity.Domain.xml
+Resources/
+ ErrorMessages.pt.resx
+ ErrorMessages.resx

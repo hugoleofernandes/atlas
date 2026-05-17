@@ -67,17 +67,17 @@ Tenants/Commands/ResolveTenantAccess/
  Output.cs
  Validator.cs
 Tenants/
+ Errors/IdentityErrors.cs
  IntegrationEventMappers/UserCreatedFromInvitationMapper.cs
  Repositories/ITenantRepository.cs
- Services/
-  Errors/TenantErrors.cs
-  IntegrationEventHandlers/UserCreatedFromInvitationIntegrationEventHandler.cs
+ Services/IntegrationEventHandlers/UserCreatedFromInvitationIntegrationEventHandler.cs
  Workflows/ResolveTenantAccess/
   IResolveTenantAccessWorkflow.cs
   ResolveTenantAccessWorkflow.cs
 
 [metadataReferences]
 ../
+ Atlas.BuildingBlocks.Infrastructure/obj/Debug/net10.0/ref/Atlas.BuildingBlocks.Application.dll
  Atlas.Contracts/obj/Debug/net10.0/ref/Atlas.Contracts.dll
  Atlas.Identity.Domain/obj/Debug/net10.0/ref/Atlas.Identity.Domain.dll
  Atlas.SharedKernel/obj/Debug/net10.0/ref/Atlas.SharedKernel.dll

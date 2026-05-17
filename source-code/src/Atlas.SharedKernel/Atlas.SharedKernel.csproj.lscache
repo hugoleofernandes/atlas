@@ -54,17 +54,16 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
-Application/Commands/
- IResultService.cs
- Result.cs
-Application/Errors/
- ErrorCategory.cs
- ErrorDefinition.cs
-Application/IntegrationEvents/
- IIntegrationEventEnqueuer.cs
- IIntegrationEventHandler.cs
- IIntegrationEventMapper.cs
 Application/
+ Commands/Result.cs
+ Errors/
+  CommonErrors.cs
+  ErrorCategory.cs
+  ErrorDefinition.cs
+ IntegrationEvents/
+  IIntegrationEventEnqueuer.cs
+  IIntegrationEventHandler.cs
+  IIntegrationEventMapper.cs
  IRequestContext.cs
  IRequestContextSetter.cs
  IResponse.cs

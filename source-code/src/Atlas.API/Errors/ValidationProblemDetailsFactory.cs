@@ -1,4 +1,4 @@
-﻿using Atlas.API.Observability;
+using Atlas.API.Observability;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,18 +8,14 @@ public static class ValidationProblemDetailsFactory
 {
     public static IActionResult Create(ActionContext context)
     {
-        var error = new ErrorDefinition(
-            Code: "COMMON_001",
-            DefaultMessage: "Validation failed",
-            Category: ErrorCategory.Validation
-        );
+        var error = CommonErrors.ValidationFailed;
 
         var problem = new ApiProblemDetails
         {
-            Title = error.DefaultMessage,
-            Status = 400,
+            Title = error.FallbackMessage,
+            Status = StatusCodes.Status400BadRequest,
             Detail = "One or more validation errors occurred.",
-            Type = $"https://docs.atlas/errors/{error.Code.ToLower()}"
+            Type = $"https://docs.atlas/errors/{error.Code}"
         };
 
         problem.AddMetadata(
@@ -39,7 +35,7 @@ public static class ValidationProblemDetailsFactory
 
         return new ObjectResult(problem)
         {
-            StatusCode = 400,
+            StatusCode = StatusCodes.Status400BadRequest,
             ContentTypes = { "application/problem+json" }
         };
     }

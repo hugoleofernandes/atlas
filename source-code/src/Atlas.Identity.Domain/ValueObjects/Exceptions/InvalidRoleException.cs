@@ -1,4 +1,5 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 
@@ -8,5 +9,5 @@ namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 public sealed class InvalidRoleException : DomainException
 {
     public InvalidRoleException(string role)
-        : base($"Invalid role: '{role}'.") { }
+        : base("role.invalid", ErrorCategory.Validation, $"Invalid role: '{role}'.") { }
 }

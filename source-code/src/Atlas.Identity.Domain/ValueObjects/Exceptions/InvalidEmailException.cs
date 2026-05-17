@@ -1,4 +1,5 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 
@@ -8,5 +9,5 @@ namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 public sealed class InvalidEmailException : DomainException
 {
     public InvalidEmailException(string email)
-        : base($"Invalid email format: '{email}'.") { }
+        : base("email.invalid", ErrorCategory.Validation, $"Invalid email format: '{email}'.") { }
 }

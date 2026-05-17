@@ -1,18 +1,10 @@
-﻿namespace Atlas.Identity.Domain.Exceptions;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
-/// <summary>
-/// Represents the business rule that a tenant must exist
-/// before any access resolution or user-related operation
-/// can be performed within the Identity domain.
-///
-/// This exception is thrown when the application layer
-/// attempts to load a tenant by name and no matching
-/// aggregate is found.
-/// </summary>
-public sealed class TenantNotFoundException : Exception
+namespace Atlas.Identity.Domain.Exceptions;
+
+public sealed class TenantNotFoundException : DomainException
 {
     public TenantNotFoundException(string tenantName)
-        : base($"Tenant '{tenantName}' was not found.")
-    {
-    }
+        : base("tenant.not_found", ErrorCategory.NotFound, $"Tenant '{tenantName}' was not found.") { }
 }

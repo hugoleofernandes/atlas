@@ -1,4 +1,4 @@
-﻿using Atlas.API.Errors;
+using Atlas.API.Errors;
 using Atlas.API.Observability;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +8,13 @@ namespace Atlas.API.Filters;
 
 public sealed class ResultToHttpFilter : IResultFilter
 {
+    private readonly ErrorMessageLocalizer _localizer;
+
+    public ResultToHttpFilter(ErrorMessageLocalizer localizer)
+    {
+        _localizer = localizer;
+    }
+
     public void OnResultExecuting(ResultExecutingContext context)
     {
         if (context.Result is not ObjectResult objectResult)
@@ -22,10 +29,10 @@ public sealed class ResultToHttpFilter : IResultFilter
 
             var problem = new ApiProblemDetails
             {
-                Title = error.DefaultMessage,
+                Title = _localizer.Localize(error),
                 Status = MapCategory(error.Category),
                 Detail = result.Error,
-                Type = $"https://docs.atlas/errors/{error.Code.ToLower()}"
+                Type = $"https://docs.atlas/errors/{error.Code}"
             };
 
             problem.AddMetadata(
@@ -54,11 +61,12 @@ public sealed class ResultToHttpFilter : IResultFilter
     private static int MapCategory(ErrorCategory category)
         => category switch
         {
-            ErrorCategory.Validation => 400,
-            ErrorCategory.Conflict => 409,
-            ErrorCategory.NotFound => 404,
-            ErrorCategory.Unauthorized => 401,
-            ErrorCategory.Unexpected => 500,
-            _ => 400
+            ErrorCategory.Validation  => StatusCodes.Status400BadRequest,
+            ErrorCategory.Business    => StatusCodes.Status422UnprocessableEntity,
+            ErrorCategory.Conflict    => StatusCodes.Status409Conflict,
+            ErrorCategory.NotFound    => StatusCodes.Status404NotFound,
+            ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
+            ErrorCategory.Unexpected  => StatusCodes.Status500InternalServerError,
+            _ => StatusCodes.Status500InternalServerError
         };
 }

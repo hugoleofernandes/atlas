@@ -10,7 +10,6 @@ using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.API.Security.Tenancy;
-using Atlas.BuildingBlocks.Application.Commands;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.Audits;
@@ -71,6 +70,8 @@ try
 
     services.AddHttpContextAccessor();
     services.AddProblemDetails();
+    services.AddLocalization(opts => opts.ResourcesPath = "Resources");
+    services.AddScoped<ErrorMessageLocalizer>();
 
     //
     // ==========================================
@@ -108,7 +109,6 @@ try
     services.AddValidatorsFromAssemblyContaining<StaffApplicationAssemblyMarker>();
 
     services.AddScoped<IAuditService, AuditService>();
-    services.AddScoped<IResultService, ResultService>();
 
 
     //
@@ -225,6 +225,15 @@ try
         app.UseHsts();
 
     app.UseHttpsRedirection();
+
+    app.UseRequestLocalization(opts =>
+    {
+        var supported = new[] { "en", "pt" };
+        opts.SetDefaultCulture("en")
+            .AddSupportedCultures(supported)
+            .AddSupportedUICultures(supported);
+        opts.ApplyCurrentCultureToResponseHeaders = true;
+    });
 
     // 🔹 CorrelationId PRIMEIRO
     app.UseMiddleware<CorrelationIdMiddleware>();
