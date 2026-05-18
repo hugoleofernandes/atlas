@@ -36,7 +36,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(256)
             .IsRequired();
 
-        b.Property(x => x.TenantRoleId)
+        b.Property(x => x.RoleId)
             .IsRequired();
 
         b.Property(x => x.IsActive)

@@ -28,7 +28,7 @@ public sealed class InvitationConfiguration : IEntityTypeConfiguration<Invitatio
             .HasMaxLength(256)
             .IsRequired();
 
-        b.Property(x => x.TenantRoleId)
+        b.Property(x => x.RoleId)
             .IsRequired();
 
         b.Property(x => x.ExpiresAt)

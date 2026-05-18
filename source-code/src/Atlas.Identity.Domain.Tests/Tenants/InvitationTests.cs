@@ -120,6 +120,6 @@ public sealed class InvitationTests
     {
         var invitation = CreateInvitation(TimeSpan.FromHours(1));
 
-        invitation.TenantRoleId.Should().Be(RoleId);
+        invitation.RoleId.Should().Be(RoleId);
     }
 }

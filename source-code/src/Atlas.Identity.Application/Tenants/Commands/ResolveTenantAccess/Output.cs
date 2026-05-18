@@ -4,7 +4,7 @@ public sealed record Output(
     Guid TenantId,
     string TenantName,
     Guid UserId,
-    Guid TenantRoleId,
+    Guid RoleId,
     string RoleName,
     IReadOnlyList<string> Permissions
 );

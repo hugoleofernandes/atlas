@@ -15,4 +15,7 @@ public static class AtlasClaims
     public const string Permission = "permission";
 
     public const string BootstrapCompleted = "atlas_bootstrap_completed";
+
+    // Permission value that grants unrestricted access — bypasses all permission checks.
+    public const string RootPermission = "system.root";
 }

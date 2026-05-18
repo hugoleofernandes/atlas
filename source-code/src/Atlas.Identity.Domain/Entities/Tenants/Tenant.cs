@@ -1,5 +1,6 @@
 using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Permissions;
 using Atlas.Identity.Domain.ValueObjects;
 using Atlas.SharedKernel.Domain;
 
@@ -45,8 +46,8 @@ public sealed class Tenant : AggregateRoot
     private readonly List<Invitation> _invitations = [];
     public IReadOnlyCollection<Invitation> Invitations => _invitations;
 
-    private readonly List<TenantRole> _roles = [];
-    public IReadOnlyCollection<TenantRole> Roles => _roles;
+    private readonly List<Role> _roles = [];
+    public IReadOnlyCollection<Role> Roles => _roles;
 
     private Tenant() { }
 
@@ -84,21 +85,19 @@ public sealed class Tenant : AggregateRoot
     /// </summary>
     public void SeedDefaultRoles()
     {
-        var admin = TenantRole.Create(Id, "admin", PermissionCatalog.All, isSystem: true);
-        var member = TenantRole.Create(Id, "member",
+        var root = Role.Create(Id, "root", PermissionCatalog.AllIncludingSystem, isSystem: true, id: SystemRoleIds.Root);
+        var admin = Role.Create(Id, "admin", PermissionCatalog.All, isSystem: true, id: SystemRoleIds.Admin);
+        var member = Role.Create(Id, "member",
         [
             PermissionCatalog.Staff.Read,
             PermissionCatalog.Staff.Create,
             PermissionCatalog.Staff.Update,
-        ], isSystem: true);
-        var viewer = TenantRole.Create(Id, "viewer",
-        [
-            PermissionCatalog.Staff.Read,
-        ], isSystem: true);
+            PermissionCatalog.Staff.Deactivate,
+        ], isSystem: true, id: SystemRoleIds.Member);
 
+        _roles.Add(root);
         _roles.Add(admin);
         _roles.Add(member);
-        _roles.Add(viewer);
     }
 
     /// <summary>
@@ -111,16 +110,16 @@ public sealed class Tenant : AggregateRoot
     ///
     /// Emits: TenantRoleCreatedDomainEvent
     /// </summary>
-    public TenantRole AddCustomRole(string name, IEnumerable<string> permissionCodes)
+    public Role AddCustomRole(string name, IEnumerable<string> permissionCodes)
     {
         EnsureActive();
 
         if (_roles.Any(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             throw new RoleAlreadyExistsException(name);
 
-        var role = TenantRole.Create(Id, name, permissionCodes);
+        var role = Role.Create(Id, name, permissionCodes);
         _roles.Add(role);
-        AddDomainEvent(new TenantRoleCreatedDomainEvent(Id, role.Id));
+        AddDomainEvent(new RoleCreatedDomainEvent(Id, role.Id));
         return role;
     }
 
@@ -143,7 +142,7 @@ public sealed class Tenant : AggregateRoot
             ?? throw new RoleNotFoundException(roleId);
 
         role.UpdatePermissions(permissionCodes);
-        AddDomainEvent(new TenantRoleUpdatedDomainEvent(Id, roleId));
+        AddDomainEvent(new RoleUpdatedDomainEvent(Id, roleId));
     }
 
     // =========================
@@ -223,7 +222,7 @@ public sealed class Tenant : AggregateRoot
 
         var user = CreateUserFromInvitation(invitation, externalId);
 
-        var roleName = _roles.FirstOrDefault(r => r.Id == user.TenantRoleId)?.Name ?? string.Empty;
+        var roleName = _roles.FirstOrDefault(r => r.Id == user.RoleId)?.Name ?? string.Empty;
         AddDomainEvent(new UserCreatedFromInvitationDomainEvent(Id, user.Id, user.Email.Value, roleName));
         AddDomainEvent(new UserAccessResolvedDomainEvent(Id, user.Id));
 
@@ -232,7 +231,7 @@ public sealed class Tenant : AggregateRoot
 
     private User CreateUserFromInvitation(Invitation invitation, ExternalId externalId)
     {
-        var user = new User(Id, externalId, invitation.Email, invitation.TenantRoleId);
+        var user = new User(Id, externalId, invitation.Email, invitation.RoleId);
         _users.Add(user);
         return user;
     }

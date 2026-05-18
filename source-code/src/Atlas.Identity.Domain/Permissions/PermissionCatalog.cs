@@ -1,4 +1,4 @@
-namespace Atlas.Identity.Domain.ValueObjects;
+namespace Atlas.Identity.Domain.Permissions;
 
 /// <summary>
 /// The authoritative set of permissions that exist in the system.
@@ -7,6 +7,13 @@ namespace Atlas.Identity.Domain.ValueObjects;
 /// </summary>
 public static class PermissionCatalog
 {
+    public static class System
+    {
+        // Grants unrestricted access — bypasses all permission checks.
+        // Only assignable to system roles (isSystem=true).
+        public const string Root = "system.root";
+    }
+
     public static class Staff
     {
         public const string Read       = "staff.read";
@@ -21,6 +28,7 @@ public static class PermissionCatalog
         public const string ManageRoles = "tenant.manage_roles";
     }
 
+    // Custom roles validate against this set — system.root is excluded on purpose.
     public static IReadOnlySet<string> All { get; } = new HashSet<string>
     {
         Staff.Read,
@@ -29,5 +37,11 @@ public static class PermissionCatalog
         Staff.Deactivate,
         Tenant.InviteUser,
         Tenant.ManageRoles,
+    };
+
+    // Only used when seeding system roles (isSystem=true).
+    public static IReadOnlySet<string> AllIncludingSystem { get; } = new HashSet<string>(All)
+    {
+        System.Root,
     };
 }

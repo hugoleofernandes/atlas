@@ -1,16 +1,15 @@
 using Atlas.BuildingBlocks.Persistence.Audits;
 using Atlas.Identity.Domain.Entities.Tenants;
-using Atlas.Identity.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Identity.Infrastructure.Entities.Tenants.Configurations;
 
-public sealed class TenantRoleConfiguration : IEntityTypeConfiguration<TenantRole>
+public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
-    public void Configure(EntityTypeBuilder<TenantRole> b)
+    public void Configure(EntityTypeBuilder<Role> b)
     {
-        b.ToTable("tenant_roles");
+        b.ToTable("roles");
 
         b.HasKey(x => x.Id);
 
@@ -30,19 +29,18 @@ public sealed class TenantRoleConfiguration : IEntityTypeConfiguration<TenantRol
         b.HasIndex(x => new { x.TenantId, x.Name })
             .IsUnique();
 
-        // RolePermission stored as a child table
         b.OwnsMany(x => x.Permissions, p =>
         {
             p.ToTable("role_permissions");
 
-            p.WithOwner().HasForeignKey("TenantRoleId");
+            p.WithOwner().HasForeignKey("RoleId");
 
             p.Property(rp => rp.Code)
                 .HasColumnName("code")
                 .HasMaxLength(100)
                 .IsRequired();
 
-            p.HasKey("TenantRoleId", "Code");
+            p.HasKey("RoleId", "Code");
         });
 
         AuditableEntityConfiguration.Configure(b);

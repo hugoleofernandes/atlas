@@ -4,7 +4,7 @@ using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
 using Atlas.Identity.Application.Tenants.Workflows.InviteUser;
-using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Domain.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

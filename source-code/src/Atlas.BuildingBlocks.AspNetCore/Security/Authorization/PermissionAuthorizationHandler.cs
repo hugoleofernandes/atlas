@@ -21,10 +21,14 @@ public sealed class PermissionAuthorizationHandler
         AuthorizationHandlerContext context,
         PermissionRequirement requirement)
     {
-        var hasClaim = context.User.HasClaim(
-            AtlasClaims.Permission,
-            requirement.Permission);
+        var isRoot = context.User.HasClaim(AtlasClaims.Permission, AtlasClaims.RootPermission);
+        if (isRoot)
+        {
+            context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
 
+        var hasClaim = context.User.HasClaim(AtlasClaims.Permission, requirement.Permission);
         if (hasClaim)
             context.Succeed(requirement);
 

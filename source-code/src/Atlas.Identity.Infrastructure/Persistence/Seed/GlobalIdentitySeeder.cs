@@ -1,4 +1,5 @@
 using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Permissions;
 using Atlas.Identity.Domain.ValueObjects;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -15,18 +16,15 @@ public sealed class GlobalIdentitySeeder : ISeeder
         // 🔹 Create Tenant
         var tenant = new Tenant("tenant01");
 
-        // 🔹 Seed default system roles (admin, member, viewer)
+        // 🔹 Seed default system roles (root, admin, member)
         tenant.SeedDefaultRoles();
 
         db.Tenants.Add(tenant);
 
-        // 🔹 Resolve the admin role to use in the invitation
-        var adminRole = tenant.Roles.Single(r => r.Name == "admin");
-
-        // 🔹 Invite email using the admin role
+        // 🔹 Invite the system owner with the root role (fixed ID)
         tenant.InviteUser(
             Email.Create("hugoleofernandes@gmail.com"),
-            adminRole.Id,
+            SystemRoleIds.Root,
             InvitationTtl.Create(TimeSpan.FromHours(24))
         );
 

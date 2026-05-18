@@ -1,6 +1,7 @@
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Permissions;
 using Atlas.Identity.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -62,16 +63,16 @@ public class TenantTests
     // ============================================================
 
     [Fact]
-    public void SeedDefaultRoles_ShouldCreateAdminMemberAndViewerRoles()
+    public void SeedDefaultRoles_ShouldCreateRootAdminAndMemberRoles()
     {
         var tenant = new Tenant("test");
 
         tenant.SeedDefaultRoles();
 
         tenant.Roles.Should().HaveCount(3);
-        tenant.Roles.Should().Contain(r => r.Name == "admin" && r.IsSystem);
+        tenant.Roles.Should().Contain(r => r.Name == "root"   && r.IsSystem);
+        tenant.Roles.Should().Contain(r => r.Name == "admin"  && r.IsSystem);
         tenant.Roles.Should().Contain(r => r.Name == "member" && r.IsSystem);
-        tenant.Roles.Should().Contain(r => r.Name == "viewer" && r.IsSystem);
     }
 
     [Fact]
@@ -304,7 +305,7 @@ public class TenantTests
         custom.Permissions.Select(p => p.Code).Should()
             .BeEquivalentTo([PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
         tenant.DomainEvents.Should().ContainSingle()
-            .Which.Should().BeOfType<TenantRoleUpdatedDomainEvent>();
+            .Which.Should().BeOfType<RoleUpdatedDomainEvent>();
     }
 
     [Fact]
@@ -417,7 +418,7 @@ public class TenantTests
         var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
 
         user.Email.Value.Should().Be("user@test.com");
-        user.TenantRoleId.Should().Be(adminRoleId);
+        user.RoleId.Should().Be(adminRoleId);
         tenant.Users.Should().Contain(user);
     }
 

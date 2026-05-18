@@ -10,7 +10,7 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 /// Invariants:
 /// - Invitation cannot be used more than once.
 /// - Invitation cannot be used after expiration.
-/// - TenantRoleId references a valid TenantRole within the same tenant.
+/// - RoleId references a valid Role within the same tenant.
 /// </summary>
 public sealed class Invitation : AuditableEntity
 {
@@ -20,7 +20,7 @@ public sealed class Invitation : AuditableEntity
 
     public Email Email { get; private set; } = default!;
 
-    public Guid TenantRoleId { get; private set; }
+    public Guid RoleId { get; private set; }
 
     public DateTime ExpiresAt { get; private set; }
 
@@ -32,11 +32,11 @@ public sealed class Invitation : AuditableEntity
 
     private Invitation() { }
 
-    internal Invitation(Guid tenantId, Email email, Guid tenantRoleId, InvitationTtl ttl)
+    internal Invitation(Guid tenantId, Email email, Guid roleId, InvitationTtl ttl)
     {
         TenantId = tenantId;
         Email = email;
-        TenantRoleId = tenantRoleId;
+        RoleId = roleId;
         ExpiresAt = DateTime.UtcNow.Add(ttl.Value);
     }
 

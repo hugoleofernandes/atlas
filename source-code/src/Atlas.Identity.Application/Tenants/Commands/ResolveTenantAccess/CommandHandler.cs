@@ -24,7 +24,7 @@ public sealed class CommandHandler : ICommandHandler
             ExternalId.Create(cmd.ExternalOid),
             Email.Create(cmd.Email));
 
-        var role = tenant.Roles.Single(r => r.Id == user.TenantRoleId);
+        var role = tenant.Roles.Single(r => r.Id == user.RoleId);
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
         return new Output(

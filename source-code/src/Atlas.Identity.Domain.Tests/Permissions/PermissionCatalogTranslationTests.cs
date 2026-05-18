@@ -1,4 +1,4 @@
-using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Domain.Permissions;
 using FluentAssertions;
 using System.Xml.Linq;
 

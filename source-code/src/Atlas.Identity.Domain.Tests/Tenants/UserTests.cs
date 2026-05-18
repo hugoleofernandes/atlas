@@ -14,13 +14,13 @@ public sealed class UserTests
             Guid? tenantId = null,
             string externalId = "oid-123",
             string email = "user@test.com",
-            Guid? tenantRoleId = null)
+            Guid? roleId = null)
         {
             return new User(
                 tenantId ?? Guid.NewGuid(),
                 ExternalId.Create(externalId),
                 Email.Create(email),
-                tenantRoleId ?? DefaultRoleId
+                roleId ?? DefaultRoleId
             );
         }
     }
@@ -45,7 +45,7 @@ public sealed class UserTests
         user.TenantId.Should().Be(tenantId);
         user.ExternalId.Value.Should().Be("oid-123");
         user.Email.Value.Should().Be("user@test.com");
-        user.TenantRoleId.Should().Be(roleId);
+        user.RoleId.Should().Be(roleId);
         user.IsActive.Should().BeTrue();
     }
 
@@ -58,22 +58,22 @@ public sealed class UserTests
     {
         var originalRoleId = Guid.NewGuid();
         var newRoleId = Guid.NewGuid();
-        var user = UserBuilder.Create(tenantRoleId: originalRoleId);
+        var user = UserBuilder.Create(roleId: originalRoleId);
 
         user.ChangeRole(newRoleId);
 
-        user.TenantRoleId.Should().Be(newRoleId);
+        user.RoleId.Should().Be(newRoleId);
     }
 
     [Fact]
     public void ChangeRole_ShouldBeIdempotent_WhenSameRoleIdProvided()
     {
         var roleId = Guid.NewGuid();
-        var user = UserBuilder.Create(tenantRoleId: roleId);
+        var user = UserBuilder.Create(roleId: roleId);
 
         user.ChangeRole(roleId);
 
-        user.TenantRoleId.Should().Be(roleId);
+        user.RoleId.Should().Be(roleId);
     }
 
     // ------------------------------------------------------------

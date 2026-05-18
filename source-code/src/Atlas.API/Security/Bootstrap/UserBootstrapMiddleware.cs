@@ -137,7 +137,7 @@ public sealed class UserBootstrapMiddleware
         identity.AddClaim(new Claim(AtlasClaims.TenantName, value.TenantName));
         identity.AddClaim(new Claim(AtlasClaims.UserId,     value.UserId.ToString()));
         identity.AddClaim(new Claim(AtlasClaims.UserEmail,  email));
-        identity.AddClaim(new Claim(AtlasClaims.RoleId,     value.TenantRoleId.ToString()));
+        identity.AddClaim(new Claim(AtlasClaims.RoleId,     value.RoleId.ToString()));
         identity.AddClaim(new Claim(ClaimTypes.Role,         value.RoleName));
         identity.AddClaim(new Claim(AtlasClaims.BootstrapCompleted, "true"));
 
