@@ -1,8 +1,10 @@
-using Atlas.API.Observability;
+﻿using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Domain;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
-namespace Atlas.API.Errors;
+namespace Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 
 public sealed class GlobalExceptionMiddleware
 {
@@ -17,7 +19,7 @@ public sealed class GlobalExceptionMiddleware
         _logger = logger;
     }
 
-    public async Task Invoke(HttpContext context, ErrorMessageLocalizer localizer)
+    public async Task Invoke(HttpContext context, IErrorMessageLocalizer localizer)
     {
         try
         {
@@ -87,3 +89,6 @@ public sealed class GlobalExceptionMiddleware
             _                          => StatusCodes.Status500InternalServerError
         };
 }
+
+
+

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Atlas.API.Errors;
+namespace Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 
 public sealed class ApiProblemDetails : ProblemDetails
 {
@@ -21,3 +21,6 @@ public sealed class ApiProblemDetails : ProblemDetails
         Extensions["timestamp"] = DateTime.UtcNow;
     }
 }
+
+
+

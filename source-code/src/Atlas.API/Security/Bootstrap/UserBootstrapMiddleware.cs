@@ -1,5 +1,7 @@
-using Atlas.API.Errors;
-using Atlas.API.Observability;
+﻿using Atlas.API.Errors;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.BuildingBlocks.AspNetCore.Observability;
+using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 using Atlas.SharedKernel.Application.Errors;
@@ -139,7 +141,7 @@ public sealed class UserBootstrapMiddleware
         identity.AddClaim(new Claim(ClaimTypes.Role,         value.RoleName));
         identity.AddClaim(new Claim(AtlasClaims.BootstrapCompleted, "true"));
 
-        // One claim per permission — authorization handler checks HasClaim(type, value)
+        // One claim per permission â€” authorization handler checks HasClaim(type, value)
         foreach (var permission in value.Permissions)
             identity.AddClaim(new Claim(AtlasClaims.Permission, permission));
 
@@ -206,3 +208,4 @@ public sealed class UserBootstrapMiddleware
         await context.Response.WriteAsJsonAsync(problem);
     }
 }
+

@@ -1,16 +1,17 @@
-using Atlas.API.Configs;
+﻿using Atlas.API.Configs;
 using Atlas.API.Errors;
-using Atlas.API.Filters;
-using Atlas.API.Observability;
-using Atlas.API.OpenApi;
-using Atlas.API.Security;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
-using Atlas.API.Security.Authorization;
-using Atlas.API.Security.Tenancy;
+using Atlas.BuildingBlocks.AspNetCore.Oidc;
+using Atlas.BuildingBlocks.AspNetCore.Oidc.Providers.EntraId;
+using Atlas.BuildingBlocks.AspNetCore.Security;
+using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
+using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
 using Microsoft.AspNetCore.Authorization;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Persistence;
@@ -34,7 +35,7 @@ using Serilog.Events;
 
 //
 // ==========================================
-// 🔹 SERILOG CONFIG (ANTES DO BUILDER)
+// ðŸ”¹ SERILOG CONFIG (ANTES DO BUILDER)
 // ==========================================
 //
 
@@ -75,6 +76,7 @@ Log.Logger = new LoggerConfiguration()
     services.AddProblemDetails();
     services.AddLocalization(opts => opts.ResourcesPath = "Resources");
     services.AddScoped<ErrorMessageLocalizer>();
+    services.AddScoped<IErrorMessageLocalizer>(sp => sp.GetRequiredService<ErrorMessageLocalizer>());
 
     //
     // ==========================================
@@ -174,7 +176,10 @@ Log.Logger = new LoggerConfiguration()
     //
 
     services.AddAppCors(configuration);
-    services.AddOidcMultiTenantAuthentication(configuration);
+    services.AddMultiTenantOidc(
+        configuration,
+        new EntraIdTenantConfigurator(AuthConstants.TenantHintCookie),
+        AuthConstants.AuthCookie);
     services.AddRateLimiting(configuration);
 
     services.AddHsts(options =>
@@ -243,13 +248,13 @@ Log.Logger = new LoggerConfiguration()
         opts.ApplyCurrentCultureToResponseHeaders = true;
     });
 
-    // 🔹 CorrelationId PRIMEIRO
+    // ðŸ”¹ CorrelationId PRIMEIRO
     app.UseMiddleware<CorrelationIdMiddleware>();
 
-    // 🔹 Serilog HTTP logging
+    // ðŸ”¹ Serilog HTTP logging
     app.UseSerilogRequestLogging();
 
-    // 🔹 Exception handling global
+    // ðŸ”¹ Exception handling global
     app.UseMiddleware<GlobalExceptionMiddleware>();
 
     app.UseSecurityHeaders();

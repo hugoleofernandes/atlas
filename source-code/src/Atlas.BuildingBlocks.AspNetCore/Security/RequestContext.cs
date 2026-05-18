@@ -1,6 +1,6 @@
 using Atlas.SharedKernel.Application;
 
-namespace Atlas.API.Security;
+namespace Atlas.BuildingBlocks.AspNetCore.Security;
 
 public sealed class RequestContext : IRequestContext, IRequestContextSetter
 {

@@ -1,4 +1,4 @@
-using Atlas.API.Security;
+using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

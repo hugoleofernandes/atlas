@@ -1,7 +1,7 @@
-using Atlas.API.Security;
 using Atlas.SharedKernel.Application;
+using Microsoft.AspNetCore.Http;
 
-namespace Atlas.API.Security.Tenancy;
+namespace Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
 
 public sealed class TenantResolverMiddleware
 {

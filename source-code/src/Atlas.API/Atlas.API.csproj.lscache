@@ -95,11 +95,7 @@ Security/
  Headers/
   ForwardedHeadersExtensions.cs
   SecurityHeadersExtensions.cs
- OIDC/
-  AuthConstants.cs
-  OidcMultiTenantConfigurator.cs
-  OidcMultiTenantExtensions.cs
-  TenantConfig.cs
+ OIDC/AuthConstants.cs
  RateLimit/
   RateLimitingConfig.cs
   RateLimitingExtensions.cs
@@ -108,6 +104,7 @@ Security/
 
 [metadataReferences]
 ../
+ Atlas.BuildingBlocks.AspNetCore/obj/Debug/net10.0/ref/Atlas.BuildingBlocks.AspNetCore.dll
  Atlas.BuildingBlocks.Infrastructure/obj/Debug/net10.0/ref/Atlas.BuildingBlocks.Application.dll
  Atlas.BuildingBlocks.Persistence/obj/Debug/net10.0/ref/Atlas.BuildingBlocks.Persistence.dll
  Atlas.Contracts/obj/Debug/net10.0/ref/Atlas.Contracts.dll

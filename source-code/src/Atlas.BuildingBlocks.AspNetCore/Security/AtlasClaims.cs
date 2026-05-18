@@ -1,4 +1,4 @@
-namespace Atlas.API.Security;
+namespace Atlas.BuildingBlocks.AspNetCore.Security;
 
 public static class AtlasClaims
 {

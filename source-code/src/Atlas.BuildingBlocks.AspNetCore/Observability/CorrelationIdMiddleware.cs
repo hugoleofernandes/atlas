@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Serilog.Context;
 
-namespace Atlas.API.Observability;
+namespace Atlas.BuildingBlocks.AspNetCore.Observability;
 
 public sealed class CorrelationIdMiddleware
 {

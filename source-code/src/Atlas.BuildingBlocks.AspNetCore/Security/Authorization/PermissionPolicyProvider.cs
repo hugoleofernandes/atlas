@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
-namespace Atlas.API.Security.Authorization;
+namespace Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 
 /// <summary>
 /// Dynamically creates an AuthorizationPolicy for any "permission:{code}" policy name.

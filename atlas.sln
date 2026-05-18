@@ -38,6 +38,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Contracts", "source-c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.BuildingBlocks.Application", "source-code\src\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj", "{B34938A0-3BDD-446E-B99F-9680A34331D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.BuildingBlocks.AspNetCore", "source-code\src\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj", "{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{B34938A0-3BDD-446E-B99F-9680A34331D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B34938A0-3BDD-446E-B99F-9680A34331D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B34938A0-3BDD-446E-B99F-9680A34331D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,6 +132,7 @@ Global
 		{9F715919-DAC4-B755-FB6F-ECD8AFE732B4} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 		{86174453-E960-2685-66C1-45410813B039} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 		{B34938A0-3BDD-446E-B99F-9680A34331D5} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
+		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB7E32C7-6D55-4E6E-BB3C-D6AAAB6BD9CA}

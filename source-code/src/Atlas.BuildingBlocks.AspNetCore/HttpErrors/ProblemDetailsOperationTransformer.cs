@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
-namespace Atlas.API.OpenApi;
+namespace Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 
 public sealed class ProblemDetailsOperationTransformer
     : IOpenApiOperationTransformer
@@ -35,3 +35,6 @@ public sealed class ProblemDetailsOperationTransformer
         };
     }
 }
+
+
+

@@ -1,4 +1,5 @@
-using Atlas.API.Errors;
+﻿using Atlas.API.Errors;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,7 @@ namespace Atlas.API.Controllers;
 /// <summary>
 /// Base controller that provides a consistent error-response helper for all Atlas API controllers.
 /// Uses the same ApiProblemDetails shape as GlobalExceptionMiddleware, ensuring every error
-/// response — whether caught by middleware or returned explicitly — looks identical to the client.
+/// response â€” whether caught by middleware or returned explicitly â€” looks identical to the client.
 /// </summary>
 public abstract class AtlasControllerBase : ControllerBase
 {
@@ -49,3 +50,4 @@ public abstract class AtlasControllerBase : ControllerBase
         _                          => StatusCodes.Status500InternalServerError
     };
 }
+

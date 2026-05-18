@@ -1,6 +1,7 @@
-using Atlas.API.Errors;
+﻿using Atlas.API.Errors;
 using Atlas.API.Models.Invitations;
-using Atlas.API.Security.Authorization;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
 using Atlas.Identity.Application.Tenants.Workflows.InviteUser;
 using Atlas.Identity.Domain.ValueObjects;
@@ -19,7 +20,7 @@ public sealed class InvitationController(
 {
     /// <summary>
     /// Invites a new user to the authenticated user's tenant.
-    /// The tenant is resolved from the session cookie — not from the URL.
+    /// The tenant is resolved from the session cookie â€” not from the URL.
     /// </summary>
     [HttpPost]
     [HasPermission(PermissionCatalog.Tenant.InviteUser)]
@@ -58,3 +59,4 @@ public sealed record InviteUserResponse(
     string RoleName,
     DateTime ExpiresAt
 );
+

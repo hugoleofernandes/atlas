@@ -1,4 +1,4 @@
-using Atlas.API.Security;
+using Atlas.BuildingBlocks.AspNetCore.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

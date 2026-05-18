@@ -1,8 +1,9 @@
-using Atlas.API.Observability;
+﻿using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.SharedKernel.Application.Errors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Atlas.API.Errors;
+namespace Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 
 public static class ValidationProblemDetailsFactory
 {
@@ -40,3 +41,6 @@ public static class ValidationProblemDetailsFactory
         };
     }
 }
+
+
+

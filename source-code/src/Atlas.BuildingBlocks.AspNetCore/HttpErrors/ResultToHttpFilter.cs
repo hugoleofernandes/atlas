@@ -1,16 +1,17 @@
-using Atlas.API.Errors;
-using Atlas.API.Observability;
+using Atlas.BuildingBlocks.AspNetCore.Observability;
+using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Atlas.API.Filters;
+namespace Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 
 public sealed class ResultToHttpFilter : IResultFilter
 {
-    private readonly ErrorMessageLocalizer _localizer;
+    private readonly IErrorMessageLocalizer _localizer;
 
-    public ResultToHttpFilter(ErrorMessageLocalizer localizer)
+    public ResultToHttpFilter(IErrorMessageLocalizer localizer)
     {
         _localizer = localizer;
     }
@@ -20,7 +21,7 @@ public sealed class ResultToHttpFilter : IResultFilter
         if (context.Result is not ObjectResult objectResult)
             return;
 
-        if (objectResult.Value is not SharedKernel.Application.IResponse result)
+        if (objectResult.Value is not IResponse result)
             return;
 
         if (!result.IsSuccess)
@@ -61,12 +62,12 @@ public sealed class ResultToHttpFilter : IResultFilter
     private static int MapCategory(ErrorCategory category)
         => category switch
         {
-            ErrorCategory.Validation  => StatusCodes.Status400BadRequest,
-            ErrorCategory.Business    => StatusCodes.Status422UnprocessableEntity,
-            ErrorCategory.Conflict    => StatusCodes.Status409Conflict,
-            ErrorCategory.NotFound    => StatusCodes.Status404NotFound,
+            ErrorCategory.Validation   => StatusCodes.Status400BadRequest,
+            ErrorCategory.Business     => StatusCodes.Status422UnprocessableEntity,
+            ErrorCategory.Conflict     => StatusCodes.Status409Conflict,
+            ErrorCategory.NotFound     => StatusCodes.Status404NotFound,
             ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
-            ErrorCategory.Unexpected  => StatusCodes.Status500InternalServerError,
-            _ => StatusCodes.Status500InternalServerError
+            ErrorCategory.Unexpected   => StatusCodes.Status500InternalServerError,
+            _                          => StatusCodes.Status500InternalServerError
         };
 }

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 
-namespace Atlas.API.Security.Authorization;
+namespace Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 
 public sealed class PermissionRequirement : IAuthorizationRequirement
 {
