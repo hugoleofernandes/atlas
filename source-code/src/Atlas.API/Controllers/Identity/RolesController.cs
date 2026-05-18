@@ -3,8 +3,10 @@ using Atlas.API.Models.Roles;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.Identity.Application.Tenants.Commands.CreateRole;
+using Atlas.Identity.Application.Tenants.Queries.ListRoles;
 using Atlas.Identity.Application.Tenants.Workflows.CreateRole;
 using Atlas.Identity.Domain.Permissions;
+using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +17,28 @@ namespace Atlas.API.Controllers.Identity;
 [Authorize]
 public sealed class RolesController(
     ICreateRoleWorkflow createRoleWorkflow,
+    IListRolesQueryHandler listRolesQueryHandler,
     ErrorMessageLocalizer errorLocalizer
 ) : AtlasControllerBase(errorLocalizer)
 {
+    /// <summary>
+    /// Lists all roles for the authenticated user's tenant, paginated.
+    /// </summary>
+    [HttpGet]
+    [HasPermission(PermissionCatalog.Tenant.ManageRoles)]
+    [ProducesResponseType(typeof(PagedResult<RoleDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> List(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default)
+    {
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var result = await listRolesQueryHandler.ExecuteAsync(new Query(page, pageSize), ct);
+        return Ok(result);
+    }
+
     /// <summary>
     /// Creates a new custom role for the authenticated user's tenant.
     /// System roles (root, admin, member) cannot be created via this endpoint.
