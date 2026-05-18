@@ -55,12 +55,16 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 
 [sourceFiles]
 Audits/
- Audit.cs
  AuditableEntityConfiguration.cs
+ AuditBase.cs
  AuditConfiguration.cs
- AuditService.cs
-DbContexts/MultiTenantDbContext.cs
-IAuditService.cs
+ AuditTrailService.cs
+ EntityChangeStamper.cs
+DbContexts/DbContextBase.cs
+IAuditTrailService.cs
+IEntityChangeStamper.cs
+IEntityTenantStamper.cs
+ISavePipeline.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Atlas.BuildingBlocks.Persistence.AssemblyInfo.cs
@@ -68,6 +72,9 @@ obj/Debug/net10.0/
 OutboxMessages/
  OutboxMessageConfiguration.cs
  OutboxMessageRepository.cs
+PersistenceAssemblyMarker.cs
+SavePipeline.cs
+Tenancy/EntityTenantStamper.cs
 
 [metadataReferences]
 ../Atlas.SharedKernel/obj/Debug/net10.0/ref/Atlas.SharedKernel.dll

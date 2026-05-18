@@ -1,8 +1,8 @@
-﻿using Atlas.SharedKernel.Domain.Events;
+using Atlas.SharedKernel.Domain.Events;
 
 namespace Atlas.SharedKernel.Domain;
 
-public abstract class AggregateRootBase : IAggregateRoot
+public abstract class AggregateRoot : AuditableEntity, IAggregateRoot
 {
     private readonly List<IDomainEvent> _domainEvents = new();
 

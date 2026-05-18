@@ -23,7 +23,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Audits.Audit", b =>
+            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Audits.AuditBase", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");

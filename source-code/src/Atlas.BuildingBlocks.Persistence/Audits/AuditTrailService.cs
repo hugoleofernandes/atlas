@@ -6,16 +6,23 @@ using System.Text.Json;
 
 namespace Atlas.BuildingBlocks.Persistence.Audits;
 
-public sealed class AuditService : IAuditService
+public sealed class AuditTrailService : IAuditTrailService
 {
+    private static readonly HashSet<string> _excludedProperties =
+        typeof(IAuditableEntity)
+            .GetProperties()
+            .Concat(typeof(IMultiTenantEntity).GetProperties())
+            .Select(p => p.Name)
+            .ToHashSet();
+
     private readonly IRequestContext _ctx;
 
-    public AuditService(IRequestContext ctx)
+    public AuditTrailService(IRequestContext ctx)
     {
         _ctx = ctx;
     }
 
-    public async Task AddAuditLogsAsync(DbContext db, CancellationToken ct)
+    public async Task RecordAsync(DbContext db, CancellationToken ct)
     {
         var tenantId = _ctx.TenantId;
         if (tenantId is null)
@@ -28,7 +35,7 @@ public sealed class AuditService : IAuditService
                 e.Entity is not INotAuditable &&
                 e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
 
-        var logs = new List<Audit>();
+        var logs = new List<AuditBase>();
 
         foreach (var entry in entries)
         {
@@ -37,6 +44,9 @@ public sealed class AuditService : IAuditService
             foreach (var prop in entry.Properties)
             {
                 if (prop.IsTemporary)
+                    continue;
+
+                if (_excludedProperties.Contains(prop.Metadata.Name))
                     continue;
 
                 if (entry.State == EntityState.Modified &&
@@ -53,7 +63,7 @@ public sealed class AuditService : IAuditService
             if (changes.Count == 0)
                 continue;
 
-            var audit = new Audit();
+            var audit = new AuditBase();
             audit.Initialize(
                 entry.Entity.GetType().Name,
                 entry.State.ToString(),
@@ -67,7 +77,7 @@ public sealed class AuditService : IAuditService
         }
 
         if (logs.Count > 0)
-            await db.Set<Audit>().AddRangeAsync(logs, ct);
+            await db.Set<AuditBase>().AddRangeAsync(logs, ct);
     }
 
     private static string? GetPrimaryKey(EntityEntry entry)

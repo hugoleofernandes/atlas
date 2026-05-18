@@ -23,7 +23,7 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 /// - Does NOT send emails or notifications.
 /// - Does NOT persist data (handled by repositories/UoW).
 /// </summary>
-public sealed class Tenant : AggregateRootBase
+public sealed class Tenant : AggregateRoot
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.Audits;
+using Atlas.BuildingBlocks.Persistence.Tenancy;
 using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
@@ -51,8 +52,8 @@ Log.Logger = new LoggerConfiguration()
         retainedFileCountLimit: 7)
     .CreateLogger();
 
-try
-{
+//try
+//{
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog();
@@ -110,7 +111,10 @@ try
     services.AddValidatorsFromAssemblyContaining<IdentityApplicationAssemblyMarker>();
     services.AddValidatorsFromAssemblyContaining<StaffApplicationAssemblyMarker>();
 
-    services.AddScoped<IAuditService, AuditService>();
+    services.AddScoped<IAuditTrailService, AuditTrailService>();
+    services.AddScoped<IEntityChangeStamper, EntityChangeStamper>();
+    services.AddScoped<IEntityTenantStamper, EntityTenantStamper>();
+    services.AddScoped<ISavePipeline, SavePipeline>();
 
 
     //
@@ -264,14 +268,14 @@ try
     app.UseOidcMetadataWarmup(configuration);
 
     app.Run();
-}
-catch (Exception ex)
-{
-    Log.Fatal(ex, "Application failed to start");
-}
-finally
-{
-    Log.CloseAndFlush();
-}
+//}
+//catch (Exception ex)
+//{
+//    Log.Fatal(ex, "Application failed to start");
+//}
+//finally
+//{
+//    Log.CloseAndFlush();
+//}
 
 public partial class Program { }

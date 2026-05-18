@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.Audits;
 using Atlas.BuildingBlocks.Persistence.DbContexts;
 using Atlas.SharedKernel.Application;
@@ -7,13 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Staff.Infrastructure.Persistence.DbContexts;
 
-public sealed class StaffDbContext
-    : MultiTenantDbContext
+public sealed class StaffDbContext : DbContextBase
 {
     protected override string Schema => "atlas_staff";
 
     public DbSet<StaffMember> StaffMembers => Set<StaffMember>();
-    public DbSet<Audit> Audits => Set<Audit>();
+    public DbSet<AuditBase> Audits => Set<AuditBase>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     public StaffDbContext(
@@ -25,8 +25,8 @@ public sealed class StaffDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StaffDbContext).Assembly);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuditConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StaffInfrastructureAssemblyMarker).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersistenceAssemblyMarker).Assembly);
 
         base.OnModelCreating(modelBuilder);
     }

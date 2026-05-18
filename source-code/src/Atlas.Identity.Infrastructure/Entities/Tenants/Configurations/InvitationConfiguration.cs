@@ -14,6 +14,9 @@ public sealed class InvitationConfiguration : IEntityTypeConfiguration<Invitatio
 
         b.HasKey(x => x.Id);
 
+        b.Property(x => x.Id)
+            .ValueGeneratedNever();
+
         b.Property(x => x.TenantId)
             .IsRequired();
 

@@ -77,19 +77,17 @@ Application/
  PagedResult.cs
  Response.cs
 Domain/
- AggregateRootBase.cs
- AuditableAggregateRoot.cs
+ AggregateRoot.cs
  AuditableEntity.cs
- AuditLogBase.cs
  DomainException.cs
  Events/
   DomainEventExtensions.cs
   IDomainEvent.cs
  IAggregateRoot.cs
  IAuditableEntity.cs
- IAuditLog.cs
  IMultiTenantEntity.cs
  INotAuditable.cs
+ INotMultiTenant.cs
  ValueObject.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs

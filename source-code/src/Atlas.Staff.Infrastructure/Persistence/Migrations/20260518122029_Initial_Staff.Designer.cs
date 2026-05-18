@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(StaffDbContext))]
-    [Migration("20260517173959_Initial_Staff")]
+    [Migration("20260518122029_Initial_Staff")]
     partial class Initial_Staff
     {
         /// <inheritdoc />
@@ -26,7 +26,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Audits.Audit", b =>
+            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Audits.AuditBase", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");

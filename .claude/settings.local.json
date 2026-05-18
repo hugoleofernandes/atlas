@@ -15,7 +15,11 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "PowerShell(dotnet ef migrations add Add_TenantRoles_And_RolePermissions --project $infra --startup-project $startup 2>&1)",
       "PowerShell($infra = \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.Identity.Infrastructure\")",
-      "PowerShell($startup = \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\")"
+      "PowerShell($startup = \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\IAuditableEntityStamper.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\Audits\\\\AuditableEntityStamper.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\IAuditService.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\Audits\\\\AuditService.cs\")"
     ]
   }
 }

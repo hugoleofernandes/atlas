@@ -7,20 +7,18 @@ namespace Atlas.Staff.Infrastructure.Persistence.DbContexts;
 public sealed class StaffUnitOfWork : IStaffUnitOfWork
 {
     private readonly StaffDbContext _db;
-    private readonly IAuditService _auditService;
+    private readonly ISavePipeline _savePipeline;
 
-    public StaffUnitOfWork(StaffDbContext db, IAuditService auditService)
+    public StaffUnitOfWork(StaffDbContext db, ISavePipeline savePipeline)
     {
         _db = db;
-        _auditService = auditService;
+        _savePipeline = savePipeline;
     }
 
     public async Task SaveChangesAsync(CancellationToken ct)
     {
-        await _auditService.AddAuditLogsAsync(_db, ct);
-
+        await _savePipeline.ExecuteAsync(_db, ct);
         await _db.SaveChangesAsync(ct);
-
         _db.ClearDomainEvents();
     }
 

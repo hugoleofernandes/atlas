@@ -23,7 +23,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Audits.Audit", b =>
+            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Audits.AuditBase", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -70,7 +70,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Invitation", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -128,6 +127,12 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -137,6 +142,15 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

@@ -64,6 +64,7 @@ Entities/Tenants/Configurations/
  TenantRoleConfiguration.cs
  UserConfiguration.cs
 Entities/Tenants/Repositories/TenantRepository.cs
+IdentityInfrastructureAssemblyMarker.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Atlas.Identity.Infrastructure.AssemblyInfo.cs
@@ -73,8 +74,8 @@ Persistence/DbContexts/
  IdentityDbContextFactory.cs
  IdentityUnitOfWork.cs
 Persistence/Migrations/
- 20260517173749_Initial_Identity.cs
- 20260517173749_Initial_Identity.Designer.cs
+ 20260518121714_Initial_Identity.cs
+ 20260518121714_Initial_Identity.Designer.cs
  IdentityDbContextModelSnapshot.cs
 Persistence/Seed/
  GlobalIdentitySeeder.cs
