@@ -9,7 +9,9 @@ using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
+using Atlas.API.Security.Authorization;
 using Atlas.API.Security.Tenancy;
+using Microsoft.AspNetCore.Authorization;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.Audits;
@@ -65,7 +67,7 @@ try
     //
 
     services.AddScoped<RequestContext>();
-    services.AddScoped<IRequestContextSetter, RequestContext>();
+    services.AddScoped<IRequestContextSetter>(sp => sp.GetRequiredService<RequestContext>());
     services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
 
     services.AddHttpContextAccessor();
@@ -93,7 +95,7 @@ try
 
     // IDENTITY 
     services.AddIdentityModuleDependencies();
-    services.AddTenantDependencies();
+    services.AddTenantDependencies(builder.Configuration);
     services.AddIdentityOutboxWorkerSupport();
     //
 
@@ -147,6 +149,8 @@ try
     });
 
     services.AddAuthorization();
+    services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+    services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
     services.AddHealthChecks();
 
     services.AddOpenApi(options =>
@@ -269,3 +273,5 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+public partial class Program { }

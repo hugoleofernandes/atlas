@@ -8,19 +8,16 @@ public sealed class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<GlobalExceptionMiddleware> _logger;
-    private readonly ErrorMessageLocalizer _localizer;
 
     public GlobalExceptionMiddleware(
         RequestDelegate next,
-        ILogger<GlobalExceptionMiddleware> logger,
-        ErrorMessageLocalizer localizer)
+        ILogger<GlobalExceptionMiddleware> logger)
     {
         _next = next;
         _logger = logger;
-        _localizer = localizer;
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task Invoke(HttpContext context, ErrorMessageLocalizer localizer)
     {
         try
         {
@@ -34,7 +31,7 @@ public sealed class GlobalExceptionMiddleware
 
             var problem = new ApiProblemDetails
             {
-                Title = _localizer.Localize(error),
+                Title = localizer.Localize(error),
                 Status = MapCategory(ex.Category),
                 Detail = ex.Message,
                 Type = $"https://docs.atlas/errors/{ex.ErrorCode}"
@@ -59,7 +56,7 @@ public sealed class GlobalExceptionMiddleware
 
             var problem = new ApiProblemDetails
             {
-                Title = _localizer.Localize(error),
+                Title = localizer.Localize(error),
                 Status = StatusCodes.Status500InternalServerError,
                 Detail = "An unexpected error occurred. Please try again later.",
                 Type = $"https://docs.atlas/errors/{error.Code}"

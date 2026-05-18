@@ -1,4 +1,4 @@
-﻿namespace Atlas.API.Security;
+namespace Atlas.API.Security;
 
 public static class AtlasClaims
 {
@@ -8,6 +8,11 @@ public static class AtlasClaims
 
     public const string UserId = "user_id";
 
-    public const string BootstrapCompleted =
-        "atlas_bootstrap_completed";
+    public const string RoleId = "role_id";
+
+    public const string UserEmail = "user_email";
+
+    public const string Permission = "permission";
+
+    public const string BootstrapCompleted = "atlas_bootstrap_completed";
 }

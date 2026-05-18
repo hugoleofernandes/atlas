@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Application.Tenants.Repositories;
+using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +14,13 @@ public sealed class TenantRepository : ITenantRepository
         _db = db;
     }
 
-    public async Task<Tenant?> GetByNameWithUsersAndInvitationsAsync(
+    public async Task<Tenant?> GetByNameWithUsersInvitationsAndRolesAsync(
         string name,
         CancellationToken ct)
     {
         return await _db.Tenants
+            .Include(t => t.Roles)
+                .ThenInclude(r => r.Permissions)
             .Include(t => t.Users)
             .Include(t => t.Invitations)
             .FirstOrDefaultAsync(t => t.Name == name && t.IsActive, ct);

@@ -59,6 +59,7 @@ obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Atlas.Identity.Domain.Tests.AssemblyInfo.cs
  Atlas.Identity.Domain.Tests.GlobalUsings.g.cs
+Permissions/PermissionCatalogTranslationTests.cs
 Tenants/
  InvitationTests.cs
  TenantTests.cs
@@ -67,7 +68,6 @@ ValueObjects/
  EmailTests.cs
  ExternalIdTests.cs
  InvitationTtlTests.cs
- RoleTests.cs
 
 [metadataReferences]
 ../

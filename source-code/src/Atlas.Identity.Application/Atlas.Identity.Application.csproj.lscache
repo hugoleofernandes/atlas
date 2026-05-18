@@ -60,6 +60,13 @@ obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Atlas.Identity.Application.AssemblyInfo.cs
  Atlas.Identity.Application.GlobalUsings.g.cs
+Tenants/Commands/InviteUser/
+ Command.cs
+ CommandHandler.cs
+ ICommandHandler.cs
+ InvitationSettings.cs
+ Output.cs
+ Validator.cs
 Tenants/Commands/ResolveTenantAccess/
  Command.cs
  CommandHandler.cs
@@ -71,6 +78,9 @@ Tenants/
  IntegrationEventMappers/UserCreatedFromInvitationMapper.cs
  Repositories/ITenantRepository.cs
  Services/IntegrationEventHandlers/UserCreatedFromInvitationIntegrationEventHandler.cs
+ Workflows/InviteUser/
+  IInviteUserWorkflow.cs
+  InviteUserWorkflow.cs
  Workflows/ResolveTenantAccess/
   IResolveTenantAccessWorkflow.cs
   ResolveTenantAccessWorkflow.cs
@@ -253,6 +263,8 @@ Tenants/
  fluentvalidation/12.1.1/lib/net8.0/FluentValidation.dll
  microsoft.extensions.dependencyinjection.abstractions/10.0.0/lib/net10.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
  microsoft.extensions.logging.abstractions/10.0.0/lib/net10.0/Microsoft.Extensions.Logging.Abstractions.dll
+ microsoft.extensions.options/10.0.0/lib/net10.0/Microsoft.Extensions.Options.dll
+ microsoft.extensions.primitives/10.0.0/lib/net10.0/Microsoft.Extensions.Primitives.dll
 
 [analyzerReferences]
 <DOTNET>/packs/Microsoft.NETCore.App.Ref/10.0.8/analyzers/dotnet/cs/
@@ -265,7 +277,9 @@ Tenants/
 <DOTNET>/sdk/10.0.300/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
-<NUGET>/microsoft.extensions.logging.abstractions/10.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Logging.Generators.dll
+<NUGET>/
+ microsoft.extensions.logging.abstractions/10.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Logging.Generators.dll
+ microsoft.extensions.options/10.0.0/analyzers/dotnet/roslyn4.4/cs/Microsoft.Extensions.Options.SourceGeneration.dll
 
 [analyzerConfigFiles]
 <DOTNET>/sdk/10.0.300/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig

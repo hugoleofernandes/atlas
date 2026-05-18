@@ -61,6 +61,7 @@ DI/
 Entities/Tenants/Configurations/
  InvitationConfiguration.cs
  TenantConfiguration.cs
+ TenantRoleConfiguration.cs
  UserConfiguration.cs
 Entities/Tenants/Repositories/TenantRepository.cs
 obj/Debug/net10.0/
@@ -72,8 +73,8 @@ Persistence/DbContexts/
  IdentityDbContextFactory.cs
  IdentityUnitOfWork.cs
 Persistence/Migrations/
- 20260517092954_Initial_Identity.cs
- 20260517092954_Initial_Identity.Designer.cs
+ 20260517173749_Initial_Identity.cs
+ 20260517173749_Initial_Identity.Designer.cs
  IdentityDbContextModelSnapshot.cs
 Persistence/Seed/
  GlobalIdentitySeeder.cs
@@ -265,10 +266,13 @@ Persistence/Seed/
  microsoft.extensions.caching.abstractions/10.0.3/lib/net10.0/Microsoft.Extensions.Caching.Abstractions.dll
  microsoft.extensions.caching.memory/10.0.3/lib/net10.0/Microsoft.Extensions.Caching.Memory.dll
  microsoft.extensions.configuration.abstractions/10.0.3/lib/net10.0/Microsoft.Extensions.Configuration.Abstractions.dll
+ microsoft.extensions.configuration.binder/10.0.0/lib/net10.0/Microsoft.Extensions.Configuration.Binder.dll
+ microsoft.extensions.configuration/10.0.0/lib/net10.0/Microsoft.Extensions.Configuration.dll
  microsoft.extensions.dependencyinjection.abstractions/10.0.3/lib/net10.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
  microsoft.extensions.dependencyinjection/10.0.3/lib/net10.0/Microsoft.Extensions.DependencyInjection.dll
  microsoft.extensions.logging.abstractions/10.0.3/lib/net10.0/Microsoft.Extensions.Logging.Abstractions.dll
  microsoft.extensions.logging/10.0.3/lib/net10.0/Microsoft.Extensions.Logging.dll
+ microsoft.extensions.options.configurationextensions/10.0.0/lib/net10.0/Microsoft.Extensions.Options.ConfigurationExtensions.dll
  microsoft.extensions.options/10.0.3/lib/net10.0/Microsoft.Extensions.Options.dll
  microsoft.extensions.primitives/10.0.3/lib/net10.0/Microsoft.Extensions.Primitives.dll
  npgsql.entityframeworkcore.postgresql/10.0.0/lib/net10.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll

@@ -15,6 +15,7 @@ public sealed class IdentityDbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<Invitation> Invitations => Set<Invitation>();
+    public DbSet<TenantRole> TenantRoles => Set<TenantRole>();
 
     public DbSet<Audit> Audits => Set<Audit>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();

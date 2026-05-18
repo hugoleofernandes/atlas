@@ -16,7 +16,7 @@ public sealed class CommandHandler : ICommandHandler
     public async Task<Output> ExecuteAsync(Command cmd, CancellationToken ct)
     {
         var tenant = await _tenantRepository
-            .GetByNameWithUsersAndInvitationsAsync(
+            .GetByNameWithUsersInvitationsAndRolesAsync(
                 cmd.TenantName.ToLowerInvariant(), ct)
             ?? throw new TenantNotFoundException(cmd.TenantName);
 
@@ -24,10 +24,15 @@ public sealed class CommandHandler : ICommandHandler
             ExternalId.Create(cmd.ExternalOid),
             Email.Create(cmd.Email));
 
+        var role = tenant.Roles.Single(r => r.Id == user.TenantRoleId);
+        var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
+
         return new Output(
             tenant.Id,
             tenant.Name,
             user.Id,
-            user.Role.Value);
+            role.Id,
+            role.Name,
+            permissions);
     }
 }

@@ -70,8 +70,8 @@ Persistence/DbContexts/
  StaffDbContextFactory.cs
  StaffUnitOfWork.cs
 Persistence/Migrations/
- 20260517093237_Initial_Staff.cs
- 20260517093237_Initial_Staff.Designer.cs
+ 20260517173959_Initial_Staff.cs
+ 20260517173959_Initial_Staff.Designer.cs
  StaffDbContextModelSnapshot.cs
 
 [metadataReferences]

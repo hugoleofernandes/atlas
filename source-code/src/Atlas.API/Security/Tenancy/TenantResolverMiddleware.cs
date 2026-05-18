@@ -1,4 +1,4 @@
-using Atlas.API.Security.OIDC;
+using Atlas.API.Security;
 using Atlas.SharedKernel.Application;
 
 namespace Atlas.API.Security.Tenancy;
@@ -13,10 +13,10 @@ public sealed class TenantResolverMiddleware
     {
         if (context.User?.Identity?.IsAuthenticated == true)
         {
-            var tenantIdRaw = context.User.FindFirst(ClaimConstants.TenantId)?.Value;
-            var tenantName  = context.User.FindFirst(ClaimConstants.TenantName)?.Value;
-            var userIdRaw   = context.User.FindFirst(ClaimConstants.UserId)?.Value;
-            var userEmail   = context.User.FindFirst(ClaimConstants.Email)?.Value;
+            var tenantIdRaw = context.User.FindFirst(AtlasClaims.TenantId)?.Value;
+            var tenantName  = context.User.FindFirst(AtlasClaims.TenantName)?.Value;
+            var userIdRaw   = context.User.FindFirst(AtlasClaims.UserId)?.Value;
+            var userEmail   = context.User.FindFirst(AtlasClaims.UserEmail)?.Value;
 
             if (Guid.TryParse(tenantIdRaw, out var tenantId) &&
                 Guid.TryParse(userIdRaw, out var userId))

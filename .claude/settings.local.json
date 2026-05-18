@@ -12,7 +12,10 @@
       "Bash(for f *)",
       "Bash(grep -v \"//.*BadRequest\")",
       "Bash(Get-ChildItem -Path \"D:\\\\git-repos\\\\atlas\\\\source-code\" -Recurse -File -Filter \"docfx.json\")",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(dotnet ef migrations add Add_TenantRoles_And_RolePermissions --project $infra --startup-project $startup 2>&1)",
+      "PowerShell($infra = \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.Identity.Infrastructure\")",
+      "PowerShell($startup = \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\")"
     ]
   }
 }

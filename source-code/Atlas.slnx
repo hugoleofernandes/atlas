@@ -51,5 +51,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
+    <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />
   </Folder>
 </Solution>

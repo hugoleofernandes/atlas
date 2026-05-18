@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,6 +24,12 @@ public sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 
         b.Property(x => x.CreatedAt)
             .IsRequired();
+
+        // 🔹 ROLES (1:N)
+        b.HasMany(x => x.Roles)
+            .WithOne()
+            .HasForeignKey(x => x.TenantId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // 🔹 USERS (1:N)
         b.HasMany(x => x.Users)

@@ -58,14 +58,20 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 Entities/Tenants/Events/
  InvitationUsedDomainEvent.cs
  TenantDeactivatedDomainEvent.cs
+ TenantRoleCreatedDomainEvent.cs
+ TenantRoleUpdatedDomainEvent.cs
  UserAccessResolvedDomainEvent.cs
  UserCreatedFromInvitationDomainEvent.cs
  UserInvitedDomainEvent.cs
 Entities/Tenants/Exceptions/
  DuplicateInvitationException.cs
+ InvalidPermissionException.cs
  InvitationAlreadyUsedException.cs
  InvitationExpiredException.cs
  InvitationNotFoundException.cs
+ RoleAlreadyExistsException.cs
+ RoleNotFoundException.cs
+ SystemRoleCannotBeModifiedException.cs
  TenantInactiveException.cs
  TenantNameRequiredException.cs
  TenantNotFoundException.cs
@@ -73,6 +79,7 @@ Entities/Tenants/Exceptions/
 Entities/Tenants/
  Invitation.cs
  Tenant.cs
+ TenantRole.cs
  User.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
@@ -85,10 +92,10 @@ ValueObjects/
   InvalidEmailException.cs
   InvalidExternalIdException.cs
   InvalidInvitationTtlException.cs
-  InvalidRoleException.cs
  ExternalId.cs
  InvitationTtl.cs
- Role.cs
+ PermissionCatalog.cs
+ RolePermission.cs
 
 [metadataReferences]
 ../Atlas.SharedKernel/obj/Debug/net10.0/ref/Atlas.SharedKernel.dll

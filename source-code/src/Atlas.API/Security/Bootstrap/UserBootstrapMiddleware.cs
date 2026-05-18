@@ -1,4 +1,4 @@
-﻿using Atlas.API.Errors;
+using Atlas.API.Errors;
 using Atlas.API.Observability;
 using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
@@ -14,7 +14,7 @@ namespace Atlas.API.Security.Bootstrap;
 ///
 /// Responsibilities:
 /// - Resolve tenant access
-/// - Create internal application claims
+/// - Create internal application claims (tenantId, userId, roleId, permissions)
 /// - Persist claims into the auth cookie
 /// - Ensure bootstrap runs only once
 ///
@@ -104,16 +104,9 @@ public sealed class UserBootstrapMiddleware
         // ==========================================
         //
 
-        var cmd = new Command(
-            tenantName,
-            oid,
-            email
-        );
+        var cmd = new Command(tenantName, oid, email);
 
-        var result = await resolveAccessWorkflow.ExecuteAsync(
-            cmd,
-            context.RequestAborted
-        );
+        var result = await resolveAccessWorkflow.ExecuteAsync(cmd, context.RequestAborted);
 
         //
         // ==========================================
@@ -138,15 +131,17 @@ public sealed class UserBootstrapMiddleware
 
         var identity = new ClaimsIdentity("atlas");
 
-        identity.AddClaim(new Claim(AtlasClaims.TenantId, value.TenantId.ToString()));
-
+        identity.AddClaim(new Claim(AtlasClaims.TenantId,   value.TenantId.ToString()));
         identity.AddClaim(new Claim(AtlasClaims.TenantName, value.TenantName));
-
-        identity.AddClaim(new Claim(AtlasClaims.UserId, value.UserId.ToString()));
-
-        identity.AddClaim(new Claim(ClaimTypes.Role, value.Role));
-
+        identity.AddClaim(new Claim(AtlasClaims.UserId,     value.UserId.ToString()));
+        identity.AddClaim(new Claim(AtlasClaims.UserEmail,  email));
+        identity.AddClaim(new Claim(AtlasClaims.RoleId,     value.TenantRoleId.ToString()));
+        identity.AddClaim(new Claim(ClaimTypes.Role,         value.RoleName));
         identity.AddClaim(new Claim(AtlasClaims.BootstrapCompleted, "true"));
+
+        // One claim per permission — authorization handler checks HasClaim(type, value)
+        foreach (var permission in value.Permissions)
+            identity.AddClaim(new Claim(AtlasClaims.Permission, permission));
 
         //
         // ==========================================

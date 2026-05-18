@@ -6,19 +6,21 @@ namespace Atlas.Identity.Tests.Tenants;
 
 public sealed class UserTests
 {
+    private static readonly Guid DefaultRoleId = Guid.NewGuid();
+
     internal static class UserBuilder
     {
         public static User Create(
             Guid? tenantId = null,
             string externalId = "oid-123",
             string email = "user@test.com",
-            string role = "admin")
+            Guid? tenantRoleId = null)
         {
             return new User(
                 tenantId ?? Guid.NewGuid(),
                 ExternalId.Create(externalId),
                 Email.Create(email),
-                Role.Create(role)
+                tenantRoleId ?? DefaultRoleId
             );
         }
     }
@@ -31,18 +33,19 @@ public sealed class UserTests
     public void Constructor_ShouldCreateActiveUser_WithValidData()
     {
         var tenantId = Guid.NewGuid();
+        var roleId = Guid.NewGuid();
 
         var user = new User(
             tenantId,
             ExternalId.Create("oid-123"),
             Email.Create("user@test.com"),
-            Role.Create("admin")
+            roleId
         );
 
         user.TenantId.Should().Be(tenantId);
         user.ExternalId.Value.Should().Be("oid-123");
         user.Email.Value.Should().Be("user@test.com");
-        user.Role.Value.Should().Be("admin");
+        user.TenantRoleId.Should().Be(roleId);
         user.IsActive.Should().BeTrue();
     }
 
@@ -51,23 +54,26 @@ public sealed class UserTests
     // ------------------------------------------------------------
 
     [Fact]
-    public void ChangeRole_ShouldUpdateRole_WhenValidRoleProvided()
+    public void ChangeRole_ShouldUpdateTenantRoleId_WhenNewRoleProvided()
     {
-        var user = UserBuilder.Create(role: "admin");
+        var originalRoleId = Guid.NewGuid();
+        var newRoleId = Guid.NewGuid();
+        var user = UserBuilder.Create(tenantRoleId: originalRoleId);
 
-        user.ChangeRole(Role.Create("member"));
+        user.ChangeRole(newRoleId);
 
-        user.Role.Value.Should().Be("member");
+        user.TenantRoleId.Should().Be(newRoleId);
     }
 
     [Fact]
-    public void ChangeRole_ShouldBeIdempotent_WhenSameRoleIsProvided()
+    public void ChangeRole_ShouldBeIdempotent_WhenSameRoleIdProvided()
     {
-        var user = UserBuilder.Create(role: "admin");
+        var roleId = Guid.NewGuid();
+        var user = UserBuilder.Create(tenantRoleId: roleId);
 
-        user.ChangeRole(Role.Create("admin"));
+        user.ChangeRole(roleId);
 
-        user.Role.Value.Should().Be("admin");
+        user.TenantRoleId.Should().Be(roleId);
     }
 
     // ------------------------------------------------------------
