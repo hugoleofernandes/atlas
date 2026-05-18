@@ -20,9 +20,19 @@ public sealed class CommandHandler : ICommandHandler
                 cmd.TenantName.ToLowerInvariant(), ct)
             ?? throw new TenantNotFoundException(cmd.TenantName);
 
+        // If the user already exists, use their stored ExternalId.
+        // This makes the command idempotent: the caller's OID is only meaningful
+        // on first access (when the user is created from the invitation).
+        // In production the Entra OID never changes, so this is a no-op.
+        // In dev login the fake OID may differ from a previously stored OID.
+        var email = Email.Create(cmd.Email);
+        var existingExternalId = tenant.Users
+            .FirstOrDefault(u => u.Email.Value == email.Value && u.IsActive)
+            ?.ExternalId.Value;
+
         var user = tenant.ResolveAccess(
-            ExternalId.Create(cmd.ExternalOid),
-            Email.Create(cmd.Email));
+            ExternalId.Create(existingExternalId ?? cmd.ExternalOid),
+            email);
 
         var role = tenant.Roles.Single(r => r.Id == user.RoleId);
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();

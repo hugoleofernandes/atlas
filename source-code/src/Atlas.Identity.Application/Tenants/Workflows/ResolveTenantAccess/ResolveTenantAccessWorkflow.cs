@@ -1,37 +1,31 @@
-using Atlas.BuildingBlocks.Infrastructure.Validation;
+using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Atlas.SharedKernel.Application.Commands;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 
-public sealed class ResolveTenantAccessWorkflow : IResolveTenantAccessWorkflow
+public sealed class ResolveTenantAccessWorkflow : WorkflowBase<Command, Output>, IResolveTenantAccessWorkflow
 {
-    private readonly IValidator<Command> _validator;
     private readonly ICommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
 
     public ResolveTenantAccessWorkflow(
         IValidator<Command> validator,
         ICommandHandler commandHandler,
-        IIdentityUnitOfWork uow)
+        IIdentityUnitOfWork uow,
+        ILoggerFactory loggerFactory) : base(validator, loggerFactory)
     {
-        _validator = validator;
         _commandHandler = commandHandler;
         _uow = uow;
     }
 
-    public async Task<Result<Output>> ExecuteAsync(Command cmd, CancellationToken ct)
+    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
     {
-        var validation = await _validator.ValidateAsync(cmd, ct);
-        if (!validation.IsValid)
-            return Result.Fail<Output>(validation.ToErrorDefinition());
-
         var output = await _commandHandler.ExecuteAsync(cmd, ct);
-
         await _uow.SaveChangesAsync(ct);
-
-        return Result.Ok(output);
+        return output;
     }
 }

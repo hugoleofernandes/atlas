@@ -46,11 +46,15 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     //.Enrich.WithMachineName()
     .Enrich.WithThreadId()
-    .WriteTo.Console()
+    .WriteTo.Console(outputTemplate:
+        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
     .WriteTo.File(
         path: "logs/log-.txt",
         rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 7)
+        retainedFileCountLimit: 7,
+        outputTemplate:
+            "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}" +
+            " {Properties:j}{NewLine}{Exception}")
     .CreateLogger();
 
 //try

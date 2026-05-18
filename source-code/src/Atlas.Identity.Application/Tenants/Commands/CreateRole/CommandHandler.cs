@@ -1,26 +1,19 @@
 using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
-using Atlas.Identity.Domain.ValueObjects;
 using Atlas.SharedKernel.Application;
-using Microsoft.Extensions.Options;
 
-namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
+namespace Atlas.Identity.Application.Tenants.Commands.CreateRole;
 
 public sealed class CommandHandler : ICommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
-    private readonly TimeSpan _defaultTtl;
 
-    public CommandHandler(
-        ITenantRepository tenantRepository,
-        IRequestContext requestContext,
-        IOptions<InvitationSettings> options)
+    public CommandHandler(ITenantRepository tenantRepository, IRequestContext requestContext)
     {
         _tenantRepository = tenantRepository;
         _requestContext = requestContext;
-        _defaultTtl = TimeSpan.FromDays(options.Value.TtlDays);
     }
 
     public async Task<Output> ExecuteAsync(Command cmd, CancellationToken ct)
@@ -32,18 +25,10 @@ public sealed class CommandHandler : ICommandHandler
             .GetByNameWithUsersInvitationsAndRolesAsync(tenantName, ct)
             ?? throw new TenantNotFoundException(tenantName);
 
-        var invitation = tenant.InviteUser(
-            Email.Create(cmd.Email),
-            cmd.RoleId,
-            InvitationTtl.Create(_defaultTtl));
+        var role = tenant.AddCustomRole(cmd.Name, cmd.PermissionCodes);
 
-        var role = tenant.Roles.Single(r => r.Id == cmd.RoleId);
+        var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
-        return new Output(
-            invitation.Id,
-            invitation.Email.Value,
-            role.Id,
-            role.Name,
-            invitation.ExpiresAt);
+        return new Output(role.Id, role.Name, permissions);
     }
 }

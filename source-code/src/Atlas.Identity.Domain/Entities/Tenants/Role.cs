@@ -43,6 +43,9 @@ public sealed class Role : AuditableEntity
         bool isSystem = false,
         Guid? id = null)
     {
+        if (name.Length is < 3 or > 10)
+            throw new InvalidRoleNameException();
+
         var codes = permissionCodes.ToList();
 
         var validSet = isSystem ? PermissionCatalog.AllIncludingSystem : PermissionCatalog.All;

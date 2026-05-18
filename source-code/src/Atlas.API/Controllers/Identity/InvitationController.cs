@@ -51,12 +51,3 @@ public sealed class InvitationController(
                 value.ExpiresAt));
     }
 }
-
-public sealed record InviteUserResponse(
-    Guid InvitationId,
-    string Email,
-    Guid RoleId,
-    string RoleName,
-    DateTime ExpiresAt
-);
-

@@ -1,18 +1,18 @@
 using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Abstractions;
-using Atlas.Identity.Application.Tenants.Commands.InviteUser;
+using Atlas.Identity.Application.Tenants.Commands.CreateRole;
 using Atlas.SharedKernel.Application.Commands;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace Atlas.Identity.Application.Tenants.Workflows.InviteUser;
+namespace Atlas.Identity.Application.Tenants.Workflows.CreateRole;
 
-public sealed class InviteUserWorkflow : WorkflowBase<Command, Output>, IInviteUserWorkflow
+public sealed class CreateRoleWorkflow : WorkflowBase<Command, Output>, ICreateRoleWorkflow
 {
     private readonly ICommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
 
-    public InviteUserWorkflow(
+    public CreateRoleWorkflow(
         IValidator<Command> validator,
         ICommandHandler commandHandler,
         IIdentityUnitOfWork uow,

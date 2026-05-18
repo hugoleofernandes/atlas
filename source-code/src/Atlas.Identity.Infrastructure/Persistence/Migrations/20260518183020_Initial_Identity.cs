@@ -87,7 +87,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    TenantRoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsUsed = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -110,7 +110,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tenant_roles",
+                name: "roles",
                 schema: "atlas_identity",
                 columns: table => new
                 {
@@ -127,9 +127,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_tenant_roles", x => x.Id);
+                    table.PrimaryKey("PK_roles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_tenant_roles_tenants_TenantId",
+                        name: "FK_roles_tenants_TenantId",
                         column: x => x.TenantId,
                         principalSchema: "atlas_identity",
                         principalTable: "tenants",
@@ -146,7 +146,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false),
                     ExternalId = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    TenantRoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
@@ -173,16 +173,16 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    TenantRoleId = table.Column<Guid>(type: "uuid", nullable: false)
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_role_permissions", x => new { x.TenantRoleId, x.code });
+                    table.PrimaryKey("PK_role_permissions", x => new { x.RoleId, x.code });
                     table.ForeignKey(
-                        name: "FK_role_permissions_tenant_roles_TenantRoleId",
-                        column: x => x.TenantRoleId,
+                        name: "FK_role_permissions_roles_RoleId",
+                        column: x => x.RoleId,
                         principalSchema: "atlas_identity",
-                        principalTable: "tenant_roles",
+                        principalTable: "roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -236,9 +236,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 column: "Type");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tenant_roles_TenantId_Name",
+                name: "IX_roles_TenantId_Name",
                 schema: "atlas_identity",
-                table: "tenant_roles",
+                table: "roles",
                 columns: new[] { "TenantId", "Name" },
                 unique: true);
 
@@ -287,7 +287,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 schema: "atlas_identity");
 
             migrationBuilder.DropTable(
-                name: "tenant_roles",
+                name: "roles",
                 schema: "atlas_identity");
 
             migrationBuilder.DropTable(
