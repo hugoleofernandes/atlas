@@ -1,4 +1,5 @@
 using Atlas.BuildingBlocks.Infrastructure.Workflows;
+using Atlas.Identity.Application.Tenants.Queries.Dtos;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.Logging;
 

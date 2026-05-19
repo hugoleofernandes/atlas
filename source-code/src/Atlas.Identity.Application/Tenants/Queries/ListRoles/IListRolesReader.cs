@@ -1,3 +1,4 @@
+using Atlas.Identity.Application.Tenants.Queries.Dtos;
 using Atlas.SharedKernel.Application;
 
 namespace Atlas.Identity.Application.Tenants.Queries.ListRoles;

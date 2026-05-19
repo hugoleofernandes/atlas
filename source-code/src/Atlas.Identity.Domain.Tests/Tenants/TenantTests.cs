@@ -492,18 +492,19 @@ public class TenantTests
     }
 
     // ============================================================
-    // 6. UPDATE ROLE PERMISSIONS
+    // 6. UPDATE ROLE
     // ============================================================
 
     [Fact]
-    public void UpdateRolePermissions_ShouldUpdatePermissions_WhenRoleIsCustom()
+    public void UpdateRole_ShouldUpdateNameAndPermissions_WhenRoleIsCustom()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
         var custom = tenant.AddCustomRole("custom", [PermissionCatalog.Staff.Read]);
         tenant.ClearDomainEvents();
 
-        tenant.UpdateRolePermissions(custom.Id, [PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+        tenant.UpdateRole(custom.Id, "renamed", [PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
 
+        custom.Name.Should().Be("renamed");
         custom.Permissions.Select(p => p.Code).Should()
             .BeEquivalentTo([PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
         tenant.DomainEvents.Should().ContainSingle()
@@ -511,23 +512,48 @@ public class TenantTests
     }
 
     [Fact]
-    public void UpdateRolePermissions_ShouldThrow_WhenRoleIsSystem()
+    public void UpdateRole_ShouldThrow_WhenRoleIsSystem()
     {
         var (tenant, adminRoleId, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.UpdateRolePermissions(adminRoleId, [PermissionCatalog.Staff.Read]);
+        var act = () => tenant.UpdateRole(adminRoleId, "newname", [PermissionCatalog.Staff.Read]);
 
         act.Should().Throw<SystemRoleCannotBeModifiedException>();
     }
 
     [Fact]
-    public void UpdateRolePermissions_ShouldThrow_WhenRoleDoesNotExist()
+    public void UpdateRole_ShouldThrow_WhenRoleDoesNotExist()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.UpdateRolePermissions(Guid.NewGuid(), [PermissionCatalog.Staff.Read]);
+        var act = () => tenant.UpdateRole(Guid.NewGuid(), "any", [PermissionCatalog.Staff.Read]);
 
         act.Should().Throw<RoleNotFoundException>();
+    }
+
+    [Fact]
+    public void UpdateRole_ShouldThrow_WhenNameAlreadyExistsInAnotherRole()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        tenant.AddCustomRole("roleone", [PermissionCatalog.Staff.Read]);
+        var roleTwo = tenant.AddCustomRole("roletwo", [PermissionCatalog.Staff.Read]);
+
+        var act = () => tenant.UpdateRole(roleTwo.Id, "roleone", [PermissionCatalog.Staff.Read]);
+
+        act.Should().Throw<RoleAlreadyExistsException>();
+    }
+
+    [Fact]
+    public void UpdateRole_ShouldAllowKeepingSameName()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var custom = tenant.AddCustomRole("custom", [PermissionCatalog.Staff.Read]);
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.UpdateRole(custom.Id, "custom", [PermissionCatalog.Staff.Update]);
+
+        act.Should().NotThrow();
+        custom.Permissions.Select(p => p.Code).Should().BeEquivalentTo([PermissionCatalog.Staff.Update]);
     }
 
     // ============================================================

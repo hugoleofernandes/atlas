@@ -170,23 +170,31 @@ public sealed class Tenant : AggregateRoot
     }
 
     /// <summary>
-    /// Updates the permission set of an existing custom role.
+    /// Updates the name and permission set of an existing custom role.
     ///
     /// Invariants:
     /// - Tenant must be active.
     /// - Role must exist.
     /// - Role must not be a system role.
+    /// - New name must be unique within the tenant (active and inactive roles included).
     /// - All permission codes must exist in PermissionCatalog.All.
     ///
-    /// Emits: TenantRoleUpdatedDomainEvent
+    /// Emits: RoleUpdatedDomainEvent
     /// </summary>
-    public void UpdateRolePermissions(Guid roleId, IEnumerable<string> permissionCodes)
+    public void UpdateRole(Guid roleId, string name, IEnumerable<string> permissionCodes)
     {
         EnsureActive();
 
         var role = _roles.FirstOrDefault(r => r.Id == roleId)
             ?? throw new RoleNotFoundException(roleId);
 
+        if (role.IsSystem)
+            throw new SystemRoleCannotBeModifiedException(role.Name);
+
+        if (_roles.Any(r => r.Id != roleId && r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            throw new RoleAlreadyExistsException(name);
+
+        role.Rename(name);
         role.UpdatePermissions(permissionCodes);
         AddDomainEvent(new RoleUpdatedDomainEvent(Id, roleId));
     }

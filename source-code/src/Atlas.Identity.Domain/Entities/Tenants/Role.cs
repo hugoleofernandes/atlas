@@ -42,6 +42,14 @@ public sealed class Role : AuditableEntity
         IsActive = false;
     }
 
+    internal void Rename(string name)
+    {
+        if (name.Length is < 3 or > 10)
+            throw new InvalidRoleNameException();
+
+        Name = name;
+    }
+
     internal static Role Create(
         Guid tenantId,
         string name,

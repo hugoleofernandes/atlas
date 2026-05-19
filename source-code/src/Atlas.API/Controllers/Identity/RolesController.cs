@@ -3,14 +3,19 @@ using Atlas.API.Models.Roles;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.Identity.Application.Tenants.Commands.CreateRole;
-using Atlas.Identity.Application.Tenants.Queries.ListRoles;
+using Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 using Atlas.Identity.Application.Tenants.Workflows.CreateRole;
 using Atlas.Identity.Application.Tenants.Workflows.RemoveRole;
+using Atlas.Identity.Application.Tenants.Workflows.UpdateRole;
 using Atlas.Identity.Domain.Permissions;
 using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Dtos = Atlas.Identity.Application.Tenants.Queries.Dtos;
+using GetRoleById = Atlas.Identity.Application.Tenants.Queries.GetRoleById;
+using ListRoles = Atlas.Identity.Application.Tenants.Queries.ListRoles;
 using RemoveRole = Atlas.Identity.Application.Tenants.Commands.RemoveRole;
+using UpdateRole = Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 
 namespace Atlas.API.Controllers.Identity;
 
@@ -19,8 +24,10 @@ namespace Atlas.API.Controllers.Identity;
 [Authorize]
 public sealed class RolesController(
     ICreateRoleWorkflow createRoleWorkflow,
+    IUpdateRoleWorkflow updateRoleWorkflow,
     IRemoveRoleWorkflow removeRoleWorkflow,
-    IListRolesQueryHandler listRolesQueryHandler,
+    ListRoles.IListRolesQueryHandler listRolesQueryHandler,
+    IGetRoleByIdQueryHandler getRoleByIdQueryHandler,
     ErrorMessageLocalizer errorLocalizer
 ) : AtlasControllerBase(errorLocalizer)
 {
@@ -29,7 +36,7 @@ public sealed class RolesController(
     /// </summary>
     [HttpGet]
     [HasPermission(PermissionCatalog.Tenant.ManageRoles)]
-    [ProducesResponseType(typeof(PagedResult<RoleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedResult<Dtos.RoleDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -39,8 +46,25 @@ public sealed class RolesController(
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 100);
 
-        var result = await listRolesQueryHandler.ExecuteAsync(new Query(page, pageSize, includeInactive), ct);
+        var result = await listRolesQueryHandler.ExecuteAsync(new ListRoles.Query(page, pageSize, includeInactive), ct);
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Returns a single role by id. Returns both active and inactive roles.
+    /// </summary>
+    [HttpGet("{id:guid}")]
+    [HasPermission(PermissionCatalog.Tenant.ManageRoles)]
+    [ProducesResponseType(typeof(Dtos.RoleDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    {
+        var role = await getRoleByIdQueryHandler.ExecuteAsync(new GetRoleById.Query(id), ct);
+
+        if (role is null)
+            return NotFound();
+
+        return Ok(role);
     }
 
     /// <summary>
@@ -69,6 +93,33 @@ public sealed class RolesController(
         return CreatedAtAction(
             nameof(Create),
             new CreateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
+    }
+
+    /// <summary>
+    /// Updates the name and permissions of a custom role.
+    /// System roles cannot be updated.
+    /// Role name must be unique within the tenant (including inactive roles).
+    /// </summary>
+    [HttpPut("{id:guid}")]
+    [HasPermission(PermissionCatalog.Tenant.ManageRoles)]
+    [ProducesResponseType(typeof(UpdateRoleResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromBody] UpdateRoleRequest request,
+        CancellationToken ct)
+    {
+        var cmd = new UpdateRole.Command(id, request.Name, request.PermissionCodes);
+        var result = await updateRoleWorkflow.ExecuteAsync(cmd, ct);
+
+        if (!result.IsSuccess)
+            return ErrorResult(result.ErrorDefinition!);
+
+        var value = result.Value!;
+        return Ok(new UpdateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
     }
 
     /// <summary>

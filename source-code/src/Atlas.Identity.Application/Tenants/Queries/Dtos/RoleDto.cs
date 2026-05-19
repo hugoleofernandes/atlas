@@ -1,4 +1,4 @@
-namespace Atlas.Identity.Application.Tenants.Queries.ListRoles;
+namespace Atlas.Identity.Application.Tenants.Queries.Dtos;
 
 public sealed record RoleDto(
     Guid RoleId,

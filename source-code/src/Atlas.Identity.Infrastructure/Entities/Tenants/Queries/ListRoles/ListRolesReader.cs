@@ -1,3 +1,4 @@
+using Atlas.Identity.Application.Tenants.Queries.Dtos;
 using Atlas.Identity.Application.Tenants.Queries.ListRoles;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.SharedKernel.Application;
