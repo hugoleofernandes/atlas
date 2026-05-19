@@ -1,18 +1,19 @@
 using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Tenants.Repositories;
+using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.Logging;
 
-namespace Atlas.Identity.Application.Tenants.Commands.CreateRole;
+namespace Atlas.Identity.Application.Tenants.Commands.RemoveRole;
 
-public sealed class CommandHandler : CommandHandlerBase<Command, Output>, ICommandHandler
+public sealed class RemoveRoleCommandHandler : CommandHandlerBase<RemoveRoleCommand, RemoveRoleOutput>, IRemoveRoleCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
 
-    public CommandHandler(
+    public RemoveRoleCommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
         ILoggerFactory loggerFactory) : base(loggerFactory)
@@ -21,7 +22,7 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
         _requestContext = requestContext;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<RemoveRoleOutput> HandleAsync(RemoveRoleCommand cmd, CancellationToken ct)
     {
         var tenantName = _requestContext.TenantName
             ?? throw new TenantContextNotResolvedException();
@@ -30,10 +31,12 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
             .GetByNameWithUsersInvitationsAndRolesAsync(tenantName, ct)
             ?? throw new TenantNotFoundException(tenantName);
 
-        var role = tenant.AddCustomRole(cmd.Name, cmd.PermissionCodes);
+        tenant.RemoveRole(cmd.RoleId);
 
-        var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
+        var wasPhysicallyDeleted = tenant.DomainEvents
+            .OfType<RoleDeletedDomainEvent>()
+            .Any();
 
-        return new Output(role.Id, role.Name, permissions);
+        return new RemoveRoleOutput(wasPhysicallyDeleted);
     }
 }

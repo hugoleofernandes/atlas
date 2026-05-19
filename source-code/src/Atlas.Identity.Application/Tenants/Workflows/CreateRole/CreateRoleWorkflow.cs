@@ -7,14 +7,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.CreateRole;
 
-public sealed class CreateRoleWorkflow : WorkflowBase<Command, Output>, ICreateRoleWorkflow
+public sealed class CreateRoleWorkflow : WorkflowBase<CreateRoleCommand, CreateRoleOutput>, ICreateRoleWorkflow
 {
-    private readonly ICommandHandler _commandHandler;
+    private readonly ICreateRoleCommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
 
     public CreateRoleWorkflow(
-        IValidator<Command> validator,
-        ICommandHandler commandHandler,
+        IValidator<CreateRoleCommand> validator,
+        ICreateRoleCommandHandler commandHandler,
         IIdentityUnitOfWork uow,
         ILoggerFactory loggerFactory) : base(validator, loggerFactory)
     {
@@ -22,7 +22,7 @@ public sealed class CreateRoleWorkflow : WorkflowBase<Command, Output>, ICreateR
         _uow = uow;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<CreateRoleOutput> HandleAsync(CreateRoleCommand cmd, CancellationToken ct)
     {
         var output = await _commandHandler.ExecuteAsync(cmd, ct);
         await _uow.SaveChangesAsync(ct);

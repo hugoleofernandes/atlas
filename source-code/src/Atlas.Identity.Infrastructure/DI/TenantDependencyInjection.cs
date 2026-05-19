@@ -27,9 +27,9 @@ public static class TenantDependencyInjection
         services.AddScoped<ICreateRoleWorkflow, CreateRoleWorkflow>();
 
         // COMMAND HANDLERS
-        services.AddScoped<ResolveTenantAccess.ICommandHandler, ResolveTenantAccess.CommandHandler>();
-        services.AddScoped<InviteUser.ICommandHandler, InviteUser.CommandHandler>();
-        services.AddScoped<CreateRole.ICommandHandler, CreateRole.CommandHandler>();
+        services.AddScoped<ResolveTenantAccess.IResolveTenantAccessCommandHandler, ResolveTenantAccess.ResolveTenantAccessCommandHandler>();
+        services.AddScoped<InviteUser.IInviteUserCommandHandler, InviteUser.InviteUserCommandHandler>();
+        services.AddScoped<CreateRole.ICreateRoleCommandHandler, CreateRole.CreateRoleCommandHandler>();
 
         // OUTBOX
         services.AddScoped<IIntegrationEventEnqueuer, IntegrationEventEnqueuer>();

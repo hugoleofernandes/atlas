@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace Atlas.Identity.Application.Tenants.Commands.RemoveRole;
 
-public sealed class Validator : AbstractValidator<Command>
+public sealed class RemoveRoleValidator : AbstractValidator<RemoveRoleCommand>
 {
-    public Validator()
+    public RemoveRoleValidator()
     {
         RuleFor(x => x.RoleId).NotEmpty();
     }

@@ -1,6 +1,6 @@
 namespace Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
-public sealed record Output(
+public sealed record ResolveTenantAccessOutput(
     Guid TenantId,
     string TenantName,
     Guid UserId,

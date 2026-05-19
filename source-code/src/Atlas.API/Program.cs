@@ -1,5 +1,6 @@
-﻿using Atlas.API.Configs;
+using Atlas.API.Configs;
 using Atlas.API.Errors;
+using Atlas.API.Observability;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.API.Security.Bootstrap;
@@ -32,39 +33,87 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.OpenTelemetry;
 
 //
 // ==========================================
-// ðŸ”¹ SERILOG CONFIG (ANTES DO BUILDER)
+// 🔹 SERILOG BOOTSTRAP (captura erros de startup)
 // ==========================================
 //
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    //.Enrich.WithMachineName()
-    .Enrich.WithThreadId()
-    .WriteTo.Console(outputTemplate:
-        "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .WriteTo.File(
-        path: "logs/log-.txt",
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 7,
-        outputTemplate:
-            "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}" +
-            " {Properties:j}{NewLine}{Exception}")
-    .CreateLogger();
+    .MinimumLevel.Warning()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-//try
-//{
+try
+{
     var builder = WebApplication.CreateBuilder(args);
 
-    builder.Host.UseSerilog();
+    //
+    // ==========================================
+    // 🔹 SERILOG FULL CONFIG (hosted — acessa IConfiguration)
+    // ==========================================
+    //
+
+    builder.Host.UseSerilog((context, services, config) =>
+    {
+        var otel = context.Configuration
+            .GetSection(ObservabilitySettings.SectionName)
+            .Get<ObservabilitySettings>() ?? new ObservabilitySettings();
+
+        config
+            .MinimumLevel.Information()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .Enrich.WithThreadId()
+            // Console sempre ativo — saída limpa para desenvolvimento
+            .WriteTo.Console(outputTemplate:
+                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+
+        if (otel.IsEnabled)
+        {
+            // Logs → Grafana Cloud Loki via OTLP
+            config.WriteTo.OpenTelemetry(o =>
+            {
+                o.Endpoint = $"{otel.Endpoint!.TrimEnd('/')}/v1/logs";
+                o.Protocol = OtlpProtocol.HttpProtobuf;
+                o.Headers = new Dictionary<string, string>
+                {
+                    ["Authorization"] = otel.ApiKey!
+                };
+                o.ResourceAttributes = new Dictionary<string, object>
+                {
+                    ["service.name"]    = otel.ServiceName,
+                    ["service.version"] = otel.ServiceVersion,
+                    ["deployment.environment"] = context.HostingEnvironment.EnvironmentName.ToLowerInvariant()
+                };
+            });
+        }
+        else
+        {
+            // Sem Grafana Cloud configurado: fallback para arquivo local
+            config.WriteTo.File(
+                path: "logs/log-.txt",
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7,
+                outputTemplate:
+                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}" +
+                    " {Properties:j}{NewLine}{Exception}");
+        }
+    });
 
     var services = builder.Services;
     var configuration = builder.Configuration;
+
+    //
+    // ==========================================
+    // 🔹 OBSERVABILITY (OTel traces + metrics → Grafana Cloud)
+    // ==========================================
+    //
+
+    services.AddAtlasObservability(configuration, builder.Environment);
 
     //
     // ==========================================
@@ -100,7 +149,7 @@ Log.Logger = new LoggerConfiguration()
     // ==========================================
     //
 
-    // IDENTITY 
+    // IDENTITY
     services.AddIdentityModuleDependencies();
     services.AddTenantDependencies(builder.Configuration);
     services.AddIdentityOutboxWorkerSupport();
@@ -121,27 +170,6 @@ Log.Logger = new LoggerConfiguration()
     services.AddScoped<IEntityChangeStamper, EntityChangeStamper>();
     services.AddScoped<IEntityTenantStamper, EntityTenantStamper>();
     services.AddScoped<ISavePipeline, SavePipeline>();
-
-
-    //
-    // ==========================================
-    // CQRS + MEDIATR
-    // ==========================================
-    //
-
-    //services.AddMediatR(cfg =>
-    //{
-    //    cfg.RegisterServicesFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
-    //    cfg.RegisterServicesFromAssembly(typeof(StaffApplicationAssemblyMarker).Assembly);
-    //});
-
-    //services.AddValidatorsFromAssembly(typeof(IdentityAssemblyMarker).Assembly);
-    //services.AddValidatorsFromAssembly(typeof(StaffApplicationAssemblyMarker).Assembly);
-
-    //services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-    //services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
-
-    //services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();    
 
     //
     // ==========================================
@@ -252,13 +280,13 @@ Log.Logger = new LoggerConfiguration()
         opts.ApplyCurrentCultureToResponseHeaders = true;
     });
 
-    // ðŸ”¹ CorrelationId PRIMEIRO
+    // 🔹 CorrelationId PRIMEIRO
     app.UseMiddleware<CorrelationIdMiddleware>();
 
-    // ðŸ”¹ Serilog HTTP logging
+    // 🔹 Serilog HTTP logging
     app.UseSerilogRequestLogging();
 
-    // ðŸ”¹ Exception handling global
+    // 🔹 Exception handling global
     app.UseMiddleware<GlobalExceptionMiddleware>();
 
     app.UseSecurityHeaders();
@@ -277,14 +305,14 @@ Log.Logger = new LoggerConfiguration()
     app.UseOidcMetadataWarmup(configuration);
 
     app.Run();
-//}
-//catch (Exception ex)
-//{
-//    Log.Fatal(ex, "Application failed to start");
-//}
-//finally
-//{
-//    Log.CloseAndFlush();
-//}
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application failed to start");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
 public partial class Program { }

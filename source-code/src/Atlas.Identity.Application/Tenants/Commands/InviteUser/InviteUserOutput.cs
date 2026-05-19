@@ -1,6 +1,6 @@
 namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
 
-public sealed record Output(
+public sealed record InviteUserOutput(
     Guid InvitationId,
     string Email,
     Guid RoleId,

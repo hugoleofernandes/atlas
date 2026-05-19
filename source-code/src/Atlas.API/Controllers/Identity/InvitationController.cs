@@ -32,7 +32,7 @@ public sealed class InvitationController(
         [FromBody] InviteUserRequest request,
         CancellationToken ct)
     {
-        var cmd = new Command(request.Email, request.RoleId);
+        var cmd = new InviteUserCommand(request.Email, request.RoleId);
 
         var result = await inviteUserWorkflow.ExecuteAsync(cmd, ct);
 

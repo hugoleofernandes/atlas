@@ -33,7 +33,7 @@ public sealed class DevLoginController(
         // Deterministic fake OID: same email always maps to the same user in the DB
         var fakeOid = new Guid(MD5.HashData(Encoding.UTF8.GetBytes(request.Email))).ToString();
 
-        var cmd = new ResolveTenantAccess.Command(request.TenantName, fakeOid, request.Email);
+        var cmd = new ResolveTenantAccess.ResolveTenantAccessCommand(request.TenantName, fakeOid, request.Email);
         var result = await workflow.ExecuteAsync(cmd, ct);
 
         if (!result.IsSuccess)

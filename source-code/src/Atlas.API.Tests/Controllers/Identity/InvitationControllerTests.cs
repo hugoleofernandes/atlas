@@ -25,8 +25,8 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
         var invitationId = Guid.NewGuid();
         var expiresAt    = DateTime.UtcNow.AddDays(7);
 
-        _workflow.ExecuteAsync(Arg.Any<Command>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Ok(new Output(invitationId, "new@acme.com", roleId, "Member", expiresAt)));
+        _workflow.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Ok(new InviteUserOutput(invitationId, "new@acme.com", roleId, "Member", expiresAt)));
 
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
 
@@ -100,8 +100,8 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
             "This email has already been invited.",
             ErrorCategory.Conflict);
 
-        _workflow.ExecuteAsync(Arg.Any<Command>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Fail<Output>(error));
+        _workflow.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Fail<InviteUserOutput>(error));
 
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
 
@@ -122,8 +122,8 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
             "The requested role does not exist.",
             ErrorCategory.NotFound);
 
-        _workflow.ExecuteAsync(Arg.Any<Command>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Fail<Output>(error));
+        _workflow.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
+            .Returns(Result.Fail<InviteUserOutput>(error));
 
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
 
@@ -139,10 +139,10 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
     [Fact]
     public async Task Invite_TenantIsResolvedFromSession_NotFromRequestBody()
     {
-        Command? capturedCommand = null;
+        InviteUserCommand? capturedCommand = null;
 
-        _workflow.ExecuteAsync(Arg.Do<Command>(c => capturedCommand = c), Arg.Any<CancellationToken>())
-            .Returns(Result.Ok(new Output(
+        _workflow.ExecuteAsync(Arg.Do<InviteUserCommand>(c => capturedCommand = c), Arg.Any<CancellationToken>())
+            .Returns(Result.Ok(new InviteUserOutput(
                 Guid.NewGuid(), "new@acme.com", Guid.NewGuid(), "Member", DateTime.UtcNow.AddDays(7))));
 
         // The client carries AtlasApiFactory.TestTenantName in its claims

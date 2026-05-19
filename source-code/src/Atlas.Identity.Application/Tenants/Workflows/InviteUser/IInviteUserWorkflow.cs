@@ -5,5 +5,5 @@ namespace Atlas.Identity.Application.Tenants.Workflows.InviteUser;
 
 public interface IInviteUserWorkflow
 {
-    Task<Result<Output>> ExecuteAsync(Command cmd, CancellationToken ct);
+    Task<Result<InviteUserOutput>> ExecuteAsync(InviteUserCommand cmd, CancellationToken ct);
 }

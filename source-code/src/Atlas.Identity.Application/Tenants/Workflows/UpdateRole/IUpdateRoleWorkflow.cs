@@ -5,5 +5,5 @@ namespace Atlas.Identity.Application.Tenants.Workflows.UpdateRole;
 
 public interface IUpdateRoleWorkflow
 {
-    Task<Result<Output>> ExecuteAsync(Command cmd, CancellationToken ct);
+    Task<Result<UpdateRoleOutput>> ExecuteAsync(UpdateRoleCommand cmd, CancellationToken ct);
 }

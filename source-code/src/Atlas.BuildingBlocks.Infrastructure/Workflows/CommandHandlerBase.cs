@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.Infrastructure.Observability;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
@@ -17,6 +18,11 @@ public abstract class CommandHandlerBase<TCommand, TOutput>
         var handlerName = GetType().Name;
         var sw = Stopwatch.StartNew();
 
+        using var activity = AtlasActivitySource.Source
+            .StartActivity($"Handler {handlerName}", ActivityKind.Internal);
+        activity?.SetTag("atlas.handler", handlerName);
+        activity?.SetTag("atlas.layer", "handler");
+
         using (_logger.BeginScope(new Dictionary<string, object?> { ["HandlerName"] = handlerName }))
         {
             _logger.LogInformation("CommandHandler {Handler} started", handlerName);
@@ -26,6 +32,7 @@ public abstract class CommandHandlerBase<TCommand, TOutput>
             _logger.LogInformation("CommandHandler {Handler} succeeded in {ElapsedMs}ms",
                 handlerName, sw.ElapsedMilliseconds);
 
+            activity?.SetStatus(ActivityStatusCode.Ok);
             return result;
         }
     }

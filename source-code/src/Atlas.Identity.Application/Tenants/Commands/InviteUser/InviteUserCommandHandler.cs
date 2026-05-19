@@ -9,13 +9,13 @@ using Microsoft.Extensions.Options;
 
 namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
 
-public sealed class CommandHandler : CommandHandlerBase<Command, Output>, ICommandHandler
+public sealed class InviteUserCommandHandler : CommandHandlerBase<InviteUserCommand, InviteUserOutput>, IInviteUserCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
     private readonly TimeSpan _defaultTtl;
 
-    public CommandHandler(
+    public InviteUserCommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
         IOptions<InvitationSettings> options,
@@ -26,7 +26,7 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
         _defaultTtl = TimeSpan.FromDays(options.Value.TtlDays);
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<InviteUserOutput> HandleAsync(InviteUserCommand cmd, CancellationToken ct)
     {
         var tenantName = _requestContext.TenantName
             ?? throw new TenantContextNotResolvedException();
@@ -42,7 +42,7 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
 
         var role = tenant.Roles.Single(r => r.Id == cmd.RoleId);
 
-        return new Output(
+        return new InviteUserOutput(
             invitation.Id,
             invitation.Email.Value,
             role.Id,

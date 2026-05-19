@@ -7,14 +7,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.InviteUser;
 
-public sealed class InviteUserWorkflow : WorkflowBase<Command, Output>, IInviteUserWorkflow
+public sealed class InviteUserWorkflow : WorkflowBase<InviteUserCommand, InviteUserOutput>, IInviteUserWorkflow
 {
-    private readonly ICommandHandler _commandHandler;
+    private readonly IInviteUserCommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
 
     public InviteUserWorkflow(
-        IValidator<Command> validator,
-        ICommandHandler commandHandler,
+        IValidator<InviteUserCommand> validator,
+        IInviteUserCommandHandler commandHandler,
         IIdentityUnitOfWork uow,
         ILoggerFactory loggerFactory) : base(validator, loggerFactory)
     {
@@ -22,7 +22,7 @@ public sealed class InviteUserWorkflow : WorkflowBase<Command, Output>, IInviteU
         _uow = uow;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<InviteUserOutput> HandleAsync(InviteUserCommand cmd, CancellationToken ct)
     {
         var output = await _commandHandler.ExecuteAsync(cmd, ct);
         await _uow.SaveChangesAsync(ct);

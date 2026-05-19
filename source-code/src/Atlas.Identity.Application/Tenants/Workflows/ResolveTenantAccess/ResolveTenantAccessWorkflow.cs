@@ -7,14 +7,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 
-public sealed class ResolveTenantAccessWorkflow : WorkflowBase<Command, Output>, IResolveTenantAccessWorkflow
+public sealed class ResolveTenantAccessWorkflow : WorkflowBase<ResolveTenantAccessCommand, ResolveTenantAccessOutput>, IResolveTenantAccessWorkflow
 {
-    private readonly ICommandHandler _commandHandler;
+    private readonly IResolveTenantAccessCommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
 
     public ResolveTenantAccessWorkflow(
-        IValidator<Command> validator,
-        ICommandHandler commandHandler,
+        IValidator<ResolveTenantAccessCommand> validator,
+        IResolveTenantAccessCommandHandler commandHandler,
         IIdentityUnitOfWork uow,
         ILoggerFactory loggerFactory) : base(validator, loggerFactory)
     {
@@ -22,7 +22,7 @@ public sealed class ResolveTenantAccessWorkflow : WorkflowBase<Command, Output>,
         _uow = uow;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<ResolveTenantAccessOutput> HandleAsync(ResolveTenantAccessCommand cmd, CancellationToken ct)
     {
         var output = await _commandHandler.ExecuteAsync(cmd, ct);
         await _uow.SaveChangesAsync(ct);

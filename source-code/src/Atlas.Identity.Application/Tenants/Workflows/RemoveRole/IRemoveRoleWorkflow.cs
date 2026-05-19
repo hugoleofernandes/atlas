@@ -5,5 +5,5 @@ namespace Atlas.Identity.Application.Tenants.Workflows.RemoveRole;
 
 public interface IRemoveRoleWorkflow
 {
-    Task<Result<Output>> ExecuteAsync(Command cmd, CancellationToken ct);
+    Task<Result<RemoveRoleOutput>> ExecuteAsync(RemoveRoleCommand cmd, CancellationToken ct);
 }

@@ -7,12 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 
-public sealed class CommandHandler : CommandHandlerBase<Command, Output>, ICommandHandler
+public sealed class UpdateRoleCommandHandler : CommandHandlerBase<UpdateRoleCommand, UpdateRoleOutput>, IUpdateRoleCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
 
-    public CommandHandler(
+    public UpdateRoleCommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
         ILoggerFactory loggerFactory) : base(loggerFactory)
@@ -21,7 +21,7 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
         _requestContext = requestContext;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<UpdateRoleOutput> HandleAsync(UpdateRoleCommand cmd, CancellationToken ct)
     {
         var tenantName = _requestContext.TenantName
             ?? throw new TenantContextNotResolvedException();
@@ -35,6 +35,6 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
         var role = tenant.Roles.Single(r => r.Id == cmd.RoleId);
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
-        return new Output(role.Id, role.Name, permissions);
+        return new UpdateRoleOutput(role.Id, role.Name, permissions);
     }
 }

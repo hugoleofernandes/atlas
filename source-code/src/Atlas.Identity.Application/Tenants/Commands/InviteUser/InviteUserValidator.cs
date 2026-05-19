@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
 
-public sealed class Validator : AbstractValidator<Command>
+public sealed class InviteUserValidator : AbstractValidator<InviteUserCommand>
 {
-    public Validator()
+    public InviteUserValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()

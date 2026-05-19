@@ -7,14 +7,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.RemoveRole;
 
-public sealed class RemoveRoleWorkflow : WorkflowBase<Command, Output>, IRemoveRoleWorkflow
+public sealed class RemoveRoleWorkflow : WorkflowBase<RemoveRoleCommand, RemoveRoleOutput>, IRemoveRoleWorkflow
 {
-    private readonly ICommandHandler _commandHandler;
+    private readonly IRemoveRoleCommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
 
     public RemoveRoleWorkflow(
-        IValidator<Command> validator,
-        ICommandHandler commandHandler,
+        IValidator<RemoveRoleCommand> validator,
+        IRemoveRoleCommandHandler commandHandler,
         IIdentityUnitOfWork uow,
         ILoggerFactory loggerFactory) : base(validator, loggerFactory)
     {
@@ -22,7 +22,7 @@ public sealed class RemoveRoleWorkflow : WorkflowBase<Command, Output>, IRemoveR
         _uow = uow;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<RemoveRoleOutput> HandleAsync(RemoveRoleCommand cmd, CancellationToken ct)
     {
         var output = await _commandHandler.ExecuteAsync(cmd, ct);
         await _uow.SaveChangesAsync(ct);

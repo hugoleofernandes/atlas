@@ -1,14 +1,11 @@
 using FluentValidation;
 
-namespace Atlas.Identity.Application.Tenants.Commands.UpdateRole;
+namespace Atlas.Identity.Application.Tenants.Commands.CreateRole;
 
-public sealed class Validator : AbstractValidator<Command>
+public sealed class CreateRoleValidator : AbstractValidator<CreateRoleCommand>
 {
-    public Validator()
+    public CreateRoleValidator()
     {
-        RuleFor(x => x.RoleId)
-            .NotEmpty();
-
         RuleFor(x => x.Name)
             .NotEmpty()
             .MinimumLength(3)

@@ -106,7 +106,7 @@ public sealed class UserBootstrapMiddleware
         // ==========================================
         //
 
-        var cmd = new Command(tenantName, oid, email);
+        var cmd = new ResolveTenantAccessCommand(tenantName, oid, email);
 
         var result = await resolveAccessWorkflow.ExecuteAsync(cmd, context.RequestAborted);
 

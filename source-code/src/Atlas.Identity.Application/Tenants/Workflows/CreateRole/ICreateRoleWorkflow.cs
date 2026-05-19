@@ -5,5 +5,5 @@ namespace Atlas.Identity.Application.Tenants.Workflows.CreateRole;
 
 public interface ICreateRoleWorkflow
 {
-    Task<Result<Output>> ExecuteAsync(Command cmd, CancellationToken ct);
+    Task<Result<CreateRoleOutput>> ExecuteAsync(CreateRoleCommand cmd, CancellationToken ct);
 }

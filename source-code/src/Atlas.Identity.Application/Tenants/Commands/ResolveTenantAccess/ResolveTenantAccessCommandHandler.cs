@@ -6,18 +6,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
-public sealed class CommandHandler : CommandHandlerBase<Command, Output>, ICommandHandler
+public sealed class ResolveTenantAccessCommandHandler : CommandHandlerBase<ResolveTenantAccessCommand, ResolveTenantAccessOutput>, IResolveTenantAccessCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
 
-    public CommandHandler(
+    public ResolveTenantAccessCommandHandler(
         ITenantRepository tenantRepository,
         ILoggerFactory loggerFactory) : base(loggerFactory)
     {
         _tenantRepository = tenantRepository;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<ResolveTenantAccessOutput> HandleAsync(ResolveTenantAccessCommand cmd, CancellationToken ct)
     {
         var tenant = await _tenantRepository
             .GetByNameWithUsersInvitationsAndRolesAsync(
@@ -41,7 +41,7 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
         var role = tenant.Roles.Single(r => r.Id == user.RoleId);
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
-        return new Output(
+        return new ResolveTenantAccessOutput(
             tenant.Id,
             tenant.Name,
             user.Id,

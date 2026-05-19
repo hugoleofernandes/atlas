@@ -23,6 +23,7 @@ public sealed class TenantRepository : ITenantRepository
                 .ThenInclude(r => r.Permissions)
             .Include(t => t.Users)
             .Include(t => t.Invitations)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(t => t.Name == name && t.IsActive, ct);
     }
 }

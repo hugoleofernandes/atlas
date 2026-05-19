@@ -7,14 +7,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Workflows.UpdateRole;
 
-public sealed class UpdateRoleWorkflow : WorkflowBase<Command, Output>, IUpdateRoleWorkflow
+public sealed class UpdateRoleWorkflow : WorkflowBase<UpdateRoleCommand, UpdateRoleOutput>, IUpdateRoleWorkflow
 {
-    private readonly ICommandHandler _commandHandler;
+    private readonly IUpdateRoleCommandHandler _commandHandler;
     private readonly IIdentityUnitOfWork _uow;
 
     public UpdateRoleWorkflow(
-        IValidator<Command> validator,
-        ICommandHandler commandHandler,
+        IValidator<UpdateRoleCommand> validator,
+        IUpdateRoleCommandHandler commandHandler,
         IIdentityUnitOfWork uow,
         ILoggerFactory loggerFactory) : base(validator, loggerFactory)
     {
@@ -22,7 +22,7 @@ public sealed class UpdateRoleWorkflow : WorkflowBase<Command, Output>, IUpdateR
         _uow = uow;
     }
 
-    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
+    protected override async Task<UpdateRoleOutput> HandleAsync(UpdateRoleCommand cmd, CancellationToken ct)
     {
         var output = await _commandHandler.ExecuteAsync(cmd, ct);
         await _uow.SaveChangesAsync(ct);

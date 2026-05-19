@@ -1,5 +1,4 @@
 using Atlas.Identity.Application.Abstractions;
-using Atlas.Identity.Application.Tenants.Commands.RemoveRole;
 using Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 using Atlas.Identity.Application.Tenants.Queries.ListRoles;
 using Atlas.Identity.Application.Tenants.Workflows.RemoveRole;
@@ -8,8 +7,8 @@ using Atlas.Identity.Infrastructure.Entities.Tenants.Queries.GetRoleById;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Queries.ListRoles;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Microsoft.Extensions.DependencyInjection;
-using RemoveRoleCommandHandler = Atlas.Identity.Application.Tenants.Commands.RemoveRole.CommandHandler;
-using UpdateRoleCommandHandler = Atlas.Identity.Application.Tenants.Commands.UpdateRole.CommandHandler;
+using RemoveRoleCommandHandler = Atlas.Identity.Application.Tenants.Commands.RemoveRole.RemoveRoleCommandHandler;
+using UpdateRoleCommandHandler = Atlas.Identity.Application.Tenants.Commands.UpdateRole.UpdateRoleCommandHandler;
 
 namespace Atlas.Identity.Infrastructure.DI;
 
@@ -28,8 +27,8 @@ public static class IdentityDependencyInjection
         services.AddScoped<IGetRoleByIdQueryHandler, GetRoleByIdQueryHandler>();
 
         // Command Handlers
-        services.AddScoped<ICommandHandler, RemoveRoleCommandHandler>();
-        services.AddScoped<Atlas.Identity.Application.Tenants.Commands.UpdateRole.ICommandHandler, UpdateRoleCommandHandler>();
+        services.AddScoped<Atlas.Identity.Application.Tenants.Commands.RemoveRole.IRemoveRoleCommandHandler, RemoveRoleCommandHandler>();
+        services.AddScoped<Atlas.Identity.Application.Tenants.Commands.UpdateRole.IUpdateRoleCommandHandler, UpdateRoleCommandHandler>();
 
         // Workflows
         services.AddScoped<IRemoveRoleWorkflow, RemoveRoleWorkflow>();

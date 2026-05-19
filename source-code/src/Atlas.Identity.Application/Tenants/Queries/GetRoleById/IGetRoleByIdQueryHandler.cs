@@ -4,5 +4,5 @@ namespace Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 
 public interface IGetRoleByIdQueryHandler
 {
-    Task<RoleDto?> ExecuteAsync(Query query, CancellationToken ct);
+    Task<RoleDto?> ExecuteAsync(GetRoleByIdQuery query, CancellationToken ct);
 }

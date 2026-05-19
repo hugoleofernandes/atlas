@@ -46,7 +46,7 @@ public sealed class RolesController(
         page = Math.Max(1, page);
         pageSize = Math.Clamp(pageSize, 1, 100);
 
-        var result = await listRolesQueryHandler.ExecuteAsync(new ListRoles.Query(page, pageSize, includeInactive), ct);
+        var result = await listRolesQueryHandler.ExecuteAsync(new ListRoles.ListRolesQuery(page, pageSize, includeInactive), ct);
         return Ok(result);
     }
 
@@ -59,7 +59,7 @@ public sealed class RolesController(
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
-        var role = await getRoleByIdQueryHandler.ExecuteAsync(new GetRoleById.Query(id), ct);
+        var role = await getRoleByIdQueryHandler.ExecuteAsync(new GetRoleById.GetRoleByIdQuery(id), ct);
 
         if (role is null)
             return NotFound();
@@ -81,7 +81,7 @@ public sealed class RolesController(
         [FromBody] CreateRoleRequest request,
         CancellationToken ct)
     {
-        var cmd = new Command(request.Name, request.PermissionCodes);
+        var cmd = new CreateRoleCommand(request.Name, request.PermissionCodes);
 
         var result = await createRoleWorkflow.ExecuteAsync(cmd, ct);
 
@@ -112,7 +112,7 @@ public sealed class RolesController(
         [FromBody] UpdateRoleRequest request,
         CancellationToken ct)
     {
-        var cmd = new UpdateRole.Command(id, request.Name, request.PermissionCodes);
+        var cmd = new UpdateRole.UpdateRoleCommand(id, request.Name, request.PermissionCodes);
         var result = await updateRoleWorkflow.ExecuteAsync(cmd, ct);
 
         if (!result.IsSuccess)
@@ -134,7 +134,7 @@ public sealed class RolesController(
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Remove(Guid id, CancellationToken ct)
     {
-        var cmd = new RemoveRole.Command(id);
+        var cmd = new RemoveRole.RemoveRoleCommand(id);
         var result = await removeRoleWorkflow.ExecuteAsync(cmd, ct);
 
         if (!result.IsSuccess)

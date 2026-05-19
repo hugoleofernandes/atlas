@@ -2,10 +2,10 @@
 
 namespace Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
-public sealed class Validator
-    : AbstractValidator<Command>
+public sealed class ResolveTenantAccessValidator
+    : AbstractValidator<ResolveTenantAccessCommand>
 {
-    public Validator()
+    public ResolveTenantAccessValidator()
     {
         RuleFor(x => x.TenantName)
             .NotEmpty();

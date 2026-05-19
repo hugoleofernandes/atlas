@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 
 public sealed class GetRoleByIdQueryHandler
-    : QueryHandlerBase<Query, RoleDto?>, IGetRoleByIdQueryHandler
+    : QueryHandlerBase<GetRoleByIdQuery, RoleDto?>, IGetRoleByIdQueryHandler
 {
     private readonly IGetRoleByIdReader _reader;
     private readonly IRequestContext _context;
@@ -20,7 +20,7 @@ public sealed class GetRoleByIdQueryHandler
         _context = context;
     }
 
-    protected override Task<RoleDto?> HandleAsync(Query query, CancellationToken ct)
+    protected override Task<RoleDto?> HandleAsync(GetRoleByIdQuery query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
         return _reader.GetByIdAsync(tenantId, query.RoleId, ct);

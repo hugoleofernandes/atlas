@@ -5,5 +5,5 @@ namespace Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 
 public interface IResolveTenantAccessWorkflow
 {
-    Task<Result<Output>> ExecuteAsync(Command cmd, CancellationToken ct);
+    Task<Result<ResolveTenantAccessOutput>> ExecuteAsync(ResolveTenantAccessCommand cmd, CancellationToken ct);
 }
