@@ -43,6 +43,12 @@ public static class ObservabilityExtensions
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation()
+                .AddProcessInstrumentation()
+                // Built-in .NET meters
+                .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+                .AddMeter("Microsoft.EntityFrameworkCore")
+                // Atlas custom meters (business metrics)
+                .AddMeter("Atlas")
                 .AddOtlpExporter(o => ConfigureOtlp(o, settings, "metrics")));
 
         return services;
