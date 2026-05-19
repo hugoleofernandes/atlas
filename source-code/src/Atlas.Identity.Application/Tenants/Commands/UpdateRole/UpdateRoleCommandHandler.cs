@@ -27,7 +27,7 @@ public sealed class UpdateRoleCommandHandler : CommandHandlerBase<UpdateRoleComm
             ?? throw new TenantContextNotResolvedException();
 
         var tenant = await _tenantRepository
-            .GetByNameWithUsersInvitationsAndRolesAsync(tenantName, ct)
+            .GetByNameWithRolesAsync(tenantName, ct)
             ?? throw new TenantNotFoundException(tenantName);
 
         tenant.UpdateRole(cmd.RoleId, cmd.Name, cmd.PermissionCodes);

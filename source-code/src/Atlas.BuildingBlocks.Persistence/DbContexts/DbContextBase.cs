@@ -19,6 +19,20 @@ public abstract class DbContextBase : DbContext
         : base(options)
     {
         _requestContext = requestContext;
+
+        // Disable automatic change detection on every LINQ call (Entries, Find, etc).
+        // This avoids scanning all tracked entities on each read operation.
+        // SaveChangesAsync is overridden below to always detect before committing,
+        // so correctness is preserved regardless of how save is called.
+        ChangeTracker.AutoDetectChangesEnabled = false;
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken ct = default)
+    {
+        // Always detect changes before saving, even with AutoDetectChangesEnabled = false.
+        // This ensures correctness whether SaveChangesAsync is called via UoW or directly.
+        ChangeTracker.DetectChanges();
+        return base.SaveChangesAsync(ct);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

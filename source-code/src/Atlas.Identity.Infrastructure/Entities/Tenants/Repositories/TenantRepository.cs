@@ -14,6 +14,17 @@ public sealed class TenantRepository : ITenantRepository
         _db = db;
     }
 
+    public async Task<Tenant?> GetByNameWithRolesAsync(
+        string name,
+        CancellationToken ct)
+    {
+        return await _db.Tenants
+            .Include(t => t.Roles)
+                .ThenInclude(r => r.Permissions)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(t => t.Name == name && t.IsActive, ct);
+    }
+
     public async Task<Tenant?> GetByNameWithUsersInvitationsAndRolesAsync(
         string name,
         CancellationToken ct)
@@ -22,7 +33,7 @@ public sealed class TenantRepository : ITenantRepository
             .Include(t => t.Roles)
                 .ThenInclude(r => r.Permissions)
             .Include(t => t.Users)
-            .Include(t => t.Invitations)
+            .Include(t => t.Invitations.Where(i => !i.IsUsed))
             .AsSplitQuery()
             .FirstOrDefaultAsync(t => t.Name == name && t.IsActive, ct);
     }

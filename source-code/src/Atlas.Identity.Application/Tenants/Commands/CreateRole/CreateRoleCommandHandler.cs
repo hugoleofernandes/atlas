@@ -27,7 +27,7 @@ public sealed class CreateRoleCommandHandler : CommandHandlerBase<CreateRoleComm
             ?? throw new TenantContextNotResolvedException();
 
         var tenant = await _tenantRepository
-            .GetByNameWithUsersInvitationsAndRolesAsync(tenantName, ct)
+            .GetByNameWithRolesAsync(tenantName, ct)
             ?? throw new TenantNotFoundException(tenantName);
 
         var role = tenant.AddCustomRole(cmd.Name, cmd.PermissionCodes);

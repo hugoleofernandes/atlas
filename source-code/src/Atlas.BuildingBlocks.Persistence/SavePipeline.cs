@@ -3,7 +3,7 @@ using Atlas.SharedKernel.Application.IntegrationEvents;
 
 namespace Atlas.BuildingBlocks.Persistence;
 
-public sealed class SavePipeline : ISavePipeline
+public sealed class SavePipeline : SavePipelineBase
 {
     private readonly IAuditTrailService _auditTrailService;
     private readonly IEntityTenantStamper _entityTenantStamper;
@@ -22,7 +22,7 @@ public sealed class SavePipeline : ISavePipeline
         _integrationEventEnqueuer = integrationEventEnqueuer;
     }
 
-    public async Task ExecuteAsync(DbContextBase db, CancellationToken ct)
+    protected override async Task RunAsync(DbContextBase db, CancellationToken ct)
     {
         await _auditTrailService.RecordAsync(db, ct);
         _entityTenantStamper.Stamp(db);

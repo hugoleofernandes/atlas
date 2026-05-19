@@ -3,7 +3,7 @@ using Atlas.Identity.Application.Abstractions;
 
 namespace Atlas.Identity.Infrastructure.Persistence.DbContexts;
 
-public sealed class IdentityUnitOfWork : IIdentityUnitOfWork
+public sealed class IdentityUnitOfWork : UnitOfWorkBase, IIdentityUnitOfWork
 {
     private readonly IdentityDbContext _db;
     private readonly ISavePipeline _savePipeline;
@@ -14,7 +14,9 @@ public sealed class IdentityUnitOfWork : IIdentityUnitOfWork
         _savePipeline = savePipeline;
     }
 
-    public async Task SaveChangesAsync(CancellationToken ct)
+    public Task SaveChangesAsync(CancellationToken ct) => ExecuteSaveAsync(ct);
+
+    protected override async Task CommitAsync(CancellationToken ct)
     {
         await _savePipeline.ExecuteAsync(_db, ct);
         await _db.SaveChangesAsync(ct);

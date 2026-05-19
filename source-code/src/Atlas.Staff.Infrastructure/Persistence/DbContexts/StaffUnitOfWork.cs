@@ -4,7 +4,7 @@ using Atlas.Staff.Application.Abstractions;
 
 namespace Atlas.Staff.Infrastructure.Persistence.DbContexts;
 
-public sealed class StaffUnitOfWork : IStaffUnitOfWork
+public sealed class StaffUnitOfWork : UnitOfWorkBase, IStaffUnitOfWork
 {
     private readonly StaffDbContext _db;
     private readonly ISavePipeline _savePipeline;
@@ -15,15 +15,14 @@ public sealed class StaffUnitOfWork : IStaffUnitOfWork
         _savePipeline = savePipeline;
     }
 
-    public async Task SaveChangesAsync(CancellationToken ct)
+    public Task SaveChangesAsync(CancellationToken ct) => ExecuteSaveAsync(ct);
+
+    public IEnumerable<IDomainEvent> GetDomainEvents() => _db.GetDomainEvents();
+
+    protected override async Task CommitAsync(CancellationToken ct)
     {
         await _savePipeline.ExecuteAsync(_db, ct);
         await _db.SaveChangesAsync(ct);
         _db.ClearDomainEvents();
-    }
-
-    public IEnumerable<IDomainEvent> GetDomainEvents()
-    {
-        return _db.GetDomainEvents();
     }
 }
