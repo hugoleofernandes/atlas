@@ -3,11 +3,11 @@ using System.Diagnostics;
 
 namespace Atlas.BuildingBlocks.Infrastructure.Workflows;
 
-public abstract class QueryBase<TQuery, TOutput>
+public abstract class QueryHandlerBase<TQuery, TOutput>
 {
     private readonly ILogger _logger;
 
-    protected QueryBase(ILoggerFactory loggerFactory)
+    protected QueryHandlerBase(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory.CreateLogger(GetType());
     }
@@ -19,11 +19,11 @@ public abstract class QueryBase<TQuery, TOutput>
 
         using (_logger.BeginScope(new Dictionary<string, object?> { ["QueryName"] = queryName }))
         {
-            _logger.LogInformation("Query {Query} started", queryName);
+            _logger.LogInformation("QueryHandler {Query} started", queryName);
 
             var result = await HandleAsync(query, ct);
 
-            _logger.LogInformation("Query {Query} succeeded in {ElapsedMs}ms",
+            _logger.LogInformation("QueryHandler {Query} succeeded in {ElapsedMs}ms",
                 queryName, sw.ElapsedMilliseconds);
 
             return result;

@@ -8,11 +8,11 @@ namespace Atlas.Identity.Infrastructure.Entities.Tenants.Queries.ListRoles;
 public sealed class ListRolesReader(IdentityDbContext db) : IListRolesReader
 {
     public async Task<PagedResult<RoleDto>> ListAsync(
-        Guid tenantId, int page, int pageSize, CancellationToken ct)
+        Guid tenantId, int page, int pageSize, bool includeInactive, CancellationToken ct)
     {
         var query = db.Roles
             .AsNoTracking()
-            .Where(r => r.TenantId == tenantId)
+            .Where(r => r.TenantId == tenantId && (includeInactive || r.IsActive))
             .OrderByDescending(r => r.IsSystem)
             .ThenBy(r => r.Name);
 

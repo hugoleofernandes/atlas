@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace Atlas.Identity.Application.Tenants.Queries.ListRoles;
 
 public sealed class ListRolesQueryHandler
-    : QueryBase<Query, PagedResult<RoleDto>>, IListRolesQueryHandler
+    : QueryHandlerBase<Query, PagedResult<RoleDto>>, IListRolesQueryHandler
 {
     private readonly IListRolesReader _reader;
     private readonly IRequestContext _context;
@@ -22,6 +22,6 @@ public sealed class ListRolesQueryHandler
     protected override Task<PagedResult<RoleDto>> HandleAsync(Query query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
-        return _reader.ListAsync(tenantId, query.Page, query.PageSize, ct);
+        return _reader.ListAsync(tenantId, query.Page, query.PageSize, query.IncludeInactive, ct);
     }
 }

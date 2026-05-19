@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260518183020_Initial_Identity")]
+    [Migration("20260519094350_Initial_Identity")]
     partial class Initial_Identity
     {
         /// <inheritdoc />
@@ -135,6 +135,11 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedByEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("IsSystem")
                         .ValueGeneratedOnAdd()

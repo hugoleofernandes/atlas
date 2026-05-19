@@ -22,6 +22,7 @@ public sealed class Role : AuditableEntity
     public Guid TenantId { get; private set; }
     public string Name { get; private set; } = default!;
     public bool IsSystem { get; private set; }
+    public bool IsActive { get; private set; } = true;
     private readonly List<Permission> _permissions = [];
     public IReadOnlyList<Permission> Permissions => _permissions.AsReadOnly();
 
@@ -34,6 +35,11 @@ public sealed class Role : AuditableEntity
         Name = name;
         IsSystem = isSystem;
         _permissions = permissions;
+    }
+
+    internal void Deactivate()
+    {
+        IsActive = false;
     }
 
     internal static Role Create(

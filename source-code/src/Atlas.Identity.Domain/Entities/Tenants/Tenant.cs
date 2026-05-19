@@ -124,6 +124,52 @@ public sealed class Tenant : AggregateRoot
     }
 
     /// <summary>
+    /// Removes a custom role from the tenant.
+    ///
+    /// Behavior:
+    /// - Hard delete when the role has never been assigned to any user or invitation.
+    /// - Soft delete (IsActive = false) when historical references exist but no active ones.
+    ///
+    /// Invariants:
+    /// - Tenant must be active.
+    /// - System roles cannot be removed.
+    /// - Role must have no active users assigned.
+    /// - Role must have no active pending invitations.
+    ///
+    /// Emits: RoleDeletedDomainEvent (hard) or RoleDeactivatedDomainEvent (soft)
+    /// </summary>
+    public void RemoveRole(Guid roleId)
+    {
+        EnsureActive();
+
+        var role = _roles.FirstOrDefault(r => r.Id == roleId)
+            ?? throw new RoleNotFoundException(roleId);
+
+        if (role.IsSystem)
+            throw new SystemRoleCannotBeModifiedException(role.Name);
+
+        if (_users.Any(u => u.RoleId == roleId && u.IsActive))
+            throw new RoleInUseByUsersException(role.Name);
+
+        if (_invitations.Any(i => i.RoleId == roleId && i.IsActive))
+            throw new RoleInUseByInvitationsException(role.Name);
+
+        var hasHistory = _users.Any(u => u.RoleId == roleId)
+                      || _invitations.Any(i => i.RoleId == roleId);
+
+        if (hasHistory)
+        {
+            role.Deactivate();
+            AddDomainEvent(new RoleDeactivatedDomainEvent(Id, roleId));
+        }
+        else
+        {
+            _roles.Remove(role);
+            AddDomainEvent(new RoleDeletedDomainEvent(Id, roleId));
+        }
+    }
+
+    /// <summary>
     /// Updates the permission set of an existing custom role.
     ///
     /// Invariants:

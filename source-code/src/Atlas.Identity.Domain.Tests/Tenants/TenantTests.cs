@@ -4,6 +4,7 @@ using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Permissions;
 using Atlas.Identity.Domain.ValueObjects;
 using FluentAssertions;
+using Atlas.Identity.Domain.ValueObjects.Exceptions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
@@ -270,6 +271,42 @@ public class TenantTests
     }
 
     [Fact]
+    public void AddCustomRole_ShouldBeActiveByDefault_WhenCreated()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var role = tenant.AddCustomRole("support", []);
+
+        role.IsActive.Should().BeTrue();
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldEmitRoleCreatedEvent_WhenValid()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var role = tenant.AddCustomRole("support", []);
+
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleCreatedDomainEvent>();
+
+        var evt = tenant.DomainEvents.OfType<RoleCreatedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.RoleId.Should().Be(role.Id);
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldThrow_WhenTenantIsInactive()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        tenant.Deactivate();
+
+        var act = () => tenant.AddCustomRole("support", []);
+
+        act.Should().Throw<TenantInactiveException>();
+    }
+
+    [Fact]
     public void AddCustomRole_ShouldThrow_WhenNameAlreadyExists()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
@@ -280,6 +317,26 @@ public class TenantTests
     }
 
     [Fact]
+    public void AddCustomRole_ShouldThrow_WhenNameIsTooShort()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.AddCustomRole("ab", []);
+
+        act.Should().Throw<InvalidRoleNameException>();
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldThrow_WhenNameIsTooLong()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.AddCustomRole("toolongname", []);
+
+        act.Should().Throw<InvalidRoleNameException>();
+    }
+
+    [Fact]
     public void AddCustomRole_ShouldThrow_WhenPermissionCodeIsInvalid()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
@@ -287,6 +344,151 @@ public class TenantTests
         var act = () => tenant.AddCustomRole("custom", ["unknown.permission"]);
 
         act.Should().Throw<InvalidPermissionException>();
+    }
+
+    // ============================================================
+    // 6. REMOVE ROLE
+    // ============================================================
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenTenantIsInactive()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.Deactivate();
+
+        var act = () => tenant.RemoveRole(role.Id);
+
+        act.Should().Throw<TenantInactiveException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleDoesNotExist()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.RemoveRole(Guid.NewGuid());
+
+        act.Should().Throw<RoleNotFoundException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleIsSystem()
+    {
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.RemoveRole(adminRoleId);
+
+        act.Should().Throw<SystemRoleCannotBeModifiedException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleHasActiveUsers()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.RemoveRole(role.Id);
+
+        act.Should().Throw<RoleInUseByUsersException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleHasActiveInvitations()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.RemoveRole(role.Id);
+
+        act.Should().Throw<RoleInUseByInvitationsException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldHardDelete_WhenRoleHasNoHistory()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.Roles.Should().NotContain(r => r.Id == role.Id);
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldEmitRoleDeletedEvent_WhenRoleHasNoHistory()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleDeletedDomainEvent>();
+
+        var evt = tenant.DomainEvents.OfType<RoleDeletedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.RoleId.Should().Be(role.Id);
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldSoftDelete_WhenRoleHasInactiveUsers()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+        user.Deactivate();
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.Roles.Should().Contain(r => r.Id == role.Id);
+        role.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldEmitRoleDeactivatedEvent_WhenRoleHasInactiveUsers()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+        user.Deactivate();
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleDeactivatedDomainEvent>();
+
+        var evt = tenant.DomainEvents.OfType<RoleDeactivatedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.RoleId.Should().Be(role.Id);
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldSoftDelete_WhenRoleHasExpiredInvitations()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        ForceExpire(tenant.Invitations.Single(i => i.RoleId == role.Id));
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.Roles.Should().Contain(r => r.Id == role.Id);
+        role.IsActive.Should().BeFalse();
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleDeactivatedDomainEvent>();
     }
 
     // ============================================================

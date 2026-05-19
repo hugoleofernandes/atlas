@@ -1,19 +1,23 @@
+using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.Identity.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
-public sealed class CommandHandler : ICommandHandler
+public sealed class CommandHandler : CommandHandlerBase<Command, Output>, ICommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
 
-    public CommandHandler(ITenantRepository tenantRepository)
+    public CommandHandler(
+        ITenantRepository tenantRepository,
+        ILoggerFactory loggerFactory) : base(loggerFactory)
     {
         _tenantRepository = tenantRepository;
     }
 
-    public async Task<Output> ExecuteAsync(Command cmd, CancellationToken ct)
+    protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
     {
         var tenant = await _tenantRepository
             .GetByNameWithUsersInvitationsAndRolesAsync(

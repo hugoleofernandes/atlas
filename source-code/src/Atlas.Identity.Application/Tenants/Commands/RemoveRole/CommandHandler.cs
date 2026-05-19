@@ -1,29 +1,25 @@
 using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Tenants.Repositories;
+using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
-using Atlas.Identity.Domain.ValueObjects;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
-namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
+namespace Atlas.Identity.Application.Tenants.Commands.RemoveRole;
 
 public sealed class CommandHandler : CommandHandlerBase<Command, Output>, ICommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
-    private readonly TimeSpan _defaultTtl;
 
     public CommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
-        IOptions<InvitationSettings> options,
         ILoggerFactory loggerFactory) : base(loggerFactory)
     {
         _tenantRepository = tenantRepository;
         _requestContext = requestContext;
-        _defaultTtl = TimeSpan.FromDays(options.Value.TtlDays);
     }
 
     protected override async Task<Output> HandleAsync(Command cmd, CancellationToken ct)
@@ -35,18 +31,12 @@ public sealed class CommandHandler : CommandHandlerBase<Command, Output>, IComma
             .GetByNameWithUsersInvitationsAndRolesAsync(tenantName, ct)
             ?? throw new TenantNotFoundException(tenantName);
 
-        var invitation = tenant.InviteUser(
-            Email.Create(cmd.Email),
-            cmd.RoleId,
-            InvitationTtl.Create(_defaultTtl));
+        tenant.RemoveRole(cmd.RoleId);
 
-        var role = tenant.Roles.Single(r => r.Id == cmd.RoleId);
+        var wasPhysicallyDeleted = tenant.DomainEvents
+            .OfType<RoleDeletedDomainEvent>()
+            .Any();
 
-        return new Output(
-            invitation.Id,
-            invitation.Email.Value,
-            role.Id,
-            role.Name,
-            invitation.ExpiresAt);
+        return new Output(wasPhysicallyDeleted);
     }
 }

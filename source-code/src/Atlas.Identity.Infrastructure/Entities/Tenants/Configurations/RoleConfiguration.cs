@@ -26,6 +26,9 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
         b.Property(x => x.IsSystem)
             .HasDefaultValue(false);
 
+        b.Property(x => x.IsActive)
+            .HasDefaultValue(true);
+
         b.HasIndex(x => new { x.TenantId, x.Name })
             .IsUnique();
 
