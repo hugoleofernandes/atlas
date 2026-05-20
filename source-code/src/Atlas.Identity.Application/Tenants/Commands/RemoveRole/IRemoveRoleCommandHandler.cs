@@ -1,6 +1,7 @@
+using Atlas.SharedKernel.Application.Handlers;
+
 namespace Atlas.Identity.Application.Tenants.Commands.RemoveRole;
 
-public interface IRemoveRoleCommandHandler
+public interface IRemoveRoleCommandHandler : ICommandHandler<RemoveRoleCommand, RemoveRoleOutput>
 {
-    Task<RemoveRoleOutput> ExecuteAsync(RemoveRoleCommand cmd, CancellationToken ct);
 }

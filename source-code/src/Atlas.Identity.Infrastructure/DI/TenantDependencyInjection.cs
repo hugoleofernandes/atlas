@@ -4,17 +4,14 @@ using Atlas.Identity.Application.Tenants.Commands.InviteUser;
 using Atlas.Identity.Application.Tenants.IntegrationEventMappers;
 using Atlas.Identity.Application.Tenants.MetricMappers;
 using Atlas.Identity.Application.Tenants.Repositories;
-using Atlas.Identity.Application.Tenants.Workflows.CreateRole;
-using Atlas.Identity.Application.Tenants.Workflows.InviteUser;
-using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Repositories;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using CreateRole = Atlas.Identity.Application.Tenants.Commands.CreateRole;
-using InviteUser = Atlas.Identity.Application.Tenants.Commands.InviteUser;
+using CreateRole          = Atlas.Identity.Application.Tenants.Commands.CreateRole;
+using InviteUser          = Atlas.Identity.Application.Tenants.Commands.InviteUser;
 using ResolveTenantAccess = Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
 namespace Atlas.Identity.Infrastructure.DI;
@@ -24,15 +21,11 @@ public static class TenantDependencyInjection
     public static IServiceCollection AddTenantDependencies(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<InvitationSettings>(configuration.GetSection("Invitations"));
-        // WORKFLOWS
-        services.AddScoped<IResolveTenantAccessWorkflow, ResolveTenantAccessWorkflow>();
-        services.AddScoped<IInviteUserWorkflow, InviteUserWorkflow>();
-        services.AddScoped<ICreateRoleWorkflow, CreateRoleWorkflow>();
 
         // COMMAND HANDLERS
         services.AddScoped<ResolveTenantAccess.IResolveTenantAccessCommandHandler, ResolveTenantAccess.ResolveTenantAccessCommandHandler>();
-        services.AddScoped<InviteUser.IInviteUserCommandHandler, InviteUser.InviteUserCommandHandler>();
-        services.AddScoped<CreateRole.ICreateRoleCommandHandler, CreateRole.CreateRoleCommandHandler>();
+        services.AddScoped<InviteUser.IInviteUserCommandHandler,                   InviteUser.InviteUserCommandHandler>();
+        services.AddScoped<CreateRole.ICreateRoleCommandHandler,                   CreateRole.CreateRoleCommandHandler>();
 
         // OUTBOX
         services.AddScoped<IIntegrationEventEnqueuer, IntegrationEventEnqueuer>();

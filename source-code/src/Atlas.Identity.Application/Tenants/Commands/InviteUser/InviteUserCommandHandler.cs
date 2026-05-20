@@ -1,32 +1,36 @@
-using Atlas.BuildingBlocks.Infrastructure.Workflows;
+using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.Identity.Domain.ValueObjects;
 using Atlas.SharedKernel.Application;
-using Microsoft.Extensions.Logging;
+using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.Extensions.Options;
 
 namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
 
-public sealed class InviteUserCommandHandler : CommandHandlerBase<InviteUserCommand, InviteUserOutput>, IInviteUserCommandHandler
+public sealed class InviteUserCommandHandler : IInviteUserCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
+    private readonly IIdentityUnitOfWork _uow;
     private readonly TimeSpan _defaultTtl;
+
+    public IUnitOfWork UnitOfWork => _uow;
 
     public InviteUserCommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
-        IOptions<InvitationSettings> options,
-        ILoggerFactory loggerFactory) : base(loggerFactory)
+        IIdentityUnitOfWork uow,
+        IOptions<InvitationSettings> options)
     {
         _tenantRepository = tenantRepository;
         _requestContext = requestContext;
+        _uow = uow;
         _defaultTtl = TimeSpan.FromDays(options.Value.TtlDays);
     }
 
-    protected override async Task<InviteUserOutput> HandleAsync(InviteUserCommand cmd, CancellationToken ct)
+    public async Task<InviteUserOutput> ExecuteAsync(InviteUserCommand cmd, CancellationToken ct)
     {
         var tenantName = _requestContext.TenantName
             ?? throw new TenantContextNotResolvedException();

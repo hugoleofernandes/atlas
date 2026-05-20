@@ -1,22 +1,21 @@
 using System.Net;
 using System.Net.Http.Json;
-using Atlas.API.Controllers.Identity;
+using Atlas.API.Models.Invitations;
 using Atlas.API.Tests.Infrastructure;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
-using Atlas.Identity.Application.Tenants.Workflows.InviteUser;
-using Atlas.Identity.Domain.ValueObjects;
-using Atlas.SharedKernel.Application.Commands;
-using Atlas.SharedKernel.Application.Errors;
+using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Permissions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 namespace Atlas.API.Tests.Controllers.Identity;
 
 public sealed class InvitationControllerTests(AtlasApiFactory factory)
     : IClassFixture<AtlasApiFactory>
 {
-    private readonly IInviteUserWorkflow _workflow = factory.InviteUserWorkflow;
+    private readonly IInviteUserCommandHandler _handler = factory.InviteUserHandler;
 
     [Fact]
     public async Task Invite_AuthenticatedWithPermission_Returns201WithBody()
@@ -25,8 +24,8 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
         var invitationId = Guid.NewGuid();
         var expiresAt    = DateTime.UtcNow.AddDays(7);
 
-        _workflow.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Ok(new InviteUserOutput(invitationId, "new@acme.com", roleId, "Member", expiresAt)));
+        _handler.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
+            .Returns(new InviteUserOutput(invitationId, "new@acme.com", roleId, "Member", expiresAt));
 
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
 
@@ -95,13 +94,8 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
     [Fact]
     public async Task Invite_WhenEmailAlreadyInvited_Returns409()
     {
-        var error = new ErrorDefinition(
-            "invitation.already_exists",
-            "This email has already been invited.",
-            ErrorCategory.Conflict);
-
-        _workflow.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Fail<InviteUserOutput>(error));
+        _handler.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new DuplicateInvitationException("existing@acme.com"));
 
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
 
@@ -117,13 +111,8 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
     [Fact]
     public async Task Invite_WhenRoleNotFound_Returns404()
     {
-        var error = new ErrorDefinition(
-            "role.not_found",
-            "The requested role does not exist.",
-            ErrorCategory.NotFound);
-
-        _workflow.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
-            .Returns(Result.Fail<InviteUserOutput>(error));
+        _handler.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new RoleNotFoundException(Guid.NewGuid()));
 
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
 
@@ -141,9 +130,9 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
     {
         InviteUserCommand? capturedCommand = null;
 
-        _workflow.ExecuteAsync(Arg.Do<InviteUserCommand>(c => capturedCommand = c), Arg.Any<CancellationToken>())
-            .Returns(Result.Ok(new InviteUserOutput(
-                Guid.NewGuid(), "new@acme.com", Guid.NewGuid(), "Member", DateTime.UtcNow.AddDays(7))));
+        _handler.ExecuteAsync(Arg.Do<InviteUserCommand>(c => capturedCommand = c), Arg.Any<CancellationToken>())
+            .Returns(new InviteUserOutput(
+                Guid.NewGuid(), "new@acme.com", Guid.NewGuid(), "Member", DateTime.UtcNow.AddDays(7)));
 
         // The client carries AtlasApiFactory.TestTenantName in its claims
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);

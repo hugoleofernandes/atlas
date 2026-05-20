@@ -1,27 +1,31 @@
-using Atlas.BuildingBlocks.Infrastructure.Workflows;
+using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.SharedKernel.Application;
-using Microsoft.Extensions.Logging;
+using Atlas.SharedKernel.Application.Handlers;
 
 namespace Atlas.Identity.Application.Tenants.Commands.CreateRole;
 
-public sealed class CreateRoleCommandHandler : CommandHandlerBase<CreateRoleCommand, CreateRoleOutput>, ICreateRoleCommandHandler
+public sealed class CreateRoleCommandHandler : ICreateRoleCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
+    private readonly IIdentityUnitOfWork _uow;
+
+    public IUnitOfWork UnitOfWork => _uow;
 
     public CreateRoleCommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
-        ILoggerFactory loggerFactory) : base(loggerFactory)
+        IIdentityUnitOfWork uow)
     {
         _tenantRepository = tenantRepository;
         _requestContext = requestContext;
+        _uow = uow;
     }
 
-    protected override async Task<CreateRoleOutput> HandleAsync(CreateRoleCommand cmd, CancellationToken ct)
+    public async Task<CreateRoleOutput> ExecuteAsync(CreateRoleCommand cmd, CancellationToken ct)
     {
         var tenantName = _requestContext.TenantName
             ?? throw new TenantContextNotResolvedException();

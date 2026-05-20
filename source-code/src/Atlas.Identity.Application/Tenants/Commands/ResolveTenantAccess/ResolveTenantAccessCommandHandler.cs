@@ -1,34 +1,34 @@
-using Atlas.BuildingBlocks.Infrastructure.Workflows;
+using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.Identity.Domain.ValueObjects;
-using Microsoft.Extensions.Logging;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Handlers;
 
 namespace Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
-public sealed class ResolveTenantAccessCommandHandler : CommandHandlerBase<ResolveTenantAccessCommand, ResolveTenantAccessOutput>, IResolveTenantAccessCommandHandler
+public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
+    private readonly IIdentityUnitOfWork _uow;
+
+    public IUnitOfWork UnitOfWork => _uow;
 
     public ResolveTenantAccessCommandHandler(
         ITenantRepository tenantRepository,
-        ILoggerFactory loggerFactory) : base(loggerFactory)
+        IIdentityUnitOfWork uow)
     {
         _tenantRepository = tenantRepository;
+        _uow = uow;
     }
 
-    protected override async Task<ResolveTenantAccessOutput> HandleAsync(ResolveTenantAccessCommand cmd, CancellationToken ct)
+    public async Task<ResolveTenantAccessOutput> ExecuteAsync(ResolveTenantAccessCommand cmd, CancellationToken ct)
     {
         var tenant = await _tenantRepository
             .GetByNameWithUsersInvitationsAndRolesAsync(
                 cmd.TenantName.ToLowerInvariant(), ct)
             ?? throw new TenantNotFoundException(cmd.TenantName);
 
-        // If the user already exists, use their stored ExternalId.
-        // This makes the command idempotent: the caller's OID is only meaningful
-        // on first access (when the user is created from the invitation).
-        // In production the Entra OID never changes, so this is a no-op.
-        // In dev login the fake OID may differ from a previously stored OID.
         var email = Email.Create(cmd.Email);
         var existingExternalId = tenant.Users
             .FirstOrDefault(u => u.Email.Value == email.Value && u.IsActive)

@@ -1,11 +1,11 @@
 using Atlas.SharedKernel.Application.Errors;
+using FluentValidation;
 using FluentValidation.Results;
 
 namespace Atlas.BuildingBlocks.Infrastructure.Validation;
 
 /// <summary>
-/// Converts FluentValidation results into the application's ErrorDefinition contract,
-/// so workflows can return Result.Fail instead of throwing ValidationException.
+/// Converts FluentValidation results into the application's ErrorDefinition contract.
 /// </summary>
 public static class ValidationResultExtensions
 {
@@ -14,8 +14,18 @@ public static class ValidationResultExtensions
         var details = string.Join(" | ", result.Errors
             .Select(e => $"{e.PropertyName}: {e.ErrorMessage}"));
 
-        // Code and Category come from the shared catalog.
-        // FallbackMessage is overridden with the field-level detail for debugging.
+        return new ErrorDefinition(
+            Code: CommonErrors.ValidationFailed.Code,
+            FallbackMessage: details,
+            Category: CommonErrors.ValidationFailed.Category
+        );
+    }
+
+    public static ErrorDefinition ToErrorDefinition(this ValidationException ex)
+    {
+        var details = string.Join(" | ", ex.Errors
+            .Select(e => $"{e.PropertyName}: {e.ErrorMessage}"));
+
         return new ErrorDefinition(
             Code: CommonErrors.ValidationFailed.Code,
             FallbackMessage: details,

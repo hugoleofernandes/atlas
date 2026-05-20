@@ -1,9 +1,9 @@
-﻿using Atlas.API.Errors;
+using Atlas.API.Errors;
 using Atlas.API.Models.Invitations;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
+using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
-using Atlas.Identity.Application.Tenants.Workflows.InviteUser;
 using Atlas.Identity.Domain.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +14,14 @@ namespace Atlas.API.Controllers.Identity;
 [Route("tenants/invitations")]
 [Authorize]
 public sealed class InvitationController(
-    IInviteUserWorkflow inviteUserWorkflow,
+    IInviteUserCommandHandler inviteUserHandler,
+    IHandlerInvoker invoker,
     ErrorMessageLocalizer errorLocalizer
 ) : AtlasControllerBase(errorLocalizer)
 {
     /// <summary>
     /// Invites a new user to the authenticated user's tenant.
-    /// The tenant is resolved from the session cookie â€” not from the URL.
+    /// The tenant is resolved from the session cookie — not from the URL.
     /// </summary>
     [HttpPost]
     [HasPermission(PermissionCatalog.Tenant.InviteUser)]
@@ -32,9 +33,8 @@ public sealed class InvitationController(
         [FromBody] InviteUserRequest request,
         CancellationToken ct)
     {
-        var cmd = new InviteUserCommand(request.Email, request.RoleId);
-
-        var result = await inviteUserWorkflow.ExecuteAsync(cmd, ct);
+        var cmd    = new InviteUserCommand(request.Email, request.RoleId);
+        var result = await invoker.InvokeAsync(inviteUserHandler, cmd, ct);
 
         if (!result.IsSuccess)
             return ErrorResult(result.ErrorDefinition!);

@@ -1,6 +1,7 @@
+using Atlas.SharedKernel.Application.Handlers;
+
 namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
 
-public interface IInviteUserCommandHandler
+public interface IInviteUserCommandHandler : ICommandHandler<InviteUserCommand, InviteUserOutput>
 {
-    Task<InviteUserOutput> ExecuteAsync(InviteUserCommand cmd, CancellationToken ct);
 }

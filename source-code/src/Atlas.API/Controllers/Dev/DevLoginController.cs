@@ -1,5 +1,6 @@
 using Atlas.BuildingBlocks.AspNetCore.Security;
-using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
+using Atlas.BuildingBlocks.Infrastructure.Workflows;
+using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -7,8 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-
-using ResolveTenantAccess = Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
 namespace Atlas.API.Controllers.Dev;
 
@@ -21,7 +20,8 @@ namespace Atlas.API.Controllers.Dev;
 [AllowAnonymous]
 [ApiExplorerSettings(IgnoreApi = true)]
 public sealed class DevLoginController(
-    IResolveTenantAccessWorkflow workflow,
+    IResolveTenantAccessCommandHandler resolveAccessHandler,
+    IHandlerInvoker invoker,
     IWebHostEnvironment env) : ControllerBase
 {
     [HttpPost("login")]
@@ -33,8 +33,8 @@ public sealed class DevLoginController(
         // Deterministic fake OID: same email always maps to the same user in the DB
         var fakeOid = new Guid(MD5.HashData(Encoding.UTF8.GetBytes(request.Email))).ToString();
 
-        var cmd = new ResolveTenantAccess.ResolveTenantAccessCommand(request.TenantName, fakeOid, request.Email);
-        var result = await workflow.ExecuteAsync(cmd, ct);
+        var cmd    = new ResolveTenantAccessCommand(request.TenantName, fakeOid, request.Email);
+        var result = await invoker.InvokeAsync(resolveAccessHandler, cmd, ct);
 
         if (!result.IsSuccess)
             return Problem(result.ErrorDefinition!.FallbackMessage, statusCode: StatusCodes.Status400BadRequest);

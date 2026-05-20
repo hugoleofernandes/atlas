@@ -1,4 +1,5 @@
-using Atlas.Identity.Application.Tenants.Workflows.InviteUser;
+using Atlas.Identity.Application.Tenants.Commands.InviteUser;
+using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,7 +16,14 @@ public sealed class AtlasApiFactory : WebApplicationFactory<Program>
     public static readonly Guid TestUserId   = Guid.Parse("22222222-2222-2222-2222-222222222222");
     public const string TestTenantName = "acme";
 
-    public IInviteUserWorkflow InviteUserWorkflow { get; } = Substitute.For<IInviteUserWorkflow>();
+    public IInviteUserCommandHandler InviteUserHandler { get; } = Substitute.For<IInviteUserCommandHandler>();
+
+    public AtlasApiFactory()
+    {
+        // HandlerInvoker calls handler.UnitOfWork.SaveChangesAsync() after execution.
+        // The mock must expose a no-op UnitOfWork so success-path tests don't NRE.
+        InviteUserHandler.UnitOfWork.Returns(Substitute.For<IUnitOfWork>());
+    }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -37,9 +45,9 @@ public sealed class AtlasApiFactory : WebApplicationFactory<Program>
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                     TestAuthHandler.SchemeName, _ => { });
 
-            // Replace the real workflow with a controllable mock
-            services.RemoveAll<IInviteUserWorkflow>();
-            services.AddScoped(_ => InviteUserWorkflow);
+            // Replace the real command handler with a controllable mock
+            services.RemoveAll<IInviteUserCommandHandler>();
+            services.AddScoped(_ => InviteUserHandler);
         });
     }
 

@@ -1,6 +1,7 @@
+using Atlas.SharedKernel.Application.Handlers;
+
 namespace Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
-public interface IResolveTenantAccessCommandHandler
+public interface IResolveTenantAccessCommandHandler : ICommandHandler<ResolveTenantAccessCommand, ResolveTenantAccessOutput>
 {
-    Task<ResolveTenantAccessOutput> ExecuteAsync(ResolveTenantAccessCommand cmd, CancellationToken ct);
 }

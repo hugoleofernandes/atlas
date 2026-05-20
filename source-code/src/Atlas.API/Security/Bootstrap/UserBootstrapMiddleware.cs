@@ -1,9 +1,9 @@
-﻿using Atlas.API.Errors;
+using Atlas.API.Errors;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Security;
+using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
-using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -36,7 +36,8 @@ public sealed class UserBootstrapMiddleware
 
     public async Task InvokeAsync(
         HttpContext context,
-        IResolveTenantAccessWorkflow resolveAccessWorkflow,
+        IResolveTenantAccessCommandHandler resolveAccessHandler,
+        IHandlerInvoker invoker,
         ErrorMessageLocalizer errorLocalizer)
     {
         //
@@ -108,7 +109,7 @@ public sealed class UserBootstrapMiddleware
 
         var cmd = new ResolveTenantAccessCommand(tenantName, oid, email);
 
-        var result = await resolveAccessWorkflow.ExecuteAsync(cmd, context.RequestAborted);
+        var result = await invoker.InvokeAsync(resolveAccessHandler, cmd, context.RequestAborted);
 
         //
         // ==========================================
@@ -141,7 +142,7 @@ public sealed class UserBootstrapMiddleware
         identity.AddClaim(new Claim(ClaimTypes.Role,         value.RoleName));
         identity.AddClaim(new Claim(AtlasClaims.BootstrapCompleted, "true"));
 
-        // One claim per permission â€” authorization handler checks HasClaim(type, value)
+        // One claim per permission — authorization handler checks HasClaim(type, value)
         foreach (var permission in value.Permissions)
             identity.AddClaim(new Claim(AtlasClaims.Permission, permission));
 
@@ -191,9 +192,9 @@ public sealed class UserBootstrapMiddleware
 
         var problem = new ApiProblemDetails
         {
-            Title = localizer.Localize(error),
+            Title  = localizer.Localize(error),
             Status = status,
-            Type = $"https://docs.atlas/errors/{error.Code}"
+            Type   = $"https://docs.atlas/errors/{error.Code}"
         };
 
         problem.AddMetadata(
@@ -202,10 +203,9 @@ public sealed class UserBootstrapMiddleware
             TraceContextHelper.GetTraceId()
         );
 
-        context.Response.StatusCode = status;
+        context.Response.StatusCode  = status;
         context.Response.ContentType = "application/problem+json";
 
         await context.Response.WriteAsJsonAsync(problem);
     }
 }
-

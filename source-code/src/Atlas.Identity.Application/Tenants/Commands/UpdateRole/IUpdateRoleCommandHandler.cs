@@ -1,6 +1,7 @@
+using Atlas.SharedKernel.Application.Handlers;
+
 namespace Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 
-public interface IUpdateRoleCommandHandler
+public interface IUpdateRoleCommandHandler : ICommandHandler<UpdateRoleCommand, UpdateRoleOutput>
 {
-    Task<UpdateRoleOutput> ExecuteAsync(UpdateRoleCommand cmd, CancellationToken ct);
 }

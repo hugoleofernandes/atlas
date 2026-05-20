@@ -1,6 +1,7 @@
+using Atlas.SharedKernel.Application.Handlers;
+
 namespace Atlas.Identity.Application.Tenants.Commands.CreateRole;
 
-public interface ICreateRoleCommandHandler
+public interface ICreateRoleCommandHandler : ICommandHandler<CreateRoleCommand, CreateRoleOutput>
 {
-    Task<CreateRoleOutput> ExecuteAsync(CreateRoleCommand cmd, CancellationToken ct);
 }
