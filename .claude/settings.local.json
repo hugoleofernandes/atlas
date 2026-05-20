@@ -26,7 +26,8 @@
       "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\Tenancy\\\\TenantResolverMiddleware.cs\")",
       "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\Authorization\\\\HasPermissionAttribute.cs\")",
       "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\Authorization\\\\PermissionAuthorizationHandler.cs\")",
-      "Bash(dotnet add *)"
+      "Bash(dotnet add *)",
+      "Bash(xargs grep -l \"Activity\\\\|ActivitySource\\\\|OpenTelemetry\\\\|AddOtel\\\\|AddAtlasObserv\")"
     ]
   }
 }

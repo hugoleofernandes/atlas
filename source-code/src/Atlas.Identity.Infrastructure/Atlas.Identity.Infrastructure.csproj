@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Persistence\Atlas.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />

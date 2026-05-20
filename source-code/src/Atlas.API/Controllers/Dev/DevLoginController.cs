@@ -1,5 +1,5 @@
+using Atlas.BuildingBlocks.Application.Invokers;
 using Atlas.BuildingBlocks.AspNetCore.Security;
-using Atlas.BuildingBlocks.Infrastructure.Workflows;
 using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

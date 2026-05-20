@@ -2,6 +2,7 @@ using Atlas.BuildingBlocks.Persistence.DbContexts;
 using Atlas.BuildingBlocks.Persistence.Decorators;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.Metrics;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Microsoft.Extensions.Logging;
 
 namespace Atlas.BuildingBlocks.Persistence;
@@ -16,7 +17,8 @@ public sealed class SavePipeline : ISavePipeline
     private readonly IAuditTrailService _auditTrailService;
     private readonly IEntityTenantStamper _entityTenantStamper;
     private readonly IEntityChangeStamper _entityChangeStamper;
-    private readonly IIntegrationEventEnqueuer _integrationEventEnqueuer;
+    private readonly IOutboxMessageBuilder _outboxMessageBuilder;
+    private readonly IEnumerable<IIntegrationEventMapper> _integrationEventMappers;
     private readonly IDomainEventMetricsPublisher _metricsPublisher;
 
     public SavePipeline(
@@ -24,26 +26,42 @@ public sealed class SavePipeline : ISavePipeline
         IAuditTrailService auditTrailService,
         IEntityTenantStamper entityTenantStamper,
         IEntityChangeStamper entityChangeStamper,
-        IIntegrationEventEnqueuer integrationEventEnqueuer,
+        IOutboxMessageBuilder outboxMessageBuilder,
+        IEnumerable<IIntegrationEventMapper> integrationEventMappers,
         IDomainEventMetricsPublisher metricsPublisher)
     {
-        _logger                   = logger;
-        _auditTrailService        = auditTrailService;
-        _entityTenantStamper      = entityTenantStamper;
-        _entityChangeStamper      = entityChangeStamper;
-        _integrationEventEnqueuer = integrationEventEnqueuer;
-        _metricsPublisher         = metricsPublisher;
+        _logger                  = logger;
+        _auditTrailService       = auditTrailService;
+        _entityTenantStamper     = entityTenantStamper;
+        _entityChangeStamper     = entityChangeStamper;
+        _outboxMessageBuilder    = outboxMessageBuilder;
+        _integrationEventMappers = integrationEventMappers;
+        _metricsPublisher        = metricsPublisher;
     }
 
-    public Task ExecuteAsync(DbContextBase db, CancellationToken ct)
+    public async Task ExecuteAsync(DbContextBase db, CancellationToken ct)
     {
-        ISavePipelineStep pipeline = new BusinessMetricsDecorator(_metricsPublisher);
-        pipeline = new IntegrationEventDecorator(pipeline, _integrationEventEnqueuer);
-        pipeline = new StamperDecorator(pipeline, _entityTenantStamper, _entityChangeStamper);
-        pipeline = new AuditDecorator(pipeline, _auditTrailService);
-        //pipeline = new LoggingDecorator(pipeline, _logger);
-        //pipeline = new TelemetryDecorator(pipeline);
+        // ── Business block ─────────────────────────────────────────────────────
+        // Runs entirely in-memory: audit trail, entity stamping,
+        // outbox enqueue and domain-event metrics.
+        ISavePipelineStep businessPipeline = new BusinessMetricsDecorator(_metricsPublisher);
+        businessPipeline = new IntegrationEventDecorator(businessPipeline, _outboxMessageBuilder, _integrationEventMappers);
+        businessPipeline = new StamperDecorator(businessPipeline, _entityTenantStamper, _entityChangeStamper);
+        businessPipeline = new AuditDecorator(businessPipeline, _auditTrailService);
+        businessPipeline = new LoggingDecorator(businessPipeline, _logger, "SavePipeline.Business");
+        businessPipeline = new TelemetryDecorator(businessPipeline, "SavePipeline.Business");
 
-        return pipeline.ExecuteAsync(db, ct);
+        await businessPipeline.ExecuteAsync(db, ct);
+        // ───────────────────────────────────────────────────────────────────────
+
+        // ── Persist block ──────────────────────────────────────────────────────
+        // Flushes all tracked changes to the database.
+        // EF Core emits its own SQL span automatically.
+        ISavePipelineStep persistPipeline = new PersistDbDecorator();
+        persistPipeline = new LoggingDecorator(persistPipeline, _logger, "SavePipeline.PersistDb");
+        persistPipeline = new TelemetryDecorator(persistPipeline, "SavePipeline.PersistDb");
+
+        await persistPipeline.ExecuteAsync(db, ct);
+        // ───────────────────────────────────────────────────────────────────────
     }
 }

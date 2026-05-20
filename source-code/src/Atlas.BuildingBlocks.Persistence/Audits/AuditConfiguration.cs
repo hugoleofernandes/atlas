@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.BuildingBlocks.Persistence.Audits;
 
-public sealed class AuditConfiguration : IEntityTypeConfiguration<AuditBase>
+public sealed class AuditConfiguration : IEntityTypeConfiguration<Audit>
 {
-    public void Configure(EntityTypeBuilder<AuditBase> b)
+    public void Configure(EntityTypeBuilder<Audit> b)
     {
         b.ToTable("audits");
 

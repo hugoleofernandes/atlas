@@ -1,11 +1,9 @@
-using Atlas.OutboxWorker.Configuration;
-using Atlas.OutboxWorker.Processing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Atlas.BuildingBlocks.Application.Invokers;
+using Atlas.Outbox.Application.ProcessOutbox;
+using Atlas.Outbox.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Atlas.OutboxWorker.Hosting;
+namespace Atlas.Outbox.Worker.Hosting;
 
 internal sealed class OutboxWorkerHostedService : BackgroundService
 {
@@ -19,8 +17,8 @@ internal sealed class OutboxWorkerHostedService : BackgroundService
         ILogger<OutboxWorkerHostedService> logger)
     {
         _scopeFactory = scopeFactory;
-        _options = options.Value;
-        _logger = logger;
+        _options      = options.Value;
+        _logger       = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -31,9 +29,14 @@ internal sealed class OutboxWorkerHostedService : BackgroundService
         {
             try
             {
-                await using var scope = _scopeFactory.CreateAsyncScope();
-                var processor = scope.ServiceProvider.GetRequiredService<IOutboxProcessor>();
-                await processor.ProcessBatchAsync(stoppingToken);
+                await using var scope   = _scopeFactory.CreateAsyncScope();
+                var invoker             = scope.ServiceProvider.GetRequiredService<IHandlerInvoker>();
+                var identityHandler     = scope.ServiceProvider.GetRequiredService<IIdentityOutboxCommandHandler>();
+                var staffHandler        = scope.ServiceProvider.GetRequiredService<IStaffOutboxCommandHandler>();
+                var command             = new ProcessOutboxCommand(_options.BatchSize, _options.MaxRetries, _options.LockDuration);
+
+                await invoker.InvokeAsync(identityHandler, command, stoppingToken);
+                await invoker.InvokeAsync(staffHandler,    command, stoppingToken);
             }
             catch (OperationCanceledException)
             {

@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.OutboxWorker\Atlas.OutboxWorker.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

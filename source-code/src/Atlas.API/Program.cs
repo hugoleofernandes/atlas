@@ -23,7 +23,6 @@ using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.Staff.Application;
 using Atlas.Staff.Infrastructure.DI;
@@ -34,6 +33,7 @@ using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.OpenTelemetry;
+using Atlas.BuildingBlocks.Persistence.OutboxMessages;
 
 //
 // ==========================================
@@ -152,13 +152,14 @@ try
     // IDENTITY
     services.AddIdentityModuleDependencies();
     services.AddTenantDependencies(builder.Configuration);
-    services.AddIdentityOutboxWorkerSupport();
     //
 
     // STAFF
     services.AddStaffModuleDependencies();
-    services.AddStaffOutboxWorkerSupport();
     //
+
+    
+
 
     services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
     services.AddScoped<IOutboxMessageBuilder, OutboxMessageBuilder>();

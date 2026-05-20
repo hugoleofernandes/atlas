@@ -6,4 +6,5 @@ public interface IRequestContext
     string? TenantName { get; }
     Guid? UserId { get; }
     string? UserEmail { get; }
+    string? CorrelationId { get; }
 }

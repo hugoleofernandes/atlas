@@ -1,8 +1,7 @@
 using Atlas.Contracts.Tenants.IntegrationEvents;
-using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
-using Atlas.OutboxWorker.DI;
-using Atlas.Staff.Infrastructure.DI;
+using Atlas.Outbox.Infrastructure.DI;
+using Atlas.Outbox.Worker.Hosting;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -43,8 +42,12 @@ try
             services.AddOutboxWorker(configuration, integrationEventAssemblies);
 
             // Módulos — um por módulo conforme forem sendo integrados
-            services.AddIdentityOutboxWorkerSupport();
-            services.AddStaffOutboxWorkerSupport();
+            services.AddIdentityOutboxModuleDependencies();
+            services.AddStaffOutboxModuleDependencies();
+
+
+            // Entry point — loop de polling que processa a outbox
+            services.AddHostedService<OutboxWorkerHostedService>();
         })
         .Build();
 

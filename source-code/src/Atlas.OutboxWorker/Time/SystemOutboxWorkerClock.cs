@@ -1,4 +1,4 @@
-namespace Atlas.OutboxWorker.Time;
+namespace Atlas.Outbox.Worker.Time;
 
 internal sealed class SystemOutboxWorkerClock : IOutboxWorkerClock
 {

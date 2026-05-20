@@ -35,7 +35,7 @@ public sealed class AuditTrailService : IAuditTrailService
                 e.Entity is not INotAuditable &&
                 e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
 
-        var logs = new List<AuditBase>();
+        var logs = new List<Audit>();
 
         foreach (var entry in entries)
         {
@@ -63,7 +63,7 @@ public sealed class AuditTrailService : IAuditTrailService
             if (changes.Count == 0)
                 continue;
 
-            var audit = new AuditBase();
+            var audit = new Audit();
             audit.Initialize(
                 entry.Entity.GetType().Name,
                 entry.State.ToString(),
@@ -77,7 +77,7 @@ public sealed class AuditTrailService : IAuditTrailService
         }
 
         if (logs.Count > 0)
-            await db.Set<AuditBase>().AddRangeAsync(logs, ct);
+            await db.Set<Audit>().AddRangeAsync(logs, ct);
     }
 
     private static string? GetPrimaryKey(EntityEntry entry)

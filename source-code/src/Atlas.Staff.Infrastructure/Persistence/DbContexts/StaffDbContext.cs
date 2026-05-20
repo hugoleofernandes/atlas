@@ -13,7 +13,7 @@ public sealed class StaffDbContext : DbContextBase
     protected override string Schema => "atlas_staff";
 
     public DbSet<StaffMember> StaffMembers => Set<StaffMember>();
-    public DbSet<AuditBase> Audits => Set<AuditBase>();
+    public DbSet<Audit> Audits => Set<Audit>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     public StaffDbContext(

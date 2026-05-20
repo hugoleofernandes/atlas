@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Identity.Domain.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Identity.Infrastructure", "source-code\src\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj", "{CB4E1981-D3BA-734E-E5A0-42B03422D0EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.OutboxWorker", "source-code\src\Atlas.OutboxWorker\Atlas.OutboxWorker.csproj", "{22A5DABB-4073-C434-BA41-86310CAEA346}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Outbox.Worker", "source-code\src\Atlas.OutboxWorker\Atlas.Outbox.Worker.csproj", "{22A5DABB-4073-C434-BA41-86310CAEA346}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.SharedKernel", "source-code\src\Atlas.SharedKernel\Atlas.SharedKernel.csproj", "{BAE91EE6-6CD0-2026-11AF-9898FF6121B4}"
 EndProject
@@ -39,6 +39,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.BuildingBlocks.Application", "source-code\src\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj", "{B34938A0-3BDD-446E-B99F-9680A34331D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.BuildingBlocks.AspNetCore", "source-code\src\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj", "{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Outbox.Application", "source-code\src\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj", "{49E12C66-B3BB-DDC7-9347-5D49C6C4077B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Outbox.Infrastructure", "source-code\src\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj", "{5797EA59-2267-C31A-0399-D9EB0B8C50D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -110,6 +114,14 @@ Global
 		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49E12C66-B3BB-DDC7-9347-5D49C6C4077B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49E12C66-B3BB-DDC7-9347-5D49C6C4077B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49E12C66-B3BB-DDC7-9347-5D49C6C4077B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49E12C66-B3BB-DDC7-9347-5D49C6C4077B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5797EA59-2267-C31A-0399-D9EB0B8C50D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5797EA59-2267-C31A-0399-D9EB0B8C50D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5797EA59-2267-C31A-0399-D9EB0B8C50D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5797EA59-2267-C31A-0399-D9EB0B8C50D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,6 +145,8 @@ Global
 		{86174453-E960-2685-66C1-45410813B039} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 		{B34938A0-3BDD-446E-B99F-9680A34331D5} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 		{CFBE5F11-3642-2271-6BF1-6DB3C45DEA41} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
+		{49E12C66-B3BB-DDC7-9347-5D49C6C4077B} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
+		{5797EA59-2267-C31A-0399-D9EB0B8C50D7} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB7E32C7-6D55-4E6E-BB3C-D6AAAB6BD9CA}

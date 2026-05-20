@@ -4,7 +4,9 @@ using Atlas.SharedKernel.Application.Metrics;
 namespace Atlas.BuildingBlocks.Persistence.Decorators;
 
 /// <summary>
-/// Publishes business domain event metrics (Grafana dashboards) before delegating downstream.
+/// Terminal step — publishes business domain event metrics to Grafana.
+/// Runs after all structural steps (audit, stamp, outbox) so the metrics
+/// reflect exactly what will be persisted.
 /// </summary>
 internal sealed class BusinessMetricsDecorator : ISavePipelineStep
 {

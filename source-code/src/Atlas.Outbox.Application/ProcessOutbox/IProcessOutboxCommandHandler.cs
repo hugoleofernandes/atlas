@@ -1,0 +1,11 @@
+using Atlas.SharedKernel.Application.Handlers;
+
+namespace Atlas.Outbox.Application.ProcessOutbox;
+
+public interface IProcessOutboxCommandHandler : IHandler<ProcessOutboxCommand, ProcessOutboxOutput> { }
+
+/// <summary>Marker for the Identity module's outbox handler registration.</summary>
+public interface IIdentityOutboxCommandHandler : IProcessOutboxCommandHandler { }
+
+/// <summary>Marker for the Staff module's outbox handler registration.</summary>
+public interface IStaffOutboxCommandHandler : IProcessOutboxCommandHandler { }

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Http;
 using Serilog.Context;
 
@@ -13,7 +15,7 @@ public sealed class CorrelationIdMiddleware
         _next = next;
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task Invoke(HttpContext context, IRequestContextSetter requestContextSetter)
     {
         var correlationId = context.Request.Headers[HeaderName].FirstOrDefault();
 
@@ -21,8 +23,12 @@ public sealed class CorrelationIdMiddleware
             correlationId = Guid.NewGuid().ToString();
 
         context.Items[HeaderName] = correlationId;
-
         context.Response.Headers[HeaderName] = correlationId;
+
+        requestContextSetter.SetCorrelationId(correlationId);
+
+        // Enrich the root HTTP span so every trace in Tempo carries the correlation ID.
+        Activity.Current?.SetTag("correlation_id", correlationId);
 
         using (LogContext.PushProperty("CorrelationId", correlationId))
         {

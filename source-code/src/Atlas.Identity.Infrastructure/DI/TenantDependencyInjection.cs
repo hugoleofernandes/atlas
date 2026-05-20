@@ -1,6 +1,7 @@
-using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Infrastructure.Metrics;
+using Atlas.Identity.Application.Tenants.Commands.CreateRole;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
+using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Atlas.Identity.Application.Tenants.IntegrationEventMappers;
 using Atlas.Identity.Application.Tenants.MetricMappers;
 using Atlas.Identity.Application.Tenants.Repositories;
@@ -9,10 +10,6 @@ using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using CreateRole          = Atlas.Identity.Application.Tenants.Commands.CreateRole;
-using InviteUser          = Atlas.Identity.Application.Tenants.Commands.InviteUser;
-using ResolveTenantAccess = Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 
 namespace Atlas.Identity.Infrastructure.DI;
 
@@ -23,12 +20,9 @@ public static class TenantDependencyInjection
         services.Configure<InvitationSettings>(configuration.GetSection("Invitations"));
 
         // COMMAND HANDLERS
-        services.AddScoped<ResolveTenantAccess.IResolveTenantAccessCommandHandler, ResolveTenantAccess.ResolveTenantAccessCommandHandler>();
-        services.AddScoped<InviteUser.IInviteUserCommandHandler,                   InviteUser.InviteUserCommandHandler>();
-        services.AddScoped<CreateRole.ICreateRoleCommandHandler,                   CreateRole.CreateRoleCommandHandler>();
-
-        // OUTBOX
-        services.AddScoped<IIntegrationEventEnqueuer, IntegrationEventEnqueuer>();
+        services.AddScoped<IResolveTenantAccessCommandHandler, ResolveTenantAccessCommandHandler>();
+        services.AddScoped<IInviteUserCommandHandler, InviteUserCommandHandler>();
+        services.AddScoped<ICreateRoleCommandHandler, CreateRoleCommandHandler>();
 
         // REPOSITORIES
         services.AddScoped<ITenantRepository, TenantRepository>();
