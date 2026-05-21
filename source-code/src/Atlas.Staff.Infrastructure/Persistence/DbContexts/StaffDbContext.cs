@@ -14,9 +14,10 @@ public sealed class StaffDbContext : DbContextBase
     protected override string Schema => "atlas_staff";
 
     public DbSet<StaffMember>       StaffMembers        => Set<StaffMember>();
-    public DbSet<Audit>             Audits              => Set<Audit>();
-    public DbSet<OutboxMessage>     OutboxMessages      => Set<OutboxMessage>();
-    public DbSet<IdempotencyEntry>  IdempotencyEntries  => Set<IdempotencyEntry>();
+    public DbSet<Audit>                  Audits                  => Set<Audit>();
+    public DbSet<OutboxMessage>          OutboxMessages          => Set<OutboxMessage>();
+    public DbSet<OutboxHandlerExecution> OutboxHandlerExecutions => Set<OutboxHandlerExecution>();
+    public DbSet<IdempotencyEntry>       IdempotencyEntries      => Set<IdempotencyEntry>();
 
     public StaffDbContext(
         DbContextOptions<StaffDbContext> options,

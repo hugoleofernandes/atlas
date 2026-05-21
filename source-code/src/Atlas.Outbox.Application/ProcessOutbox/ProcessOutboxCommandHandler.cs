@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.SharedKernel.Application;
@@ -18,12 +17,19 @@ namespace Atlas.Outbox.Application.ProcessOutbox;
 /// EntityTenantStamper, EntityChangeStamper and the SavePipeline run under the correct context.
 ///
 /// Save strategy: PersistDbDecorator calls UnitOfWork.SaveChangesAsync once after the handler
-/// returns — one flush for the entire batch of status updates.
+/// returns — one flush for the entire batch (parent updates + retry inserts + execution records).
 ///
-/// Error model:
-///   - Handler failures  → captured in HandlerInvocationResult list; message.MarkAsFailed(json)
-///   - Dispatcher errors → caught by outer try/catch (unknown type, deserialization failure)
-///   Both paths record a structured JSON error string on the OutboxMessage for future history.
+/// Retry model — Attempt-Chain:
+///   Each OutboxMessage row represents exactly one processing attempt.
+///   On failure the current row is closed (FailedAt set) and a new child row
+///   (AttemptNumber + 1, same IdempotencyKey) is inserted atomically in the same transaction.
+///   Handlers that already succeeded skip re-execution via the idempotency check.
+///   On max attempts the row is dead-lettered instead of spawning a child.
+///
+/// Execution history:
+///   After each dispatch (success or failure), one OutboxHandlerExecution row is inserted
+///   per handler into outbox_handler_executions. This gives a fully queryable, structured
+///   record of every handler invocation across all attempts.
 /// </summary>
 public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler, IStaffOutboxCommandHandler
 {
@@ -60,13 +66,6 @@ public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler,
 
         foreach (var message in messages)
         {
-            if (message.HasExceededRetries(command.MaxRetries))
-            {
-                message.MarkAsDeadLettered();
-                deadLettered++;
-                continue;
-            }
-
             // Hydrate the scoped request context from the outbox message so that
             // SavePipeline (audit trail, entity stampers) and any handler that
             // resolves IRequestContext sees the correct tenant/user/correlation.
@@ -78,43 +77,67 @@ public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler,
                 var results  = await _dispatcher.DispatchAsync(message, ct);
                 var failures = results.Where(r => !r.IsSuccess).ToList();
 
+                // Persist one structured execution row per handler — queryable history.
+                var executions = BuildExecutions(message.Id, results);
+                await _repository.AddExecutionsAsync(executions, ct);
+
                 if (failures.Count == 0)
                 {
                     message.MarkAsProcessed();
                     processed++;
                 }
+                else if (message.IsMaxAttemptReached(command.MaxRetries))
+                {
+                    message.MarkAsDeadLettered();
+                    deadLettered++;
+                }
                 else
                 {
-                    // Serialize the failure details into a structured JSON error string.
-                    // Future: this feeds per-handler execution history on OutboxMessage.
-                    var errorJson = JsonSerializer.Serialize(
-                        failures.Select(f => new { f.HandlerName, f.ErrorMessage }));
-
-                    message.MarkAsFailed(errorJson);
+                    var errorSummary = $"{failures.Count} of {results.Count} handler(s) failed on attempt {message.AttemptNumber}.";
+                    var retry        = message.CreateRetryAttempt(errorSummary);
+                    await _repository.AddRetryAsync(retry, ct);
                     failed++;
-
-                    if (message.HasExceededRetries(command.MaxRetries))
-                    {
-                        message.MarkAsDeadLettered();
-                        deadLettered++;
-                    }
                 }
             }
             catch (Exception ex)
             {
                 // Dispatcher-level failure: unknown event type, deserialization error,
-                // no handlers registered. Not a handler error — record as plain string.
-                message.MarkAsFailed(ex.Message);
-                failed++;
+                // no handlers registered. Recorded as a single "Dispatcher" execution.
+                var executions = new[]
+                {
+                    new OutboxHandlerExecution(message.Id, "Dispatcher", isSuccess: false, ex.Message)
+                };
+                await _repository.AddExecutionsAsync(executions, ct);
 
-                if (message.HasExceededRetries(command.MaxRetries))
+                if (message.IsMaxAttemptReached(command.MaxRetries))
                 {
                     message.MarkAsDeadLettered();
                     deadLettered++;
+                }
+                else
+                {
+                    var retry = message.CreateRetryAttempt(ex.Message);
+                    await _repository.AddRetryAsync(retry, ct);
+                    failed++;
                 }
             }
         }
 
         return new ProcessOutboxOutput(processed, failed, deadLettered);
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    private static IReadOnlyList<OutboxHandlerExecution> BuildExecutions(
+        Guid outboxMessageId,
+        IReadOnlyList<HandlerInvocationResult> results)
+    {
+        return results
+            .Select(r => new OutboxHandlerExecution(
+                outboxMessageId,
+                r.HandlerName,
+                r.IsSuccess,
+                r.ErrorMessage))
+            .ToList();
     }
 }

@@ -21,9 +21,10 @@ public sealed class IdentityDbContext
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<Role> Roles => Set<Role>();
 
-    public DbSet<Audit>            Audits             => Set<Audit>();
-    public DbSet<OutboxMessage>    OutboxMessages     => Set<OutboxMessage>();
-    public DbSet<IdempotencyEntry> IdempotencyEntries => Set<IdempotencyEntry>();
+    public DbSet<Audit>                  Audits                 => Set<Audit>();
+    public DbSet<OutboxMessage>          OutboxMessages         => Set<OutboxMessage>();
+    public DbSet<OutboxHandlerExecution> OutboxHandlerExecutions => Set<OutboxHandlerExecution>();
+    public DbSet<IdempotencyEntry>       IdempotencyEntries     => Set<IdempotencyEntry>();
 
     public IdentityDbContext(
         DbContextOptions<IdentityDbContext> options,

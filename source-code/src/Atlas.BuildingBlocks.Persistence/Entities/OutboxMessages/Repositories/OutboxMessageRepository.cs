@@ -21,6 +21,8 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
         _db = db;
     }
 
+    // ── IOutboxMessageRepository (Save pipeline — write side) ─────────────────
+
     public async Task AddAsync(OutboxMessage message, CancellationToken ct)
     {
         await _db.Set<OutboxMessage>().AddAsync(message, ct);
@@ -30,6 +32,8 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
     {
         await _db.Set<OutboxMessage>().AddRangeAsync(messages, ct);
     }
+
+    // ── IOutboxWorkerRepository (Outbox Worker — read/process side) ───────────
 
     public async Task<IReadOnlyList<OutboxMessage>> GetPendingBatchAsync(
         int batchSize, TimeSpan lockDuration, CancellationToken ct)
@@ -42,8 +46,8 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
         var table       = entityType.GetTableName()!;
         var storeObject = StoreObjectIdentifier.Table(table, schema);
 
-        // Lê os nomes reais das colunas do modelo EF — respeita qualquer convenção
-        // de naming (PascalCase, snake_case, etc.) sem hardcode.
+        // Reads real column names from the EF model — respects any naming convention
+        // (PascalCase, snake_case, etc.) without hardcoding.
         string Col(string prop) =>
             entityType.FindProperty(prop)!.GetColumnName(storeObject);
 
@@ -52,8 +56,11 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
         var id             = Col(nameof(OutboxMessage.Id));
         var processedOn    = Col(nameof(OutboxMessage.ProcessedOn));
         var deadLetteredOn = Col(nameof(OutboxMessage.DeadLetteredOn));
+        var failedAt       = Col(nameof(OutboxMessage.FailedAt));
         var occurredOn     = Col(nameof(OutboxMessage.OccurredOn));
 
+        // FailedAt IS NULL excludes rows that were closed as failed and already have
+        // a child retry row — only truly pending rows (no terminal state) are picked up.
         var sql = $"""
             UPDATE      "{schema}"."{table}"
             SET         "{locId}"          = @batchLockId,
@@ -62,6 +69,7 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
                 SELECT  "{id}" FROM "{schema}"."{table}"
                 WHERE   "{processedOn}"    IS NULL
                   AND   "{deadLetteredOn}" IS NULL
+                  AND   "{failedAt}"       IS NULL
                   AND   ("{colLockedUntil}" IS NULL OR "{colLockedUntil}" < NOW())
                 ORDER BY "{occurredOn}"
                 LIMIT {batchSize}
@@ -82,4 +90,14 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
             .ToListAsync(ct);
     }
 
+    public async Task AddRetryAsync(OutboxMessage message, CancellationToken ct)
+    {
+        await _db.Set<OutboxMessage>().AddAsync(message, ct);
+    }
+
+    public async Task AddExecutionsAsync(
+        IReadOnlyList<OutboxHandlerExecution> executions, CancellationToken ct)
+    {
+        await _db.Set<OutboxHandlerExecution>().AddRangeAsync(executions, ct);
+    }
 }
