@@ -29,8 +29,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Test project — direct access to internal types (OutboxWorkerHostedService). -->
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>Atlas.OutboxWorker.Tests</_Parameter1>
+    </AssemblyAttribute>
+    <!-- Castle DynamicProxy (NSubstitute) — required to proxy ILogger<OutboxWorkerHostedService> at runtime. -->
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 

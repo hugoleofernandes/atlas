@@ -1,127 +1,238 @@
-//using System.Text.Json;
-//using Atlas.OutboxWorker.Dispatching;
-//using Atlas.SharedKernel.Application.IntegrationEvents;
-//using Atlas.SharedKernel.Application.OutboxMessages;
-//using FluentAssertions;
-//using Microsoft.Extensions.DependencyInjection;
-//using Microsoft.Extensions.Logging.Abstractions;
-//using NSubstitute;
+using System.Text.Json;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
+using Atlas.Outbox.Infrastructure;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Commands;
+using Atlas.SharedKernel.Application.Handlers;
+using Atlas.SharedKernel.Application.Idempotency;
+using Atlas.SharedKernel.Application.IntegrationEvents;
+using Atlas.SharedKernel.Application.OutboxMessages;
+using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 
-//namespace Atlas.OutboxWorker.Tests.Dispatching;
+namespace Atlas.OutboxWorker.Tests.Dispatching;
 
-//public class OutboxMessageDispatcherTests
-//{
-//    // ============================================================
-//    // 1. HANDLER INVOCADO CORRETAMENTE
-//    // ============================================================
+/// <summary>
+/// Unit tests for <see cref="OutboxMessageDispatcher"/>.
+///
+/// Strategy:
+///   - <see cref="OutboxMessageDispatcher"/> is <c>internal</c>; access is granted via
+///     <c>[assembly: InternalsVisibleTo("Atlas.OutboxWorker.Tests")]</c> in Atlas.Outbox.Infrastructure.
+///   - <see cref="IIntegrationEventTypeResolver"/> is also <c>internal</c> — mocked with
+///     NSubstitute using the same InternalsVisibleTo grant.
+///   - <see cref="IHandlerInvoker"/> is replaced by the concrete <see cref="FakeHandlerInvoker"/>
+///     to avoid NSubstitute + generic-method-via-reflection unreliability (the dispatcher calls
+///     InvokeAsync&lt;TInput,TOutput&gt; through reflection, which NSubstitute cannot intercept reliably).
+///   - Handlers are concrete classes (<see cref="FakeSuccessHandler"/>, <see cref="FakeFailingHandler"/>)
+///     registered in a real <see cref="IServiceProvider"/> — mirrors production DI resolution.
+///   - <see cref="IIdempotencyContextSetter"/> is mocked to assert per-handler context wiring.
+/// </summary>
+public sealed class OutboxMessageDispatcherTests
+{
+    // ── infrastructure ────────────────────────────────────────────────────────
 
-//    [Fact]
-//    public async Task Dispatch_ShouldCallCorrectHandler_WhenTypeIsKnown()
-//    {
-//        var handler = Substitute.For<IIntegrationEventHandler<FakeIntegrationEvent>>();
+    private readonly IIntegrationEventTypeResolver _typeResolver =
+        Substitute.For<IIntegrationEventTypeResolver>();
 
-//        var sp = BuildServiceProvider(handler);
-//        var resolver = BuildResolver(typeof(FakeIntegrationEvent));
-//        var dispatcher = new OutboxMessageDispatcher(resolver, sp, NullLogger<OutboxMessageDispatcher>.Instance);
+    private readonly IIdempotencyContextSetter _idempotencyContextSetter =
+        Substitute.For<IIdempotencyContextSetter>();
 
-//        var @event = new FakeIntegrationEvent("hello");
-//        var message = CreateMessage(typeof(FakeIntegrationEvent).FullName!, @event);
+    private readonly FakeHandlerInvoker _handlerInvoker = new();
 
-//        await dispatcher.DispatchAsync(message, default);
+    // ── factory helpers ───────────────────────────────────────────────────────
 
-//        await handler.Received(1)
-//            .HandleAsync(Arg.Is<FakeIntegrationEvent>(e => e.Value == "hello"), Arg.Any<CancellationToken>());
-//    }
+    private OutboxMessageDispatcher CreateSut(IServiceProvider serviceProvider) =>
+        new(_typeResolver, _handlerInvoker, _idempotencyContextSetter, serviceProvider);
 
-//    // ============================================================
-//    // 2. TIPO NÃO ENCONTRADO → EXCEÇÃO
-//    // ============================================================
+    /// <summary>
+    /// Builds a <see cref="IServiceProvider"/> with the given handler instances registered
+    /// as <c>IIntegrationEventHandler&lt;FakeIntegrationEvent&gt;</c>.
+    /// Passing no handlers produces a provider that returns an empty sequence — used to
+    /// verify the "no handler registered" guard.
+    /// </summary>
+    private static IServiceProvider BuildServiceProvider(
+        params IIntegrationEventHandler<FakeIntegrationEvent>[] handlers)
+    {
+        var services = new ServiceCollection();
+        foreach (var handler in handlers)
+            services.AddSingleton<IIntegrationEventHandler<FakeIntegrationEvent>>(handler);
+        return services.BuildServiceProvider();
+    }
 
-//    [Fact]
-//    public async Task Dispatch_ShouldThrow_WhenTypeNotFound()
-//    {
-//        var resolver = Substitute.For<IIntegrationEventTypeResolver>();
-//        resolver.Resolve(Arg.Any<string>()).Returns((Type?)null);
+    private static OutboxMessage CreateMessage()
+    {
+        var payload = JsonSerializer.Serialize(new FakeIntegrationEvent("hello"));
+        return new OutboxMessage(
+            name:          "FakeIntegrationEvent",
+            type:          "FakeIntegrationEvent",
+            payload:       payload,
+            tenantId:      Guid.NewGuid(),
+            userId:        Guid.NewGuid(),
+            correlationId: "corr-id",
+            module:        "tests");
+    }
 
-//        var sp = new ServiceCollection().BuildServiceProvider();
-//        var dispatcher = new OutboxMessageDispatcher(resolver, sp, NullLogger<OutboxMessageDispatcher>.Instance);
-//        var message = CreateMessage("Unknown.Type", new FakeIntegrationEvent("x"));
+    // ── tests ─────────────────────────────────────────────────────────────────
 
-//        var act = () => dispatcher.DispatchAsync(message, default);
+    [Fact]
+    public async Task DispatchAsync_WhenTypeIsKnownAndHandlerSucceeds_ShouldReturnSingleSuccessResult()
+    {
+        // Arrange
+        var message = CreateMessage();
+        _typeResolver.Resolve("FakeIntegrationEvent").Returns(typeof(FakeIntegrationEvent));
+        var sut = CreateSut(BuildServiceProvider(new FakeSuccessHandler()));
 
-//        await act.Should().ThrowAsync<InvalidOperationException>()
-//            .WithMessage("*Unknown.Type*");
-//    }
+        // Act
+        var results = await sut.DispatchAsync(message, CancellationToken.None);
 
-//    // ============================================================
-//    // 3. DESSERIALIZAÇÃO CORRETA
-//    // ============================================================
+        // Assert
+        results.Should().HaveCount(1);
+        results[0].IsSuccess.Should().BeTrue();
+        results[0].HandlerName.Should().Be(nameof(FakeSuccessHandler));
+    }
 
-//    [Fact]
-//    public async Task Dispatch_ShouldDeserializePayloadCorrectly()
-//    {
-//        FakeIntegrationEvent? received = null;
-//        var handler = Substitute.For<IIntegrationEventHandler<FakeIntegrationEvent>>();
-//        handler.HandleAsync(Arg.Do<FakeIntegrationEvent>(e => received = e), Arg.Any<CancellationToken>())
-//            .Returns(Task.CompletedTask);
+    [Fact]
+    public async Task DispatchAsync_WhenTwoHandlersRegistered_ShouldReturnResultForEachHandler()
+    {
+        // Arrange
+        var message = CreateMessage();
+        _typeResolver.Resolve("FakeIntegrationEvent").Returns(typeof(FakeIntegrationEvent));
+        var sut = CreateSut(BuildServiceProvider(new FakeSuccessHandlerA(), new FakeSuccessHandlerB()));
 
-//        var sp = BuildServiceProvider(handler);
-//        var resolver = BuildResolver(typeof(FakeIntegrationEvent));
-//        var dispatcher = new OutboxMessageDispatcher(resolver, sp, NullLogger<OutboxMessageDispatcher>.Instance);
+        // Act
+        var results = await sut.DispatchAsync(message, CancellationToken.None);
 
-//        var message = CreateMessage(typeof(FakeIntegrationEvent).FullName!, new FakeIntegrationEvent("deserialized-value"));
+        // Assert — both handlers ran and both succeeded (fan-out)
+        results.Should().HaveCount(2);
+        results.Should().AllSatisfy(r => r.IsSuccess.Should().BeTrue());
+        results.Select(r => r.HandlerName).Should()
+            .BeEquivalentTo([nameof(FakeSuccessHandlerA), nameof(FakeSuccessHandlerB)]);
+    }
 
-//        await dispatcher.DispatchAsync(message, default);
+    [Fact]
+    public async Task DispatchAsync_WhenOneHandlerFails_ShouldContinueAndReturnMixedResults()
+    {
+        // Arrange
+        var message = CreateMessage();
+        _typeResolver.Resolve("FakeIntegrationEvent").Returns(typeof(FakeIntegrationEvent));
+        var sut = CreateSut(BuildServiceProvider(new FakeSuccessHandler(), new FakeFailingHandler()));
 
-//        received.Should().NotBeNull();
-//        received!.Value.Should().Be("deserialized-value");
-//    }
+        // Act
+        var results = await sut.DispatchAsync(message, CancellationToken.None);
 
-//    // ============================================================
-//    // 4. HANDLER NÃO REGISTRADO → EXCEÇÃO
-//    // ============================================================
+        // Assert — fan-out is not aborted by one handler failing
+        results.Should().HaveCount(2);
+        results.Should().ContainSingle(r =>  r.IsSuccess);
+        results.Should().ContainSingle(r => !r.IsSuccess);
+        results.First(r => !r.IsSuccess).ErrorMessage.Should()
+            .Contain("simulated handler failure");
+    }
 
-//    [Fact]
-//    public async Task Dispatch_ShouldThrow_WhenHandlerNotRegistered()
-//    {
-//        var sp = new ServiceCollection().BuildServiceProvider(); // nenhum handler
-//        var resolver = BuildResolver(typeof(FakeIntegrationEvent));
-//        var dispatcher = new OutboxMessageDispatcher(resolver, sp, NullLogger<OutboxMessageDispatcher>.Instance);
+    [Fact]
+    public async Task DispatchAsync_WhenTypeResolverReturnsNull_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var message = CreateMessage();
+        _typeResolver.Resolve("FakeIntegrationEvent").Returns((Type?)null);
+        var sut = CreateSut(BuildServiceProvider());
 
-//        var message = CreateMessage(typeof(FakeIntegrationEvent).FullName!, new FakeIntegrationEvent("x"));
+        // Act
+        var act = () => sut.DispatchAsync(message, CancellationToken.None);
 
-//        var act = () => dispatcher.DispatchAsync(message, default);
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*FakeIntegrationEvent*");
+    }
 
-//        await act.Should().ThrowAsync<InvalidOperationException>()
-//            .WithMessage("*FakeIntegrationEvent*");
-//    }
+    [Fact]
+    public async Task DispatchAsync_WhenNoHandlerIsRegistered_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var message = CreateMessage();
+        _typeResolver.Resolve("FakeIntegrationEvent").Returns(typeof(FakeIntegrationEvent));
+        var sut = CreateSut(BuildServiceProvider()); // empty provider — no handlers
 
-//    // ============================================================
-//    // HELPERS
-//    // ============================================================
+        // Act
+        var act = () => sut.DispatchAsync(message, CancellationToken.None);
 
-//    private static IServiceProvider BuildServiceProvider(IIntegrationEventHandler<FakeIntegrationEvent> handler)
-//    {
-//        var services = new ServiceCollection();
-//        services.AddSingleton(handler);
-//        return services.BuildServiceProvider();
-//    }
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*FakeIntegrationEvent*");
+    }
 
-//    private static IIntegrationEventTypeResolver BuildResolver(Type type)
-//    {
-//        var resolver = Substitute.For<IIntegrationEventTypeResolver>();
-//        resolver.Resolve(type.FullName!).Returns(type);
-//        return resolver;
-//    }
+    [Fact]
+    public async Task DispatchAsync_WhenHandlerRuns_ShouldSetIdempotencyContextWithMessageKeyAndHandlerName()
+    {
+        // Arrange
+        var message = CreateMessage();
+        _typeResolver.Resolve("FakeIntegrationEvent").Returns(typeof(FakeIntegrationEvent));
+        var sut = CreateSut(BuildServiceProvider(new FakeSuccessHandler()));
 
-//    private static OutboxMessage CreateMessage<T>(string typeName, T @event) =>
-//        new("fake.event",
-//            typeName,
-//            JsonSerializer.Serialize(@event),
-//            tenantId: null,
-//            userId: null,
-//            correlationId: null,
-//            module: "tests");
-//}
+        // Act
+        await sut.DispatchAsync(message, CancellationToken.None);
 
-//public sealed record FakeIntegrationEvent(string Value);
+        // Assert — idempotency key is stable (IdempotencyKey == Id on the first attempt)
+        _idempotencyContextSetter.Received(1)
+            .Set(message.IdempotencyKey, nameof(FakeSuccessHandler));
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Test support types
+// ══════════════════════════════════════════════════════════════════════════════
+
+/// <summary>Minimal integration event used as the payload in all dispatcher tests.</summary>
+internal record FakeIntegrationEvent(string Value);
+
+/// <summary>Handler that completes successfully. Used for the happy path and multi-handler fan-out.</summary>
+internal sealed class FakeSuccessHandler : IIntegrationEventHandler<FakeIntegrationEvent>
+{
+    public Task HandleAsync(FakeIntegrationEvent @event, CancellationToken ct) => Task.CompletedTask;
+}
+
+/// <summary>Two distinct success handlers to verify the two-handler fan-out scenario.</summary>
+internal sealed class FakeSuccessHandlerA : IIntegrationEventHandler<FakeIntegrationEvent>
+{
+    public Task HandleAsync(FakeIntegrationEvent @event, CancellationToken ct) => Task.CompletedTask;
+}
+
+internal sealed class FakeSuccessHandlerB : IIntegrationEventHandler<FakeIntegrationEvent>
+{
+    public Task HandleAsync(FakeIntegrationEvent @event, CancellationToken ct) => Task.CompletedTask;
+}
+
+/// <summary>
+/// Handler that always throws. Verifies that the dispatcher catches per-handler exceptions
+/// and continues executing the remaining handlers (fault isolation).
+/// The exception propagates through the DIM bridge (ExecuteAsync → HandleAsync) as a
+/// faulted Task, which the dispatcher's per-handler catch records as a failure result.
+/// </summary>
+internal sealed class FakeFailingHandler : IIntegrationEventHandler<FakeIntegrationEvent>
+{
+    public Task HandleAsync(FakeIntegrationEvent @event, CancellationToken ct)
+        => throw new InvalidOperationException("simulated handler failure");
+}
+
+/// <summary>
+/// Concrete <see cref="IHandlerInvoker"/> that calls <c>handler.ExecuteAsync</c> directly
+/// and wraps the output in <c>Result.Ok</c>.
+///
+/// Using a concrete class (instead of NSubstitute) avoids the known unreliability of
+/// NSubstitute intercepting open generic methods called via reflection — which is exactly
+/// how <see cref="OutboxMessageDispatcher"/> dispatches to <c>InvokeAsync&lt;TInput, TOutput&gt;</c>.
+///
+/// On exception → propagates the faulted Task so the dispatcher's per-handler catch fires,
+/// exactly as it would through the real decorator pipeline.
+/// </summary>
+internal sealed class FakeHandlerInvoker : IHandlerInvoker
+{
+    public async Task<Result<TOutput>> InvokeAsync<TInput, TOutput>(
+        IHandler<TInput, TOutput> handler,
+        TInput                   input,
+        CancellationToken        ct)
+    {
+        var output = await handler.ExecuteAsync(input, ct);
+        return Result.Ok(output);
+    }
+}
