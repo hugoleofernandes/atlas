@@ -1,6 +1,6 @@
 using Atlas.API.Configs;
 using Atlas.API.Errors;
-using Atlas.API.Observability;
+using Atlas.BuildingBlocks.Observability;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.API.Security.Bootstrap;
@@ -29,7 +29,8 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
@@ -74,28 +75,11 @@ try
             .Enrich.WithThreadId()
             // Console sempre ativo — saída limpa para desenvolvimento
             .WriteTo.Console(outputTemplate:
-                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+            // Logs → Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
+            .WriteToAtlasObservability(otel, context.HostingEnvironment);
 
-        if (otel.IsEnabled)
-        {
-            // Logs → Grafana Cloud Loki via OTLP
-            config.WriteTo.OpenTelemetry(o =>
-            {
-                o.Endpoint = $"{otel.Endpoint!.TrimEnd('/')}/v1/logs";
-                o.Protocol = OtlpProtocol.HttpProtobuf;
-                o.Headers = new Dictionary<string, string>
-                {
-                    ["Authorization"] = otel.ApiKey!
-                };
-                o.ResourceAttributes = new Dictionary<string, object>
-                {
-                    ["service.name"]    = otel.ServiceName,
-                    ["service.version"] = otel.ServiceVersion,
-                    ["deployment.environment"] = context.HostingEnvironment.EnvironmentName.ToLowerInvariant()
-                };
-            });
-        }
-        else
+        if (!otel.IsEnabled)
         {
             // Sem Grafana Cloud configurado: fallback para arquivo local
             config.WriteTo.File(
@@ -117,7 +101,18 @@ try
     // ==========================================
     //
 
-    services.AddAtlasObservability(configuration, builder.Environment);
+    services.AddAtlasObservability(
+        configuration,
+        builder.Environment,
+        configureTracing: tracing => tracing
+            .AddAspNetCoreInstrumentation(o =>
+            {
+                o.Filter        = ctx => !ctx.Request.Path.StartsWithSegments("/health");
+                o.RecordException = true;
+            }),
+        configureMetrics: metrics => metrics
+            .AddAspNetCoreInstrumentation()
+            .AddMeter("Microsoft.AspNetCore.Server.Kestrel"));
 
     //
     // ==========================================

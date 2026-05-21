@@ -40,7 +40,29 @@ internal sealed class OutboxMessageDispatcher : IOutboxMessageDispatcher
 
         var handleMethod = handlerType.GetMethod(nameof(IIntegrationEventHandler<object>.HandleAsync))!;
 
+        // Run every handler regardless of individual failures.
+        // A failure in one handler must not prevent the others from executing.
+        // The message is retried as a whole if any handler fails, so each
+        // handler implementation MUST be idempotent.
+        var exceptions = new List<Exception>();
+
         foreach (var handler in handlers)
-            await (Task)handleMethod.Invoke(handler, [@event, ct])!;
+        {
+            try
+            {
+                await (Task)handleMethod.Invoke(handler, [@event, ct])!;
+            }
+            catch (Exception ex)
+            {
+                exceptions.Add(ex);
+            }
+        }
+
+        if (exceptions.Count == 1)
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(exceptions[0]).Throw();
+
+        if (exceptions.Count > 1)
+            throw new AggregateException(
+                $"{exceptions.Count} handler(s) failed for '{eventType.Name}'.", exceptions);
     }
 }
