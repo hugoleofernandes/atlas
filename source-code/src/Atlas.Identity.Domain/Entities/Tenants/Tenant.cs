@@ -1,5 +1,6 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants.Events;
+using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Permissions;
 using Atlas.Identity.Domain.ValueObjects;
 using Atlas.SharedKernel.Domain;
 
@@ -7,27 +8,23 @@ namespace Atlas.Identity.Domain.Entities.Tenants;
 
 /// <summary>
 /// Purpose:
-/// Represents an organizational boundary that owns users and invitations.
-/// Controls access resolution and invitation lifecycle.
+/// Represents an organizational boundary that owns users, invitations, and roles.
+/// Controls access resolution, invitation lifecycle, and role/permission management.
 ///
 /// Invariants:
 /// - A tenant cannot be inactive when performing domain operations.
 /// - A tenant cannot have two users with the same email.
 /// - A tenant cannot have two active invitations for the same email.
 /// - A user must always be created from a valid and active invitation.
+/// - Role names must be unique within the tenant.
+/// - Permission codes must exist in PermissionCatalog.All.
 ///
 /// Boundaries:
 /// - Does NOT validate external identity providers.
 /// - Does NOT send emails or notifications.
 /// - Does NOT persist data (handled by repositories/UoW).
-///
-/// Design Decisions:
-/// - Users and Invitations belong to the Tenant because their lifecycle
-///   and invariants depend on the tenant boundary.
-/// - Access resolution is part of the Tenant because it enforces invariants
-///   related to user creation and invitation usage.
 /// </summary>
-public sealed class Tenant : AggregateRootBase
+public sealed class Tenant : AggregateRoot
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
@@ -37,26 +34,23 @@ public sealed class Tenant : AggregateRootBase
     /// Entra ID directory (e.g., "tenant01" or "tenant01.onmicrosoft.com").
     /// Not intended to be a user-friendly display name.
     /// </summary>
-    public string Name { get; private set; }
+    public string Name { get; private set; } = default!;
 
     public bool IsActive { get; private set; } = true;
 
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    private readonly List<User> _users = new();
+    private readonly List<User> _users = [];
     public IReadOnlyCollection<User> Users => _users;
 
-    private readonly List<Invitation> _invitations = new();
+    private readonly List<Invitation> _invitations = [];
     public IReadOnlyCollection<Invitation> Invitations => _invitations;
+
+    private readonly List<Role> _roles = [];
+    public IReadOnlyCollection<Role> Roles => _roles;
 
     private Tenant() { }
 
-    /// <summary>
-    /// Creates a new tenant.
-    ///
-    /// Invariants:
-    /// - Name must be provided and normalized.
-    /// </summary>
     public Tenant(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -65,21 +59,12 @@ public sealed class Tenant : AggregateRootBase
         Name = name.ToLowerInvariant();
     }
 
-    /// <summary>
-    /// Ensures the tenant is active before performing domain operations.
-    /// </summary>
     private void EnsureActive()
     {
         if (!IsActive)
             throw new TenantInactiveException();
     }
 
-    /// <summary>
-    /// Deactivates the tenant.
-    ///
-    /// Emits:
-    /// - TenantDeactivatedDomainEvent
-    /// </summary>
     public void Deactivate()
     {
         if (!IsActive)
@@ -87,6 +72,131 @@ public sealed class Tenant : AggregateRootBase
 
         IsActive = false;
         AddDomainEvent(new TenantDeactivatedDomainEvent(Id));
+    }
+
+    // =========================
+    // ROLE MANAGEMENT
+    // =========================
+
+    /// <summary>
+    /// Seeds the default system roles for this tenant.
+    /// Called once when a tenant is first created.
+    /// System roles cannot be modified or deleted.
+    /// </summary>
+    public void SeedDefaultRoles()
+    {
+        var root = Role.Create(Id, "root", PermissionCatalog.AllIncludingSystem, isSystem: true, id: SystemRoleIds.Root);
+        var admin = Role.Create(Id, "admin", PermissionCatalog.All, isSystem: true, id: SystemRoleIds.Admin);
+        var member = Role.Create(Id, "member",
+        [
+            PermissionCatalog.Staff.Read,
+            PermissionCatalog.Staff.Create,
+            PermissionCatalog.Staff.Update,
+            PermissionCatalog.Staff.Deactivate,
+        ], isSystem: true, id: SystemRoleIds.Member);
+
+        _roles.Add(root);
+        _roles.Add(admin);
+        _roles.Add(member);
+    }
+
+    /// <summary>
+    /// Creates a custom role for this tenant with the specified permissions.
+    ///
+    /// Invariants:
+    /// - Tenant must be active.
+    /// - Role name must be unique within this tenant.
+    /// - All permission codes must exist in PermissionCatalog.All.
+    ///
+    /// Emits: TenantRoleCreatedDomainEvent
+    /// </summary>
+    public Role AddCustomRole(string name, IEnumerable<string> permissionCodes)
+    {
+        EnsureActive();
+
+        if (_roles.Any(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            throw new RoleAlreadyExistsException(name);
+
+        var role = Role.Create(Id, name, permissionCodes);
+        _roles.Add(role);
+        AddDomainEvent(new RoleCreatedDomainEvent(Id, role.Id));
+        return role;
+    }
+
+    /// <summary>
+    /// Removes a custom role from the tenant.
+    ///
+    /// Behavior:
+    /// - Hard delete when the role has never been assigned to any user or invitation.
+    /// - Soft delete (IsActive = false) when historical references exist but no active ones.
+    ///
+    /// Invariants:
+    /// - Tenant must be active.
+    /// - System roles cannot be removed.
+    /// - Role must have no active users assigned.
+    /// - Role must have no active pending invitations.
+    ///
+    /// Emits: RoleDeletedDomainEvent (hard) or RoleDeactivatedDomainEvent (soft)
+    /// </summary>
+    public void RemoveRole(Guid roleId)
+    {
+        EnsureActive();
+
+        var role = _roles.FirstOrDefault(r => r.Id == roleId)
+            ?? throw new RoleNotFoundException(roleId);
+
+        if (role.IsSystem)
+            throw new SystemRoleCannotBeModifiedException(role.Name);
+
+        if (_users.Any(u => u.RoleId == roleId && u.IsActive))
+            throw new RoleInUseByUsersException(role.Name);
+
+        if (_invitations.Any(i => i.RoleId == roleId && i.IsActive))
+            throw new RoleInUseByInvitationsException(role.Name);
+
+        var hasHistory = _users.Any(u => u.RoleId == roleId)
+                      || _invitations.Any(i => i.RoleId == roleId);
+
+        if (hasHistory)
+        {
+            role.Deactivate();
+            AddDomainEvent(new RoleDeactivatedDomainEvent(Id, roleId));
+        }
+        else
+        {
+            _roles.Remove(role);
+            AddDomainEvent(new RoleDeletedDomainEvent(Id, roleId));
+        }
+    }
+
+    /// <summary>
+    /// Updates the name and permission set of an existing custom role.
+    ///
+    /// Invariants:
+    /// - Tenant must be active.
+    /// - Role must exist.
+    /// - Role must not be a system role.
+    /// - New name must be unique within the tenant (active and inactive roles included).
+    /// - All permission codes must exist in PermissionCatalog.All.
+    ///
+    /// Emits: RoleUpdatedDomainEvent
+    /// </summary>
+    public void UpdateRole(Guid roleId, string name, IEnumerable<string> permissionCodes)
+    {
+        EnsureActive();
+
+        var role = _roles.FirstOrDefault(r => r.Id == roleId)
+            ?? throw new RoleNotFoundException(roleId);
+
+        if (role.IsSystem)
+            throw new SystemRoleCannotBeModifiedException(role.Name);
+
+        if (_roles.Any(r => r.Id != roleId && r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            throw new RoleAlreadyExistsException(name);
+
+        role.Rename(name);
+        role.UpdatePermissions(permissionCodes);
+        AddDomainEvent(new RoleUpdatedDomainEvent(Id, roleId));
     }
 
     // =========================
@@ -100,18 +210,16 @@ public sealed class Tenant : AggregateRootBase
     /// - Tenant must be active.
     /// - No two active invitations may exist for the same email.
     /// - Invitations cannot be created for existing users.
+    /// - The specified role must exist in this tenant.
     ///
-    /// Emits:
-    /// - UserInvitedDomainEvent
-    ///
-    /// Throws:
-    /// - TenantInactiveException
-    /// - UserAlreadyExistsException
-    /// - DuplicateInvitationException
+    /// Emits: UserInvitedDomainEvent
     /// </summary>
-    public Invitation InviteUser(Email email, Role role, InvitationTtl ttl)
+    public Invitation InviteUser(Email email, Guid roleId, InvitationTtl ttl)
     {
         EnsureActive();
+
+        if (!_roles.Any(r => r.Id == roleId))
+            throw new RoleNotFoundException(roleId);
 
         if (_users.Any(x => x.Email.Value == email.Value))
             throw new UserAlreadyExistsException(email.Value);
@@ -122,11 +230,9 @@ public sealed class Tenant : AggregateRootBase
         if (activeInvitation is not null)
             throw new DuplicateInvitationException(email.Value);
 
-        var invitation = new Invitation(Id, email, role, ttl);
-
+        var invitation = new Invitation(Id, email, roleId, ttl);
         _invitations.Add(invitation);
-
-        AddDomainEvent(new UserInvitedDomainEvent(Id, email.Value));//, role.Value));
+        AddDomainEvent(new UserInvitedDomainEvent(Id, email.Value));
 
         return invitation;
     }
@@ -143,16 +249,7 @@ public sealed class Tenant : AggregateRootBase
     /// - A user must come from a valid and active invitation.
     /// - No two users may share the same email.
     ///
-    /// Emits:
-    /// - InvitationUsedDomainEvent
-    /// - UserCreatedFromInvitationDomainEvent
-    /// - UserAccessResolvedDomainEvent
-    ///
-    /// Throws:
-    /// - TenantInactiveException
-    /// - InvitationNotFoundException
-    /// - InvitationExpiredException
-    /// - UserAlreadyExistsException
+    /// Emits: InvitationUsedDomainEvent, UserCreatedFromInvitationDomainEvent, UserAccessResolvedDomainEvent
     /// </summary>
     public User ResolveAccess(ExternalId externalId, Email email)
     {
@@ -179,20 +276,16 @@ public sealed class Tenant : AggregateRootBase
 
         var user = CreateUserFromInvitation(invitation, externalId);
 
-        AddDomainEvent(new UserCreatedFromInvitationDomainEvent(
-            Id, user.Id, user.Email.Value, user.Role.Value));
-
+        var roleName = _roles.FirstOrDefault(r => r.Id == user.RoleId)?.Name ?? string.Empty;
+        AddDomainEvent(new UserCreatedFromInvitationDomainEvent(Id, user.Id, user.Email.Value, roleName));
         AddDomainEvent(new UserAccessResolvedDomainEvent(Id, user.Id));
 
         return user;
     }
 
-    /// <summary>
-    /// Creates a new user from a valid invitation.
-    /// </summary>
     private User CreateUserFromInvitation(Invitation invitation, ExternalId externalId)
     {
-        var user = new User(Id, externalId, invitation.Email, invitation.Role);
+        var user = new User(Id, externalId, invitation.Email, invitation.RoleId);
         _users.Add(user);
         return user;
     }

@@ -1,31 +1,26 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.ValueObjects;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities.Tenants;
 
 /// <summary>
-/// Represents an invitation for a user to join a tenant.
+/// Represents an invitation for a user to join a tenant with a specific role.
 ///
 /// Invariants:
 /// - Invitation cannot be used more than once.
 /// - Invitation cannot be used after expiration.
-/// - Email, Role and TTL are validated by their respective value objects.
-/// 
-/// Purpose:
-/// - Controls the lifecycle of an invitation.
-/// - Ensures correct usage and expiration behavior.
+/// - RoleId references a valid Role within the same tenant.
 /// </summary>
-public sealed class Invitation
+public sealed class Invitation : AuditableEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
     public Guid TenantId { get; private set; }
 
-    public Email Email { get; private set; }
+    public Email Email { get; private set; } = default!;
 
-    public Role Role { get; private set; }
-
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public Guid RoleId { get; private set; }
 
     public DateTime ExpiresAt { get; private set; }
 
@@ -37,11 +32,11 @@ public sealed class Invitation
 
     private Invitation() { }
 
-    internal Invitation(Guid tenantId, Email email, Role role, InvitationTtl ttl)
+    internal Invitation(Guid tenantId, Email email, Guid roleId, InvitationTtl ttl)
     {
         TenantId = tenantId;
         Email = email;
-        Role = role;
+        RoleId = roleId;
         ExpiresAt = DateTime.UtcNow.Add(ttl.Value);
     }
 

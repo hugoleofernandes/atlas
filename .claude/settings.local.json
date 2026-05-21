@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.OutboxWorker\\\\Class1.cs\" -Force)",
+      "PowerShell(cd \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\"; dotnet build 2>&1 | Where-Object { $_ -match \"erro|error|Erro\" } | Select-Object -First 30)",
+      "Bash(cat \"D:/git-repos/atlas/source-code/Atlas.slnx\" | head -30)",
+      "Bash(dotnet test *)",
+      "Bash(dotnet build *)",
+      "Bash(cat \"C:/Users/hugol/AppData/Roaming/Microsoft/UserSecrets/a75bf6d9-dca8-4164-b7f2-b6d774848cad/secrets.json\" 2>/dev/null || echo \"no user secrets\")",
+      "Bash(xargs grep -l \"UserCreatedFromInvitation\")",
+      "Bash(xargs cat)",
+      "Bash(for f *)",
+      "Bash(grep -v \"//.*BadRequest\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\git-repos\\\\atlas\\\\source-code\" -Recurse -File -Filter \"docfx.json\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "PowerShell(dotnet ef migrations add Add_TenantRoles_And_RolePermissions --project $infra --startup-project $startup 2>&1)",
+      "PowerShell($infra = \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.Identity.Infrastructure\")",
+      "PowerShell($startup = \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\IAuditableEntityStamper.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\Audits\\\\AuditableEntityStamper.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\IAuditService.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.BuildingBlocks.Persistence\\\\Audits\\\\AuditService.cs\")",
+      "Bash(dotnet restore *)",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\AtlasClaims.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\RequestContext.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\Tenancy\\\\TenantResolverMiddleware.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\Authorization\\\\HasPermissionAttribute.cs\")",
+      "Bash(Remove-Item \"D:\\\\git-repos\\\\atlas\\\\source-code\\\\.claude\\\\worktrees\\\\gifted-lovelace-5fcafb\\\\source-code\\\\src\\\\Atlas.API\\\\Security\\\\Authorization\\\\PermissionAuthorizationHandler.cs\")",
+      "Bash(dotnet add *)",
+      "Bash(xargs grep -l \"Activity\\\\|ActivitySource\\\\|OpenTelemetry\\\\|AddOtel\\\\|AddAtlasObserv\")",
+      "Bash(dotnet new *)",
+      "Bash(dotnet sln *)"
+    ]
+  }
+}

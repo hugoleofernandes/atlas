@@ -1,9 +1,12 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 
 public sealed class UserAlreadyExistsException : DomainException
 {
+    public const string ErrorCode = "user.already_exists";
+
     public UserAlreadyExistsException(string email)
-        : base($"A user with email '{email}' already exists in this tenant.") { }
+        : base(ErrorCode, ErrorCategory.Conflict, $"A user with email '{email}' already exists in this tenant.") { }
 }

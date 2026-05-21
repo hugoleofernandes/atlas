@@ -1,12 +1,12 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 
-/// <summary>
-/// Thrown when an invitation TTL violates the TTL invariant.
-/// </summary>
 public sealed class InvalidInvitationTtlException : DomainException
 {
+    public const string ErrorCode = "invitation_ttl.invalid";
+
     public InvalidInvitationTtlException(TimeSpan ttl)
-        : base($"Invalid invitation TTL: '{ttl}'.") { }
+        : base(ErrorCode, ErrorCategory.Validation, $"Invalid invitation TTL: '{ttl}'.") { }
 }

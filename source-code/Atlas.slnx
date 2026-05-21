@@ -41,6 +41,10 @@
     <Project Path="src/Atlas.Staff.Domain/Atlas.Staff.Domain.csproj" />
     <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Outbox/">
+    <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
+    <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/src/Shared/">
     <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Validation/Atlas.BuildingBlocks.Validation.csproj" />
@@ -51,5 +55,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
+    <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />
   </Folder>
 </Solution>

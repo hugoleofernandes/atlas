@@ -23,9 +23,11 @@ public sealed class IdentityDbContextFactory
 
     private sealed class DesignTimeRequestContext : IRequestContext
     {
-        public bool IsAuthenticated => false;
-        public Guid? TenantId => null;
-        public string? TenantName => null;
-        public Guid? UserId => null;
+        public bool IsAuthenticated  => false;
+        public Guid? TenantId        => null;
+        public string? TenantName    => null;
+        public Guid? UserId          => null;
+        public string? UserEmail     => null;
+        public string? CorrelationId => null;
     }
 }
