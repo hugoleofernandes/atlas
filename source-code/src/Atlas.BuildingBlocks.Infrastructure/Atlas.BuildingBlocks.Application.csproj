@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Invokers\" />
-  </ItemGroup>
-
 </Project>
