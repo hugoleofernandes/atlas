@@ -1,4 +1,5 @@
-﻿using Atlas.API.Models.Session;
+using Atlas.API.Errors;
+using Atlas.API.Models.Session;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -9,15 +10,13 @@ namespace Atlas.API.Controllers.Identity;
 /// Exposes session-related endpoints for the BFF. These endpoints allow the frontend
 /// to retrieve authenticated user data (/session/me) and debug claims during development
 /// (/session/debug).
-/// 
-/// This controller is the main integration point for the frontend to verify whether 
+///
+/// This controller is the main integration point for the frontend to verify whether
 /// the authentication cookie is valid and establish the user's logged-in state.
 /// </summary>
-
-
 [ApiController]
 [Route("session")]
-public class SessionController : ControllerBase
+public class SessionController(ErrorMessageLocalizer errorLocalizer) : AtlasControllerBase(errorLocalizer)
 {
     [HttpGet("me")]
     [Authorize]
@@ -32,7 +31,7 @@ public class SessionController : ControllerBase
             ?? email; // fallback seguro
 
         if (string.IsNullOrWhiteSpace(email))
-            return BadRequest("Missing email claim.");
+            return ErrorResult(AuthErrors.Claim.EmailMissing);
 
         var dto = new GetSessionResponse()
         {

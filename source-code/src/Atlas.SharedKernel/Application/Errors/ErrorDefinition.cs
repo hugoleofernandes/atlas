@@ -2,6 +2,6 @@
 
 public sealed record ErrorDefinition(
     string Code,
-    string DefaultMessage,
+    string FallbackMessage,
     ErrorCategory Category
 );

@@ -1,4 +1,4 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -6,19 +6,21 @@ namespace Atlas.Identity.Tests.Tenants;
 
 public sealed class UserTests
 {
+    private static readonly Guid DefaultRoleId = Guid.NewGuid();
+
     internal static class UserBuilder
     {
         public static User Create(
             Guid? tenantId = null,
             string externalId = "oid-123",
             string email = "user@test.com",
-            string role = "admin")
+            Guid? roleId = null)
         {
             return new User(
                 tenantId ?? Guid.NewGuid(),
                 ExternalId.Create(externalId),
                 Email.Create(email),
-                Role.Create(role)
+                roleId ?? DefaultRoleId
             );
         }
     }
@@ -26,74 +28,76 @@ public sealed class UserTests
     // ------------------------------------------------------------
     // 1. Constructor Behavior
     // ------------------------------------------------------------
+
     [Fact]
     public void Constructor_ShouldCreateActiveUser_WithValidData()
     {
-        // Arrange
         var tenantId = Guid.NewGuid();
+        var roleId = Guid.NewGuid();
 
-        // Act
         var user = new User(
             tenantId,
             ExternalId.Create("oid-123"),
             Email.Create("user@test.com"),
-            Role.Create("admin")
+            roleId
         );
 
-        // Assert
         user.TenantId.Should().Be(tenantId);
         user.ExternalId.Value.Should().Be("oid-123");
         user.Email.Value.Should().Be("user@test.com");
-        user.Role.Value.Should().Be("admin");
+        user.RoleId.Should().Be(roleId);
         user.IsActive.Should().BeTrue();
     }
 
     // ------------------------------------------------------------
     // 2. ChangeRole Behavior
     // ------------------------------------------------------------
+
     [Fact]
-    public void ChangeRole_ShouldUpdateRole_WhenValidRoleProvided()
+    public void ChangeRole_ShouldUpdateTenantRoleId_WhenNewRoleProvided()
     {
-        // Arrange
-        var user = UserBuilder.Create(role: "admin");
+        var originalRoleId = Guid.NewGuid();
+        var newRoleId = Guid.NewGuid();
+        var user = UserBuilder.Create(roleId: originalRoleId);
 
-        // Act
-        user.ChangeRole(Role.Create("member"));
+        user.ChangeRole(newRoleId);
 
-        // Assert
-        user.Role.Value.Should().Be("member");
+        user.RoleId.Should().Be(newRoleId);
+    }
+
+    [Fact]
+    public void ChangeRole_ShouldBeIdempotent_WhenSameRoleIdProvided()
+    {
+        var roleId = Guid.NewGuid();
+        var user = UserBuilder.Create(roleId: roleId);
+
+        user.ChangeRole(roleId);
+
+        user.RoleId.Should().Be(roleId);
     }
 
     // ------------------------------------------------------------
     // 3. Deactivate Behavior
     // ------------------------------------------------------------
+
     [Fact]
     public void Deactivate_ShouldSetIsActiveToFalse_WhenUserIsActive()
     {
-        // Arrange
         var user = UserBuilder.Create();
 
-        // Act
         user.Deactivate();
 
-        // Assert
         user.IsActive.Should().BeFalse();
     }
 
-    // ------------------------------------------------------------
-    // 4. Deactivate ShouldBeIdempotent
-    // ------------------------------------------------------------
     [Fact]
     public void Deactivate_ShouldRemainInactive_WhenCalledMultipleTimes()
     {
-        // Arrange
         var user = UserBuilder.Create();
 
-        // Act
         user.Deactivate();
         user.Deactivate();
 
-        // Assert
         user.IsActive.Should().BeFalse();
     }
 }

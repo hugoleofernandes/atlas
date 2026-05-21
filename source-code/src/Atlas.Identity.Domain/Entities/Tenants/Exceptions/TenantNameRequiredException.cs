@@ -1,20 +1,12 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 
-/// <summary>
-/// Thrown when attempting to create a tenant without a valid name.
-///
-/// Invariant violated:
-/// - A tenant must always have a valid and normalized name.
-///
-/// Aggregate:
-/// - Tenant
-/// </summary>
 public sealed class TenantNameRequiredException : DomainException
 {
+    public const string ErrorCode = "tenant.name_required";
+
     public TenantNameRequiredException()
-        : base("Tenant name is required.")
-    {
-    }
+        : base(ErrorCode, ErrorCategory.Validation, "Tenant name is required.") { }
 }

@@ -1,28 +1,19 @@
-﻿using Atlas.Identity.Application.Abstractions;
-using Atlas.SharedKernel.Application;
+using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
+using Atlas.Identity.Application.Abstractions;
 
 namespace Atlas.Identity.Infrastructure.Persistence.DbContexts;
 
 public sealed class IdentityUnitOfWork : IIdentityUnitOfWork
 {
     private readonly IdentityDbContext _db;
-    private readonly IRequestContext _requestContext;
+    private readonly ISavePipeline _savePipeline;
 
-    public IdentityUnitOfWork(IdentityDbContext db, IRequestContext requestContext)
+    public IdentityUnitOfWork(IdentityDbContext db, ISavePipeline savePipeline)
     {
-        _db = db;
-        _requestContext = requestContext;
+        _db           = db;
+        _savePipeline = savePipeline;
     }
 
-    public async Task SaveChangesAsync(CancellationToken ct)
-    {
-        _db.ClearDomainEvents();
-
-        await _db.SaveChangesAsync(ct);
-    }
-
-    public Task<T> GetDbContext<T>() where T : class
-    {
-        return Task.FromResult(_db as T ?? throw new InvalidOperationException());
-    }
+    public Task SaveChangesAsync(CancellationToken ct)
+        => _savePipeline.ExecuteAsync(_db, ct);
 }

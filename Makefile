@@ -1,7 +1,12 @@
-PROJECT=atlas
-COMPOSE=docker compose -p $(PROJECT) -f infrastructure/docker-compose.yml -f infrastructure/docker-compose.dev.yml
+ROOT_DIR := $(shell git rev-parse --show-toplevel)
 
-SRC=source-code/src
+PROJECT=atlas
+
+ENV_FILE=$(ROOT_DIR)/.env
+
+COMPOSE=docker compose --env-file $(ENV_FILE) -p $(PROJECT) -f infrastructure/docker-compose.yml -f infrastructure/docker-compose.dev.yml
+
+SRC=$(ROOT_DIR)/source-code/src
 API=$(SRC)/Atlas.API
 
 # =========================================

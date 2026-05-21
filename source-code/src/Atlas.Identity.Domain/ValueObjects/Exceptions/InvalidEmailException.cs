@@ -1,12 +1,12 @@
-﻿using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.ValueObjects.Exceptions;
 
-/// <summary>
-/// Thrown when an email violates the email invariant.
-/// </summary>
 public sealed class InvalidEmailException : DomainException
 {
+    public const string ErrorCode = "email.invalid";
+
     public InvalidEmailException(string email)
-        : base($"Invalid email format: '{email}'.") { }
+        : base(ErrorCode, ErrorCategory.Validation, $"Invalid email format: '{email}'.") { }
 }

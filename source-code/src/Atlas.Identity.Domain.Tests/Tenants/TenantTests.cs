@@ -1,13 +1,44 @@
-﻿using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Permissions;
 using Atlas.Identity.Domain.ValueObjects;
 using FluentAssertions;
+using Atlas.Identity.Domain.ValueObjects.Exceptions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
 public class TenantTests
 {
+    // ============================================================
+    // HELPERS
+    // ============================================================
+
+    /// <summary>
+    /// Creates a tenant with default system roles seeded.
+    /// Returns the tenant and the Id of the "admin" role.
+    /// </summary>
+    private static (Tenant tenant, Guid adminRoleId, Guid memberRoleId) CreateTenantWithRoles(string name = "test")
+    {
+        var tenant = new Tenant(name);
+        tenant.SeedDefaultRoles();
+        tenant.ClearDomainEvents();
+        var adminRoleId = tenant.Roles.Single(r => r.Name == "admin").Id;
+        var memberRoleId = tenant.Roles.Single(r => r.Name == "member").Id;
+        return (tenant, adminRoleId, memberRoleId);
+    }
+
+    /// <summary>
+    /// Forces an invitation's ExpiresAt into the past via reflection.
+    /// Avoids Thread.Sleep — deterministic and fast in any environment.
+    /// </summary>
+    private static void ForceExpire(Invitation invitation)
+    {
+        typeof(Invitation)
+            .GetProperty(nameof(Invitation.ExpiresAt))!
+            .SetValue(invitation, DateTime.UtcNow.AddSeconds(-1));
+    }
+
     // ============================================================
     // 1. CONSTRUCTOR
     // ============================================================
@@ -29,7 +60,36 @@ public class TenantTests
     }
 
     // ============================================================
-    // 2. LIFECYCLE: DEACTIVATE
+    // 2. SEED DEFAULT ROLES
+    // ============================================================
+
+    [Fact]
+    public void SeedDefaultRoles_ShouldCreateRootAdminAndMemberRoles()
+    {
+        var tenant = new Tenant("test");
+
+        tenant.SeedDefaultRoles();
+
+        tenant.Roles.Should().HaveCount(3);
+        tenant.Roles.Should().Contain(r => r.Name == "root"   && r.IsSystem);
+        tenant.Roles.Should().Contain(r => r.Name == "admin"  && r.IsSystem);
+        tenant.Roles.Should().Contain(r => r.Name == "member" && r.IsSystem);
+    }
+
+    [Fact]
+    public void SeedDefaultRoles_AdminShouldHaveAllPermissions()
+    {
+        var tenant = new Tenant("test");
+
+        tenant.SeedDefaultRoles();
+
+        var admin = tenant.Roles.Single(r => r.Name == "admin");
+        admin.Permissions.Select(p => p.Code).Should()
+            .BeEquivalentTo(PermissionCatalog.All);
+    }
+
+    // ============================================================
+    // 3. LIFECYCLE: DEACTIVATE
     // ============================================================
 
     [Fact]
@@ -54,6 +114,17 @@ public class TenantTests
     }
 
     [Fact]
+    public void Deactivate_ShouldEmitEventWithCorrectTenantId()
+    {
+        var tenant = new Tenant("test");
+
+        tenant.Deactivate();
+
+        var evt = tenant.DomainEvents.OfType<TenantDeactivatedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+    }
+
+    [Fact]
     public void Deactivate_ShouldDoNothing_WhenTenantIsAlreadyInactive()
     {
         var tenant = new Tenant("test");
@@ -66,18 +137,18 @@ public class TenantTests
     }
 
     // ============================================================
-    // 3. INVITE USER
+    // 4. INVITE USER
     // ============================================================
 
     [Fact]
     public void InviteUser_ShouldThrow_WhenTenantIsInactive()
     {
-        var tenant = new Tenant("test");
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
         tenant.Deactivate();
 
         var act = () => tenant.InviteUser(
             Email.Create("user@test.com"),
-            Role.Create("admin"),
+            adminRoleId,
             InvitationTtl.Create(TimeSpan.FromHours(1))
         );
 
@@ -85,21 +156,31 @@ public class TenantTests
     }
 
     [Fact]
-    public void InviteUser_ShouldThrow_WhenUserAlreadyExists()
+    public void InviteUser_ShouldThrow_WhenRoleDoesNotExist()
     {
-        var tenant = new Tenant("test");
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var unknownRoleId = Guid.NewGuid();
 
-        tenant.InviteUser(
+        var act = () => tenant.InviteUser(
             Email.Create("user@test.com"),
-            Role.Create("admin"),
+            unknownRoleId,
             InvitationTtl.Create(TimeSpan.FromHours(1))
         );
 
+        act.Should().Throw<RoleNotFoundException>();
+    }
+
+    [Fact]
+    public void InviteUser_ShouldThrow_WhenUserAlreadyExists()
+    {
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
         tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
 
         var act = () => tenant.InviteUser(
             Email.Create("user@test.com"),
-            Role.Create("admin"),
+            adminRoleId,
             InvitationTtl.Create(TimeSpan.FromHours(1))
         );
 
@@ -109,17 +190,13 @@ public class TenantTests
     [Fact]
     public void InviteUser_ShouldThrow_WhenActiveInvitationAlreadyExists()
     {
-        var tenant = new Tenant("test");
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
 
-        tenant.InviteUser(
-            Email.Create("user@test.com"),
-            Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromHours(1))
-        );
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
 
         var act = () => tenant.InviteUser(
             Email.Create("user@test.com"),
-            Role.Create("admin"),
+            adminRoleId,
             InvitationTtl.Create(TimeSpan.FromHours(1))
         );
 
@@ -127,51 +204,369 @@ public class TenantTests
     }
 
     [Fact]
-    public void InviteUser_ShouldEmitUserInvitedEvent_WhenValid()
+    public void InviteUser_ShouldSucceed_WhenPreviousInvitationIsExpired()
     {
-        var tenant = new Tenant("test");
+        var (tenant, adminRoleId, memberRoleId) = CreateTenantWithRoles();
 
-        tenant.InviteUser(
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        ForceExpire(tenant.Invitations.Single());
+
+        var act = () => tenant.InviteUser(
             Email.Create("user@test.com"),
-            Role.Create("admin"),
+            memberRoleId,
             InvitationTtl.Create(TimeSpan.FromHours(1))
         );
+
+        act.Should().NotThrow();
+        tenant.Invitations.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public void InviteUser_ShouldEmitUserInvitedEvent_WhenValid()
+    {
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
 
         tenant.DomainEvents.Should().ContainSingle()
             .Which.Should().BeOfType<UserInvitedDomainEvent>();
     }
 
     [Fact]
+    public void InviteUser_ShouldEmitEventWithCorrectData_WhenValid()
+    {
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
+
+        var evt = tenant.DomainEvents.OfType<UserInvitedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.Email.Should().Be("user@test.com");
+    }
+
+    [Fact]
     public void InviteUser_ShouldAddInvitation_WhenValid()
     {
-        var tenant = new Tenant("test");
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
 
-        tenant.InviteUser(
-            Email.Create("user@test.com"),
-            Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromHours(1))
-        );
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
 
         tenant.Invitations.Should().ContainSingle(i => i.Email.Value == "user@test.com");
     }
 
     // ============================================================
-    // 4. RESOLVE ACCESS
+    // 5. ADD CUSTOM ROLE
+    // ============================================================
+
+    [Fact]
+    public void AddCustomRole_ShouldAddRole_WhenNameIsUnique()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var role = tenant.AddCustomRole("supervisor", [PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+
+        tenant.Roles.Should().Contain(r => r.Name == "supervisor");
+        role.IsSystem.Should().BeFalse();
+        role.Permissions.Select(p => p.Code).Should().Contain([PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldBeActiveByDefault_WhenCreated()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var role = tenant.AddCustomRole("support", []);
+
+        role.IsActive.Should().BeTrue();
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldEmitRoleCreatedEvent_WhenValid()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var role = tenant.AddCustomRole("support", []);
+
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleCreatedDomainEvent>();
+
+        var evt = tenant.DomainEvents.OfType<RoleCreatedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.RoleId.Should().Be(role.Id);
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldThrow_WhenTenantIsInactive()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        tenant.Deactivate();
+
+        var act = () => tenant.AddCustomRole("support", []);
+
+        act.Should().Throw<TenantInactiveException>();
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldThrow_WhenNameAlreadyExists()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.AddCustomRole("admin", [PermissionCatalog.Staff.Read]);
+
+        act.Should().Throw<RoleAlreadyExistsException>();
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldThrow_WhenNameIsTooShort()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.AddCustomRole("ab", []);
+
+        act.Should().Throw<InvalidRoleNameException>();
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldThrow_WhenNameIsTooLong()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.AddCustomRole("toolongname", []);
+
+        act.Should().Throw<InvalidRoleNameException>();
+    }
+
+    [Fact]
+    public void AddCustomRole_ShouldThrow_WhenPermissionCodeIsInvalid()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.AddCustomRole("custom", ["unknown.permission"]);
+
+        act.Should().Throw<InvalidPermissionException>();
+    }
+
+    // ============================================================
+    // 6. REMOVE ROLE
+    // ============================================================
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenTenantIsInactive()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.Deactivate();
+
+        var act = () => tenant.RemoveRole(role.Id);
+
+        act.Should().Throw<TenantInactiveException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleDoesNotExist()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.RemoveRole(Guid.NewGuid());
+
+        act.Should().Throw<RoleNotFoundException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleIsSystem()
+    {
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.RemoveRole(adminRoleId);
+
+        act.Should().Throw<SystemRoleCannotBeModifiedException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleHasActiveUsers()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.RemoveRole(role.Id);
+
+        act.Should().Throw<RoleInUseByUsersException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldThrow_WhenRoleHasActiveInvitations()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.RemoveRole(role.Id);
+
+        act.Should().Throw<RoleInUseByInvitationsException>();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldHardDelete_WhenRoleHasNoHistory()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.Roles.Should().NotContain(r => r.Id == role.Id);
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldEmitRoleDeletedEvent_WhenRoleHasNoHistory()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleDeletedDomainEvent>();
+
+        var evt = tenant.DomainEvents.OfType<RoleDeletedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.RoleId.Should().Be(role.Id);
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldSoftDelete_WhenRoleHasInactiveUsers()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+        user.Deactivate();
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.Roles.Should().Contain(r => r.Id == role.Id);
+        role.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldEmitRoleDeactivatedEvent_WhenRoleHasInactiveUsers()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+        user.Deactivate();
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleDeactivatedDomainEvent>();
+
+        var evt = tenant.DomainEvents.OfType<RoleDeactivatedDomainEvent>().Single();
+        evt.TenantId.Should().Be(tenant.Id);
+        evt.RoleId.Should().Be(role.Id);
+    }
+
+    [Fact]
+    public void RemoveRole_ShouldSoftDelete_WhenRoleHasExpiredInvitations()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var role = tenant.AddCustomRole("support", []);
+        tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        ForceExpire(tenant.Invitations.Single(i => i.RoleId == role.Id));
+        tenant.ClearDomainEvents();
+
+        tenant.RemoveRole(role.Id);
+
+        tenant.Roles.Should().Contain(r => r.Id == role.Id);
+        role.IsActive.Should().BeFalse();
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleDeactivatedDomainEvent>();
+    }
+
+    // ============================================================
+    // 6. UPDATE ROLE
+    // ============================================================
+
+    [Fact]
+    public void UpdateRole_ShouldUpdateNameAndPermissions_WhenRoleIsCustom()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var custom = tenant.AddCustomRole("custom", [PermissionCatalog.Staff.Read]);
+        tenant.ClearDomainEvents();
+
+        tenant.UpdateRole(custom.Id, "renamed", [PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+
+        custom.Name.Should().Be("renamed");
+        custom.Permissions.Select(p => p.Code).Should()
+            .BeEquivalentTo([PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+        tenant.DomainEvents.Should().ContainSingle()
+            .Which.Should().BeOfType<RoleUpdatedDomainEvent>();
+    }
+
+    [Fact]
+    public void UpdateRole_ShouldThrow_WhenRoleIsSystem()
+    {
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.UpdateRole(adminRoleId, "newname", [PermissionCatalog.Staff.Read]);
+
+        act.Should().Throw<SystemRoleCannotBeModifiedException>();
+    }
+
+    [Fact]
+    public void UpdateRole_ShouldThrow_WhenRoleDoesNotExist()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+
+        var act = () => tenant.UpdateRole(Guid.NewGuid(), "any", [PermissionCatalog.Staff.Read]);
+
+        act.Should().Throw<RoleNotFoundException>();
+    }
+
+    [Fact]
+    public void UpdateRole_ShouldThrow_WhenNameAlreadyExistsInAnotherRole()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        tenant.AddCustomRole("roleone", [PermissionCatalog.Staff.Read]);
+        var roleTwo = tenant.AddCustomRole("roletwo", [PermissionCatalog.Staff.Read]);
+
+        var act = () => tenant.UpdateRole(roleTwo.Id, "roleone", [PermissionCatalog.Staff.Read]);
+
+        act.Should().Throw<RoleAlreadyExistsException>();
+    }
+
+    [Fact]
+    public void UpdateRole_ShouldAllowKeepingSameName()
+    {
+        var (tenant, _, _) = CreateTenantWithRoles();
+        var custom = tenant.AddCustomRole("custom", [PermissionCatalog.Staff.Read]);
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.UpdateRole(custom.Id, "custom", [PermissionCatalog.Staff.Update]);
+
+        act.Should().NotThrow();
+        custom.Permissions.Select(p => p.Code).Should().BeEquivalentTo([PermissionCatalog.Staff.Update]);
+    }
+
+    // ============================================================
+    // 7. RESOLVE ACCESS
     // ============================================================
 
     [Fact]
     public void ResolveAccess_ShouldReturnExistingUser_WhenUserAlreadyExists()
     {
-        var tenant = new Tenant("test");
-
-        tenant.InviteUser(
-            Email.Create("user@test.com"),
-            Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromDays(1)) // TTL maior
-        );
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromDays(1)));
 
         var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
-
         tenant.ClearDomainEvents();
 
         var result = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
@@ -184,7 +579,7 @@ public class TenantTests
     [Fact]
     public void ResolveAccess_ShouldThrow_WhenTenantIsInactive()
     {
-        var tenant = new Tenant("test");
+        var (tenant, _, _) = CreateTenantWithRoles();
         tenant.Deactivate();
 
         var act = () => tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
@@ -195,7 +590,7 @@ public class TenantTests
     [Fact]
     public void ResolveAccess_ShouldThrow_WhenInvitationDoesNotExist()
     {
-        var tenant = new Tenant("test");
+        var (tenant, _, _) = CreateTenantWithRoles();
 
         var act = () => tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("missing@test.com"));
 
@@ -205,15 +600,9 @@ public class TenantTests
     [Fact]
     public void ResolveAccess_ShouldThrow_WhenInvitationIsExpired()
     {
-        var tenant = new Tenant("test");
-
-        tenant.InviteUser(
-            Email.Create("user@test.com"),
-            Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromMilliseconds(1))
-        );
-
-        Thread.Sleep(10);
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        ForceExpire(tenant.Invitations.Single());
 
         var act = () => tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
 
@@ -223,14 +612,8 @@ public class TenantTests
     [Fact]
     public void ResolveAccess_ShouldThrow_WhenUserAlreadyExistsAfterInvitationUse()
     {
-        var tenant = new Tenant("test");
-
-        tenant.InviteUser(
-            Email.Create("user@test.com"),
-            Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromHours(1))
-        );
-
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
         tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
         tenant.ClearDomainEvents();
 
@@ -240,33 +623,38 @@ public class TenantTests
     }
 
     [Fact]
+    public void ResolveAccess_ShouldThrow_WhenExistingUserHasDifferentExternalId()
+    {
+        // Security invariant: same email but different OID means a different identity
+        // provider account is trying to claim the same user slot — must be rejected.
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        tenant.ResolveAccess(ExternalId.Create("oid-legitimate"), Email.Create("user@test.com"));
+        tenant.ClearDomainEvents();
+
+        var act = () => tenant.ResolveAccess(ExternalId.Create("oid-attacker"), Email.Create("user@test.com"));
+
+        act.Should().Throw<UserAlreadyExistsException>();
+    }
+
+    [Fact]
     public void ResolveAccess_ShouldCreateUser_WhenInvitationIsValid()
     {
-        var tenant = new Tenant("test");
-
-        tenant.InviteUser(
-            Email.Create("user@test.com"),
-            Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromHours(1))
-        );
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
 
         var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
 
         user.Email.Value.Should().Be("user@test.com");
+        user.RoleId.Should().Be(adminRoleId);
         tenant.Users.Should().Contain(user);
     }
 
     [Fact]
     public void ResolveAccess_ShouldEmitEvents_WhenUserIsCreated()
     {
-        var tenant = new Tenant("test");
-
-        tenant.InviteUser(
-            Email.Create("user@test.com"),
-            Role.Create("admin"),
-            InvitationTtl.Create(TimeSpan.FromHours(1))
-        );
-
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
         tenant.ClearDomainEvents();
 
         tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
@@ -275,5 +663,25 @@ public class TenantTests
         tenant.DomainEvents.Should().Contain(e => e is InvitationUsedDomainEvent);
         tenant.DomainEvents.Should().Contain(e => e is UserCreatedFromInvitationDomainEvent);
         tenant.DomainEvents.Should().Contain(e => e is UserAccessResolvedDomainEvent);
+    }
+
+    [Fact]
+    public void ResolveAccess_ShouldEmitEventsWithCorrectData_WhenUserIsCreated()
+    {
+        var (tenant, adminRoleId, _) = CreateTenantWithRoles();
+        tenant.InviteUser(Email.Create("user@test.com"), adminRoleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
+        tenant.ClearDomainEvents();
+
+        var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
+
+        var createdEvt = tenant.DomainEvents.OfType<UserCreatedFromInvitationDomainEvent>().Single();
+        createdEvt.TenantId.Should().Be(tenant.Id);
+        createdEvt.UserId.Should().Be(user.Id);
+        createdEvt.Email.Should().Be("user@test.com");
+        createdEvt.Role.Should().Be("admin");
+
+        var resolvedEvt = tenant.DomainEvents.OfType<UserAccessResolvedDomainEvent>().Single();
+        resolvedEvt.TenantId.Should().Be(tenant.Id);
+        resolvedEvt.UserId.Should().Be(user.Id);
     }
 }

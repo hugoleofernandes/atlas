@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!--
+    Intentionally thin — only maps domain events to integration events.
+    References are limited to Domain and Contracts layers (no Application/Infrastructure)
+    to stay clean and dependency-free.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\Atlas.Contracts\Atlas.Contracts.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
+    <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+</Project>

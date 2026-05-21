@@ -1,5 +1,10 @@
-﻿using Atlas.Identity.Application.Tenants.UseCases.ResolveTenantAccess;
-using Atlas.Identity.Application.Tenants.Workflows.ResolveTenantAccess;
+using Atlas.API.Errors;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.BuildingBlocks.AspNetCore.Observability;
+using Atlas.BuildingBlocks.AspNetCore.Security;
+using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
+using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
@@ -11,7 +16,7 @@ namespace Atlas.API.Security.Bootstrap;
 ///
 /// Responsibilities:
 /// - Resolve tenant access
-/// - Create internal application claims
+/// - Create internal application claims (tenantId, userId, roleId, permissions)
 /// - Persist claims into the auth cookie
 /// - Ensure bootstrap runs only once
 ///
@@ -30,8 +35,10 @@ public sealed class UserBootstrapMiddleware
     }
 
     public async Task InvokeAsync(
-    HttpContext context,
-    IResolveTenantAccessWorkflow resolveAccessWorkflow)
+        HttpContext context,
+        IResolveTenantAccessCommandHandler resolveAccessHandler,
+        IHandlerInvoker invoker,
+        ErrorMessageLocalizer errorLocalizer)
     {
         //
         // ==========================================
@@ -90,12 +97,7 @@ public sealed class UserBootstrapMiddleware
             string.IsNullOrWhiteSpace(email) ||
             string.IsNullOrWhiteSpace(tenantName))
         {
-            context.Response.StatusCode =
-                StatusCodes.Status401Unauthorized;
-
-            await context.Response.WriteAsync(
-                "Missing required identity claims.");
-
+            await WriteProblemAsync(context, AuthErrors.Claim.IdentityMissing, errorLocalizer);
             return;
         }
 
@@ -105,16 +107,9 @@ public sealed class UserBootstrapMiddleware
         // ==========================================
         //
 
-        var cmd = new Command(
-            tenantName,
-            oid,
-            email
-        );
+        var cmd = new ResolveTenantAccessCommand(tenantName, oid, email);
 
-        var result = await resolveAccessWorkflow.ExecuteAsync(
-            cmd,
-            context.RequestAborted
-        );
+        var result = await invoker.InvokeAsync(resolveAccessHandler, cmd, context.RequestAborted);
 
         //
         // ==========================================
@@ -124,11 +119,8 @@ public sealed class UserBootstrapMiddleware
 
         if (!result.IsSuccess)
         {
-            context.Response.StatusCode =
-                StatusCodes.Status403Forbidden;
-
-            await context.Response.WriteAsync(result.Error?.DefaultMessage ?? "Failed to resolve tenant access.");
-
+            var error = result.ErrorDefinition!;
+            await WriteProblemAsync(context, error, errorLocalizer);
             return;
         }
 
@@ -142,15 +134,17 @@ public sealed class UserBootstrapMiddleware
 
         var identity = new ClaimsIdentity("atlas");
 
-        identity.AddClaim(new Claim(AtlasClaims.TenantId, value.TenantId.ToString()));
-
+        identity.AddClaim(new Claim(AtlasClaims.TenantId,   value.TenantId.ToString()));
         identity.AddClaim(new Claim(AtlasClaims.TenantName, value.TenantName));
-
-        identity.AddClaim(new Claim(AtlasClaims.UserId, value.UserId.ToString()));
-
-        identity.AddClaim(new Claim(ClaimTypes.Role, value.Role));
-
+        identity.AddClaim(new Claim(AtlasClaims.UserId,     value.UserId.ToString()));
+        identity.AddClaim(new Claim(AtlasClaims.UserEmail,  email));
+        identity.AddClaim(new Claim(AtlasClaims.RoleId,     value.RoleId.ToString()));
+        identity.AddClaim(new Claim(ClaimTypes.Role,         value.RoleName));
         identity.AddClaim(new Claim(AtlasClaims.BootstrapCompleted, "true"));
+
+        // One claim per permission — authorization handler checks HasClaim(type, value)
+        foreach (var permission in value.Permissions)
+            identity.AddClaim(new Claim(AtlasClaims.Permission, permission));
 
         //
         // ==========================================
@@ -179,4 +173,39 @@ public sealed class UserBootstrapMiddleware
         await _next(context);
     }
 
+    private static int MapCategory(ErrorCategory category) => category switch
+    {
+        ErrorCategory.Validation   => StatusCodes.Status400BadRequest,
+        ErrorCategory.Business     => StatusCodes.Status422UnprocessableEntity,
+        ErrorCategory.Conflict     => StatusCodes.Status409Conflict,
+        ErrorCategory.NotFound     => StatusCodes.Status404NotFound,
+        ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
+        _                          => StatusCodes.Status500InternalServerError
+    };
+
+    private static async Task WriteProblemAsync(
+        HttpContext context,
+        ErrorDefinition error,
+        ErrorMessageLocalizer localizer)
+    {
+        var status = MapCategory(error.Category);
+
+        var problem = new ApiProblemDetails
+        {
+            Title  = localizer.Localize(error),
+            Status = status,
+            Type   = $"https://docs.atlas/errors/{error.Code}"
+        };
+
+        problem.AddMetadata(
+            error.Code,
+            CorrelationIdMiddleware.Get(context),
+            TraceContextHelper.GetTraceId()
+        );
+
+        context.Response.StatusCode  = status;
+        context.Response.ContentType = "application/problem+json";
+
+        await context.Response.WriteAsJsonAsync(problem);
+    }
 }

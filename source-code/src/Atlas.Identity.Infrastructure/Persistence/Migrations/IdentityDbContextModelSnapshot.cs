@@ -23,7 +23,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Audits.IdentityModuleAudit", b =>
+            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Entities.Audits.Audit", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -67,14 +67,37 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("audits", "atlas_identity");
                 });
 
+            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Entities.Idempotency.IdempotencyEntry", b =>
+                {
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("HandlerName")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("IdempotencyKey", "HandlerName");
+
+                    b.ToTable("idempotency_entries", "atlas_identity");
+                });
+
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Invitation", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -89,19 +112,78 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TenantId", "Email");
 
                     b.ToTable("invitations", "atlas_identity");
+                });
+
+            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsSystem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("roles", "atlas_identity");
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Tenant", b =>
@@ -113,6 +195,12 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -122,6 +210,15 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -139,6 +236,13 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -154,13 +258,21 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -179,6 +291,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("CorrelationId")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -187,6 +300,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Error")
                         .HasColumnType("text");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("LockId")
                         .HasColumnType("uuid");
@@ -217,7 +333,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("TenantId")
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Type")
@@ -225,10 +341,12 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdempotencyKey");
 
                     b.HasIndex("Module");
 
@@ -250,6 +368,35 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Role", b =>
+                {
+                    b.HasOne("Atlas.Identity.Domain.Entities.Tenants.Tenant", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Atlas.Identity.Domain.ValueObjects.Permission", "Permissions", b1 =>
+                        {
+                            b1.Property<Guid>("RoleId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Code")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("code");
+
+                            b1.HasKey("RoleId", "Code");
+
+                            b1.ToTable("role_permissions", "atlas_identity");
+
+                            b1.WithOwner()
+                                .HasForeignKey("RoleId");
+                        });
+
+                    b.Navigation("Permissions");
+                });
+
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.User", b =>
                 {
                     b.HasOne("Atlas.Identity.Domain.Entities.Tenants.Tenant", null)
@@ -262,6 +409,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Tenant", b =>
                 {
                     b.Navigation("Invitations");
+
+                    b.Navigation("Roles");
 
                     b.Navigation("Users");
                 });
