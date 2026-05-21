@@ -2,6 +2,7 @@ using Atlas.BuildingBlocks.Observability;
 using Atlas.Contracts.Tenants.IntegrationEvents;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Outbox.Infrastructure.DI;
+using Atlas.Outbox.Integration.DI;
 using Atlas.Outbox.Worker.Hosting;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -67,9 +68,13 @@ try
 
             services.AddOutboxWorker(configuration, integrationEventAssemblies);
 
-            // ── Módulos — um por módulo conforme integrados ───────────────────
+            // ── Módulos — infraestrutura por módulo (repos, UoW, idempotência) ──
             services.AddIdentityOutboxModuleDependencies();
             services.AddStaffOutboxModuleDependencies();
+
+            // ── Bindings evento → handler ─────────────────────────────────────
+            // Abra OutboxIntegrationDependencyInjection para ver todos os mappings.
+            services.AddOutboxIntegrationHandlers();
 
             // ── Entry point — loop de polling ─────────────────────────────────
             services.AddHostedService<OutboxWorkerHostedService>();

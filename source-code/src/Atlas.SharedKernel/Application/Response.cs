@@ -2,10 +2,7 @@ using Atlas.SharedKernel.Application.Errors;
 
 namespace Atlas.SharedKernel.Application;
 
-public readonly struct Unit
-{
-    public static readonly Unit Value = default;
-}
+
 
 public sealed class Response : IResponse
 {

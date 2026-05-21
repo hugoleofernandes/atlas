@@ -26,16 +26,18 @@ public static class OutboxDependencyInjection
         services.AddScoped<IRequestContext>(sp        => sp.GetRequiredService<WorkerRequestContext>());
         services.AddScoped<IRequestContextSetter>(sp  => sp.GetRequiredService<WorkerRequestContext>());
 
-        // Idempotency context — populated per handler invocation by OutboxMessageDispatcher.
+        // Idempotency context — populated per handler invocation by OutboxMessageDispatcher
+        // before each pipeline execution.
         // IIdempotencyService is registered per module (needs the module's DbContext).
         services.AddScoped<IdempotencyContext>();
         services.AddScoped<IIdempotencyContext>(sp       => sp.GetRequiredService<IdempotencyContext>());
         services.AddScoped<IIdempotencyContextSetter>(sp => sp.GetRequiredService<IdempotencyContext>());
 
-        // Invoker — orquestra logging + telemetria para cada handler chamado
+        // Invoker — routes all handler types (command / query / integration event)
+        // through the correct decorator pipeline.
         services.AddScoped<IHandlerInvoker, HandlerInvoker>();
 
-        // Dispatcher de integration events (type resolver + invocação de handlers)
+        // Dispatcher — resolves handlers per event type, delegates to invoker
         services.AddOutboxInfrastructure(integrationEventAssemblies);
 
         return services;

@@ -34,19 +34,34 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "idempotency_entries",
+                schema: "atlas_identity",
+                columns: table => new
+                {
+                    IdempotencyKey = table.Column<Guid>(type: "uuid", nullable: false),
+                    HandlerName = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    ProcessedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_idempotency_entries", x => new { x.IdempotencyKey, x.HandlerName });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "outboxes",
                 schema: "atlas_identity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    IdempotencyKey = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Type = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     Payload = table.Column<string>(type: "jsonb", nullable: false),
                     OccurredOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ProcessedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    TenantId = table.Column<Guid>(type: "uuid", nullable: true),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: true),
-                    CorrelationId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    TenantId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CorrelationId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Module = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     RetryCount = table.Column<int>(type: "integer", nullable: false),
                     Error = table.Column<string>(type: "text", nullable: true),
@@ -213,6 +228,12 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 columns: new[] { "TenantId", "Email" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_outboxes_IdempotencyKey",
+                schema: "atlas_identity",
+                table: "outboxes",
+                column: "IdempotencyKey");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_outboxes_Module",
                 schema: "atlas_identity",
                 table: "outboxes",
@@ -269,6 +290,10 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "audits",
+                schema: "atlas_identity");
+
+            migrationBuilder.DropTable(
+                name: "idempotency_entries",
                 schema: "atlas_identity");
 
             migrationBuilder.DropTable(

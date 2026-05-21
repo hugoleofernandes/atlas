@@ -10,24 +10,28 @@ namespace Atlas.Staff.Application.IntegrationEventHandlers;
 
 /// <summary>
 /// Creates a StaffMember when a user accepts an invitation.
-/// Idempotency is guaranteed by IIdempotencyService (INSERT ON CONFLICT DO NOTHING)
-/// — safe to retry if the outbox message is re-processed after a transient failure.
+///
+/// Idempotency layers:
+///   1. Technical (retry)  — IIdempotentHandler marker: IntegrationIdempotencyDecorator checks
+///      the idempotency store before invoking this handler. If the (IdempotencyKey, HandlerName)
+///      pair was already recorded the handler is skipped transparently — no code here needed.
+///   2. Domain (business)  — ExistsAsync: guards against duplicate invitation events that carry
+///      a different IdempotencyKey but the same business outcome (same TenantId + UserId).
+///      This layer is intentional and must stay even if the technical layer fires.
 /// </summary>
 public sealed class CreateStaffMemberIntegrationEventHandler
-    : IIntegrationEventHandler<UserCreatedFromInvitationIntegrationEvent>
+    : IIntegrationEventHandler<UserCreatedFromInvitationIntegrationEvent>,
+      IIdempotentHandler
 {
-    private readonly IIdempotencyService _idempotency;
     private readonly IStaffMemberRepository _repository;
     private readonly IStaffUnitOfWork _unitOfWork;
     private readonly ILogger<CreateStaffMemberIntegrationEventHandler> _logger;
 
     public CreateStaffMemberIntegrationEventHandler(
-        IIdempotencyService idempotency,
         IStaffMemberRepository repository,
-        IStaffUnitOfWork unitOfWork,
+        IStaffUnitOfWork       unitOfWork,
         ILogger<CreateStaffMemberIntegrationEventHandler> logger)
     {
-        _idempotency = idempotency;
         _repository  = repository;
         _unitOfWork  = unitOfWork;
         _logger      = logger;
@@ -39,20 +43,10 @@ public sealed class CreateStaffMemberIntegrationEventHandler
             "CreateStaffMember — TenantId={TenantId} UserId={UserId} Email={Email} Role={Role}",
             @event.TenantId, @event.UserId, @event.Email, @event.Role);
 
-        // Technical idempotency: skip if this exact message was already processed
-        // (e.g. worker retry after a transient failure).
-        if (await _idempotency.HasAlreadyProcessedAsync(ct))
-        {
-            _logger.LogInformation(
-                "CreateStaffMember skipped — already processed (UserId={UserId})",
-                @event.UserId);
-            return;
-        }
-
         // Domain idempotency: enforce the business invariant that a user can only
         // have one StaffMember per tenant — guards against duplicate invitation messages
-        // (different OutboxMessage.Id, same business outcome) which the idempotency
-        // service would not catch because the message key is different.
+        // (different IdempotencyKey, same business outcome) which the technical idempotency
+        // layer would not catch because the key is different.
         if (await _repository.ExistsAsync(@event.TenantId, @event.UserId, ct))
         {
             _logger.LogInformation(

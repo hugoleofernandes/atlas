@@ -29,7 +29,12 @@ internal sealed class TelemetryDecorator<TInput, TOutput> : IResultPipelineStep<
 
     public async Task<Result<TOutput>> ExecuteAsync(TInput input, CancellationToken ct)
     {
-        var spanName = _layer == "handler" ? $"Handler {_name}" : $"Query {_name}";
+        var spanName = _layer switch
+        {
+            "handler"     => $"Handler {_name}",
+            "integration" => $"Integration {_name}",
+            _             => $"Query {_name}"
+        };
 
         using var activity = AtlasActivitySource.Source.StartActivity(spanName, ActivityKind.Internal);
         activity?.SetTag("atlas.layer",        _layer);

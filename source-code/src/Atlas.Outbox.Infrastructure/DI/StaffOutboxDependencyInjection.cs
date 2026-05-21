@@ -10,16 +10,13 @@ using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
-using Atlas.Contracts.Tenants.IntegrationEvents;
 using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.Outbox.Application.ProcessOutbox;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Idempotency;
-using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.Metrics;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.Staff.Application.Abstractions;
-using Atlas.Staff.Application.IntegrationEventHandlers;
 using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Infrastructure.Entities.StaffMembers.Repositories;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
@@ -35,8 +32,9 @@ public static class StaffOutboxDependencyInjection
     /// - ProcessOutboxCommandHandler configurado com deps da Staff
     /// - SavePipeline completo (audit, stampers, metrics) para que handlers
     ///   de integration events passem pelo pipeline correto ao persistir
-    /// - dependências necessárias pelos integration event handlers do Staff
-    /// - handlers de integration events consumidos por este módulo
+    /// - dependências de domínio necessárias pelos handlers do Staff
+    ///
+    /// Os integration event handlers do Staff são registrados em Atlas.Outbox.Integration.
     /// </summary>
     public static IServiceCollection AddStaffOutboxModuleDependencies(this IServiceCollection services)
     {
@@ -68,9 +66,6 @@ public static class StaffOutboxDependencyInjection
         // ── Staff domain dependencies ──────────────────────────────────────────
         services.AddScoped<IStaffMemberRepository, StaffMemberRepository>();
         services.AddScoped<IStaffUnitOfWork, StaffUnitOfWork>();
-
-        // ── Integration Event Handlers ─────────────────────────────────────────
-        services.AddScoped<IIntegrationEventHandler<UserCreatedFromInvitationIntegrationEvent>, CreateStaffMemberIntegrationEventHandler>();
 
         return services;
     }

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -17,6 +19,11 @@ namespace Atlas.Outbox.Application.ProcessOutbox;
 ///
 /// Save strategy: PersistDbDecorator calls UnitOfWork.SaveChangesAsync once after the handler
 /// returns — one flush for the entire batch of status updates.
+///
+/// Error model:
+///   - Handler failures  → captured in HandlerInvocationResult list; message.MarkAsFailed(json)
+///   - Dispatcher errors → caught by outer try/catch (unknown type, deserialization failure)
+///   Both paths record a structured JSON error string on the OutboxMessage for future history.
 /// </summary>
 public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler, IStaffOutboxCommandHandler
 {
@@ -28,10 +35,10 @@ public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler,
     public IUnitOfWork UnitOfWork => _uow;
 
     public ProcessOutboxCommandHandler(
-        IOutboxWorkerRepository repository,
+        IOutboxWorkerRepository  repository,
         IOutboxMessageDispatcher dispatcher,
-        IUnitOfWork uow,
-        IRequestContextSetter contextSetter)
+        IUnitOfWork              uow,
+        IRequestContextSetter    contextSetter)
     {
         _repository    = repository;
         _dispatcher    = dispatcher;
@@ -68,12 +75,35 @@ public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler,
 
             try
             {
-                await _dispatcher.DispatchAsync(message, ct);
-                message.MarkAsProcessed();
-                processed++;
+                var results  = await _dispatcher.DispatchAsync(message, ct);
+                var failures = results.Where(r => !r.IsSuccess).ToList();
+
+                if (failures.Count == 0)
+                {
+                    message.MarkAsProcessed();
+                    processed++;
+                }
+                else
+                {
+                    // Serialize the failure details into a structured JSON error string.
+                    // Future: this feeds per-handler execution history on OutboxMessage.
+                    var errorJson = JsonSerializer.Serialize(
+                        failures.Select(f => new { f.HandlerName, f.ErrorMessage }));
+
+                    message.MarkAsFailed(errorJson);
+                    failed++;
+
+                    if (message.HasExceededRetries(command.MaxRetries))
+                    {
+                        message.MarkAsDeadLettered();
+                        deadLettered++;
+                    }
+                }
             }
             catch (Exception ex)
             {
+                // Dispatcher-level failure: unknown event type, deserialization error,
+                // no handlers registered. Not a handler error — record as plain string.
                 message.MarkAsFailed(ex.Message);
                 failed++;
 

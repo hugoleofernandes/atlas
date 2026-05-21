@@ -41,14 +41,16 @@ internal sealed class CommandHandlerInvoker
     {
         var name = handler.GetType().Name;
 
-        // ── Command block ──────────────────────────────────────────────────
         IHandler<TInput, TOutput> handlerPipeline = handler;
+        IResultPipelineStep<TInput, TOutput> pipeline;
+
+        // ── Command block ──────────────────────────────────────────────────
         handlerPipeline = new ValidationDecorator<TInput, TOutput>(handlerPipeline, _serviceProvider);
         handlerPipeline = new PersistDbDecorator<TInput, TOutput>(handlerPipeline, handler.UnitOfWork);
         // ──────────────────────────────────────────────────────────────────
 
         // ── Observability block ────────────────────────────────────────────
-        IResultPipelineStep<TInput, TOutput> pipeline = new OutputTransformDecorator<TInput, TOutput>(handlerPipeline);
+        pipeline = new OutputTransformDecorator<TInput, TOutput>(handlerPipeline);
         pipeline = new DomainExceptionDecorator<TInput, TOutput>(pipeline);
         pipeline = new LoggingDecorator<TInput, TOutput>(pipeline, _loggerFactory, handler.GetType(), name, layer: "handler");
         pipeline = new TelemetryDecorator<TInput, TOutput>(pipeline, name, layer: "handler", _requestContext.CorrelationId);

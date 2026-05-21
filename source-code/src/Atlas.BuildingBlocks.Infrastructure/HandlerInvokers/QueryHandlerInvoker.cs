@@ -36,9 +36,10 @@ internal sealed class QueryHandlerInvoker
         CancellationToken ct)
     {
         var name = handler.GetType().Name;
+        IResultPipelineStep<TInput, TOutput> pipeline;
 
         // ── Observability block ────────────────────────────────────────────
-        IResultPipelineStep<TInput, TOutput> pipeline = new OutputTransformDecorator<TInput, TOutput>(handler);
+        pipeline = new OutputTransformDecorator<TInput, TOutput>(handler);
         pipeline = new DomainExceptionDecorator<TInput, TOutput>(pipeline);
         pipeline = new LoggingDecorator<TInput, TOutput>(pipeline, _loggerFactory, handler.GetType(), name, layer: "query");
         pipeline = new TelemetryDecorator<TInput, TOutput>(pipeline, name, layer: "query", _requestContext.CorrelationId);

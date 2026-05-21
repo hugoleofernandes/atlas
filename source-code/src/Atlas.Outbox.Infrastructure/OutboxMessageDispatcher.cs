@@ -1,6 +1,11 @@
 using System.Reflection;
 using System.Text.Json;
+using Atlas.BuildingBlocks.Application.HandlerInvokers;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.Outbox.Application.OutboxMessages;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Commands;
+using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -10,65 +15,97 @@ namespace Atlas.Outbox.Infrastructure;
 
 /// <summary>
 /// Resolves the integration event type from the outbox message, deserializes the payload,
-/// and invokes all registered IIntegrationEventHandler&lt;TEvent&gt; for that event type.
+/// and invokes all registered IIntegrationEventHandler&lt;TEvent&gt; through IHandlerInvoker —
+/// which handles telemetry, logging and idempotency.
+///
+/// Each handler runs independently: a failure in one never prevents the others from executing.
+/// Results are returned as a list — one HandlerInvocationResult per handler.
 /// </summary>
 internal sealed class OutboxMessageDispatcher : IOutboxMessageDispatcher
 {
     private readonly IIntegrationEventTypeResolver _typeResolver;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IHandlerInvoker               _handlerInvoker;
+    private readonly IIdempotencyContextSetter      _idempotencyContextSetter;
+    private readonly IServiceProvider              _serviceProvider;
+
+    // Cached open MethodInfo for IHandlerInvoker.InvokeAsync<TInput, TOutput>.
+    // MakeGenericMethod(eventType, typeof(Unit)) is called once per event type.
+    private static readonly MethodInfo OpenInvokeMethod =
+        typeof(IHandlerInvoker)
+            .GetMethod(nameof(IHandlerInvoker.InvokeAsync))!;
 
     public OutboxMessageDispatcher(
         IIntegrationEventTypeResolver typeResolver,
-        IServiceProvider serviceProvider)
+        IHandlerInvoker               handlerInvoker,
+        IIdempotencyContextSetter     idempotencyContextSetter,
+        IServiceProvider              serviceProvider)
     {
-        _typeResolver    = typeResolver;
-        _serviceProvider = serviceProvider;
+        _typeResolver             = typeResolver;
+        _handlerInvoker           = handlerInvoker;
+        _idempotencyContextSetter = idempotencyContextSetter;
+        _serviceProvider          = serviceProvider;
     }
 
-    public async Task DispatchAsync(OutboxMessage message, CancellationToken ct)
+    public async Task<IReadOnlyList<HandlerInvocationResult>> DispatchAsync(
+        OutboxMessage message, CancellationToken ct)
     {
+        // ── Resolve event type and deserialize payload ─────────────────────────
         var eventType = _typeResolver.Resolve(message.Type)
-            ?? throw new InvalidOperationException($"Integration event type '{message.Type}' not found.");
+            ?? throw new InvalidOperationException(
+                $"Integration event type '{message.Type}' not found.");
 
         var @event = JsonSerializer.Deserialize(message.Payload, eventType)
-            ?? throw new InvalidOperationException($"Failed to deserialize payload for type '{message.Type}'.");
+            ?? throw new InvalidOperationException(
+                $"Failed to deserialize payload for type '{message.Type}'.");
 
-        var handlerType  = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
-        var handlers     = _serviceProvider.GetServices(handlerType).ToList();
+        var handlerType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
+
+        // GetServices returns IEnumerable<object?> — filter and project to non-nullable.
+        List<object> handlers = _serviceProvider.GetServices(handlerType)
+            .Where(h => h is not null)
+            .Select(h => h!)
+            .ToList();
 
         if (handlers.Count == 0)
-            throw new InvalidOperationException($"No handler registered for '{eventType.Name}'.");
+            throw new InvalidOperationException(
+                $"No handler registered for '{eventType.Name}'.");
+        // ───────────────────────────────────────────────────────────────────────
 
-        var handleMethod    = handlerType.GetMethod(nameof(IIntegrationEventHandler<object>.HandleAsync))!;
-        var contextSetter   = _serviceProvider.GetRequiredService<IIdempotencyContextSetter>();
-
-        // Run every handler regardless of individual failures.
-        // A failure in one handler must not prevent the others from executing.
-        // The message is retried as a whole if any handler fails — IIdempotencyService
-        // protects handlers that already succeeded from re-executing business logic.
-        var exceptions = new List<Exception>();
+        // ── Invoke every handler — collect results ─────────────────────────────
+        // Idempotency context is set per handler before invoking so IIdempotencyService
+        // reads the correct (IdempotencyKey, HandlerName) pair.
+        // Each handler runs regardless of what others do; exceptions are caught per handler.
+        var invokeMethod = OpenInvokeMethod.MakeGenericMethod(eventType, typeof(Unit));
+        var results      = new List<HandlerInvocationResult>(handlers.Count);
 
         foreach (var handler in handlers)
         {
-            // Populate the scoped idempotency context for this specific handler invocation.
-            // IdempotencyKey is stable across retries; HandlerName scopes it per handler.
-            contextSetter.Set(message.IdempotencyKey, handler.GetType().Name);
+            var handlerName = handler.GetType().Name;
+
+            // Wire idempotency context before the pipeline runs.
+            _idempotencyContextSetter.Set(message.IdempotencyKey, handlerName);
 
             try
             {
-                await (Task)handleMethod.Invoke(handler, [@event, ct])!;
+                var resultTask = (Task<Result<Unit>>)invokeMethod.Invoke(
+                    _handlerInvoker,
+                    [handler, @event, ct])!;
+
+                var result = await resultTask;
+
+                results.Add(result.IsSuccess
+                    ? HandlerInvocationResult.Success(handlerName)
+                    : HandlerInvocationResult.Failure(handlerName, result.ErrorDefinition!.FallbackMessage));
             }
             catch (Exception ex)
             {
-                exceptions.Add(ex);
+                // Infrastructure-level exception that escaped the invoker pipeline
+                // (already logged and spanned by LoggingDecorator / TelemetryDecorator).
+                results.Add(HandlerInvocationResult.Failure(handlerName, ex));
             }
         }
+        // ───────────────────────────────────────────────────────────────────────
 
-        if (exceptions.Count == 1)
-            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(exceptions[0]).Throw();
-
-        if (exceptions.Count > 1)
-            throw new AggregateException(
-                $"{exceptions.Count} handler(s) failed for '{eventType.Name}'.", exceptions);
+        return results;
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(StaffDbContext))]
-    [Migration("20260519094610_Initial_Staff")]
+    [Migration("20260521161850_Initial_Staff")]
     partial class Initial_Staff
     {
         /// <inheritdoc />
@@ -26,7 +26,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Audits.AuditBase", b =>
+            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Entities.Audits.Audit", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -70,6 +70,23 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.ToTable("audits", "atlas_staff");
                 });
 
+            modelBuilder.Entity("Atlas.BuildingBlocks.Persistence.Entities.Idempotency.IdempotencyEntry", b =>
+                {
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("HandlerName")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("IdempotencyKey", "HandlerName");
+
+                    b.ToTable("idempotency_entries", "atlas_staff");
+                });
+
             modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -77,6 +94,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("CorrelationId")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -85,6 +103,9 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Error")
                         .HasColumnType("text");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("LockId")
                         .HasColumnType("uuid");
@@ -115,7 +136,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer");
 
-                    b.Property<Guid?>("TenantId")
+                    b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Type")
@@ -123,10 +144,12 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdempotencyKey");
 
                     b.HasIndex("Module");
 
