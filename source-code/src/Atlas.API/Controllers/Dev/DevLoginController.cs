@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication;

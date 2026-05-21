@@ -1,6 +1,6 @@
 using Atlas.SharedKernel.Application.Commands;
 
-namespace Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 
 /// <summary>
 /// Internal boundary interface between the raw-handler world (IHandler returning TOutput)

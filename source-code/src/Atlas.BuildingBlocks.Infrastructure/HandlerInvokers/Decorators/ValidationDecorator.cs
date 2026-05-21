@@ -2,7 +2,7 @@ using Atlas.SharedKernel.Application.Handlers;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Atlas.BuildingBlocks.Application.Invokers.Decorators;
+namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
 /// Resolves <see cref="IValidator{TInput}"/> from DI and validates the input

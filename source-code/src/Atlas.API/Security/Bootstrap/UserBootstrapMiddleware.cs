@@ -1,5 +1,5 @@
 using Atlas.API.Errors;
-using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Security;

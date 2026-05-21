@@ -4,6 +4,7 @@ using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.BuildingBlocks.Persistence.Entities.OutboxMessages.Repositories;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
@@ -13,6 +14,7 @@ using Atlas.Contracts.Tenants.IntegrationEvents;
 using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.Outbox.Application.ProcessOutbox;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.Metrics;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -59,6 +61,9 @@ public static class StaffOutboxDependencyInjection
         services.AddScoped<IOutboxMessageBuilder, OutboxMessageBuilder>();
         services.AddScoped<IDomainEventMetricsPublisher, DomainEventMetricsPublisher>();
         services.AddScoped<ISavePipeline, SavePipeline>();
+
+        // ── Idempotency ────────────────────────────────────────────────────────
+        services.AddScoped<IIdempotencyService, IdempotencyService<StaffDbContext>>();
 
         // ── Staff domain dependencies ──────────────────────────────────────────
         services.AddScoped<IStaffMemberRepository, StaffMemberRepository>();

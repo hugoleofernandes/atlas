@@ -1,7 +1,7 @@
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Handlers;
 
-namespace Atlas.BuildingBlocks.Application.Invokers.Decorators;
+namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
 /// Delegates to the inner handler, then persists to the database on success.

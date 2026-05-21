@@ -4,7 +4,9 @@ using Atlas.Identity.Application.Tenants.Services.IntegrationEventHandlers;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.Outbox.Application.ProcessOutbox;
+using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +31,9 @@ public static class IdentityOutboxDependencyInjection
                 new OutboxUnitOfWork(sp.GetRequiredService<IdentityDbContext>()),
                 sp.GetRequiredService<IRequestContextSetter>()
             ));
+
+        // ── Idempotency ────────────────────────────────────────────────────────
+        services.AddScoped<IIdempotencyService, IdempotencyService<IdentityDbContext>>();
 
         // Integration Event Handlers
         services.AddScoped<IIntegrationEventHandler<UserCreatedFromInvitationIntegrationEvent>, UserCreatedFromInvitationIntegrationEventHandler>();

@@ -10,6 +10,15 @@ public sealed class OutboxMessage : INotAuditable
 {
     public Guid Id { get; private set; }
 
+    /// <summary>
+    /// Stable identifier used as the idempotency key across retries.
+    /// Defaults to <see cref="Id"/> on creation.
+    /// When a retry-as-new-message pattern is adopted (new row, new Id),
+    /// this value is copied from the original message so handlers can
+    /// recognise they already processed the logical event.
+    /// </summary>
+    public Guid IdempotencyKey { get; private set; }
+
     public string Name { get; private set; } = default!;
 
     public string Type { get; private set; } = default!;
@@ -56,8 +65,9 @@ public sealed class OutboxMessage : INotAuditable
         string correlationId,
         string module)
     {
-        Id            = Guid.NewGuid();
-        Name          = name;
+        Id             = Guid.NewGuid();
+        IdempotencyKey = Id;
+        Name           = name;
         Type          = type;
         Payload       = payload;
         TenantId      = tenantId;

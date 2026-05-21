@@ -1,6 +1,7 @@
 using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.DbContexts;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.Staff.Domain.Entities;
@@ -12,9 +13,10 @@ public sealed class StaffDbContext : DbContextBase
 {
     protected override string Schema => "atlas_staff";
 
-    public DbSet<StaffMember> StaffMembers => Set<StaffMember>();
-    public DbSet<Audit> Audits => Set<Audit>();
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<StaffMember>       StaffMembers        => Set<StaffMember>();
+    public DbSet<Audit>             Audits              => Set<Audit>();
+    public DbSet<OutboxMessage>     OutboxMessages      => Set<OutboxMessage>();
+    public DbSet<IdempotencyEntry>  IdempotencyEntries  => Set<IdempotencyEntry>();
 
     public StaffDbContext(
         DbContextOptions<StaffDbContext> options,

@@ -5,10 +5,10 @@ using Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 using Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 using Atlas.Identity.Application.Tenants.Queries.ListRoles;
 using Microsoft.Extensions.DependencyInjection;
-using Atlas.BuildingBlocks.Application.Invokers;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.GetRoleById;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListRoles;
-using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+using Atlas.BuildingBlocks.Application.HandlerInvokers;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 
 namespace Atlas.Identity.Infrastructure.DI;
 

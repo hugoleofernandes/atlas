@@ -1,9 +1,9 @@
-using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.BuildingBlocks.Infrastructure.Observability;
 using Atlas.SharedKernel.Application.Commands;
 using System.Diagnostics;
 
-namespace Atlas.BuildingBlocks.Application.Invokers.Decorators;
+namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
 /// OpenTelemetry decorator. Opens an activity span that covers the full pipeline execution.

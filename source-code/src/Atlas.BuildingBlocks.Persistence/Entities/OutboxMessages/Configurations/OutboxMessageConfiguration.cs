@@ -13,6 +13,12 @@ public sealed class OutboxMessageConfiguration
 
         b.HasKey(x => x.Id);
 
+        b.Property(x => x.IdempotencyKey)
+            .IsRequired();
+
+        b.HasIndex(x => x.IdempotencyKey)
+            .IsUnique(false); // non-unique: retry messages share the same key
+
         b.Property(x => x.Name)
             .HasMaxLength(200)
             .IsRequired();

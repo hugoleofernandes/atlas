@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using Atlas.Outbox.Application.OutboxMessages;
+using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,16 +39,21 @@ internal sealed class OutboxMessageDispatcher : IOutboxMessageDispatcher
         if (handlers.Count == 0)
             throw new InvalidOperationException($"No handler registered for '{eventType.Name}'.");
 
-        var handleMethod = handlerType.GetMethod(nameof(IIntegrationEventHandler<object>.HandleAsync))!;
+        var handleMethod    = handlerType.GetMethod(nameof(IIntegrationEventHandler<object>.HandleAsync))!;
+        var contextSetter   = _serviceProvider.GetRequiredService<IIdempotencyContextSetter>();
 
         // Run every handler regardless of individual failures.
         // A failure in one handler must not prevent the others from executing.
-        // The message is retried as a whole if any handler fails, so each
-        // handler implementation MUST be idempotent.
+        // The message is retried as a whole if any handler fails — IIdempotencyService
+        // protects handlers that already succeeded from re-executing business logic.
         var exceptions = new List<Exception>();
 
         foreach (var handler in handlers)
         {
+            // Populate the scoped idempotency context for this specific handler invocation.
+            // IdempotencyKey is stable across retries; HandlerName scopes it per handler.
+            contextSetter.Set(message.IdempotencyKey, handler.GetType().Name);
+
             try
             {
                 await (Task)handleMethod.Invoke(handler, [@event, ct])!;

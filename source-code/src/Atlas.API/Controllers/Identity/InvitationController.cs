@@ -1,6 +1,6 @@
 using Atlas.API.Errors;
 using Atlas.API.Models.Invitations;
-using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;

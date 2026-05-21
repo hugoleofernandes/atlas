@@ -1,10 +1,10 @@
-using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace Atlas.BuildingBlocks.Application.Invokers.Decorators;
+namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
 /// Structured logging for the handler pipeline.

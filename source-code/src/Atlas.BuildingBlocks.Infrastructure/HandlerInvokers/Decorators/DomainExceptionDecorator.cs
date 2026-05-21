@@ -1,11 +1,11 @@
-using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.BuildingBlocks.Infrastructure.Validation;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Domain;
 using FluentValidation;
 
-namespace Atlas.BuildingBlocks.Application.Invokers.Decorators;
+namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
 /// Catches <see cref="DomainException"/> and <see cref="ValidationException"/> thrown

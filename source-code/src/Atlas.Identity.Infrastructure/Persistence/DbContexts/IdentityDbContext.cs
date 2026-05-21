@@ -1,6 +1,7 @@
 using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.DbContexts;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -20,8 +21,9 @@ public sealed class IdentityDbContext
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<Role> Roles => Set<Role>();
 
-    public DbSet<Audit> Audits => Set<Audit>();
-    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<Audit>            Audits             => Set<Audit>();
+    public DbSet<OutboxMessage>    OutboxMessages     => Set<OutboxMessage>();
+    public DbSet<IdempotencyEntry> IdempotencyEntries => Set<IdempotencyEntry>();
 
     public IdentityDbContext(
         DbContextOptions<IdentityDbContext> options,

@@ -1,7 +1,7 @@
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
 
-namespace Atlas.BuildingBlocks.Application.Invokers.Interfaces;
+namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 
 /// <summary>
 /// Executes any handler through an explicit decorator pipeline:
