@@ -6,6 +6,4 @@ public interface IOutboxWorkerRepository
         int batchSize,
         TimeSpan lockDuration,
         CancellationToken ct);
-
-    Task SaveChangesAsync(CancellationToken ct);
 }

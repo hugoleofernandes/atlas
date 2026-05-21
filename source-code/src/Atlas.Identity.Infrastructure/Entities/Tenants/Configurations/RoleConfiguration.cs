@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Persistence.Audits;
+using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -46,6 +46,6 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
             p.HasKey("RoleId", "Code");
         });
 
-        AuditableEntityConfiguration.Configure(b);
+        EntityChangeConfiguration.Configure(b);
     }
 }

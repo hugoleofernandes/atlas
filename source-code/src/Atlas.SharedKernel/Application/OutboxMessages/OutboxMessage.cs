@@ -20,11 +20,11 @@ public sealed class OutboxMessage : INotAuditable
 
     public DateTime? ProcessedOn { get; private set; }
 
-    public Guid? TenantId { get; private set; }
+    public Guid TenantId { get; private set; }
 
-    public Guid? UserId { get; private set; }
+    public Guid UserId { get; private set; }
 
-    public string? CorrelationId { get; private set; }
+    public string CorrelationId { get; private set; } = default!;
 
     public string Module { get; private set; } = default!;
 
@@ -51,23 +51,20 @@ public sealed class OutboxMessage : INotAuditable
         string name,
         string type,
         string payload,
-        Guid? tenantId,
-        Guid? userId,
-        string? correlationId,
+        Guid tenantId,
+        Guid userId,
+        string correlationId,
         string module)
     {
-        Id = Guid.NewGuid();
-
-        Name = name;
-        Type = type;
-        Payload = payload;
-
-        TenantId = tenantId;
-        UserId = userId;
+        Id            = Guid.NewGuid();
+        Name          = name;
+        Type          = type;
+        Payload       = payload;
+        TenantId      = tenantId;
+        UserId        = userId;
         CorrelationId = correlationId;
-        Module = module;
-
-        OccurredOn = DateTime.UtcNow;
+        Module        = module;
+        OccurredOn    = DateTime.UtcNow;
     }
 
     // -------------------------

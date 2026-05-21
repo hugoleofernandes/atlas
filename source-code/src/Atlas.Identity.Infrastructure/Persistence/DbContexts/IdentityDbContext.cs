@@ -1,6 +1,6 @@
 using Atlas.BuildingBlocks.Persistence;
-using Atlas.BuildingBlocks.Persistence.Audits;
 using Atlas.BuildingBlocks.Persistence.DbContexts;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;

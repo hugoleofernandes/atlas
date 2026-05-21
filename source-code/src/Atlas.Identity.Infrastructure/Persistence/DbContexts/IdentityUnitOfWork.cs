@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Persistence;
+using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
 using Atlas.Identity.Application.Abstractions;
 
 namespace Atlas.Identity.Infrastructure.Persistence.DbContexts;

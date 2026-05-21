@@ -1,6 +1,6 @@
 using Atlas.API.Errors;
 using Atlas.API.Models.Roles;
-using Atlas.BuildingBlocks.Application.Invokers;
+using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.Identity.Application.Tenants.Commands.CreateRole;

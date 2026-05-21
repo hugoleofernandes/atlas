@@ -1,4 +1,5 @@
 using Atlas.BuildingBlocks.Application.Invokers.Decorators;
+using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
@@ -29,26 +30,27 @@ public sealed class HandlerInvoker : IHandlerInvoker
         TInput input,
         CancellationToken ct)
     {
-        // ── INNER PIPELINE — commands only ────────────────────────────────
-        IHandler<TInput, TOutput> inner = handler;
-        var layer = "query";
-
+        // ── Command block ──────────────────────────────────────────────────────
+        // Validation and persistence — skipped for queries.
+        IHandler<TInput, TOutput> handlerPipeline = handler;
         if (handler is ICommandHandler<TInput, TOutput> cmd)
         {
-            inner = new ValidationDecorator<TInput, TOutput>(inner, _serviceProvider);
-            inner = new PersistDbDecorator<TInput, TOutput>(inner, cmd.UnitOfWork);
-            layer = "handler";
+            handlerPipeline = new ValidationDecorator<TInput, TOutput>(handlerPipeline, _serviceProvider);
+            handlerPipeline = new PersistDbDecorator<TInput, TOutput>(handlerPipeline, cmd.UnitOfWork);
         }
+        // ───────────────────────────────────────────────────────────────────────
 
-        // ── OUTER PIPELINE — all handlers ─────────────────────────────────
-        IResultPipelineStep<TInput, TOutput> pipeline = new OutputTransformDecorator<TInput, TOutput>(inner);
+        // ── Observability block — all handlers ─────────────────────────────────
+        // Error handling, logging and tracing — wraps both commands and queries.
+        var isCommand = handler is ICommandHandler<TInput, TOutput>;
+        var layer = isCommand ? "handler" : "query";
+        var name  = handler.GetType().Name;
+
+        IResultPipelineStep<TInput, TOutput> pipeline = new OutputTransformDecorator<TInput, TOutput>(handlerPipeline);
         pipeline = new DomainExceptionDecorator<TInput, TOutput>(pipeline);
-
-        var logger = _loggerFactory.CreateLogger(handler.GetType());
-        var name   = handler.GetType().Name;
-        pipeline = new LoggingDecorator<TInput, TOutput>(pipeline, logger, name, layer);
-
+        pipeline = new LoggingDecorator<TInput, TOutput>(pipeline, _loggerFactory, handler.GetType(), name, layer);
         pipeline = new TelemetryDecorator<TInput, TOutput>(pipeline, name, layer, _requestContext.CorrelationId);
+        // ───────────────────────────────────────────────────────────────────────
 
         return pipeline.ExecuteAsync(input, ct);
     }

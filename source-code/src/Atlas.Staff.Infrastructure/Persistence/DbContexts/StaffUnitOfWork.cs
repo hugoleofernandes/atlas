@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Persistence;
+using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
 using Atlas.SharedKernel.Domain.Events;
 using Atlas.Staff.Application.Abstractions;
 

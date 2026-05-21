@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Persistence.Audits;
+using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +42,6 @@ public sealed class InvitationConfiguration : IEntityTypeConfiguration<Invitatio
         b.Ignore(x => x.IsActive);
         b.Ignore(x => x.IsExpired);
 
-        AuditableEntityConfiguration.Configure(b);
+        EntityChangeConfiguration.Configure(b);
     }
 }

@@ -1,9 +1,10 @@
-using Atlas.BuildingBlocks.Persistence.OutboxMessages;
+using Atlas.BuildingBlocks.Persistence.Entities.OutboxMessages.Repositories;
 using Atlas.Contracts.Tenants.IntegrationEvents;
 using Atlas.Identity.Application.Tenants.Services.IntegrationEventHandlers;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.Outbox.Application.ProcessOutbox;
+using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,7 +25,9 @@ public static class IdentityOutboxDependencyInjection
         services.AddScoped<IIdentityOutboxCommandHandler>(sp =>
             new ProcessOutboxCommandHandler(
                 sp.GetRequiredService<OutboxMessageRepository<IdentityDbContext>>(),
-                sp.GetRequiredService<IOutboxMessageDispatcher>()
+                sp.GetRequiredService<IOutboxMessageDispatcher>(),
+                new OutboxUnitOfWork(sp.GetRequiredService<IdentityDbContext>()),
+                sp.GetRequiredService<IRequestContextSetter>()
             ));
 
         // Integration Event Handlers

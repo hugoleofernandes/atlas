@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.Extensions.Logging;
@@ -25,12 +26,13 @@ internal sealed class LoggingDecorator<TInput, TOutput> : IResultPipelineStep<TI
 
     public LoggingDecorator(
         IResultPipelineStep<TInput, TOutput> inner,
-        ILogger logger,
+        ILoggerFactory loggerFactory,
+        Type handlerType,
         string name,
         string layer)
     {
         _inner  = inner;
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger(handlerType);
         _name   = name;
         _layer  = layer;
     }

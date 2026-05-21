@@ -17,9 +17,9 @@ public sealed class OutboxMessageFactory : IOutboxMessageFactory
             name: typeof(T).Name,
             type: typeof(T).FullName!,
             payload: JsonSerializer.Serialize(payload),
-            tenantId: _requestContext.TenantId,
-            userId: _requestContext.UserId,
-            correlationId: _requestContext.CorrelationId,
+            tenantId:      _requestContext.TenantId      ?? throw new InvalidOperationException($"TenantId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
+            userId:        _requestContext.UserId         ?? throw new InvalidOperationException($"UserId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
+            correlationId: _requestContext.CorrelationId  ?? throw new InvalidOperationException($"CorrelationId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
             module: GetModule(typeof(T))
         );
     }

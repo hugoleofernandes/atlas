@@ -15,9 +15,6 @@ using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
 using Microsoft.AspNetCore.Authorization;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
-using Atlas.BuildingBlocks.Persistence;
-using Atlas.BuildingBlocks.Persistence.Audits;
-using Atlas.BuildingBlocks.Persistence.Tenancy;
 using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
@@ -33,7 +30,14 @@ using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.OpenTelemetry;
-using Atlas.BuildingBlocks.Persistence.OutboxMessages;
+using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
+using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
+using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 
 //
 // ==========================================

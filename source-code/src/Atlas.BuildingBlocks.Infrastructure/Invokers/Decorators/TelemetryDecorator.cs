@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
 using Atlas.BuildingBlocks.Infrastructure.Observability;
 using Atlas.SharedKernel.Application.Commands;
 using System.Diagnostics;

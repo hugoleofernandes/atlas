@@ -2,7 +2,7 @@ using Atlas.SharedKernel.Application.Handlers;
 
 namespace Atlas.Outbox.Application.ProcessOutbox;
 
-public interface IProcessOutboxCommandHandler : IHandler<ProcessOutboxCommand, ProcessOutboxOutput> { }
+public interface IProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxCommand, ProcessOutboxOutput> { }
 
 /// <summary>Marker for the Identity module's outbox handler registration.</summary>
 public interface IIdentityOutboxCommandHandler : IProcessOutboxCommandHandler { }

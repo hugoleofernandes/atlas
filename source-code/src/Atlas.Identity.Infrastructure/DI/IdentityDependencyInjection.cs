@@ -4,10 +4,11 @@ using Atlas.Identity.Application.Tenants.Commands.RemoveRole;
 using Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 using Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 using Atlas.Identity.Application.Tenants.Queries.ListRoles;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Queries.GetRoleById;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Queries.ListRoles;
 using Microsoft.Extensions.DependencyInjection;
 using Atlas.BuildingBlocks.Application.Invokers;
+using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.GetRoleById;
+using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListRoles;
+using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
 
 namespace Atlas.Identity.Infrastructure.DI;
 

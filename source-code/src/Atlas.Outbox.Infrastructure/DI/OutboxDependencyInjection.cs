@@ -1,5 +1,6 @@
 using System.Reflection;
 using Atlas.BuildingBlocks.Application.Invokers;
+using Atlas.BuildingBlocks.Application.Invokers.Interfaces;
 using Atlas.Outbox.Infrastructure;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Atlas.SharedKernel.Application;
@@ -17,8 +18,12 @@ public static class OutboxDependencyInjection
     {
         services.Configure<OutboxWorkerOptions>(configuration.GetSection("OutboxWorker"));
 
-        // No-op request context — satisfaz MultiTenantDbContext sem HTTP request
-        services.AddScoped<IRequestContext, WorkerRequestContext>();
+        // Mutable request context — populated from each OutboxMessage before dispatch.
+        // Registered as a concrete type so both IRequestContext and IRequestContextSetter
+        // resolve to the same scoped instance.
+        services.AddScoped<WorkerRequestContext>();
+        services.AddScoped<IRequestContext>(sp        => sp.GetRequiredService<WorkerRequestContext>());
+        services.AddScoped<IRequestContextSetter>(sp  => sp.GetRequiredService<WorkerRequestContext>());
 
         // Invoker — orquestra logging + telemetria para cada handler chamado
         services.AddScoped<IHandlerInvoker, HandlerInvoker>();
