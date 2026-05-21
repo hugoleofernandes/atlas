@@ -2,11 +2,9 @@ using Atlas.BuildingBlocks.Infrastructure.Metrics;
 using Atlas.Identity.Application.Tenants.Commands.CreateRole;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
 using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
-using Atlas.Identity.Application.Tenants.IntegrationEventMappers;
 using Atlas.Identity.Application.Tenants.MetricMappers;
 using Atlas.Identity.Application.Tenants.Repositories;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Repositories;
-using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,9 +24,6 @@ public static class TenantDependencyInjection
 
         // REPOSITORIES
         services.AddScoped<ITenantRepository, TenantRepository>();
-
-        // INTEGRATION EVENT MAPPERS
-        services.AddScoped<IIntegrationEventMapper, UserCreatedFromInvitationMapper>();
 
         // METRICS
         services.AddScoped<IDomainEventMetricsPublisher, DomainEventMetricsPublisher>();

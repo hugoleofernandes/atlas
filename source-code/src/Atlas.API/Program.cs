@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
+using Atlas.Identity.Integration.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Persistence.Seed;
 using Atlas.SharedKernel.Application;
@@ -151,6 +152,7 @@ try
     // IDENTITY
     services.AddIdentityModuleDependencies();
     services.AddTenantDependencies(builder.Configuration);
+    services.AddIdentityIntegrationMappings();
     //
 
     // STAFF

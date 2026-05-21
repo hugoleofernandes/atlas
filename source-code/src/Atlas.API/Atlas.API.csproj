@@ -34,6 +34,7 @@
     <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.Integration\Atlas.Identity.Integration.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
   </ItemGroup>

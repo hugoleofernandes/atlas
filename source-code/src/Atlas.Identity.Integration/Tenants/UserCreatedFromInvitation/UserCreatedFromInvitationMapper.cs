@@ -4,9 +4,13 @@ using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Domain.Events;
 
-namespace Atlas.Identity.Application.Tenants.IntegrationEventMappers;
+namespace Atlas.Identity.Integration.Tenants.UserCreatedFromInvitation;
 
-public sealed class UserCreatedFromInvitationMapper : IIntegrationEventMapper
+/// <summary>
+/// Maps <see cref="UserCreatedFromInvitationDomainEvent"/> to
+/// <see cref="UserCreatedFromInvitationIntegrationEvent"/> and wraps it in an outbox message.
+/// </summary>
+internal sealed class UserCreatedFromInvitationMapper : IIntegrationEventMapper
 {
     private readonly IOutboxMessageFactory _factory;
 
