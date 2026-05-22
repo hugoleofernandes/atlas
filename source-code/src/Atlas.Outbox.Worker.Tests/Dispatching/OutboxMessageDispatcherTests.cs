@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.Outbox.Infrastructure;
-using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.Idempotency;
