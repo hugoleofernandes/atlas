@@ -4,10 +4,12 @@ using Atlas.SharedKernel.Application.Handlers;
 namespace Atlas.Identity.Application.Tenants.Commands.SendWelcomeEmail;
 
 /// <summary>
-/// Extends <see cref="IHandler{TInput,TOutput}"/> (not ICommandHandler) because
-/// sending an e-mail requires no unit-of-work / database commit.
+/// Sending a welcome e-mail is a side-effecting command with no database writes.
+/// Implements <see cref="ICommandHandler{TCommand,TOutput}"/> with
+/// <see cref="NullUnitOfWork"/> so the standard pipeline (PersistDbDecorator)
+/// runs without error — SaveChangesAsync is a no-op for this handler.
 /// </summary>
 public interface ISendWelcomeEmailCommandHandler
-    : IHandler<SendWelcomeEmailCommand, Unit>
+    : ICommandHandler<SendWelcomeEmailCommand, Unit>
 {
 }

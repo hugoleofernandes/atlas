@@ -1,4 +1,6 @@
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Handlers;
+using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.Staff.Application.Abstractions;
 using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Domain.Entities;
@@ -12,28 +14,35 @@ namespace Atlas.Staff.Application.StaffMembers.Commands.CreateFromInvitation;
 /// Pure application logic — has no knowledge of how this command was triggered.
 /// The trigger (OutboxWorker, test harness) is the adapter's concern.
 ///
-/// Idempotency (domain layer):
-///   ExistsAsync guards against duplicate invitation events that carry a different
-///   IdempotencyKey but produce the same business outcome (same TenantId + UserId).
-///   Technical idempotency (retry deduplication) is handled by the adapter implementing
-///   IIdempotentHandler, which the IntegrationIdempotencyDecorator intercepts before
-///   this handler is ever called.
+/// Implements <see cref="IIdempotentHandler"/> so the <c>IdempotencyDecorator</c>
+/// in the command pipeline deduplicates retries using the (IdempotencyKey, HandlerName)
+/// pair set by OutboxMessageDispatcher.
+///
+/// Domain idempotency:
+///   ExistsAsync guards against duplicate events that carry a different IdempotencyKey
+///   but produce the same business outcome (same TenantId + UserId).
+///   Both guards complement each other — technical and domain-level safety.
 /// </summary>
 public sealed class CreateStaffMemberFromInvitationCommandHandler
-    : ICreateStaffMemberFromInvitationCommandHandler
+    : ICreateStaffMemberFromInvitationCommandHandler,
+      IIdempotentHandler
 {
     private readonly IStaffMemberRepository                          _repository;
     private readonly IStaffUnitOfWork                               _unitOfWork;
     private readonly ILogger<CreateStaffMemberFromInvitationCommandHandler> _logger;
 
+    /// <inheritdoc/>
+    /// Exposed so PersistDbDecorator can call SaveChangesAsync after execution.
+    public IUnitOfWork UnitOfWork => _unitOfWork;
+
     public CreateStaffMemberFromInvitationCommandHandler(
-        IStaffMemberRepository                          repository,
-        IStaffUnitOfWork                               unitOfWork,
+        IStaffMemberRepository                                 repository,
+        IStaffUnitOfWork                                       unitOfWork,
         ILogger<CreateStaffMemberFromInvitationCommandHandler> logger)
     {
-        _repository  = repository;
-        _unitOfWork  = unitOfWork;
-        _logger      = logger;
+        _repository = repository;
+        _unitOfWork = unitOfWork;
+        _logger     = logger;
     }
 
     public async Task<Unit> ExecuteAsync(
@@ -44,7 +53,9 @@ public sealed class CreateStaffMemberFromInvitationCommandHandler
             "CreateStaffMember — TenantId={TenantId} UserId={UserId} Role={Role}",
             command.TenantId, command.UserId, command.Role);
 
-        // Domain idempotency: same business outcome may arrive via different messages.
+        // Domain idempotency: same business outcome may arrive via messages with different
+        // IdempotencyKeys (e.g. two separate invitations for the same user).
+        // Technical idempotency (retry deduplication) is handled by IdempotencyDecorator.
         if (await _repository.ExistsAsync(command.TenantId, command.UserId, ct))
         {
             _logger.LogInformation(
@@ -69,7 +80,7 @@ public sealed class CreateStaffMemberFromInvitationCommandHandler
             role:      command.Role);
 
         await _repository.AddAsync(staff, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+        // SaveChangesAsync is called by PersistDbDecorator — do NOT call it here.
 
         _logger.LogInformation(
             "StaffMember created — Id={StaffId} UserId={UserId}",

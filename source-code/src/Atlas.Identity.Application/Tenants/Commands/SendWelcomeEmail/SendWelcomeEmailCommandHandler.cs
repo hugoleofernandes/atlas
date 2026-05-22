@@ -1,4 +1,5 @@
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Application.Tenants.Commands.SendWelcomeEmail;
@@ -14,6 +15,10 @@ namespace Atlas.Identity.Application.Tenants.Commands.SendWelcomeEmail;
 public sealed class SendWelcomeEmailCommandHandler : ISendWelcomeEmailCommandHandler
 {
     private readonly ILogger<SendWelcomeEmailCommandHandler> _logger;
+
+    /// <inheritdoc/>
+    /// No database writes — PersistDbDecorator calls SaveChangesAsync safely as a no-op.
+    public IUnitOfWork UnitOfWork => NullUnitOfWork.Instance;
 
     public SendWelcomeEmailCommandHandler(
         ILogger<SendWelcomeEmailCommandHandler> logger)
