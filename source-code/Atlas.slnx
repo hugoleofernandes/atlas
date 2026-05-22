@@ -33,8 +33,10 @@
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Identity/">
     <Project Path="src/Atlas.Identity.Application/Atlas.Identity.Application.csproj" />
+    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
     <Project Path="src/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
     <Project Path="src/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
+    <Project Path="src/Atlas.Identity.Integration/Atlas.Identity.Integration.csproj" />
   </Folder>
   <Folder Name="/src/Modules/Staff/">
     <Project Path="src/Atlas.Staff.Application/Atlas.Staff.Application.csproj" />
@@ -44,17 +46,19 @@
   <Folder Name="/src/Modules/Outbox/">
     <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
     <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
+    <Project Path="src/Atlas.Outbox.Integration/Atlas.Outbox.Integration.csproj" />
+    <Project Path="src/Atlas.Outbox.Worker.Tests/Atlas.Outbox.Worker.Tests.csproj" />
+    <Project Path="src/Atlas.Outbox.Worker/Atlas.Outbox.Worker.csproj" />
   </Folder>
   <Folder Name="/src/Shared/">
+    <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
+    <Project Path="src/Atlas.BuildingBlocks.Infrastructure/Atlas.BuildingBlocks.Application.csproj" />
+    <Project Path="src/Atlas.BuildingBlocks.Observability/Atlas.BuildingBlocks.Observability.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Validation/Atlas.BuildingBlocks.Validation.csproj" />
+    <Project Path="src/Atlas.Contracts/Atlas.Contracts.csproj" />
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
   </Folder>
-  <Folder Name="/src/Workers/">
-    <Project Path="src/Atlas.OutboxWorker/Atlas.OutboxWorker.csproj" Id="e326b476-d435-43f0-b660-b959f84dee77" />
-  </Folder>
   <Folder Name="/tests/">
-    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
     <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />
   </Folder>
 </Solution>

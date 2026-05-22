@@ -284,11 +284,52 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("users", "atlas_identity");
                 });
 
+            modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxHandlerExecution", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("AttemptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("HandlerName")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<Guid>("OutboxMessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttemptedAt");
+
+                    b.HasIndex("OutboxMessageId");
+
+                    b.HasIndex("HandlerName", "Status");
+
+                    b.ToTable("outbox_handler_executions", "atlas_identity");
+                });
+
             modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<int>("AttemptNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("CorrelationId")
                         .IsRequired()
@@ -300,6 +341,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Error")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("FailedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("IdempotencyKey")
                         .HasColumnType("uuid");
@@ -323,15 +367,15 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("OccurredOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("ParentOutboxMessageId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Payload")
                         .IsRequired()
                         .HasColumnType("jsonb");
 
                     b.Property<DateTime?>("ProcessedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("RetryCount")
-                        .HasColumnType("integer");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -350,11 +394,13 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Module");
 
+                    b.HasIndex("ParentOutboxMessageId");
+
                     b.HasIndex("TenantId");
 
                     b.HasIndex("Type");
 
-                    b.HasIndex("ProcessedOn", "DeadLetteredOn", "LockedUntil", "OccurredOn");
+                    b.HasIndex("ProcessedOn", "DeadLetteredOn", "FailedAt", "LockedUntil", "OccurredOn");
 
                     b.ToTable("outboxes", "atlas_identity");
                 });
@@ -404,6 +450,23 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxHandlerExecution", b =>
+                {
+                    b.HasOne("Atlas.SharedKernel.Application.OutboxMessages.OutboxMessage", null)
+                        .WithMany()
+                        .HasForeignKey("OutboxMessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxMessage", b =>
+                {
+                    b.HasOne("Atlas.SharedKernel.Application.OutboxMessages.OutboxMessage", null)
+                        .WithMany()
+                        .HasForeignKey("ParentOutboxMessageId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Tenant", b =>
