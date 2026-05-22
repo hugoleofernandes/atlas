@@ -11,8 +11,6 @@
     References are limited to Application layers (no Infrastructure) to stay clean.
   -->
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.Contracts\Atlas.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
   </ItemGroup>

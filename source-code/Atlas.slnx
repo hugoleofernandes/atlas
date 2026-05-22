@@ -27,38 +27,48 @@
     <File Path="docs/modules/identity/index.md" />
   </Folder>
   <Folder Name="/src/" />
-  <Folder Name="/src/API/">
-    <Project Path="src/Atlas.API/Atlas.API.csproj" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
+    <Project Path="src/Atlas.BuildingBlocks.Infrastructure/Atlas.BuildingBlocks.Application.csproj" />
+    <Project Path="src/Atlas.BuildingBlocks.Observability/Atlas.BuildingBlocks.Observability.csproj" />
+    <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/src/IntegrationEvents/">
+    <Project Path="src/Atlas.Contracts/Atlas.Integration.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/src/IntegrationEvents/Input/">
+    <Project Path="src/Atlas.Identity.Integration/Atlas.Identity.Integration.csproj" />
+  </Folder>
+  <Folder Name="/src/IntegrationEvents/Output/">
+    <Project Path="src/Atlas.Outbox.Integration/Atlas.Outbox.Integration.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Identity/">
     <Project Path="src/Atlas.Identity.Application/Atlas.Identity.Application.csproj" />
-    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
     <Project Path="src/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
     <Project Path="src/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
-    <Project Path="src/Atlas.Identity.Integration/Atlas.Identity.Integration.csproj" />
   </Folder>
   <Folder Name="/src/Modules/Staff/">
     <Project Path="src/Atlas.Staff.Application/Atlas.Staff.Application.csproj" />
     <Project Path="src/Atlas.Staff.Domain/Atlas.Staff.Domain.csproj" />
     <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/src/Modules/Outbox/">
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/Outbox/">
     <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
     <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
-    <Project Path="src/Atlas.Outbox.Integration/Atlas.Outbox.Integration.csproj" />
-    <Project Path="src/Atlas.Outbox.Worker.Tests/Atlas.Outbox.Worker.Tests.csproj" />
-    <Project Path="src/Atlas.Outbox.Worker/Atlas.Outbox.Worker.csproj" />
   </Folder>
-  <Folder Name="/src/Shared/">
-    <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Infrastructure/Atlas.BuildingBlocks.Application.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Observability/Atlas.BuildingBlocks.Observability.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
-    <Project Path="src/Atlas.Contracts/Atlas.Contracts.csproj" />
-    <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
+  <Folder Name="/src/_API/">
+    <Project Path="src/Atlas.API/Atlas.API.csproj" />
+  </Folder>
+  <Folder Name="/src/_WORKER/">
+    <Project Path="src/Atlas.Outbox.Worker/Atlas.Outbox.Worker.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />
+    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
+    <Project Path="src/Atlas.Outbox.Worker.Tests/Atlas.Outbox.Worker.Tests.csproj" />
   </Folder>
 </Solution>
