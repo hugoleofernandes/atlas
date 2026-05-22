@@ -8,26 +8,35 @@ using Microsoft.Extensions.Logging;
 namespace Atlas.BuildingBlocks.Application.HandlerInvokers;
 
 /// <summary>
-/// Executes a command handler through the full decorator pipeline:
+/// Executes any side-effecting handler through the full decorator pipeline.
+/// Used for both application command handlers and integration-event adapters —
+/// the three "command-specific" decorators are safe no-ops when not applicable:
 ///
-///   TelemetryDecorator
-///     LoggingDecorator
-///       DomainExceptionDecorator
-///         OutputTransformDecorator
-///           ValidationDecorator   ← validates input via FluentValidation
-///             PersistDbDecorator  ← calls UnitOfWork.SaveChangesAsync after handler
-///               handler
+///   IdempotencyDecorator  — skips if handler does not implement IIdempotentHandler
+///   ValidationDecorator   — skips if no IValidator&lt;TInput&gt; is registered
+///   PersistDbDecorator    — calls SaveChangesAsync, which is a no-op for NullUnitOfWork
+///
+/// Full pipeline (innermost → outermost):
+///
+///   handler
+///     IdempotencyDecorator  ← deduplicates retries (IIdempotentHandler opt-in)
+///       ValidationDecorator ← FluentValidation (IValidator opt-in)
+///         PersistDbDecorator ← UnitOfWork.SaveChangesAsync (NullUnitOfWork for adapters)
+///           OutputTransformDecorator
+///             DomainExceptionDecorator
+///               LoggingDecorator
+///                 TelemetryDecorator
 /// </summary>
 internal sealed class CommandHandlerInvoker
 {
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILoggerFactory   _loggerFactory;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IRequestContext _requestContext;
+    private readonly IRequestContext  _requestContext;
 
     public CommandHandlerInvoker(
-        ILoggerFactory loggerFactory,
+        ILoggerFactory   loggerFactory,
         IServiceProvider serviceProvider,
-        IRequestContext requestContext)
+        IRequestContext  requestContext)
     {
         _loggerFactory   = loggerFactory;
         _serviceProvider = serviceProvider;
@@ -35,18 +44,24 @@ internal sealed class CommandHandlerInvoker
     }
 
     public Task<Result<TOutput>> InvokeAsync<TInput, TOutput>(
-        ICommandHandler<TInput, TOutput> handler,
-        TInput input,
-        CancellationToken ct)
+        IHandler<TInput, TOutput> handler,
+        TInput                    input,
+        CancellationToken         ct)
     {
         var name = handler.GetType().Name;
+
+        // ICommandHandler exposes its own UnitOfWork; everything else (adapters, etc.)
+        // gets NullUnitOfWork so PersistDbDecorator runs safely as a no-op.
+        var unitOfWork = (handler as ICommandHandler<TInput, TOutput>)?.UnitOfWork
+                         ?? NullUnitOfWork.Instance;
 
         IHandler<TInput, TOutput> handlerPipeline = handler;
         IResultPipelineStep<TInput, TOutput> pipeline;
 
-        // ── Command block ──────────────────────────────────────────────────
+        // ── Side-effect block (no-ops when not applicable) ─────────────────
         handlerPipeline = new ValidationDecorator<TInput, TOutput>(handlerPipeline, _serviceProvider);
-        handlerPipeline = new PersistDbDecorator<TInput, TOutput>(handlerPipeline, handler.UnitOfWork);
+        handlerPipeline = new PersistDbDecorator<TInput, TOutput>(handlerPipeline, unitOfWork);
+        handlerPipeline = new IdempotencyDecorator<TInput, TOutput>(handlerPipeline, _serviceProvider);
         // ──────────────────────────────────────────────────────────────────
 
         // ── Observability block ────────────────────────────────────────────

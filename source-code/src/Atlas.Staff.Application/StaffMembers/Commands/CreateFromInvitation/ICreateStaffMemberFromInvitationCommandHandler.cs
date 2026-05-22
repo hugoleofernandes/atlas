@@ -4,10 +4,11 @@ using Atlas.SharedKernel.Application.Handlers;
 namespace Atlas.Staff.Application.StaffMembers.Commands.CreateFromInvitation;
 
 /// <summary>
-/// Extends <see cref="IHandler{TInput,TOutput}"/> (not ICommandHandler) because
-/// the handler manages its own UnitOfWork internally — no external save pipeline needed.
+/// Creates a StaffMember when a user accepts an invitation.
+/// Implements <see cref="ICommandHandler{TCommand,TOutput}"/> so the standard
+/// pipeline runs: idempotency guard → validation → handler → UoW save.
 /// </summary>
 public interface ICreateStaffMemberFromInvitationCommandHandler
-    : IHandler<CreateStaffMemberFromInvitationCommand, Unit>
+    : ICommandHandler<CreateStaffMemberFromInvitationCommand, Unit>
 {
 }
