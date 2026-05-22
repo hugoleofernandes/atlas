@@ -1,9 +1,10 @@
 using System.Reflection;
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
-using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
+using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Outbox.Infrastructure;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Dispatching;
 using Atlas.SharedKernel.Application.Idempotency;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,13 @@ public static class OutboxDependencyInjection
         services.AddScoped<IdempotencyContext>();
         services.AddScoped<IIdempotencyContext>(sp       => sp.GetRequiredService<IdempotencyContext>());
         services.AddScoped<IIdempotencyContextSetter>(sp => sp.GetRequiredService<IdempotencyContext>());
+
+        // Trace context — populated from each OutboxMessage before dispatch so that
+        // dispatcher decorators (logging, tracing) remain generic and have no dependency
+        // on OutboxMessage directly.
+        services.AddScoped<TraceContext>();
+        services.AddScoped<ITraceContext>(sp       => sp.GetRequiredService<TraceContext>());
+        services.AddScoped<ITraceContextSetter>(sp => sp.GetRequiredService<TraceContext>());
 
         // Invoker — routes all handler types (command / query / integration event)
         // through the correct decorator pipeline.

@@ -1,6 +1,5 @@
-using Atlas.BuildingBlocks.Application.HandlerInvokers;
-using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Dispatching;
 using Atlas.SharedKernel.Application.OutboxMessages;
 
 namespace Atlas.Outbox.Application.ProcessOutbox;
@@ -33,23 +32,29 @@ namespace Atlas.Outbox.Application.ProcessOutbox;
 /// </summary>
 public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler, IStaffOutboxCommandHandler
 {
-    private readonly IOutboxWorkerRepository _repository;
+    private readonly IOutboxWorkerRepository  _repository;
     private readonly IOutboxMessageDispatcher _dispatcher;
-    private readonly IUnitOfWork _uow;
-    private readonly IRequestContextSetter _contextSetter;
+    private readonly IDispatcherInvoker       _dispatcherInvoker;
+    private readonly IUnitOfWork              _uow;
+    private readonly IRequestContextSetter    _contextSetter;
+    private readonly ITraceContextSetter      _traceContextSetter;
 
     public IUnitOfWork UnitOfWork => _uow;
 
     public ProcessOutboxCommandHandler(
         IOutboxWorkerRepository  repository,
         IOutboxMessageDispatcher dispatcher,
+        IDispatcherInvoker       dispatcherInvoker,
         IUnitOfWork              uow,
-        IRequestContextSetter    contextSetter)
+        IRequestContextSetter    contextSetter,
+        ITraceContextSetter      traceContextSetter)
     {
-        _repository    = repository;
-        _dispatcher    = dispatcher;
-        _uow           = uow;
-        _contextSetter = contextSetter;
+        _repository         = repository;
+        _dispatcher         = dispatcher;
+        _dispatcherInvoker  = dispatcherInvoker;
+        _uow                = uow;
+        _contextSetter      = contextSetter;
+        _traceContextSetter = traceContextSetter;
     }
 
     public async Task<ProcessOutboxOutput> ExecuteAsync(ProcessOutboxCommand command, CancellationToken ct)
@@ -69,12 +74,22 @@ public sealed class ProcessOutboxCommandHandler : IIdentityOutboxCommandHandler,
             // Hydrate the scoped request context from the outbox message so that
             // SavePipeline (audit trail, entity stampers) and any handler that
             // resolves IRequestContext sees the correct tenant/user/correlation.
-            _contextSetter.Set(message.TenantId, string.Empty, message.UserId, null);
+            _contextSetter.Set(message.TenantId, string.Empty, message.UserId, message.UserEmail);
             _contextSetter.SetCorrelationId(message.CorrelationId);
+
+            // Hydrate the scoped trace context so dispatcher decorators (logging,
+            // tracing) can read event type, message id, attempt and correlation
+            // without depending on OutboxMessage directly.
+            _traceContextSetter.Set(
+                message.TraceParent,
+                message.Name,
+                message.Id,
+                message.AttemptNumber,
+                message.CorrelationId);
 
             try
             {
-                var results  = await _dispatcher.DispatchAsync(message, ct);
+                var results  = await _dispatcherInvoker.InvokeAsync(_dispatcher, message, ct);
                 var failures = results.Where(r => !r.IsSuccess).ToList();
 
                 // Persist one structured execution row per handler — queryable history.

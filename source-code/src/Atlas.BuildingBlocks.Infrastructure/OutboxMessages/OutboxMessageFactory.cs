@@ -14,13 +14,14 @@ public sealed class OutboxMessageFactory : IOutboxMessageFactory
     public OutboxMessage Create<T>(T payload)
     {
         return new OutboxMessage(
-            name: typeof(T).Name,
-            type: typeof(T).FullName!,
-            payload: JsonSerializer.Serialize(payload),
-            tenantId:      _requestContext.TenantId      ?? throw new InvalidOperationException($"TenantId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
-            userId:        _requestContext.UserId         ?? throw new InvalidOperationException($"UserId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
-            correlationId: _requestContext.CorrelationId  ?? throw new InvalidOperationException($"CorrelationId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
-            module: GetModule(typeof(T))
+            name:          typeof(T).Name,
+            type:          typeof(T).FullName!,
+            payload:       JsonSerializer.Serialize(payload),
+            tenantId:      _requestContext.TenantId     ?? throw new InvalidOperationException($"TenantId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
+            userId:        _requestContext.UserId        ?? throw new InvalidOperationException($"UserId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
+            userEmail:     _requestContext.UserEmail,    // nullable — no authenticated user in seeding/CLI
+            correlationId: _requestContext.CorrelationId ?? throw new InvalidOperationException($"CorrelationId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
+            module:        GetModule(typeof(T))
         );
     }
 

@@ -1,4 +1,4 @@
-namespace Atlas.BuildingBlocks.Application.HandlerInvokers;
+namespace Atlas.SharedKernel.Application.OutboxMessages;
 
 /// <summary>
 /// The outcome of a single integration event handler invocation.
@@ -9,7 +9,7 @@ namespace Atlas.BuildingBlocks.Application.HandlerInvokers;
 ///
 /// ProcessOutboxCommandHandler inspects the list to decide whether to mark
 /// the OutboxMessage as processed or failed, and to build a structured error
-/// payload for the future execution history.
+/// payload for the execution history.
 ///
 /// Note: skipped (idempotency hit) is mapped to Success — both mean the handler
 /// completed correctly; the idempotency entry in the database is the record of the skip.

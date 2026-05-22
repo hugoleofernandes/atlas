@@ -8,11 +8,18 @@ using FluentValidation;
 namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
-/// Catches <see cref="DomainException"/> and <see cref="ValidationException"/> thrown
-/// anywhere below in the pipeline and converts them to Result.Fail.
+/// Catches known failure exceptions thrown below in the pipeline and converts them to Result.Fail.
 ///
-/// Responsibility: sad path only — DomainException and ValidationException → Result.Fail.
-/// The happy path (Result.Ok) is owned by <see cref="ResultTransformDecorator{TInput,TOutput}"/>.
+/// Three cases handled:
+///   <see cref="ValidationException"/>    → validation errors from FluentValidation
+///   <see cref="DomainException"/>        → explicit domain rule violations
+///   <see cref="HandlerResultException"/> → re-surfaced Result.Fail from a nested command handler
+///                                          invocation inside an integration event adapter;
+///                                          preserves the original <see cref="ErrorDefinition"/>
+///                                          so <see cref="LoggingDecorator{TInput,TOutput}"/> and
+///                                          <see cref="TelemetryDecorator{TInput,TOutput}"/> receive
+///                                          the structured failure (code + category) upstream.
+///
 /// Unexpected exceptions are NOT caught — they propagate to
 /// <see cref="LoggingDecorator{TInput,TOutput}"/> for error logging and re-throw.
 /// </summary>
@@ -35,6 +42,10 @@ internal sealed class DomainExceptionDecorator<TInput, TOutput> : IResultPipelin
         catch (DomainException ex)
         {
             return Result.Fail<TOutput>(new ErrorDefinition(ex.ErrorCode, ex.Message, ex.Category));
+        }
+        catch (HandlerResultException ex)
+        {
+            return Result.Fail<TOutput>(ex.ErrorDefinition);
         }
     }
 }

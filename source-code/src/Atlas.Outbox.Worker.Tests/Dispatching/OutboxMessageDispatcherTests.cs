@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
+using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Outbox.Infrastructure;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
@@ -68,6 +68,7 @@ public sealed class OutboxMessageDispatcherTests
             payload:       payload,
             tenantId:      Guid.NewGuid(),
             userId:        Guid.NewGuid(),
+            userEmail:     "test@atlas.com",
             correlationId: "corr-id",
             module:        "tests");
     }

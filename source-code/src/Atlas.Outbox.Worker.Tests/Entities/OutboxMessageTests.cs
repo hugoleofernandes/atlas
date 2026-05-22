@@ -14,7 +14,7 @@ public sealed class OutboxMessageTests
     private static OutboxMessage Create(string module = "tests") =>
         new("event.name", "Atlas.Tests.FakeEvent", """{"value":1}""",
             tenantId: Guid.NewGuid(), userId: Guid.NewGuid(),
-            correlationId: "corr-123", module: module);
+            userEmail: null, correlationId: "corr-123", module: module);
 
     // ── 1. first attempt defaults ────────────────────────────────────────────
 

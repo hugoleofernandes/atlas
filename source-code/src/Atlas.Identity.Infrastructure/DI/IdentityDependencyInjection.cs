@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.GetRoleById;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListRoles;
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
-using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
+using Atlas.SharedKernel.Application.Handlers;
 
 namespace Atlas.Identity.Infrastructure.DI;
 

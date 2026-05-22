@@ -1,4 +1,3 @@
-using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;

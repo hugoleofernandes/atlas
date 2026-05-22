@@ -1,7 +1,6 @@
-using Atlas.BuildingBlocks.Application.HandlerInvokers;
-using Atlas.Outbox.Application.OutboxMessages;
 using Atlas.Outbox.Application.ProcessOutbox;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Dispatching;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using FluentAssertions;
 using NSubstitute;
@@ -22,10 +21,12 @@ public sealed class ProcessOutboxCommandHandlerTests
 {
     // ── infrastructure ───────────────────────────────────────────────────────
 
-    private readonly IOutboxWorkerRepository  _repository    = Substitute.For<IOutboxWorkerRepository>();
-    private readonly IOutboxMessageDispatcher _dispatcher    = Substitute.For<IOutboxMessageDispatcher>();
-    private readonly IUnitOfWork              _uow           = Substitute.For<IUnitOfWork>();
-    private readonly IRequestContextSetter    _contextSetter = Substitute.For<IRequestContextSetter>();
+    private readonly IOutboxWorkerRepository                                                         _repository         = Substitute.For<IOutboxWorkerRepository>();
+    private readonly IOutboxMessageDispatcher                                                        _dispatcher         = Substitute.For<IOutboxMessageDispatcher>();
+    private readonly IDispatcherInvoker                                                              _dispatcherInvoker  = Substitute.For<IDispatcherInvoker>();
+    private readonly IUnitOfWork                                                                     _uow                = Substitute.For<IUnitOfWork>();
+    private readonly IRequestContextSetter                                                           _contextSetter      = Substitute.For<IRequestContextSetter>();
+    private readonly ITraceContextSetter                                                             _traceContextSetter = Substitute.For<ITraceContextSetter>();
 
     private readonly ProcessOutboxCommandHandler _sut;
 
@@ -41,14 +42,15 @@ public sealed class ProcessOutboxCommandHandlerTests
             Arg.Any<IReadOnlyList<OutboxHandlerExecution>>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
-        _sut = new ProcessOutboxCommandHandler(_repository, _dispatcher, _uow, _contextSetter);
+        _sut = new ProcessOutboxCommandHandler(
+            _repository, _dispatcher, _dispatcherInvoker, _uow, _contextSetter, _traceContextSetter);
     }
 
     // ── factory helpers ──────────────────────────────────────────────────────
 
     private static OutboxMessage CreateMessage() =>
         new("event.name", "Atlas.Tests.FakeEvent", """{"v":1}""",
-            Guid.NewGuid(), Guid.NewGuid(), "corr-123", "tests");
+            Guid.NewGuid(), Guid.NewGuid(), null, "corr-123", "tests");
 
     /// <summary>
     /// Chains <paramref name="maxRetries"/> - 1 retry attempts so the returned message
@@ -68,7 +70,10 @@ public sealed class ProcessOutboxCommandHandlerTests
             .Returns(messages.ToList());
 
     private void GivenDispatcherReturns(params HandlerInvocationResult[] results) =>
-        _dispatcher.DispatchAsync(Arg.Any<OutboxMessage>(), Arg.Any<CancellationToken>())
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Any<OutboxMessage>(),
+                Arg.Any<CancellationToken>())
             .Returns(results.ToList());
 
     // ── 1. empty batch ───────────────────────────────────────────────────────
@@ -84,8 +89,11 @@ public sealed class ProcessOutboxCommandHandlerTests
 
         // Assert
         output.Should().Be(new ProcessOutboxOutput(0, 0, 0));
-        await _dispatcher.DidNotReceive()
-            .DispatchAsync(Arg.Any<OutboxMessage>(), Arg.Any<CancellationToken>());
+        await _dispatcherInvoker.DidNotReceive()
+            .InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Any<OutboxMessage>(),
+                Arg.Any<CancellationToken>());
     }
 
     // ── 2–4. all handlers succeed ────────────────────────────────────────────
@@ -325,7 +333,10 @@ public sealed class ProcessOutboxCommandHandlerTests
         // Arrange
         var message = CreateMessage(); // AttemptNumber = 1
         GivenBatch(message);
-        _dispatcher.DispatchAsync(Arg.Any<OutboxMessage>(), Arg.Any<CancellationToken>())
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Any<OutboxMessage>(),
+                Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("unknown event type"));
 
         // Act
@@ -343,7 +354,10 @@ public sealed class ProcessOutboxCommandHandlerTests
         // Arrange
         var message = CreateMessage();
         GivenBatch(message);
-        _dispatcher.DispatchAsync(Arg.Any<OutboxMessage>(), Arg.Any<CancellationToken>())
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Any<OutboxMessage>(),
+                Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("no handlers registered"));
 
         IReadOnlyList<OutboxHandlerExecution>? captured = null;
@@ -368,7 +382,10 @@ public sealed class ProcessOutboxCommandHandlerTests
         // Arrange
         var message = CreateFinalAttemptMessage(maxRetries: 3); // AttemptNumber = 3
         GivenBatch(message);
-        _dispatcher.DispatchAsync(Arg.Any<OutboxMessage>(), Arg.Any<CancellationToken>())
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Any<OutboxMessage>(),
+                Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("deserialization failed"));
 
         // Act
@@ -393,11 +410,15 @@ public sealed class ProcessOutboxCommandHandlerTests
 
         GivenBatch(ok1, ok2, fail);
 
-        _dispatcher.DispatchAsync(Arg.Is<OutboxMessage>(m => m.Id == ok1.Id || m.Id == ok2.Id),
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Is<OutboxMessage>(m => m.Id == ok1.Id || m.Id == ok2.Id),
                 Arg.Any<CancellationToken>())
             .Returns(new List<HandlerInvocationResult> { HandlerInvocationResult.Success("HandlerA") });
 
-        _dispatcher.DispatchAsync(Arg.Is<OutboxMessage>(m => m.Id == fail.Id),
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Is<OutboxMessage>(m => m.Id == fail.Id),
                 Arg.Any<CancellationToken>())
             .Returns(new List<HandlerInvocationResult> { HandlerInvocationResult.Failure("HandlerA", "err") });
 
@@ -420,11 +441,15 @@ public sealed class ProcessOutboxCommandHandlerTests
 
         GivenBatch(first, second, third);
 
-        _dispatcher.DispatchAsync(Arg.Is<OutboxMessage>(m => m.Id == second.Id),
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Is<OutboxMessage>(m => m.Id == second.Id),
                 Arg.Any<CancellationToken>())
             .ThrowsAsync(new Exception("transient failure"));
 
-        _dispatcher.DispatchAsync(Arg.Is<OutboxMessage>(m => m.Id != second.Id),
+        _dispatcherInvoker.InvokeAsync(
+                Arg.Any<IOutboxMessageDispatcher>(),
+                Arg.Is<OutboxMessage>(m => m.Id != second.Id),
                 Arg.Any<CancellationToken>())
             .Returns(new List<HandlerInvocationResult> { HandlerInvocationResult.Success("HandlerA") });
 
