@@ -7,13 +7,12 @@
   </PropertyGroup>
 
   <!--
-    Consume-side adapter added: this project now also orchestrates integration event → command
-    dispatch, so it needs a reference to Atlas.Identity.Application for ISendWelcomeEmailCommandHandler.
-    The dependency is one-way (Integration → Application) which is correct.
+    Publish side for the Identity module.
+    Maps Identity domain events → integration events → outbox messages.
+    Referenced by Atlas.API (write side / SavePipeline).
   -->
   <ItemGroup>
     <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>

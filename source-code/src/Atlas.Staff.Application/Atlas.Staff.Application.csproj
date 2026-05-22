@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.Contracts\Atlas.Contracts.csproj" />
+    <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Domain\Atlas.Staff.Domain.csproj" />
   </ItemGroup>

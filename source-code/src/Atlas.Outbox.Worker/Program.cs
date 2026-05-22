@@ -1,8 +1,8 @@
 using Atlas.BuildingBlocks.Observability;
-using Atlas.Contracts.Tenants.IntegrationEvents;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
+using Atlas.Integration.Contracts.Tenants;
 using Atlas.Outbox.Infrastructure.DI;
-using Atlas.Outbox.Integration.DI;
+using Atlas.Outbox.Consumer.Identity.DI;
 using Atlas.Outbox.Worker.Hosting;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
@@ -74,7 +74,7 @@ try
 
             // ── Bindings evento → handler ─────────────────────────────────────
             // Abra OutboxIntegrationDependencyInjection para ver todos os mappings.
-            services.AddOutboxIntegrationHandlers();
+            services.AddIdentityOutboxConsumerHandlers();
 
             // ── Entry point — loop de polling ─────────────────────────────────
             services.AddHostedService<OutboxWorkerHostedService>();

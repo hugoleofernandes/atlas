@@ -35,12 +35,8 @@
   </Folder>
   <Folder Name="/src/IntegrationEvents/">
     <Project Path="src/Atlas.Contracts/Atlas.Integration.Contracts.csproj" />
-  </Folder>
-  <Folder Name="/src/IntegrationEvents/Input/">
-    <Project Path="src/Atlas.Identity.Integration/Atlas.Identity.Integration.csproj" />
-  </Folder>
-  <Folder Name="/src/IntegrationEvents/Output/">
-    <Project Path="src/Atlas.Outbox.Integration/Atlas.Outbox.Integration.csproj" />
+    <Project Path="src/Atlas.Outbox.Consumer.Identity/Atlas.Outbox.Consumer.Identity.csproj" />
+    <Project Path="src/Atlas.Outbox.Publisher.Identity/Atlas.Outbox.Publisher.Identity.csproj" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Identity/">
@@ -53,12 +49,12 @@
     <Project Path="src/Atlas.Staff.Domain/Atlas.Staff.Domain.csproj" />
     <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/src/Shared/">
-    <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
-  </Folder>
-  <Folder Name="/src/Shared/Outbox/">
+  <Folder Name="/src/Outbox/">
     <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
     <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/src/_API/">
     <Project Path="src/Atlas.API/Atlas.API.csproj" />
