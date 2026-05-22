@@ -1,21 +1,36 @@
 using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Application.Logging;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
 /// Structured logging for the handler pipeline.
 ///
-/// - Before execution : logs "{Name} started"
-/// - On Result.Ok     : logs "{Name} succeeded in {ms}ms" (Info)
-/// - On Result.Fail   : logs "{Name} [validation] failed in {ms}ms — {code}" (Warning)
-/// - On exception     : logs "{Name} failed unexpectedly in {ms}ms" (Error) and re-throws
+/// Log strategy — three layers:
 ///
-/// Unexpected exceptions (not caught by <see cref="DomainExceptionDecorator{TInput,TOutput}"/>)
-/// are logged as Error and re-thrown so they continue to propagate up the pipeline.
+///   1. Scope (always, no PII risk)
+///      Adds InputType and OutputType as structured fields to every log line emitted
+///      within the handler execution — including logs from repositories and domain services.
+///      Grafana Loki can filter by these fields: {InputType="CreateTenantCommand"}.
+///
+///   2. Summary at Information level (always, opt-in for business context)
+///      If the input implements <see cref="ILogSummary"/>, logs ToLogSummary() — a
+///      developer-defined, PII-safe string (identifiers only, no personal data).
+///      Without ILogSummary, logs only the input type name.
+///
+///   3. Full payload at Debug level (off by default, on when investigating)
+///      Serializes the entire input object to JSON. Controlled by the log level
+///      configuration — set "Default": "Debug" in appsettings to enable.
+///      Never enabled in production by default.
+///
+/// - On Result.Ok   : logs "{Name} succeeded in {ms}ms" (Info)
+/// - On Result.Fail : logs "{Name} failed in {ms}ms — {ErrorCode}" (Warning)
+/// - On exception   : logs "{Name} failed unexpectedly in {ms}ms" (Error) and re-throws
 /// </summary>
 internal sealed class LoggingDecorator<TInput, TOutput> : IResultPipelineStep<TInput, TOutput>
 {
@@ -39,10 +54,22 @@ internal sealed class LoggingDecorator<TInput, TOutput> : IResultPipelineStep<TI
 
     public async Task<Result<TOutput>> ExecuteAsync(TInput input, CancellationToken ct)
     {
-        using var _ = _logger.BeginScope(
-            new Dictionary<string, object?> { [$"{_layer}Name"] = _name });
+        // ── Layer 1: scope — enriches ALL log lines inside the handler ────────
+        using var _ = _logger.BeginScope(new Dictionary<string, object?>
+        {
+            [$"{_layer}Name"] = _name,
+            ["InputType"]     = typeof(TInput).Name,
+            ["OutputType"]    = typeof(TOutput).Name,
+        });
 
-        _logger.LogInformation("{Name} started", _name);
+        // ── Layer 2: summary at Information — PII-safe, always visible ────────
+        var summary = input is ILogSummary s ? s.ToLogSummary() : typeof(TInput).Name;
+        _logger.LogInformation("{Name} started — {Summary}", _name, summary);
+
+        // ── Layer 3: full payload at Debug — off in production by default ─────
+        if (_logger.IsEnabled(LogLevel.Debug))
+            _logger.LogDebug("{Name} input {@Input}", _name, input);
+
         var sw = Stopwatch.StartNew();
 
         try
