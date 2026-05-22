@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <!--
-    Intentionally thin — only maps domain events to integration events.
-    References are limited to Domain and Contracts layers (no Application/Infrastructure)
-    to stay clean and dependency-free.
+    Consume-side adapter added: this project now also orchestrates integration event → command
+    dispatch, so it needs a reference to Atlas.Identity.Application for ISendWelcomeEmailCommandHandler.
+    The dependency is one-way (Integration → Application) which is correct.
   -->
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.Contracts\Atlas.Contracts.csproj" />
+    <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>

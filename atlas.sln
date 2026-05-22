@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Identity.Domain.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Identity.Infrastructure", "source-code\src\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj", "{CB4E1981-D3BA-734E-E5A0-42B03422D0EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Outbox.Worker", "source-code\src\Atlas.OutboxWorker\Atlas.Outbox.Worker.csproj", "{22A5DABB-4073-C434-BA41-86310CAEA346}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Outbox.Worker", "source-code\src\Atlas.Outbox.Worker\Atlas.Outbox.Worker.csproj", "{22A5DABB-4073-C434-BA41-86310CAEA346}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.SharedKernel", "source-code\src\Atlas.SharedKernel\Atlas.SharedKernel.csproj", "{BAE91EE6-6CD0-2026-11AF-9898FF6121B4}"
 EndProject
@@ -33,9 +33,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{253C3290
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Tests", "source-code\tests\Atlas.Tests\Atlas.Tests.csproj", "{C24391FE-A7CF-A16D-E7FC-5BDEF44AD294}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.OutboxWorker.Tests", "source-code\src\Atlas.OutboxWorker.Tests\Atlas.OutboxWorker.Tests.csproj", "{9F715919-DAC4-B755-FB6F-ECD8AFE732B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Outbox.Worker.Tests", "source-code\src\Atlas.Outbox.Worker.Tests\Atlas.Outbox.Worker.Tests.csproj", "{9F715919-DAC4-B755-FB6F-ECD8AFE732B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Contracts", "source-code\src\Atlas.Contracts\Atlas.Contracts.csproj", "{86174453-E960-2685-66C1-45410813B039}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.Integration.Contracts", "source-code\src\Atlas.Contracts\Atlas.Integration.Contracts.csproj", "{86174453-E960-2685-66C1-45410813B039}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.BuildingBlocks.Application", "source-code\src\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj", "{B34938A0-3BDD-446E-B99F-9680A34331D5}"
 EndProject
