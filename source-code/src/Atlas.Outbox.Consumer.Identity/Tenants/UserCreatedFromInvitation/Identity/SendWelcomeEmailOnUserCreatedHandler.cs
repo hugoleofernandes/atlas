@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.Identity.Application.Tenants.Commands.SendWelcomeEmail;
 using Atlas.Integration.Contracts.Tenants;
+using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 
 namespace Atlas.Outbox.Consumer.Identity.Tenants.UserCreatedFromInvitation.Identity;
@@ -26,17 +26,11 @@ internal sealed class SendWelcomeEmailOnUserCreatedHandler
         _invoker  = invoker;
     }
 
-    public async Task HandleAsync(
+    public Task HandleAsync(
         UserCreatedFromInvitationIntegrationEvent @event,
         CancellationToken                         ct)
-    {
-        var result = await _invoker.InvokeAsync(
+        => _invoker.InvokeOrThrowAsync(
             _handler,
             new SendWelcomeEmailCommand(@event.TenantId, @event.UserId, @event.Email),
             ct);
-
-        if (!result.IsSuccess)
-            throw new InvalidOperationException(
-                result.ErrorDefinition?.FallbackMessage ?? "SendWelcomeEmail command failed.");
-    }
 }

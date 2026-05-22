@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
+using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.Staff.Application.StaffMembers.Commands.CreateFromInvitation;
@@ -29,11 +29,10 @@ internal sealed class CreateStaffMemberOnUserCreatedHandler
         _invoker  = invoker;
     }
 
-    public async Task HandleAsync(
+    public Task HandleAsync(
         UserCreatedFromInvitationIntegrationEvent @event,
         CancellationToken                         ct)
-    {
-        var result = await _invoker.InvokeAsync(
+        => _invoker.InvokeOrThrowAsync(
             _handler,
             new CreateStaffMemberFromInvitationCommand(
                 @event.TenantId,
@@ -41,9 +40,4 @@ internal sealed class CreateStaffMemberOnUserCreatedHandler
                 @event.Email,
                 @event.Role),
             ct);
-
-        if (!result.IsSuccess)
-            throw new InvalidOperationException(
-                result.ErrorDefinition?.FallbackMessage ?? "CreateStaffMember command failed.");
-    }
 }

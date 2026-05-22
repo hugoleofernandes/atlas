@@ -10,9 +10,10 @@ using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
-using Atlas.Outbox.Application.OutboxMessages;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.Outbox.Application.ProcessOutbox;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Dispatching;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.Metrics;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -45,8 +46,10 @@ public static class StaffOutboxDependencyInjection
             new ProcessOutboxCommandHandler(
                 sp.GetRequiredService<OutboxMessageRepository<StaffDbContext>>(),
                 sp.GetRequiredService<IOutboxMessageDispatcher>(),
+                sp.GetRequiredService<IDispatcherInvoker>(),
                 new OutboxUnitOfWork(sp.GetRequiredService<StaffDbContext>()),
-                sp.GetRequiredService<IRequestContextSetter>()
+                sp.GetRequiredService<IRequestContextSetter>(),
+                sp.GetRequiredService<ITraceContextSetter>()
             ));
 
         // ── SavePipeline and its dependencies ──────────────────────────────────

@@ -233,7 +233,7 @@ The `IdempotencyKey` is stable across all retry attempts. Handlers that already 
 
 ## Roadmap
 
-- [ ] Distributed trace propagation — store `traceparent` in `OutboxMessage` so Grafana Tempo links API spans to Worker spans in one trace
+- [x] Distributed trace propagation — `traceparent` stored in `OutboxMessage`; OutboxWorker restores it as parent context so Grafana Tempo shows API → Worker as a single end-to-end trace
 - [ ] AWS Cognito OIDC provider implementation
 - [ ] Email infrastructure (`IEmailService`)
 - [ ] Tenant self-service onboarding UI

@@ -1,9 +1,10 @@
 using Atlas.BuildingBlocks.Persistence.Entities.OutboxMessages.Repositories;
 using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
-using Atlas.Outbox.Application.OutboxMessages;
+using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.Outbox.Application.ProcessOutbox;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Dispatching;
 using Atlas.SharedKernel.Application.Idempotency;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,8 +28,10 @@ public static class IdentityOutboxDependencyInjection
             new ProcessOutboxCommandHandler(
                 sp.GetRequiredService<OutboxMessageRepository<IdentityDbContext>>(),
                 sp.GetRequiredService<IOutboxMessageDispatcher>(),
+                sp.GetRequiredService<IDispatcherInvoker>(),
                 new OutboxUnitOfWork(sp.GetRequiredService<IdentityDbContext>()),
-                sp.GetRequiredService<IRequestContextSetter>()
+                sp.GetRequiredService<IRequestContextSetter>(),
+                sp.GetRequiredService<ITraceContextSetter>()
             ));
 
         // ── Idempotency ────────────────────────────────────────────────────────

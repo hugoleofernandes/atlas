@@ -1,4 +1,5 @@
-﻿using Atlas.SharedKernel.Domain;
+﻿using System.Diagnostics;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.SharedKernel.Application.OutboxMessages;
 
@@ -64,7 +65,26 @@ public sealed class OutboxMessage : INotAuditable
 
     public Guid UserId { get; private set; }
 
+    /// <summary>
+    /// Snapshot of the actor's email at publish time.
+    /// Preserved across retries so the outbox worker can hydrate <see cref="IRequestContext"/>
+    /// with the original email — ensuring <c>EntityChangeStamper</c> stamps the correct
+    /// <c>CreatedByEmail</c>/<c>UpdatedByEmail</c> even if the user later changes their
+    /// email or is deleted. Null when no authenticated user was present (seeding, CLI tools).
+    /// </summary>
+    public string? UserEmail { get; private set; }
+
     public string CorrelationId { get; private set; } = default!;
+
+    /// <summary>
+    /// W3C traceparent of the span that was active when this message was created
+    /// (format: <c>00-{traceId}-{spanId}-{flags}</c>).
+    ///
+    /// Stored so the OutboxWorker can restore it as the parent context of its own span,
+    /// linking the worker execution to the originating API request as a single trace
+    /// in Grafana Tempo. Null when no active Activity was present (e.g. seeding, tests).
+    /// </summary>
+    public string? TraceParent { get; private set; }
 
     public string Module { get; private set; } = default!;
 
@@ -98,13 +118,14 @@ public sealed class OutboxMessage : INotAuditable
 
     /// <summary>Creates the first attempt (AttemptNumber = 1).</summary>
     public OutboxMessage(
-        string name,
-        string type,
-        string payload,
-        Guid   tenantId,
-        Guid   userId,
-        string correlationId,
-        string module)
+        string  name,
+        string  type,
+        string  payload,
+        Guid    tenantId,
+        Guid    userId,
+        string? userEmail,
+        string  correlationId,
+        string  module)
     {
         Id             = Guid.NewGuid();
         IdempotencyKey = Id;
@@ -114,9 +135,14 @@ public sealed class OutboxMessage : INotAuditable
         Payload        = payload;
         TenantId       = tenantId;
         UserId         = userId;
+        UserEmail      = userEmail;
         CorrelationId  = correlationId;
         Module         = module;
         OccurredOn     = DateTime.UtcNow;
+        // Capture the W3C traceparent of the active span so the OutboxWorker can
+        // restore it as parent context and link its spans to this API trace in Tempo.
+        // Null when there is no active Activity (seeding, tests, CLI tools).
+        TraceParent    = Activity.Current?.Id;
     }
 
     /// <summary>
@@ -124,16 +150,18 @@ public sealed class OutboxMessage : INotAuditable
     /// Creates the next attempt row copying all event data from the parent.
     /// </summary>
     private OutboxMessage(
-        Guid   parentId,
-        Guid   idempotencyKey,
-        int    attemptNumber,
-        string name,
-        string type,
-        string payload,
-        Guid   tenantId,
-        Guid   userId,
-        string correlationId,
-        string module)
+        Guid    parentId,
+        Guid    idempotencyKey,
+        int     attemptNumber,
+        string  name,
+        string  type,
+        string  payload,
+        Guid    tenantId,
+        Guid    userId,
+        string? userEmail,
+        string  correlationId,
+        string  module,
+        string? traceParent)
     {
         Id                    = Guid.NewGuid();
         IdempotencyKey        = idempotencyKey;
@@ -144,8 +172,10 @@ public sealed class OutboxMessage : INotAuditable
         Payload               = payload;
         TenantId              = tenantId;
         UserId                = userId;
+        UserEmail             = userEmail;
         CorrelationId         = correlationId;
         Module                = module;
+        TraceParent           = traceParent;
         OccurredOn            = DateTime.UtcNow;
     }
 
@@ -186,8 +216,10 @@ public sealed class OutboxMessage : INotAuditable
             payload:        Payload,
             tenantId:       TenantId,
             userId:         UserId,
+            userEmail:      UserEmail,      // preserve actor email snapshot across retries
             correlationId:  CorrelationId,
-            module:         Module);
+            module:         Module,
+            traceParent:    TraceParent);   // preserve original API trace across retries
     }
 
     /// <summary>

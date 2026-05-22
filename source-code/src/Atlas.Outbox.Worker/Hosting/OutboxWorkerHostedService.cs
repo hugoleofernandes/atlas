@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
+using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Outbox.Application.ProcessOutbox;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;

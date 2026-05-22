@@ -64,11 +64,23 @@ public sealed class OutboxMessageConfiguration
         b.Property(x => x.CorrelationId)
             .HasMaxLength(100);
 
+        // W3C traceparent — "00-{32-hex traceId}-{16-hex spanId}-{2-hex flags}" = 55 chars max.
+        // Nullable: not set when there is no active OTel Activity (seeding, tests, CLI tools).
+        b.Property(x => x.TraceParent)
+            .HasMaxLength(55)
+            .IsRequired(false);
+
         b.Property(x => x.OccurredOn)
             .IsRequired();
 
         b.Property(x => x.TenantId);
         b.Property(x => x.UserId);
+
+        // Snapshot of the actor's email at publish time — nullable (seeding, CLI tools).
+        // RFC 5321 max email length = 254 chars.
+        b.Property(x => x.UserEmail)
+            .HasMaxLength(254)
+            .IsRequired(false);
 
         // ── State ────────────────────────────────────────────────────────────
         b.Property(x => x.ProcessedOn);
