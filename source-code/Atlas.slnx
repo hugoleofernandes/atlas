@@ -28,6 +28,7 @@
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/Atlas.BuildingBlocks.Email/Atlas.BuildingBlocks.Email.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Infrastructure/Atlas.BuildingBlocks.Application.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Observability/Atlas.BuildingBlocks.Observability.csproj" />

@@ -6,12 +6,16 @@ namespace Atlas.BuildingBlocks.Application.HandlerInvokers.Decorators;
 
 /// <summary>
 /// Idempotency guard for command handlers.
-/// Sits as the outermost step in the IHandler chain inside CommandHandlerInvoker,
-/// so a duplicate message short-circuits before validation, UoW, and execution.
+/// Sits outside <c>PersistDbDecorator</c> and <c>ValidationDecorator</c> in the
+/// <c>CommandHandlerInvoker</c> pipeline so a duplicate message short-circuits before
+/// validation, UoW, and execution.
 ///
-/// Opt-in: only handlers that implement <see cref="IIdempotentHandler"/> are guarded.
+/// Only injected when the handler implements <see cref="IIdempotentHandler"/> —
+/// that check lives in <c>CommandHandlerInvoker</c>, before wrapping starts.
+/// This decorator always runs the guard unconditionally; it has no type-check of its own.
+///
 /// <see cref="IIdempotencyContext"/> is populated externally before the pipeline runs
-/// (by OutboxMessageDispatcher for outbox-triggered commands).
+/// (by <c>OutboxMessageDispatcher</c> for outbox-triggered commands).
 ///
 /// When the guard fires, <c>default!</c> is returned.
 /// For <c>TOutput = Unit</c> (the only valid use-case for idempotent commands)
@@ -32,12 +36,9 @@ internal sealed class IdempotencyDecorator<TInput, TOutput> : IHandler<TInput, T
 
     public async Task<TOutput> ExecuteAsync(TInput input, CancellationToken ct)
     {
-        if (_inner is IIdempotentHandler)
-        {
-            var idempotency = _serviceProvider.GetRequiredService<IIdempotencyService>();
-            if (await idempotency.HasAlreadyProcessedAsync(ct))
-                return default!;
-        }
+        var idempotency = _serviceProvider.GetRequiredService<IIdempotencyService>();
+        if (await idempotency.HasAlreadyProcessedAsync(ct))
+            return default!;
 
         return await _inner.ExecuteAsync(input, ct);
     }

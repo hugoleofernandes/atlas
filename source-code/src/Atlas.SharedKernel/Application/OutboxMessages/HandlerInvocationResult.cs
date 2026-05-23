@@ -31,8 +31,52 @@ public sealed record HandlerInvocationResult
         new() { HandlerName = handlerName, IsSuccess = true };
 
     public static HandlerInvocationResult Failure(string handlerName, Exception ex) =>
-        new() { HandlerName = handlerName, IsSuccess = false, ErrorMessage = ex.Message };
+        new() { HandlerName = handlerName, IsSuccess = false, ErrorMessage = BuildErrorMessage(ex) };
 
     public static HandlerInvocationResult Failure(string handlerName, string errorMessage) =>
         new() { HandlerName = handlerName, IsSuccess = false, ErrorMessage = errorMessage };
+
+    // ── Private ──────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Walks the full inner-exception chain and builds a readable message like:
+    ///   DbUpdateException: An error occurred while saving the entity changes.
+    ///     → PostgresException: 23505: duplicate key value violates unique constraint "IX_staff_members_TenantId_UserId"
+    ///
+    /// Generic wrapper messages ("See the inner exception for details.") are collapsed
+    /// so they don't add noise when a more specific inner message is available.
+    ///
+    /// AggregateException is unwrapped to its first inner exception — the typical case
+    /// for fire-and-forget task wrappers.
+    /// </summary>
+    private static string BuildErrorMessage(Exception ex)
+    {
+        var parts   = new List<string>();
+        Exception?  current = ex;
+
+        while (current is not null)
+        {
+            // Unwrap AggregateException to its first real cause
+            if (current is AggregateException agg && agg.InnerExceptions.Count > 0)
+            {
+                current = agg.InnerExceptions[0];
+                continue;
+            }
+
+            var message = current.Message;
+
+            // Skip vacuous wrapper messages that only say "see inner exception"
+            bool isVacuous = current.InnerException is not null
+                && message.Contains("See the inner exception", StringComparison.OrdinalIgnoreCase);
+
+            if (!isVacuous)
+                parts.Add($"{current.GetType().Name}: {message}");
+
+            current = current.InnerException;
+        }
+
+        return parts.Count > 0
+            ? string.Join(" → ", parts)
+            : ex.Message;
+    }
 }

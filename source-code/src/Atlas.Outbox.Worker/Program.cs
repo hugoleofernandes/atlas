@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Integration.Contracts.Tenants;
@@ -52,6 +53,9 @@ try
             // ── Observabilidade (Traces + Metrics → Grafana Cloud) ─────────────
             // Sem AddAspNetCoreInstrumentation — o worker não tem pipeline HTTP.
             services.AddAtlasObservability(configuration, ctx.HostingEnvironment);
+
+            // ── Email ─────────────────────────────────────────────────────────
+            services.AddResendEmailService(configuration);
 
             // ── DbContexts — um por módulo que usa o outbox ───────────────────
             services.AddDbContext<IdentityDbContext>(o =>

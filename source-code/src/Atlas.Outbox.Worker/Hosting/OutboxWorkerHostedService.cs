@@ -36,7 +36,7 @@ internal sealed class OutboxWorkerHostedService : BackgroundService
                 var command             = new ProcessOutboxCommand(_options.BatchSize, _options.MaxRetries, _options.LockDuration);
 
                 await invoker.InvokeAsync(identityHandler, command, stoppingToken);
-                await invoker.InvokeAsync(staffHandler,    command, stoppingToken);
+                //await invoker.InvokeAsync(staffHandler,    command, stoppingToken);
             }
             catch (OperationCanceledException)
             {

@@ -25,6 +25,21 @@ public sealed class OutboxMessageFactory : IOutboxMessageFactory
         );
     }
 
+    /// <inheritdoc/>
+    public OutboxMessage Create<T>(T payload, Guid tenantId, Guid userId, string? userEmail)
+    {
+        return new OutboxMessage(
+            name:          typeof(T).Name,
+            type:          typeof(T).FullName!,
+            payload:       JsonSerializer.Serialize(payload),
+            tenantId:      tenantId,
+            userId:        userId,
+            userEmail:     userEmail,
+            correlationId: _requestContext.CorrelationId ?? throw new InvalidOperationException($"CorrelationId is required in {nameof(IRequestContext)} to create an OutboxMessage."),
+            module:        GetModule(typeof(T))
+        );
+    }
+
     private static string GetModule(Type type)
         => type.Namespace?.Split('.')[1] ?? "Unknown";
 }

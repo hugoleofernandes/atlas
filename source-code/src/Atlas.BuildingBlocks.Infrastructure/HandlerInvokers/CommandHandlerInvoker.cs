@@ -3,6 +3,7 @@ using Atlas.BuildingBlocks.Application.HandlerInvokers.Interfaces;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
+using Atlas.SharedKernel.Application.Idempotency;
 using Microsoft.Extensions.Logging;
 
 namespace Atlas.BuildingBlocks.Application.HandlerInvokers;
@@ -10,9 +11,9 @@ namespace Atlas.BuildingBlocks.Application.HandlerInvokers;
 /// <summary>
 /// Executes any side-effecting handler through the full decorator pipeline.
 /// Used for both application command handlers and integration-event adapters —
-/// the three "command-specific" decorators are safe no-ops when not applicable:
+/// the "command-specific" decorators are safe no-ops when not applicable:
 ///
-///   IdempotencyDecorator  — skips if handler does not implement IIdempotentHandler
+///   IdempotencyDecorator  — only injected when handler implements IIdempotentHandler
 ///   ValidationDecorator   — skips if no IValidator&lt;TInput&gt; is registered
 ///   PersistDbDecorator    — calls SaveChangesAsync, which is a no-op for NullUnitOfWork
 ///
@@ -55,13 +56,18 @@ internal sealed class CommandHandlerInvoker
         var unitOfWork = (handler as ICommandHandler<TInput, TOutput>)?.UnitOfWork
                          ?? NullUnitOfWork.Instance;
 
+        // Check before wrapping — once the handler is wrapped in other decorators,
+        // the type-check inside IdempotencyDecorator would test the wrong object.
+        bool isIdempotent = handler is IIdempotentHandler;
+
         IHandler<TInput, TOutput> handlerPipeline = handler;
         IResultPipelineStep<TInput, TOutput> pipeline;
 
         // ── Side-effect block (no-ops when not applicable) ─────────────────
         handlerPipeline = new ValidationDecorator<TInput, TOutput>(handlerPipeline, _serviceProvider);
         handlerPipeline = new PersistDbDecorator<TInput, TOutput>(handlerPipeline, unitOfWork);
-        handlerPipeline = new IdempotencyDecorator<TInput, TOutput>(handlerPipeline, _serviceProvider);
+        if (isIdempotent)
+            handlerPipeline = new IdempotencyDecorator<TInput, TOutput>(handlerPipeline, _serviceProvider);
         // ──────────────────────────────────────────────────────────────────
 
         // ── Observability block ────────────────────────────────────────────
