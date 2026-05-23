@@ -3,8 +3,11 @@ using System.Net.Http.Json;
 using Atlas.API.Models.Invitations;
 using Atlas.API.Tests.Infrastructure;
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
+using Atlas.Identity.Application.Tenants.Queries.Dtos;
+using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Permissions;
+using Atlas.SharedKernel.Application;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
@@ -16,6 +19,60 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
     : IClassFixture<AtlasApiFactory>
 {
     private readonly IInviteUserCommandHandler _handler = factory.InviteUserHandler;
+    private readonly IListInvitationsQueryHandler _listHandler = factory.ListInvitationsQueryHandler;
+
+    [Fact]
+    public async Task List_AuthenticatedWithPermission_Returns200WithPagedInvitations()
+    {
+        var invitationId = Guid.NewGuid();
+        var roleId       = Guid.NewGuid();
+
+        _listHandler.ExecuteAsync(Arg.Any<ListInvitationsQuery>(), Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<InvitationDto>(
+            [
+                new InvitationDto(invitationId, "new@acme.com", roleId, "Member", DateTime.UtcNow.AddDays(7), false)
+            ],
+            2,
+            5,
+            13));
+
+        var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
+
+        var response = await client.GetAsync("/tenants/invitations?page=2&pageSize=5");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var body = await response.Content.ReadFromJsonAsync<PagedResult<InvitationDto>>();
+        body.Should().NotBeNull();
+        body!.Page.Should().Be(2);
+        body.PageSize.Should().Be(5);
+        body.TotalCount.Should().Be(13);
+        body.Items.Should().ContainSingle();
+        body.Items.Single().InvitationId.Should().Be(invitationId);
+    }
+
+    [Fact]
+    public async Task List_WithoutAuthentication_Returns401()
+    {
+        var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = false
+        });
+
+        var response = await client.GetAsync("/tenants/invitations");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task List_AuthenticatedWithoutPermission_Returns403()
+    {
+        var client = factory.CreateAuthenticatedClient();
+
+        var response = await client.GetAsync("/tenants/invitations");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
 
     [Fact]
     public async Task Invite_AuthenticatedWithPermission_Returns201WithBody()

@@ -389,6 +389,10 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
+                    b.Property<string>("UserEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 

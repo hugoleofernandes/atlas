@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Email\Atlas.BuildingBlocks.Email.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
     <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />

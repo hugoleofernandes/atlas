@@ -1,4 +1,5 @@
 using Atlas.Identity.Application.Tenants.Commands.InviteUser;
+using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,7 @@ public sealed class AtlasApiFactory : WebApplicationFactory<Program>
     public const string TestTenantName = "acme";
 
     public IInviteUserCommandHandler InviteUserHandler { get; } = Substitute.For<IInviteUserCommandHandler>();
+    public IListInvitationsQueryHandler ListInvitationsQueryHandler { get; } = Substitute.For<IListInvitationsQueryHandler>();
 
     public AtlasApiFactory()
     {
@@ -48,6 +50,9 @@ public sealed class AtlasApiFactory : WebApplicationFactory<Program>
             // Replace the real command handler with a controllable mock
             services.RemoveAll<IInviteUserCommandHandler>();
             services.AddScoped(_ => InviteUserHandler);
+
+            services.RemoveAll<IListInvitationsQueryHandler>();
+            services.AddScoped(_ => ListInvitationsQueryHandler);
         });
     }
 

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(StaffDbContext))]
-    [Migration("20260521220008_Initial_Staff")]
+    [Migration("20260523181556_Initial_Staff")]
     partial class Initial_Staff
     {
         /// <inheritdoc />
@@ -183,10 +183,18 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("TraceParent")
+                        .HasMaxLength(55)
+                        .HasColumnType("character varying(55)");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<string>("UserEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

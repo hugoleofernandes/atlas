@@ -11,6 +11,17 @@ namespace Atlas.Outbox.Publisher.Identity.Tenants.UserCreatedFromInvitation;
 /// Maps <see cref="UserCreatedFromInvitationDomainEvent"/> (Identity domain) to
 /// <see cref="UserCreatedFromInvitationIntegrationEvent"/> (shared contract) and
 /// wraps it in an outbox message for reliable delivery.
+///
+/// <para>
+/// This mapper deliberately uses the explicit-identity overload of
+/// <see cref="IOutboxMessageFactory.Create{T}(T,Guid,Guid,string?)"/>.
+/// The event is raised inside <c>ResolveTenantAccessCommandHandler</c>, which
+/// is invoked by <c>UserBootstrapMiddleware</c> <em>before</em> the tenant/user
+/// claims are written to the cookie — meaning <c>IRequestContext.TenantId</c> and
+/// <c>IRequestContext.UserId</c> are still null at that point.
+/// The domain event itself already carries the correct identity values, so we
+/// pass them directly instead of relying on the ambient request context.
+/// </para>
 /// </summary>
 internal sealed class UserCreatedFromInvitationMapper : IIntegrationEventMapper
 {
@@ -33,7 +44,9 @@ internal sealed class UserCreatedFromInvitationMapper : IIntegrationEventMapper
             e.Email,
             e.Role);
 
-        return _factory.Create(integrationEvent);
+        // Pass identity values explicitly — IRequestContext is not yet populated
+        // when this mapper runs during the bootstrap flow.
+        return _factory.Create(integrationEvent, e.TenantId, e.UserId, e.Email);
     }
 }
 
