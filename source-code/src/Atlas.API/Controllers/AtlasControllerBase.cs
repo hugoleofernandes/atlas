@@ -1,4 +1,5 @@
 using Atlas.API.Errors;
+using Atlas.API.Models;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Errors;
@@ -31,27 +32,27 @@ public abstract class AtlasControllerBase : ControllerBase
     /// Use when the command creates a resource but there is no GET-by-id endpoint yet.
     /// </summary>
     protected IActionResult CreatedFromResult<TOutput, TResponse>(
-        Result<TOutput> result,
-        Func<TOutput, TResponse> map)
-        => _resultMapper.ToCreatedResult(result, map);
+        Result<TOutput> result)
+        where TResponse : IResponseFrom<TOutput, TResponse>
+        => _resultMapper.ToCreatedResult(result, TResponse.From);
 
     /// <summary>
     /// Returns 202 Accepted with an optional response body.
     /// Use for create requests accepted for asynchronous processing, where the resource may not exist yet.
     /// </summary>
     protected IActionResult CreateAcceptedFromResult<TOutput, TResponse>(
-        Result<TOutput> result,
-        Func<TOutput, TResponse> map)
-        => _resultMapper.ToCreateAcceptedResult(result, map);
+        Result<TOutput> result)
+        where TResponse : IResponseFrom<TOutput, TResponse>
+        => _resultMapper.ToCreateAcceptedResult(result, TResponse.From);
 
     /// <summary>
     /// Returns 200 OK with the updated representation in the response body.
     /// Use for synchronous updates that return a DTO.
     /// </summary>
     protected IActionResult UpdatedFromResult<TOutput, TResponse>(
-        Result<TOutput> result,
-        Func<TOutput, TResponse> map)
-        => _resultMapper.ToUpdatedResult(result, map);
+        Result<TOutput> result)
+        where TResponse : IResponseFrom<TOutput, TResponse>
+        => _resultMapper.ToUpdatedResult(result, TResponse.From);
 
     /// <summary>
     /// Returns 204 No Content.
@@ -65,9 +66,9 @@ public abstract class AtlasControllerBase : ControllerBase
     /// Use for updates accepted for asynchronous processing, where the update may not be complete yet.
     /// </summary>
     protected IActionResult UpdateAcceptedFromResult<TOutput, TResponse>(
-        Result<TOutput> result,
-        Func<TOutput, TResponse> map)
-        => _resultMapper.ToUpdateAcceptedResult(result, map);
+        Result<TOutput> result)
+        where TResponse : IResponseFrom<TOutput, TResponse>
+        => _resultMapper.ToUpdateAcceptedResult(result, TResponse.From);
 
     /// <summary>
     /// Returns 204 No Content.
@@ -81,18 +82,18 @@ public abstract class AtlasControllerBase : ControllerBase
     /// Use for synchronous deletes that return details about the deleted resource or action.
     /// </summary>
     protected IActionResult DeletedWithBodyFromResult<TOutput, TResponse>(
-        Result<TOutput> result,
-        Func<TOutput, TResponse> map)
-        => _resultMapper.ToDeletedWithBodyResult(result, map);
+        Result<TOutput> result)
+        where TResponse : IResponseFrom<TOutput, TResponse>
+        => _resultMapper.ToDeletedWithBodyResult(result, TResponse.From);
 
     /// <summary>
     /// Returns 202 Accepted with an optional response body.
     /// Use for deletes accepted for asynchronous processing, where deletion may not be complete yet.
     /// </summary>
     protected IActionResult DeleteAcceptedFromResult<TOutput, TResponse>(
-        Result<TOutput> result,
-        Func<TOutput, TResponse> map)
-        => _resultMapper.ToDeleteAcceptedResult(result, map);
+        Result<TOutput> result)
+        where TResponse : IResponseFrom<TOutput, TResponse>
+        => _resultMapper.ToDeleteAcceptedResult(result, TResponse.From);
 
     /// <summary>
     /// Returns 201 Created with a Location header pointing to the created resource.
@@ -101,9 +102,9 @@ public abstract class AtlasControllerBase : ControllerBase
     protected IActionResult CreatedAtActionFromResult<TOutput, TResponse>(
         Result<TOutput> result,
         string actionName,
-        Func<TOutput, object?> routeValues,
-        Func<TOutput, TResponse> map)
-        => _resultMapper.ToCreatedAtActionResult(this, result, actionName, routeValues, map);
+        Func<TOutput, object?> routeValues)
+        where TResponse : IResponseFrom<TOutput, TResponse>
+        => _resultMapper.ToCreatedAtActionResult(this, result, actionName, routeValues, TResponse.From);
 
     protected ObjectResult ErrorResult(ErrorDefinition error)
         => _resultMapper.ToProblemResult(error);

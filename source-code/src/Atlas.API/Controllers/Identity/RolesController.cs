@@ -87,11 +87,10 @@ public sealed class RolesController(
         var cmd    = new CreateRoleCommand(request.Name, request.PermissionCodes);
         var result = await invoker.InvokeAsync(createRoleHandler, cmd, ct);
 
-        return CreatedAtActionFromResult(
+        return CreatedAtActionFromResult<CreateRoleOutput, CreateRoleResponse>(
             result,
             nameof(GetById),
-            value => new { id = value.RoleId },
-            value => new CreateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
+            value => new { id = value.RoleId });
     }
 
     /// <summary>
@@ -114,9 +113,7 @@ public sealed class RolesController(
         var cmd    = new UpdateRoleCommand(id, request.Name, request.PermissionCodes);
         var result = await invoker.InvokeAsync(updateRoleHandler, cmd, ct);
 
-        return UpdatedFromResult(
-            result,
-            value => new UpdateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
+        return UpdatedFromResult<UpdateRoleOutput, UpdateRoleResponse>(result);
     }
 
     /// <summary>
