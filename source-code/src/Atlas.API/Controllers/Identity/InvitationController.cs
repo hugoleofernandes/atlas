@@ -52,6 +52,7 @@ public sealed class InvitationController(
     [HasPermission(PermissionCatalog.Tenant.InviteUser)]
     [ProducesResponseType(typeof(InviteUserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Invite(

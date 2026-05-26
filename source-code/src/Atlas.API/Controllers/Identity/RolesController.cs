@@ -77,6 +77,7 @@ public sealed class RolesController(
     [HasPermission(PermissionCatalog.Tenant.ManageRoles)]
     [ProducesResponseType(typeof(CreateRoleResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Create(
@@ -128,6 +129,7 @@ public sealed class RolesController(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> Remove(Guid id, CancellationToken ct)
     {
         var cmd    = new RemoveRoleCommand(id);
