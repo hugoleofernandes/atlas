@@ -20,8 +20,9 @@ public sealed class InvitationController(
     IInviteUserCommandHandler inviteUserHandler,
     IListInvitationsQueryHandler listInvitationsQueryHandler,
     IHandlerInvoker invoker,
-    ErrorMessageLocalizer errorLocalizer
-) : AtlasControllerBase(errorLocalizer)
+    ErrorMessageLocalizer errorLocalizer,
+    IHttpResultMapper resultMapper
+) : AtlasControllerBase(errorLocalizer, resultMapper)
 {
     /// <summary>
     /// Lists all invitations for the authenticated user's tenant, paginated.
@@ -39,7 +40,8 @@ public sealed class InvitationController(
 
         var query  = new ListInvitationsQuery(page, pageSize);
         var result = await invoker.InvokeAsync(listInvitationsQueryHandler, query, ct);
-        return Ok(result.Value);
+
+        return OkFromResult(result);
     }
 
     /// <summary>
@@ -59,14 +61,9 @@ public sealed class InvitationController(
         var cmd    = new InviteUserCommand(request.Email, request.RoleId);
         var result = await invoker.InvokeAsync(inviteUserHandler, cmd, ct);
 
-        if (!result.IsSuccess)
-            return ErrorResult(result.ErrorDefinition!);
-
-        var value = result.Value!;
-
-        return CreatedAtAction(
-            nameof(Invite),
-            new InviteUserResponse(
+        return CreatedFromResult(
+            result,
+            value => new InviteUserResponse(
                 value.InvitationId,
                 value.Email,
                 value.RoleId,

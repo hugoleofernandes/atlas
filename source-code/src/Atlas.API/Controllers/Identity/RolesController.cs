@@ -27,8 +27,9 @@ public sealed class RolesController(
     IListRolesQueryHandler listRolesQueryHandler,
     IGetRoleByIdQueryHandler getRoleByIdQueryHandler,
     IHandlerInvoker invoker,
-    ErrorMessageLocalizer errorLocalizer
-) : AtlasControllerBase(errorLocalizer)
+    ErrorMessageLocalizer errorLocalizer,
+    IHttpResultMapper resultMapper
+) : AtlasControllerBase(errorLocalizer, resultMapper)
 {
     /// <summary>
     /// Lists all roles for the authenticated user's tenant, paginated.
@@ -47,7 +48,7 @@ public sealed class RolesController(
 
         var query  = new ListRolesQuery(page, pageSize, includeInactive);
         var result = await invoker.InvokeAsync(listRolesQueryHandler, query, ct);
-        return Ok(result.Value);
+        return OkFromResult(result);
     }
 
     /// <summary>
@@ -85,13 +86,11 @@ public sealed class RolesController(
         var cmd    = new CreateRoleCommand(request.Name, request.PermissionCodes);
         var result = await invoker.InvokeAsync(createRoleHandler, cmd, ct);
 
-        if (!result.IsSuccess)
-            return ErrorResult(result.ErrorDefinition!);
-
-        var value = result.Value!;
-        return CreatedAtAction(
-            nameof(Create),
-            new CreateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
+        return CreatedAtActionFromResult(
+            result,
+            nameof(GetById),
+            value => new { id = value.RoleId },
+            value => new CreateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
     }
 
     /// <summary>
@@ -114,11 +113,9 @@ public sealed class RolesController(
         var cmd    = new UpdateRoleCommand(id, request.Name, request.PermissionCodes);
         var result = await invoker.InvokeAsync(updateRoleHandler, cmd, ct);
 
-        if (!result.IsSuccess)
-            return ErrorResult(result.ErrorDefinition!);
-
-        var value = result.Value!;
-        return Ok(new UpdateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
+        return UpdatedFromResult(
+            result,
+            value => new UpdateRoleResponse(value.RoleId, value.Name, value.PermissionCodes));
     }
 
     /// <summary>
@@ -136,9 +133,6 @@ public sealed class RolesController(
         var cmd    = new RemoveRoleCommand(id);
         var result = await invoker.InvokeAsync(removeRoleHandler, cmd, ct);
 
-        if (!result.IsSuccess)
-            return ErrorResult(result.ErrorDefinition!);
-
-        return NoContent();
+        return DeletedFromResult(result);
     }
 }
