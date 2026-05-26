@@ -62,13 +62,6 @@ public sealed class InvitationController(
         var cmd    = new InviteUserCommand(request.Email, request.RoleId);
         var result = await invoker.InvokeAsync(inviteUserHandler, cmd, ct);
 
-        return CreatedFromResult(
-            result,
-            value => new InviteUserResponse(
-                value.InvitationId,
-                value.Email,
-                value.RoleId,
-                value.RoleName,
-                value.ExpiresAt));
+        return CreatedFromResult<InviteUserOutput, InviteUserResponse>(result);
     }
 }
