@@ -1,8 +1,9 @@
 using Atlas.API.Errors;
 using Atlas.API.Models.Session;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.BuildingBlocks.AspNetCore.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Atlas.API.Controllers.Identity;
 
@@ -16,29 +17,21 @@ namespace Atlas.API.Controllers.Identity;
 /// </summary>
 [ApiController]
 [Route("session")]
-public class SessionController(ErrorMessageLocalizer errorLocalizer) : AtlasControllerBase(errorLocalizer)
+public class SessionController(
+    ErrorMessageLocalizer errorLocalizer,
+    IHttpResultMapper resultMapper) : AtlasControllerBase(errorLocalizer, resultMapper)
 {
     [HttpGet("me")]
     [Authorize]
     public IActionResult Me()
     {
-        var name = User.Identity?.Name ?? "unknown";
-        var email = User.FindFirst("preferred_username")?.Value
-            ?? User.FindFirst(ClaimTypes.Email)?.Value;
-
-        var sub = User.FindFirst("sub")?.Value
-            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? email; // fallback seguro
+        var email = User.FindFirst(AtlasClaims.UserEmail)?.Value;
+        var userId = User.FindFirst(AtlasClaims.UserId)?.Value;
 
         if (string.IsNullOrWhiteSpace(email))
             return ErrorResult(AuthErrors.Claim.EmailMissing);
 
-        var dto = new GetSessionResponse()
-        {
-            Name = name,
-            Email = email,
-            Sub = sub ?? ""
-        };
+        var dto = new GetSessionResponse(email, email, userId ?? "");
 
         return Ok(dto);
     }

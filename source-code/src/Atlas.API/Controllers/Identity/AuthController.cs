@@ -1,5 +1,6 @@
 ﻿using Atlas.API.Configs;
 using Atlas.API.Errors;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -14,8 +15,9 @@ public class AuthController(
     IConfiguration config,
     IOptions<FrontendConfig> frontOptions,
     ILogger<AuthController> logger,
-    ErrorMessageLocalizer errorLocalizer
-) : AtlasControllerBase(errorLocalizer)
+    ErrorMessageLocalizer errorLocalizer,
+    IHttpResultMapper resultMapper
+) : AtlasControllerBase(errorLocalizer, resultMapper)
 {
     private readonly IConfiguration _config = config;
     private readonly FrontendConfig _frontConfig = frontOptions.Value;

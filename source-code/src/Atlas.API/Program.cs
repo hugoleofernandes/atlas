@@ -130,6 +130,7 @@ try
     services.AddLocalization(opts => opts.ResourcesPath = "Resources");
     services.AddScoped<ErrorMessageLocalizer>();
     services.AddScoped<IErrorMessageLocalizer>(sp => sp.GetRequiredService<ErrorMessageLocalizer>());
+    services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
     //
     // ==========================================
@@ -179,10 +180,7 @@ try
     // ==========================================
     //
 
-    services.AddControllers(options =>
-    {
-        options.Filters.Add<ResultToHttpFilter>();
-    }).ConfigureApiBehaviorOptions(options =>
+    services.AddControllers().ConfigureApiBehaviorOptions(options =>
     {
         options.InvalidModelStateResponseFactory =
             ValidationProblemDetailsFactory.Create;
