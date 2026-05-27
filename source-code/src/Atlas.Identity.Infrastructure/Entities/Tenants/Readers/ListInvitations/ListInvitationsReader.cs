@@ -1,30 +1,29 @@
 using Atlas.Identity.Application.Tenants.Queries.Dtos;
 using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
-using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListInvitations;
 
 public sealed class ListInvitationsReader(IdentityDbContext db) : IListInvitationsReader
 {
-    public async Task<PagedResult<InvitationDto>> ListAsync(
+    public async Task<IReadOnlyList<InvitationDto>> ListAsync(
         Guid tenantId,
-        int page,
-        int pageSize,
+        bool isActive,
         CancellationToken ct)
     {
+        var now = DateTime.UtcNow;
+
         var query = db.Invitations
             .AsNoTracking()
             .Where(i => i.TenantId == tenantId)
+            .Where(i => isActive
+                ? !i.IsUsed && i.ExpiresAt >= now
+                : i.IsUsed || i.ExpiresAt < now)
             .OrderByDescending(i => i.CreatedAt)
             .ThenBy(i => EF.Property<string>(i, nameof(i.Email)));
 
-        var total = await query.CountAsync(ct);
-
-        var items = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+        return await query
             .Join(
                 db.Roles.AsNoTracking(),
                 invitation => invitation.RoleId,
@@ -35,9 +34,14 @@ public sealed class ListInvitationsReader(IdentityDbContext db) : IListInvitatio
                     invitation.RoleId,
                     role.Name,
                     invitation.ExpiresAt,
-                    invitation.IsUsed))
+                    invitation.IsUsed,
+                    !invitation.IsUsed && invitation.ExpiresAt >= now,
+                    invitation.CreatedAt,
+                    invitation.CreatedBy,
+                    invitation.CreatedByEmail,
+                    invitation.UpdatedAt,
+                    invitation.UpdatedBy,
+                    invitation.UpdatedByEmail))
             .ToListAsync(ct);
-
-        return new PagedResult<InvitationDto>(items, page, pageSize, total);
     }
 }

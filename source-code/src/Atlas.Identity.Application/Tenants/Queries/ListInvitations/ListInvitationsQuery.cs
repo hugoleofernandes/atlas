@@ -1,3 +1,3 @@
 namespace Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 
-public sealed record ListInvitationsQuery(int Page, int PageSize);
+public sealed record ListInvitationsQuery(bool IsActive);

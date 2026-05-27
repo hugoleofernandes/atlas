@@ -7,7 +7,6 @@ using Atlas.Identity.Application.Tenants.Commands.InviteUser;
 using Atlas.Identity.Application.Tenants.Queries.Dtos;
 using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 using Atlas.Identity.Domain.Permissions;
-using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,20 +24,16 @@ public sealed class InvitationController(
 ) : AtlasControllerBase(errorLocalizer, resultMapper)
 {
     /// <summary>
-    /// Lists all invitations for the authenticated user's tenant, paginated.
+    /// Lists invitations for the authenticated user's tenant, ordered by most recent first.
     /// </summary>
     [HttpGet]
     [HasPermission(PermissionCatalog.Tenant.InviteUser)]
-    [ProducesResponseType(typeof(PagedResult<InvitationDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IReadOnlyList<InvitationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 20,
+        [FromQuery] bool isActive = true,
         CancellationToken ct = default)
     {
-        page     = Math.Max(1, page);
-        pageSize = Math.Clamp(pageSize, 1, 100);
-
-        var query  = new ListInvitationsQuery(page, pageSize);
+        var query  = new ListInvitationsQuery(isActive);
         var result = await invoker.InvokeAsync(listInvitationsQueryHandler, query, ct);
 
         return OkFromResult(result);

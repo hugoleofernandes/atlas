@@ -7,7 +7,6 @@ using Atlas.Identity.Application.Tenants.Queries.Dtos;
 using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Permissions;
-using Atlas.SharedKernel.Application;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
@@ -22,33 +21,45 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
     private readonly IListInvitationsQueryHandler _listHandler = factory.ListInvitationsQueryHandler;
 
     [Fact]
-    public async Task List_AuthenticatedWithPermission_Returns200WithPagedInvitations()
+    public async Task List_AuthenticatedWithPermission_Returns200WithInvitations()
     {
         var invitationId = Guid.NewGuid();
         var roleId       = Guid.NewGuid();
+        var createdAt    = DateTime.UtcNow;
+        IReadOnlyList<InvitationDto> invitations =
+        [
+            new InvitationDto(
+                invitationId,
+                "new@acme.com",
+                roleId,
+                "Member",
+                DateTime.UtcNow.AddDays(7),
+                false,
+                true,
+                createdAt,
+                null,
+                null,
+                null,
+                null,
+                null)
+        ];
 
-        _listHandler.ExecuteAsync(Arg.Any<ListInvitationsQuery>(), Arg.Any<CancellationToken>())
-            .Returns(new PagedResult<InvitationDto>(
-            [
-                new InvitationDto(invitationId, "new@acme.com", roleId, "Member", DateTime.UtcNow.AddDays(7), false)
-            ],
-            2,
-            5,
-            13));
+        _listHandler.ExecuteAsync(
+                Arg.Is<ListInvitationsQuery>(query => query.IsActive),
+                Arg.Any<CancellationToken>())
+            .Returns(invitations);
 
         var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.InviteUser);
 
-        var response = await client.GetAsync("/tenants/invitations?page=2&pageSize=5");
+        var response = await client.GetAsync("/tenants/invitations?isActive=true");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await response.Content.ReadFromJsonAsync<PagedResult<InvitationDto>>();
+        var body = await response.Content.ReadFromJsonAsync<IReadOnlyList<InvitationDto>>();
         body.Should().NotBeNull();
-        body!.Page.Should().Be(2);
-        body.PageSize.Should().Be(5);
-        body.TotalCount.Should().Be(13);
-        body.Items.Should().ContainSingle();
-        body.Items.Single().InvitationId.Should().Be(invitationId);
+        body.Should().ContainSingle();
+        body!.Single().InvitationId.Should().Be(invitationId);
+        body.Single().IsActive.Should().BeTrue();
     }
 
     [Fact]

@@ -14,9 +14,9 @@ public sealed class ListInvitationsQueryHandler : IListInvitationsQueryHandler
         _context = context;
     }
 
-    public Task<PagedResult<InvitationDto>> ExecuteAsync(ListInvitationsQuery query, CancellationToken ct)
+    public Task<IReadOnlyList<InvitationDto>> ExecuteAsync(ListInvitationsQuery query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
-        return _reader.ListAsync(tenantId, query.Page, query.PageSize, ct);
+        return _reader.ListAsync(tenantId, query.IsActive, ct);
     }
 }
