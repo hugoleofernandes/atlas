@@ -9,6 +9,7 @@ using Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 using Atlas.Identity.Application.Tenants.Queries.Dtos;
 using Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 using Atlas.Identity.Application.Tenants.Queries.ListRoles;
+using Atlas.Identity.Application.Tenants.Queries.LookupRoles;
 using Atlas.Identity.Domain.Permissions;
 using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Authorization;
@@ -26,11 +27,26 @@ public sealed class RolesController(
     IRemoveRoleCommandHandler removeRoleHandler,
     IListRolesQueryHandler listRolesQueryHandler,
     IGetRoleByIdQueryHandler getRoleByIdQueryHandler,
+    ILookupRolesQueryHandler lookupRolesQueryHandler,
     IHandlerInvoker invoker,
     ErrorMessageLocalizer errorLocalizer,
     IHttpResultMapper resultMapper
 ) : AtlasControllerBase(errorLocalizer, resultMapper)
 {
+    /// <summary>
+    /// Returns a lightweight id+name list of active roles for populating dropdowns.
+    /// Requires InviteUser permission so invitation editors can use it without ManageRoles.
+    /// </summary>
+    [HttpGet("lookup")]
+    [HasPermission(PermissionCatalog.Tenant.InviteUser)]
+    [ProducesResponseType(typeof(IReadOnlyList<RoleLookupDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Lookup(CancellationToken ct)
+    {
+        var query  = new LookupRolesQuery();
+        var result = await invoker.InvokeAsync(lookupRolesQueryHandler, query, ct);
+        return OkFromResult(result);
+    }
+
     /// <summary>
     /// Lists all roles for the authenticated user's tenant, paginated.
     /// </summary>

@@ -5,10 +5,12 @@ using Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 using Atlas.Identity.Application.Tenants.Queries.GetRoleById;
 using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 using Atlas.Identity.Application.Tenants.Queries.ListRoles;
+using Atlas.Identity.Application.Tenants.Queries.LookupRoles;
 using Microsoft.Extensions.DependencyInjection;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.GetRoleById;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListInvitations;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListRoles;
+using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.LookupRoles;
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.SharedKernel.Application.Handlers;
 
@@ -27,11 +29,13 @@ public static class IdentityDependencyInjection
         services.AddScoped<IListInvitationsReader, ListInvitationsReader>();
         services.AddScoped<IListRolesReader, ListRolesReader>();
         services.AddScoped<IGetRoleByIdReader, GetRoleByIdReader>();
+        services.AddScoped<ILookupRolesReader, LookupRolesReader>();
 
         // Query Handlers
         services.AddScoped<IListInvitationsQueryHandler, ListInvitationsQueryHandler>();
         services.AddScoped<IListRolesQueryHandler,    ListRolesQueryHandler>();
         services.AddScoped<IGetRoleByIdQueryHandler,  GetRoleByIdQueryHandler>();
+        services.AddScoped<ILookupRolesQueryHandler,  LookupRolesQueryHandler>();
 
         // Command Handlers
         services.AddScoped<IRemoveRoleCommandHandler, RemoveRoleCommandHandler>();
