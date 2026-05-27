@@ -1,6 +1,6 @@
 using Atlas.Identity.Domain.Entities.Tenants;
-using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
-using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations.Exceptions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;

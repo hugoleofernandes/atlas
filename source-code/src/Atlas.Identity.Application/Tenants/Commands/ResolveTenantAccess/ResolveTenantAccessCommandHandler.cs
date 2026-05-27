@@ -1,7 +1,8 @@
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Tenants.Repositories;
+using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants.Users;
 using Atlas.Identity.Domain.Exceptions;
-using Atlas.Identity.Domain.ValueObjects;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Handlers;
 

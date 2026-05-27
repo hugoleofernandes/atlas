@@ -1,6 +1,6 @@
 using Atlas.Identity.Domain.Entities.Tenants;
-using Atlas.Identity.Domain.Permissions;
-using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations;
+using Atlas.Identity.Domain.Entities.Tenants.Roles;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 

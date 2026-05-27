@@ -1,4 +1,6 @@
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Users.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.SharedKernel.Application.Errors;
 

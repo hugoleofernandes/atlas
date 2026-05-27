@@ -130,6 +130,7 @@ try
     services.AddLocalization(opts => opts.ResourcesPath = "Resources");
     services.AddScoped<ErrorMessageLocalizer>();
     services.AddScoped<IErrorMessageLocalizer>(sp => sp.GetRequiredService<ErrorMessageLocalizer>());
+    services.AddScoped<PermissionLabelLocalizer>();
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
     //

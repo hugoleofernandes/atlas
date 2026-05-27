@@ -28,9 +28,20 @@ public sealed class PermissionAuthorizationHandler
             return Task.CompletedTask;
         }
 
-        var hasClaim = context.User.HasClaim(AtlasClaims.Permission, requirement.Permission);
-        if (hasClaim)
+        if (context.User.HasClaim(AtlasClaims.Permission, requirement.Permission))
+        {
             context.Succeed(requirement);
+            return Task.CompletedTask;
+        }
+
+        // A user with {prefix}.manage satisfies any {prefix}.{verb} check.
+        var lastDot = requirement.Permission.LastIndexOf('.');
+        if (lastDot > 0)
+        {
+            var managePermission = requirement.Permission[..lastDot] + ".manage";
+            if (context.User.HasClaim(AtlasClaims.Permission, managePermission))
+                context.Succeed(requirement);
+        }
 
         return Task.CompletedTask;
     }

@@ -11,9 +11,4 @@
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Factories\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

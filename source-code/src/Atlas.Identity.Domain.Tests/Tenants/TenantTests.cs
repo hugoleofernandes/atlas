@@ -1,10 +1,13 @@
 using Atlas.Identity.Domain.Entities.Tenants;
 using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
-using Atlas.Identity.Domain.Permissions;
-using Atlas.Identity.Domain.ValueObjects;
 using FluentAssertions;
-using Atlas.Identity.Domain.ValueObjects.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations;
+using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Roles.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Users.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Users;
 
 namespace Atlas.Identity.Tests.Tenants;
 
@@ -343,7 +346,7 @@ public class TenantTests
 
         var act = () => tenant.AddCustomRole("custom", ["unknown.permission"]);
 
-        act.Should().Throw<InvalidPermissionException>();
+        act.Should().Throw<RoleWithInvalidPermissionException>();
     }
 
     // ============================================================

@@ -1,5 +1,5 @@
 using Atlas.Identity.Domain.Entities.Tenants;
-using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Domain.Entities.Tenants.Users;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;
