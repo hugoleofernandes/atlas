@@ -1,5 +1,5 @@
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
-using Atlas.Identity.Domain.Entities.Tenants;
+using Atlas.Identity.Domain.Entities.Tenants.Roles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

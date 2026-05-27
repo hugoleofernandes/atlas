@@ -1,7 +1,12 @@
 using Atlas.Identity.Domain.Entities.Tenants.Events;
 using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
-using Atlas.Identity.Domain.Permissions;
-using Atlas.Identity.Domain.ValueObjects;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations;
+using Atlas.Identity.Domain.Entities.Tenants.Invitations.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Roles;
+using Atlas.Identity.Domain.Entities.Tenants.Roles.Exceptions;
+using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
+using Atlas.Identity.Domain.Entities.Tenants.Users;
+using Atlas.Identity.Domain.Entities.Tenants.Users.Exceptions;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Entities.Tenants;
