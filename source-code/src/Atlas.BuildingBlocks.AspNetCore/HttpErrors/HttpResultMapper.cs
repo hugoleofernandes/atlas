@@ -144,7 +144,7 @@ public sealed class HttpResultMapper : IHttpResultMapper
         var problem = new ApiProblemDetails
         {
             Title = _localizer.Localize(error),
-            Status = MapCategory(error.Category),
+            Status = error.Category.ToHttpStatus(),
             Detail = detail,
             Type = $"https://docs.atlas/errors/{error.Code}"
         };
@@ -166,16 +166,4 @@ public sealed class HttpResultMapper : IHttpResultMapper
         var context = _httpContextAccessor.HttpContext;
         return context is null ? null : CorrelationIdMiddleware.Get(context);
     }
-
-    private static int MapCategory(ErrorCategory category)
-        => category switch
-        {
-            ErrorCategory.Validation   => StatusCodes.Status400BadRequest,
-            ErrorCategory.Business     => StatusCodes.Status422UnprocessableEntity,
-            ErrorCategory.Conflict     => StatusCodes.Status409Conflict,
-            ErrorCategory.NotFound     => StatusCodes.Status404NotFound,
-            ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
-            ErrorCategory.Unexpected   => StatusCodes.Status500InternalServerError,
-            _                          => StatusCodes.Status500InternalServerError
-        };
 }

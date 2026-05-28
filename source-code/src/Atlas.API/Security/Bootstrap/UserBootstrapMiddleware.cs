@@ -3,11 +3,11 @@ using Atlas.SharedKernel.Application.Handlers;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Security;
-using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using Atlas.Identity.Application.Tenants.Handlers.Commands.ResolveTenantAccess;
 
 namespace Atlas.API.Security.Bootstrap;
 
@@ -38,7 +38,7 @@ public sealed class UserBootstrapMiddleware
         HttpContext context,
         IResolveTenantAccessCommandHandler resolveAccessHandler,
         IHandlerInvoker invoker,
-        ErrorMessageLocalizer errorLocalizer)
+        IErrorMessageLocalizer errorLocalizer)
     {
         //
         // ==========================================
@@ -186,7 +186,7 @@ public sealed class UserBootstrapMiddleware
     private static async Task WriteProblemAsync(
         HttpContext context,
         ErrorDefinition error,
-        ErrorMessageLocalizer localizer)
+        IErrorMessageLocalizer localizer)
     {
         var status = MapCategory(error.Category);
 

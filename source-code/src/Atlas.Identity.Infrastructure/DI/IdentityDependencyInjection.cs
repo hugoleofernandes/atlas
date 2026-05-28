@@ -1,23 +1,29 @@
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
-using Atlas.Identity.Application.Tenants.Commands.RemoveRole;
-using Atlas.Identity.Application.Tenants.Commands.UpdateRole;
-using Atlas.Identity.Application.Tenants.Queries.GetRoleById;
-using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
-using Atlas.Identity.Application.Tenants.Queries.ListRoles;
-using Atlas.Identity.Application.Tenants.Queries.ListPermissions;
-using Atlas.Identity.Application.Tenants.Queries.LookupRoles;
-using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
 using Atlas.Staff.Domain.Permissions;
 using Microsoft.Extensions.DependencyInjection;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.GetRoleById;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListInvitations;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListPermissions;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListRoles;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.LookupRoles;
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.Identity.Domain.Tenants.Roles.Permissions;
+using Atlas.Identity.Infrastructure.Domain.Tenants;
+using Atlas.Identity.Infrastructure.Domain.Tenants.Roles.Readers.GetRoleById;
+using Atlas.Identity.Infrastructure.Domain.Tenants.Roles.Readers.ListRoles;
+using Atlas.Identity.Infrastructure.Domain.Tenants.Roles.Readers.LookupRoles;
+using Atlas.Identity.Infrastructure.Domain.Tenants.Roles.Permissions.Readers.ListPermissions;
+using Atlas.Identity.Infrastructure.Domain.Invitations;
+using Atlas.Identity.Infrastructure.Domain.Invitations.Readers.ListInvitations;
+using Atlas.Identity.Infrastructure.Domain.Users;
+using Atlas.Identity.Application.Tenants;
+using Atlas.Identity.Application.Invitations;
+using Atlas.Identity.Application.Users;
+using Atlas.Identity.Application.Tenants.Roles.Handlers.Queries.GetRoleById;
+using Atlas.Identity.Application.Tenants.Roles.Handlers.Queries.ListRoles;
+using Atlas.Identity.Application.Tenants.Roles.Handlers.Queries.LookupRoles;
+using Atlas.Identity.Application.Tenants.Roles.Handlers.Commands.RemoveRole;
+using Atlas.Identity.Application.Tenants.Roles.Handlers.Commands.UpdateRole;
+using Atlas.Identity.Application.Tenants.Roles.Permissions.Handlers.Queries.ListPermissions;
+using Atlas.Identity.Application.Invitations.Handlers.Queries.ListInvitations;
 
 namespace Atlas.Identity.Infrastructure.DI;
 
@@ -26,6 +32,9 @@ public static class IdentityDependencyInjection
     public static IServiceCollection AddIdentityModuleDependencies(this IServiceCollection services)
     {
         services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IInvitationRepository, InvitationRepository>();
 
         // INVOKER
         services.AddScoped<IHandlerInvoker, HandlerInvoker>();

@@ -1,10 +1,10 @@
 using Atlas.BuildingBlocks.Infrastructure.Metrics;
-using Atlas.Identity.Application.Tenants.Commands.CreateRole;
-using Atlas.Identity.Application.Tenants.Commands.InviteUser;
-using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
+using Atlas.Identity.Application.Invitations.Handlers.Commands.InviteUser;
+using Atlas.Identity.Application.Tenants;
+using Atlas.Identity.Application.Tenants.Handlers.Commands.ResolveTenantAccess;
 using Atlas.Identity.Application.Tenants.MetricMappers;
-using Atlas.Identity.Application.Tenants.Repositories;
-using Atlas.Identity.Infrastructure.Entities.Tenants.Repositories;
+using Atlas.Identity.Application.Tenants.Roles.Handlers.Commands.CreateRole;
+using Atlas.Identity.Infrastructure.Domain.Tenants;
 using Atlas.SharedKernel.Application.Metrics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,8 +15,6 @@ public static class TenantDependencyInjection
 {
     public static IServiceCollection AddTenantDependencies(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<InvitationSettings>(configuration.GetSection("Invitations"));
-
         // COMMAND HANDLERS
         services.AddScoped<IResolveTenantAccessCommandHandler, ResolveTenantAccessCommandHandler>();
         services.AddScoped<IInviteUserCommandHandler, InviteUserCommandHandler>();

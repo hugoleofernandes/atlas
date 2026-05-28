@@ -1,5 +1,6 @@
 using Atlas.API.Configs;
 using Atlas.API.Errors;
+using FastEndpoints;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
@@ -40,6 +41,7 @@ using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
+using Atlas.SharedKernel.Application.Errors;
 
 //
 // ==========================================
@@ -181,6 +183,8 @@ try
     // ==========================================
     //
 
+    services.AddFastEndpoints();
+
     services.AddControllers().ConfigureApiBehaviorOptions(options =>
     {
         options.InvalidModelStateResponseFactory =
@@ -299,6 +303,7 @@ try
     app.UseMiddleware<UserBootstrapMiddleware>();
     app.UseAuthorization();
 
+    app.UseFastEndpoints();
     app.MapControllers();
 
     // Pre-load OIDC metadata for all tenants in background right after startup,

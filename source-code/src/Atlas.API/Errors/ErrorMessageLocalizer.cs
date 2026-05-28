@@ -1,5 +1,4 @@
 ﻿using Atlas.API.Resources;
-using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.SharedKernel.Application.Errors;
 using Microsoft.Extensions.Localization;
 

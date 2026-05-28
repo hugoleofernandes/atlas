@@ -1,4 +1,4 @@
-using Atlas.Identity.Domain.Entities.Tenants.Events;
+using Atlas.Identity.Domain.Users.Events;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.OutboxMessages;

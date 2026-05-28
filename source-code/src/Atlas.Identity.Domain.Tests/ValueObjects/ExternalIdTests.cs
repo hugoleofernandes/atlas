@@ -1,5 +1,5 @@
-using Atlas.Identity.Domain.Entities.Tenants.Users;
-using Atlas.Identity.Domain.Entities.Tenants.Users.Exceptions;
+using Atlas.Identity.Domain.Users;
+using Atlas.Identity.Domain.Users.Exceptions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.ValueObjects;

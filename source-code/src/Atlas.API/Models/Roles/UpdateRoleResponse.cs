@@ -1,5 +1,5 @@
-using Atlas.API.Models;
-using Atlas.Identity.Application.Tenants.Commands.UpdateRole;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.Identity.Application.Tenants.Roles.Handlers.Commands.UpdateRole;
 
 namespace Atlas.API.Models.Roles;
 

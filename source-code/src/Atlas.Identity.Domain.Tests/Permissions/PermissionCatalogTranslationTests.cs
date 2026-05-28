@@ -1,4 +1,4 @@
-using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
+using Atlas.Identity.Domain.Tenants.Roles.Permissions;
 using Atlas.Staff.Domain.Permissions;
 
 using FluentAssertions;
