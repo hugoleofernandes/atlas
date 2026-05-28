@@ -20,7 +20,7 @@ using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Outbox.Publisher.Identity.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
-using Atlas.Identity.Infrastructure.Persistence.Seed;
+using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.Staff.Application;
@@ -232,8 +232,7 @@ try
     // ==========================================
     //
 
-    services.AddScoped<ISeeder, GlobalIdentitySeeder>();
-    services.AddScoped<SeederPipeline>();
+    services.AddScoped<SeedOrchestrator>();
 
     //
     // ==========================================
@@ -253,13 +252,8 @@ try
     {
         using var scope = app.Services.CreateScope();
 
-        var identityDb = scope.ServiceProvider
-            .GetRequiredService<IdentityDbContext>();
-
-        var pipeline = scope.ServiceProvider
-            .GetRequiredService<SeederPipeline>();
-
-        await pipeline.RunAsync(identityDb, scope.ServiceProvider);
+        var orchestrator = scope.ServiceProvider.GetRequiredService<SeedOrchestrator>();
+        await orchestrator.RunAsync(scope.ServiceProvider);
 
         app.MapOpenApi();
         app.MapScalarApiReference();

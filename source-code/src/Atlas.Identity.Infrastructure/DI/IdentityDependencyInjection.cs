@@ -24,6 +24,8 @@ using Atlas.Identity.Application.Tenants.Roles.Handlers.Commands.RemoveRole;
 using Atlas.Identity.Application.Tenants.Roles.Handlers.Commands.UpdateRole;
 using Atlas.Identity.Application.Tenants.Roles.Permissions.Handlers.Queries.ListPermissions;
 using Atlas.Identity.Application.Invitations.Handlers.Queries.ListInvitations;
+using Atlas.BuildingBlocks.Application.Seeding;
+using Atlas.Identity.Infrastructure.Persistence.Seed;
 
 namespace Atlas.Identity.Infrastructure.DI;
 
@@ -31,6 +33,8 @@ public static class IdentityDependencyInjection
 {
     public static IServiceCollection AddIdentityModuleDependencies(this IServiceCollection services)
     {
+        services.AddScoped<IModuleSeeder, IdentityModuleSeeder>();
+
         services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
