@@ -1,4 +1,4 @@
-using Atlas.API.Configs;
+using Atlas.Identity.API.Configs;
 using Atlas.API.Errors;
 using FastEndpoints;
 using Atlas.BuildingBlocks.Observability;
@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Authorization;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
-using Atlas.Outbox.Publisher.Identity.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.SharedKernel.Application;
@@ -42,6 +41,11 @@ using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 using Atlas.SharedKernel.Application.Errors;
+using Atlas.Identity.API;
+using Atlas.Staff.API;
+using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.Outbox.Identity.Publisher.DI;
+
 
 //
 // ==========================================
@@ -132,6 +136,8 @@ try
     services.AddLocalization(opts => opts.ResourcesPath = "Resources");
     services.AddScoped<ErrorMessageLocalizer>();
     services.AddScoped<IErrorMessageLocalizer>(sp => sp.GetRequiredService<ErrorMessageLocalizer>());
+    services.AddScoped<IPermissionLabelProvider, IdentityPermissionLabelProvider>();
+    services.AddScoped<IPermissionLabelProvider, StaffPermissionLabelProvider>();
     services.AddScoped<PermissionLabelLocalizer>();
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
@@ -155,7 +161,6 @@ try
 
     // IDENTITY
     services.AddIdentityModuleDependencies();
-    services.AddTenantDependencies(builder.Configuration);
     services.AddIdentityOutboxPublisherMappings();
     //
 
@@ -183,7 +188,13 @@ try
     // ==========================================
     //
 
-    services.AddFastEndpoints();
+    services.AddFastEndpoints(o =>
+    {
+        o.Assemblies = [
+            typeof(IdentityApiAssemblyMarker).Assembly,
+            typeof(StaffApiAssemblyMarker).Assembly,
+        ];
+    });
 
     services.AddControllers().ConfigureApiBehaviorOptions(options =>
     {

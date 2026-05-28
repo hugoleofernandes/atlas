@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Atlas.Identity.Application.Tenants.Handlers.Commands.ResolveTenantAccess;
+using Atlas.Identity.Application.Aggregates.Tenants.Handlers.Commands.ResolveTenantAccess;
 
 namespace Atlas.API.Controllers.Dev;
 

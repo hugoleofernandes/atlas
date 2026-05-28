@@ -150,8 +150,8 @@ flowchart LR
 The `ErrorCode` is the contract between domain code and translation files. Adding a new error means:
 
 1. Add `public const string ErrorCode = "..."` to a new exception class
-2. Reference it in the relevant error catalog (`IdentityErrors`, `AuthErrors`, etc.)
-3. Add the key to `ErrorMessages.resx` (en) and `ErrorMessages.pt.resx` (pt)
+2. Reference it in the relevant domain error catalog (`TenantErrors`, `UserErrors`, `InvitationErrors`, `ClaimErrors`, `StaffErrors`, `SystemErrors`, etc.)
+3. Add the key to the matching `{Domain}Errors.resx` (en) and `{Domain}Errors.pt.resx` (pt)
 
 If a translation is missing, the fallback message (English, defined in the catalog) is returned — never an empty title.
 

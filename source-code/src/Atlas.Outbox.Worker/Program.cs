@@ -3,12 +3,13 @@ using Atlas.BuildingBlocks.Observability;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.Outbox.Infrastructure.DI;
-using Atlas.Outbox.Consumer.Identity.DI;
 using Atlas.Outbox.Worker.Hosting;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using Atlas.Outbox.Identity.Consumer.DI;
+
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Warning()

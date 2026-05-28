@@ -209,6 +209,19 @@ var cmd = new InviteUserCommand(req.Email, req.RoleId);
 
 ---
 
+## Regras de Git
+
+**Nunca se coloque como co-autor nos commits.** O autor do repositório é exclusivamente Hugo.
+
+```
+// ❌ Proibido — jamais incluir isso em mensagens de commit
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+```
+
+Ao criar commits, use apenas a mensagem descritiva — sem nenhuma linha `Co-Authored-By`.
+
+---
+
 ## Mapeamento ErrorCategory → HTTP Status
 
 A fonte única é `ErrorCategoryExtensions.ToHttpStatus()` em `Atlas.BuildingBlocks.AspNetCore.HttpErrors`.

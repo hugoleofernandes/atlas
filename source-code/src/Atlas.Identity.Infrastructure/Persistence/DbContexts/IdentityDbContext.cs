@@ -4,7 +4,7 @@ using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Tenants;
-using Atlas.Identity.Domain.Tenants.Roles;
+using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;

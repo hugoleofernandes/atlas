@@ -1,7 +1,7 @@
+using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Domain.Tenants.Events;
 using Atlas.Identity.Domain.Tenants.Exceptions;
-using Atlas.Identity.Domain.Tenants.Roles;
-using Atlas.Identity.Domain.Tenants.Roles.Exceptions;
+using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.SharedKernel.Domain;
 using Atlas.SharedKernel.Domain.Permissions;
 

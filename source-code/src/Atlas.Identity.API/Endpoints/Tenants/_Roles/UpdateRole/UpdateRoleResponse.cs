@@ -1,0 +1,13 @@
+using Atlas.Identity.Application.Aggregates.Tenants._Roles.Handlers.Commands.UpdateRole;
+
+namespace Atlas.Identity.API.Endpoints.Tenants._Roles.UpdateRole;
+
+public sealed record UpdateRoleResponse(
+    Guid                  RoleId,
+    string                Name,
+    IReadOnlyList<string> PermissionCodes
+)
+{
+    public static UpdateRoleResponse From(UpdateRoleOutput output)
+        => new(output.RoleId, output.Name, output.PermissionCodes);
+}

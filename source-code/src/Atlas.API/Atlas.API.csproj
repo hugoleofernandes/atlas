@@ -30,13 +30,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.API\Atlas.Identity.API.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Publisher.Identity\Atlas.Outbox.Publisher.Identity.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Identity.Publisher\Atlas.Outbox.Identity.Publisher.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.API\Atlas.Staff.API.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
   </ItemGroup>

@@ -22,8 +22,8 @@
     <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
     <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Identity.Consumer\Atlas.Outbox.Identity.Consumer.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Consumer.Identity\Atlas.Outbox.Consumer.Identity.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />

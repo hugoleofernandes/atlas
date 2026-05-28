@@ -1,4 +1,3 @@
-using Atlas.API.Errors;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
@@ -7,7 +6,8 @@ using Atlas.SharedKernel.Application.Errors;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using Atlas.Identity.Application.Tenants.Handlers.Commands.ResolveTenantAccess;
+using Atlas.Identity.API.Endpoints.Auth;
+using Atlas.Identity.Application.Aggregates.Tenants.Handlers.Commands.ResolveTenantAccess;
 
 namespace Atlas.API.Security.Bootstrap;
 

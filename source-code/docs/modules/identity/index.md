@@ -93,7 +93,7 @@ Emitted by Tenant during lifecycle operations:
 | `ResolveTenantAccess.Command/Handler/Validator` | Looks up the tenant, calls `tenant.ResolveAccess(...)` |
 | `ITenantRepository` | Loads Tenant with Users + Invitations eagerly |
 | `IIdentityUnitOfWork` | Commits the EF Core transaction *and* enqueues outbox messages atomically |
-| `IdentityErrors` | Error catalog — codes reference `Exception.ErrorCode` constants |
+| `TenantErrors` / `UserErrors` / `InvitationErrors` / `ClaimErrors` | Domain-scoped error catalogs — codes reference `Exception.ErrorCode` constants |
 
 ---
 

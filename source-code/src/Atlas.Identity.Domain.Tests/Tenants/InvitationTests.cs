@@ -3,11 +3,9 @@ using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants;
-using Atlas.Identity.Domain.Tenants.Roles.Exceptions;
-using Atlas.Identity.Domain.Tenants.Roles.Permissions;
-using Atlas.Identity.Domain.Tenants.Exceptions;
 using Atlas.Staff.Domain.Permissions;
 using FluentAssertions;
+using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
@@ -15,16 +13,16 @@ public class InvitationTests
 {
     private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
     {
-        IdentityPermissions.Tenant.Roles.Read,
-        IdentityPermissions.Tenant.Roles.Create,
-        IdentityPermissions.Tenant.Roles.Update,
-        IdentityPermissions.Tenant.Roles.Delete,
-        IdentityPermissions.Tenant.Roles.Manage,
-        IdentityPermissions.Tenant.Invitations.Read,
-        IdentityPermissions.Tenant.Invitations.Create,
-        IdentityPermissions.Tenant.Invitations.Update,
-        IdentityPermissions.Tenant.Invitations.Delete,
-        IdentityPermissions.Tenant.Invitations.Manage,
+        IdentityModulePermissions.Tenant.Roles.Read,
+        IdentityModulePermissions.Tenant.Roles.Create,
+        IdentityModulePermissions.Tenant.Roles.Update,
+        IdentityModulePermissions.Tenant.Roles.Delete,
+        IdentityModulePermissions.Tenant.Roles.Manage,
+        IdentityModulePermissions.Tenant.Invitations.Read,
+        IdentityModulePermissions.Tenant.Invitations.Create,
+        IdentityModulePermissions.Tenant.Invitations.Update,
+        IdentityModulePermissions.Tenant.Invitations.Delete,
+        IdentityModulePermissions.Tenant.Invitations.Manage,
         StaffPermissions.Read,
         StaffPermissions.Create,
         StaffPermissions.Update,
