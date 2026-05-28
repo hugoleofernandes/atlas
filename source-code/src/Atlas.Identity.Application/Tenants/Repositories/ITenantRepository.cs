@@ -5,16 +5,29 @@ namespace Atlas.Identity.Application.Tenants.Repositories;
 public interface ITenantRepository
 {
     /// <summary>
-    /// Loads tenant + Roles + Permissions only.
-    /// Use for role management commands (Create, Update) that don't touch users or invitations.
+    /// Loads tenant + Roles + Permissions by primary key.
+    /// Use for role management commands (CreateRole, UpdateRole) that don't touch users or invitations.
     /// </summary>
-    Task<Tenant?> GetByNameWithRolesAsync(string name, CancellationToken ct);
+    Task<Tenant?> GetByIdWithRolesAsync(Guid id, CancellationToken ct);
 
     /// <summary>
-    /// Loads tenant + Roles + Permissions + Users + Invitations (non-used only).
-    /// Invitations with IsUsed = true are excluded — they are already represented by their
-    /// corresponding User in the Users collection, so domain invariants remain intact.
-    /// Use when domain operations access all three collections (RemoveRole, InviteUser, ResolveAccess).
+    /// Loads tenant + Roles (no Permissions) + Users + active Invitations by primary key.
+    /// Active = not used AND not expired (i.ExpiresAt > UtcNow).
+    /// Use for InviteUser: only needs to detect duplicate active invitations and verify the role exists.
+    /// </summary>
+    Task<Tenant?> GetByIdWithUsersActiveInvitationsAndRolesAsync(Guid id, CancellationToken ct);
+
+    /// <summary>
+    /// Loads tenant + Roles (no Permissions) + Users + ALL Invitations by primary key.
+    /// No invitation filter — RemoveRole needs the full history to decide between
+    /// hard-delete (no references ever) and soft-delete (historical references exist).
+    /// </summary>
+    Task<Tenant?> GetByIdWithUsersAllInvitationsAndRolesAsync(Guid id, CancellationToken ct);
+
+    /// <summary>
+    /// Loads tenant + Roles + Permissions + Users + Invitations by name.
+    /// Used exclusively by ResolveTenantAccess, which runs during OIDC login before the
+    /// tenant context is established — the tenant name comes from the token, not from session.
     /// </summary>
     Task<Tenant?> GetByNameWithUsersInvitationsAndRolesAsync(string name, CancellationToken ct);
 }

@@ -4,6 +4,7 @@ using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Handlers;
+using Atlas.SharedKernel.Domain.Permissions;
 
 namespace Atlas.Identity.Application.Tenants.Commands.CreateRole;
 
@@ -11,6 +12,7 @@ public sealed class CreateRoleCommandHandler : ICreateRoleCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
+    private readonly IPermissionPolicy _permissionPolicy;
     private readonly IIdentityUnitOfWork _uow;
 
     public IUnitOfWork UnitOfWork => _uow;
@@ -18,23 +20,25 @@ public sealed class CreateRoleCommandHandler : ICreateRoleCommandHandler
     public CreateRoleCommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
+        IPermissionPolicy permissionPolicy,
         IIdentityUnitOfWork uow)
     {
         _tenantRepository = tenantRepository;
         _requestContext = requestContext;
+        _permissionPolicy = permissionPolicy;
         _uow = uow;
     }
 
     public async Task<CreateRoleOutput> ExecuteAsync(CreateRoleCommand cmd, CancellationToken ct)
     {
-        var tenantName = _requestContext.TenantName
+        var tenantId = _requestContext.TenantId
             ?? throw new TenantContextNotResolvedException();
 
         var tenant = await _tenantRepository
-            .GetByNameWithRolesAsync(tenantName, ct)
-            ?? throw new TenantNotFoundException(tenantName);
+            .GetByIdWithRolesAsync(tenantId, ct)
+            ?? throw new TenantNotFoundException(_requestContext.TenantName ?? tenantId.ToString());
 
-        var role = tenant.AddCustomRole(cmd.Name, cmd.PermissionCodes);
+        var role = tenant.AddRole(cmd.Name, cmd.PermissionCodes, _permissionPolicy.All);
 
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 

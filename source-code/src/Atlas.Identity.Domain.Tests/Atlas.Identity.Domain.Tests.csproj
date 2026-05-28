@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Domain\Atlas.Staff.Domain.csproj" />
   </ItemGroup>
 
 </Project>

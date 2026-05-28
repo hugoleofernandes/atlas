@@ -40,12 +40,37 @@ public async Task<IActionResult> Remove(...) { }
 // use Manage para dar tudo — o handler resolve para todos os verbos
 ```
 
+### Arquitetura modular de permissões
+
+Cada módulo define suas próprias permissões — Identity não conhece as constantes de Staff.
+
+| Módulo | Catálogo | Registro |
+|---|---|---|
+| Identity | `PermissionCatalog` (tenant.*) | `IdentityModulePermissions` |
+| Staff | `StaffPermissionCatalog` (staff.*) | `StaffModulePermissions` |
+
+O `IPermissionPolicy` (singleton em DI) agrega todos os `IModulePermissions` registrados.  
+O `PermissionPolicyService` faz a agregação em `IdentityDependencyInjection`.
+
 ### Ao adicionar um recurso novo
 
-1. Crie as constantes no `PermissionCatalog` (`read`, `create`, `update`, `delete`, `manage`)
-2. Adicione as traduções em `PermissionLabels.resx` (EN) e `PermissionLabels.pt.resx` (PT)
-3. Os `PermissionCatalogTranslationTests` vão garantir que nenhuma tradução ficou faltando
-4. Decore os endpoints com os verbos corretos
+**Recurso dentro de um módulo existente:**
+1. Crie as constantes no catálogo do módulo (`{ModulePermissionCatalog}`)
+2. Atualize o `{Module}ModulePermissions` (adicione ao `Permissions` set e ao `Groups` list)
+3. Adicione as traduções em `PermissionLabels.resx` (EN) e `PermissionLabels.pt.resx` (PT)
+4. Os `PermissionCatalogTranslationTests` vão garantir que nenhuma tradução ficou faltando
+5. Decore os endpoints com os verbos corretos
+
+**Novo módulo:**
+1. Crie `{Module}PermissionCatalog.cs` em `Atlas.{Module}.Domain/Permissions/`
+2. Crie `{Module}ModulePermissions.cs` implementando `IModulePermissions`
+3. Registre em `IdentityDependencyInjection`: `services.AddSingleton<IModulePermissions, {Module}ModulePermissions>()`
+4. Siga os passos acima para os recursos do módulo
+
+### Métodos de domínio que validam permissões
+
+`Tenant.AddCustomRole` e `Tenant.UpdateRole` recebem `IReadOnlySet<string> validCodes` como parâmetro.  
+Os command handlers injetam `IPermissionPolicy` e passam `_permissionPolicy.All`.
 
 ---
 

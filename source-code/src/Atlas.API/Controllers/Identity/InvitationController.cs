@@ -27,7 +27,7 @@ public sealed class InvitationController(
     /// Lists invitations for the authenticated user's tenant, ordered by most recent first.
     /// </summary>
     [HttpGet]
-    [HasPermission(PermissionCatalog.Tenant.Invitations.Read)]
+    [HasPermission(IdentityPermissions.Tenant.Invitations.Read)]
     [ProducesResponseType(typeof(IReadOnlyList<InvitationDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromQuery] bool isActive = true,
@@ -44,7 +44,7 @@ public sealed class InvitationController(
     /// The tenant is resolved from the session cookie — not from the URL.
     /// </summary>
     [HttpPost]
-    [HasPermission(PermissionCatalog.Tenant.Invitations.Create)]
+    [HasPermission(IdentityPermissions.Tenant.Invitations.Create)]
     [ProducesResponseType(typeof(InviteUserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]

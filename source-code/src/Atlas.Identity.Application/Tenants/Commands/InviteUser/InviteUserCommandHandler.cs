@@ -5,7 +5,6 @@ using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Entities.Tenants.Invitations;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.Extensions.Options;
 
 namespace Atlas.Identity.Application.Tenants.Commands.InviteUser;
@@ -33,12 +32,12 @@ public sealed class InviteUserCommandHandler : IInviteUserCommandHandler
 
     public async Task<InviteUserOutput> ExecuteAsync(InviteUserCommand cmd, CancellationToken ct)
     {
-        var tenantName = _requestContext.TenantName
+        var tenantId = _requestContext.TenantId
             ?? throw new TenantContextNotResolvedException();
 
         var tenant = await _tenantRepository
-            .GetByNameWithUsersInvitationsAndRolesAsync(tenantName, ct)
-            ?? throw new TenantNotFoundException(tenantName);
+            .GetByIdWithUsersActiveInvitationsAndRolesAsync(tenantId, ct)
+            ?? throw new TenantNotFoundException(_requestContext.TenantName ?? tenantId.ToString());
 
         var invitation = tenant.InviteUser(
             Email.Create(cmd.Email),

@@ -4,6 +4,7 @@ using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
 using Atlas.Identity.Domain.Exceptions;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Handlers;
+using Atlas.SharedKernel.Domain.Permissions;
 
 namespace Atlas.Identity.Application.Tenants.Commands.UpdateRole;
 
@@ -11,6 +12,7 @@ public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
 {
     private readonly ITenantRepository _tenantRepository;
     private readonly IRequestContext _requestContext;
+    private readonly IPermissionPolicy _permissionPolicy;
     private readonly IIdentityUnitOfWork _uow;
 
     public IUnitOfWork UnitOfWork => _uow;
@@ -18,23 +20,25 @@ public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
     public UpdateRoleCommandHandler(
         ITenantRepository tenantRepository,
         IRequestContext requestContext,
+        IPermissionPolicy permissionPolicy,
         IIdentityUnitOfWork uow)
     {
         _tenantRepository = tenantRepository;
         _requestContext = requestContext;
+        _permissionPolicy = permissionPolicy;
         _uow = uow;
     }
 
     public async Task<UpdateRoleOutput> ExecuteAsync(UpdateRoleCommand cmd, CancellationToken ct)
     {
-        var tenantName = _requestContext.TenantName
+        var tenantId = _requestContext.TenantId
             ?? throw new TenantContextNotResolvedException();
 
         var tenant = await _tenantRepository
-            .GetByNameWithRolesAsync(tenantName, ct)
-            ?? throw new TenantNotFoundException(tenantName);
+            .GetByIdWithRolesAsync(tenantId, ct)
+            ?? throw new TenantNotFoundException(_requestContext.TenantName ?? tenantId.ToString());
 
-        tenant.UpdateRole(cmd.RoleId, cmd.Name, cmd.PermissionCodes);
+        tenant.UpdateRole(cmd.RoleId, cmd.Name, cmd.PermissionCodes, _permissionPolicy.All);
 
         var role = tenant.Roles.Single(r => r.Id == cmd.RoleId);
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();

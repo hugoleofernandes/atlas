@@ -8,6 +8,7 @@ using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
 using Atlas.Identity.Domain.Entities.Tenants.Users;
 using Atlas.Identity.Domain.Entities.Tenants.Users.Exceptions;
 using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Domain.Permissions;
 
 namespace Atlas.Identity.Domain.Entities.Tenants;
 
@@ -87,18 +88,21 @@ public sealed class Tenant : AggregateRoot
     /// Seeds the default system roles for this tenant.
     /// Called once when a tenant is first created.
     /// System roles cannot be modified or deleted.
+    ///
+    /// Parameters:
+    /// - allCodes: all assignable codes across all modules (from IPermissionPolicy.All)
+    /// - allIncludingSystemCodes: same plus system.root (from IPermissionPolicy.AllIncludingSystem)
+    /// - memberPermissions: permission codes to assign to the default "member" role;
+    ///   provided by the caller (seeder) so Identity domain does not need to know about other modules.
     /// </summary>
-    public void SeedDefaultRoles()
+    public void SeedDefaultRoles(
+        IReadOnlySet<string> allCodes,
+        IReadOnlySet<string> allIncludingSystemCodes,
+        IEnumerable<string> memberPermissions)
     {
-        var root = Role.Create(Id, "root", PermissionCatalog.AllIncludingSystem, isSystem: true, id: SystemRoleIds.Root);
-        var admin = Role.Create(Id, "admin", PermissionCatalog.All, isSystem: true, id: SystemRoleIds.Admin);
-        var member = Role.Create(Id, "member",
-        [
-            PermissionCatalog.Staff.Read,
-            PermissionCatalog.Staff.Create,
-            PermissionCatalog.Staff.Update,
-            PermissionCatalog.Staff.Deactivate,
-        ], isSystem: true, id: SystemRoleIds.Member);
+        var root   = Role.Create(Id, "root",   allIncludingSystemCodes, allIncludingSystemCodes, isSystem: true, id: SystemRoleIds.Root);
+        var admin  = Role.Create(Id, "admin",  allCodes,                allCodes,                isSystem: true, id: SystemRoleIds.Admin);
+        var member = Role.Create(Id, "member", memberPermissions,       allCodes,                isSystem: true, id: SystemRoleIds.Member);
 
         _roles.Add(root);
         _roles.Add(admin);
@@ -111,18 +115,18 @@ public sealed class Tenant : AggregateRoot
     /// Invariants:
     /// - Tenant must be active.
     /// - Role name must be unique within this tenant.
-    /// - All permission codes must exist in PermissionCatalog.All.
+    /// - All permission codes must exist in the provided validCodes set (from IPermissionPolicy.All).
     ///
     /// Emits: TenantRoleCreatedDomainEvent
     /// </summary>
-    public Role AddCustomRole(string name, IEnumerable<string> permissionCodes)
+    public Role AddRole(string name, IEnumerable<string> permissionCodes, IReadOnlySet<string> validCodes)
     {
         EnsureActive();
 
         if (_roles.Any(r => r.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             throw new RoleAlreadyExistsException(name);
 
-        var role = Role.Create(Id, name, permissionCodes);
+        var role = Role.Create(Id, name, permissionCodes, validCodes);
         _roles.Add(role);
         AddDomainEvent(new RoleCreatedDomainEvent(Id, role.Id));
         return role;
@@ -182,11 +186,11 @@ public sealed class Tenant : AggregateRoot
     /// - Role must exist.
     /// - Role must not be a system role.
     /// - New name must be unique within the tenant (active and inactive roles included).
-    /// - All permission codes must exist in PermissionCatalog.All.
+    /// - All permission codes must exist in the provided validCodes set (from IPermissionPolicy.All).
     ///
     /// Emits: RoleUpdatedDomainEvent
     /// </summary>
-    public void UpdateRole(Guid roleId, string name, IEnumerable<string> permissionCodes)
+    public void UpdateRole(Guid roleId, string name, IEnumerable<string> permissionCodes, IReadOnlySet<string> validCodes)
     {
         EnsureActive();
 
@@ -200,7 +204,7 @@ public sealed class Tenant : AggregateRoot
             throw new RoleAlreadyExistsException(name);
 
         role.Rename(name);
-        role.UpdatePermissions(permissionCodes);
+        role.UpdatePermissions(permissionCodes, validCodes);
         AddDomainEvent(new RoleUpdatedDomainEvent(Id, roleId));
     }
 
