@@ -51,7 +51,7 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
                 Arg.Any<CancellationToken>())
             .Returns(invitations);
 
-        var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.Invitations.Read);
+        var client = factory.CreateAuthenticatedClient(IdentityPermissions.Tenant.Invitations.Read);
 
         var response = await client.GetAsync("/tenants/invitations?isActive=true");
 
@@ -97,7 +97,7 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
         _handler.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
             .Returns(new InviteUserOutput(invitationId, "new@acme.com", roleId, "Member", expiresAt));
 
-        var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.Invitations.Create);
+        var client = factory.CreateAuthenticatedClient(IdentityPermissions.Tenant.Invitations.Create);
 
         var response = await client.PostAsJsonAsync("/tenants/invitations", new
         {
@@ -149,7 +149,7 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
     [Fact]
     public async Task Invite_WithNonGuidRoleId_Returns400()
     {
-        var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.Invitations.Create);
+        var client = factory.CreateAuthenticatedClient(IdentityPermissions.Tenant.Invitations.Create);
 
         // "not-a-guid" cannot be deserialized to Guid — model binding rejects it
         var response = await client.PostAsJsonAsync("/tenants/invitations", new
@@ -167,7 +167,7 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
         _handler.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new DuplicateInvitationException("existing@acme.com"));
 
-        var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.Invitations.Create);
+        var client = factory.CreateAuthenticatedClient(IdentityPermissions.Tenant.Invitations.Create);
 
         var response = await client.PostAsJsonAsync("/tenants/invitations", new
         {
@@ -184,7 +184,7 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
         _handler.ExecuteAsync(Arg.Any<InviteUserCommand>(), Arg.Any<CancellationToken>())
             .ThrowsAsync(new RoleNotFoundException(Guid.NewGuid()));
 
-        var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.Invitations.Create);
+        var client = factory.CreateAuthenticatedClient(IdentityPermissions.Tenant.Invitations.Create);
 
         var response = await client.PostAsJsonAsync("/tenants/invitations", new
         {
@@ -205,7 +205,7 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
                 Guid.NewGuid(), "new@acme.com", Guid.NewGuid(), "Member", DateTime.UtcNow.AddDays(7)));
 
         // The client carries AtlasApiFactory.TestTenantName in its claims
-        var client = factory.CreateAuthenticatedClient(PermissionCatalog.Tenant.Invitations.Create);
+        var client = factory.CreateAuthenticatedClient(IdentityPermissions.Tenant.Invitations.Create);
 
         await client.PostAsJsonAsync("/tenants/invitations", new
         {

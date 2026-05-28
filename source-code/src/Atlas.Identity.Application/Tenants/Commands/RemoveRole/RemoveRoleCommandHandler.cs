@@ -28,12 +28,12 @@ public sealed class RemoveRoleCommandHandler : IRemoveRoleCommandHandler
 
     public async Task<RemoveRoleOutput> ExecuteAsync(RemoveRoleCommand cmd, CancellationToken ct)
     {
-        var tenantName = _requestContext.TenantName
+        var tenantId = _requestContext.TenantId
             ?? throw new TenantContextNotResolvedException();
 
         var tenant = await _tenantRepository
-            .GetByNameWithUsersInvitationsAndRolesAsync(tenantName, ct)
-            ?? throw new TenantNotFoundException(tenantName);
+            .GetByIdWithUsersAllInvitationsAndRolesAsync(tenantId, ct)
+            ?? throw new TenantNotFoundException(_requestContext.TenantName ?? tenantId.ToString());
 
         tenant.RemoveRole(cmd.RoleId);
 

@@ -1,11 +1,13 @@
 using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
+using Atlas.Staff.Domain.Permissions;
+
 using FluentAssertions;
 using System.Xml.Linq;
 
 namespace Atlas.Identity.Tests.Permissions;
 
 /// <summary>
-/// Contract test: every permission code in PermissionCatalog.All must have
+/// Contract test: every permission code registered across all modules must have
 /// a non-empty label in both the English and Portuguese PermissionLabels.resx files.
 ///
 /// Why: the compiler guarantees the code exists, but cannot guarantee the translation.
@@ -15,11 +17,20 @@ public sealed class PermissionCatalogTranslationTests
 {
     private static readonly string ResxDirectory = FindResxDirectory();
 
+    /// <summary>
+    /// The full permission policy built from all registered modules — same as runtime.
+    /// </summary>
+    private static readonly PermissionPolicyService Policy = new(
+    [
+        new IdentityPermissions(),
+        new StaffPermissions(),
+    ]);
+
     [Fact]
     public void AllPermissions_ShouldHaveLabel_InEnglishResx()
     {
         var labels = LoadLabels("PermissionLabels.resx");
-        var missing = PermissionCatalog.All
+        var missing = Policy.All
             .Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
             .ToList();
 
@@ -31,7 +42,7 @@ public sealed class PermissionCatalogTranslationTests
     public void AllPermissions_ShouldHaveLabel_InPortugueseResx()
     {
         var labels = LoadLabels("PermissionLabels.pt.resx");
-        var missing = PermissionCatalog.All
+        var missing = Policy.All
             .Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
             .ToList();
 
@@ -44,11 +55,11 @@ public sealed class PermissionCatalogTranslationTests
     {
         var labels = LoadLabels("PermissionLabels.resx");
         var orphaned = labels.Keys
-            .Where(key => !PermissionCatalog.All.Contains(key))
+            .Where(key => !Policy.All.Contains(key))
             .ToList();
 
         orphaned.Should().BeEmpty(
-            because: $"PermissionLabels.resx contains keys not in PermissionCatalog (dead translations): {string.Join(", ", orphaned)}");
+            because: $"PermissionLabels.resx contains keys not in any module catalog (dead translations): {string.Join(", ", orphaned)}");
     }
 
     [Fact]
@@ -56,11 +67,11 @@ public sealed class PermissionCatalogTranslationTests
     {
         var labels = LoadLabels("PermissionLabels.pt.resx");
         var orphaned = labels.Keys
-            .Where(key => !PermissionCatalog.All.Contains(key))
+            .Where(key => !Policy.All.Contains(key))
             .ToList();
 
         orphaned.Should().BeEmpty(
-            because: $"PermissionLabels.pt.resx contains keys not in PermissionCatalog (dead translations): {string.Join(", ", orphaned)}");
+            because: $"PermissionLabels.pt.resx contains keys not in any module catalog (dead translations): {string.Join(", ", orphaned)}");
     }
 
     // -------------------------------------------------------

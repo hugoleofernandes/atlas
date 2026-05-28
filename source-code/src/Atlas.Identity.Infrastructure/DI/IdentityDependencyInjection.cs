@@ -7,6 +7,8 @@ using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
 using Atlas.Identity.Application.Tenants.Queries.ListRoles;
 using Atlas.Identity.Application.Tenants.Queries.ListPermissions;
 using Atlas.Identity.Application.Tenants.Queries.LookupRoles;
+using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
+using Atlas.Staff.Domain.Permissions;
 using Microsoft.Extensions.DependencyInjection;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.GetRoleById;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListInvitations;
@@ -15,6 +17,7 @@ using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.ListRoles;
 using Atlas.Identity.Infrastructure.Entities.Tenants.Readers.LookupRoles;
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.SharedKernel.Application.Handlers;
+using Atlas.SharedKernel.Domain.Permissions;
 
 namespace Atlas.Identity.Infrastructure.DI;
 
@@ -26,6 +29,14 @@ public static class IdentityDependencyInjection
 
         // INVOKER
         services.AddScoped<IHandlerInvoker, HandlerInvoker>();
+
+        // PERMISSION POLICY
+        // Each module registers its IModulePermissions; PermissionPolicyService aggregates them.
+        services.AddSingleton<IModulePermissions, IdentityPermissions>();
+        services.AddSingleton<IModulePermissions, StaffPermissions>();
+        services.AddSingleton<IPermissionPolicy>(sp =>
+            new PermissionPolicyService(sp.GetServices<IModulePermissions>()));
+
 
         // Readers (Infrastructure — EF puro)
         services.AddScoped<IListInvitationsReader, ListInvitationsReader>();

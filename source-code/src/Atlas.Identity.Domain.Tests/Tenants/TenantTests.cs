@@ -8,23 +8,65 @@ using Atlas.Identity.Domain.Entities.Tenants.Invitations.Exceptions;
 using Atlas.Identity.Domain.Entities.Tenants.Roles.Exceptions;
 using Atlas.Identity.Domain.Entities.Tenants.Users.Exceptions;
 using Atlas.Identity.Domain.Entities.Tenants.Users;
+using Atlas.Staff.Domain.Permissions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
 public class TenantTests
 {
     // ============================================================
+    // SHARED PERMISSION SETS (test fixtures)
+    // ============================================================
+
+    /// <summary>
+    /// Full set of assignable codes across all modules — mirrors what IPermissionPolicy.All returns at runtime.
+    /// </summary>
+    private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
+    {
+        IdentityPermissions.Tenant.Roles.Read,
+        IdentityPermissions.Tenant.Roles.Create,
+        IdentityPermissions.Tenant.Roles.Update,
+        IdentityPermissions.Tenant.Roles.Delete,
+        IdentityPermissions.Tenant.Roles.Manage,
+
+        IdentityPermissions.Tenant.Invitations.Read,
+        IdentityPermissions.Tenant.Invitations.Create,
+        IdentityPermissions.Tenant.Invitations.Update,
+        IdentityPermissions.Tenant.Invitations.Delete,
+        IdentityPermissions.Tenant.Invitations.Manage,
+
+        StaffPermissions.Read,
+        StaffPermissions.Create,
+        StaffPermissions.Update,
+        StaffPermissions.Deactivate,
+        StaffPermissions.Manage,
+    };
+
+    private static readonly IReadOnlySet<string> AllIncludingSystemCodes = new HashSet<string>(AllCodes)
+    {
+        SystemPermissions.Root,
+    };
+
+    private static readonly IEnumerable<string> DefaultMemberPermissions =
+    [
+        StaffPermissions.Read,
+        StaffPermissions.Create,
+        StaffPermissions.Update,
+        StaffPermissions.Deactivate,
+    ];
+
+    // ============================================================
     // HELPERS
     // ============================================================
 
     /// <summary>
     /// Creates a tenant with default system roles seeded.
-    /// Returns the tenant and the Id of the "admin" role.
+    /// Returns the tenant and the Ids of the "admin" and "member" roles.
     /// </summary>
     private static (Tenant tenant, Guid adminRoleId, Guid memberRoleId) CreateTenantWithRoles(string name = "test")
     {
         var tenant = new Tenant(name);
-        tenant.SeedDefaultRoles();
+        tenant.SeedDefaultRoles(AllCodes, AllIncludingSystemCodes, DefaultMemberPermissions);
         tenant.ClearDomainEvents();
         var adminRoleId = tenant.Roles.Single(r => r.Name == "admin").Id;
         var memberRoleId = tenant.Roles.Single(r => r.Name == "member").Id;
@@ -71,7 +113,7 @@ public class TenantTests
     {
         var tenant = new Tenant("test");
 
-        tenant.SeedDefaultRoles();
+        tenant.SeedDefaultRoles(AllCodes, AllIncludingSystemCodes, DefaultMemberPermissions);
 
         tenant.Roles.Should().HaveCount(3);
         tenant.Roles.Should().Contain(r => r.Name == "root"   && r.IsSystem);
@@ -84,11 +126,11 @@ public class TenantTests
     {
         var tenant = new Tenant("test");
 
-        tenant.SeedDefaultRoles();
+        tenant.SeedDefaultRoles(AllCodes, AllIncludingSystemCodes, DefaultMemberPermissions);
 
         var admin = tenant.Roles.Single(r => r.Name == "admin");
         admin.Permissions.Select(p => p.Code).Should()
-            .BeEquivalentTo(PermissionCatalog.All);
+            .BeEquivalentTo(AllCodes);
     }
 
     // ============================================================
@@ -266,11 +308,11 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var role = tenant.AddCustomRole("supervisor", [PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+        var role = tenant.AddRole("supervisor", [StaffPermissions.Read, StaffPermissions.Update], AllCodes);
 
         tenant.Roles.Should().Contain(r => r.Name == "supervisor");
         role.IsSystem.Should().BeFalse();
-        role.Permissions.Select(p => p.Code).Should().Contain([PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+        role.Permissions.Select(p => p.Code).Should().Contain([StaffPermissions.Read, StaffPermissions.Update]);
     }
 
     [Fact]
@@ -278,7 +320,7 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
 
         role.IsActive.Should().BeTrue();
     }
@@ -288,7 +330,7 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
 
         tenant.DomainEvents.Should().ContainSingle()
             .Which.Should().BeOfType<RoleCreatedDomainEvent>();
@@ -304,7 +346,7 @@ public class TenantTests
         var (tenant, _, _) = CreateTenantWithRoles();
         tenant.Deactivate();
 
-        var act = () => tenant.AddCustomRole("support", []);
+        var act = () => tenant.AddRole("support", [], AllCodes);
 
         act.Should().Throw<TenantInactiveException>();
     }
@@ -314,7 +356,7 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.AddCustomRole("admin", [PermissionCatalog.Staff.Read]);
+        var act = () => tenant.AddRole("admin", [StaffPermissions.Read], AllCodes);
 
         act.Should().Throw<RoleAlreadyExistsException>();
     }
@@ -324,7 +366,7 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.AddCustomRole("ab", []);
+        var act = () => tenant.AddRole("ab", [], AllCodes);
 
         act.Should().Throw<InvalidRoleNameException>();
     }
@@ -334,7 +376,7 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.AddCustomRole("toolongname", []);
+        var act = () => tenant.AddRole("toolongname", [], AllCodes);
 
         act.Should().Throw<InvalidRoleNameException>();
     }
@@ -344,7 +386,7 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.AddCustomRole("custom", ["unknown.permission"]);
+        var act = () => tenant.AddRole("custom", ["unknown.permission"], AllCodes);
 
         act.Should().Throw<RoleWithInvalidPermissionException>();
     }
@@ -357,7 +399,7 @@ public class TenantTests
     public void RemoveRole_ShouldThrow_WhenTenantIsInactive()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.Deactivate();
 
         var act = () => tenant.RemoveRole(role.Id);
@@ -389,7 +431,7 @@ public class TenantTests
     public void RemoveRole_ShouldThrow_WhenRoleHasActiveUsers()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
         tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
         tenant.ClearDomainEvents();
@@ -403,7 +445,7 @@ public class TenantTests
     public void RemoveRole_ShouldThrow_WhenRoleHasActiveInvitations()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
         tenant.ClearDomainEvents();
 
@@ -416,7 +458,7 @@ public class TenantTests
     public void RemoveRole_ShouldHardDelete_WhenRoleHasNoHistory()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.ClearDomainEvents();
 
         tenant.RemoveRole(role.Id);
@@ -428,7 +470,7 @@ public class TenantTests
     public void RemoveRole_ShouldEmitRoleDeletedEvent_WhenRoleHasNoHistory()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.ClearDomainEvents();
 
         tenant.RemoveRole(role.Id);
@@ -445,7 +487,7 @@ public class TenantTests
     public void RemoveRole_ShouldSoftDelete_WhenRoleHasInactiveUsers()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
         var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
         user.Deactivate();
@@ -461,7 +503,7 @@ public class TenantTests
     public void RemoveRole_ShouldEmitRoleDeactivatedEvent_WhenRoleHasInactiveUsers()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
         var user = tenant.ResolveAccess(ExternalId.Create("oid-1"), Email.Create("user@test.com"));
         user.Deactivate();
@@ -481,7 +523,7 @@ public class TenantTests
     public void RemoveRole_ShouldSoftDelete_WhenRoleHasExpiredInvitations()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var role = tenant.AddCustomRole("support", []);
+        var role = tenant.AddRole("support", [], AllCodes);
         tenant.InviteUser(Email.Create("user@test.com"), role.Id, InvitationTtl.Create(TimeSpan.FromHours(1)));
         ForceExpire(tenant.Invitations.Single(i => i.RoleId == role.Id));
         tenant.ClearDomainEvents();
@@ -502,14 +544,14 @@ public class TenantTests
     public void UpdateRole_ShouldUpdateNameAndPermissions_WhenRoleIsCustom()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var custom = tenant.AddCustomRole("custom", [PermissionCatalog.Staff.Read]);
+        var custom = tenant.AddRole("custom", [StaffPermissions.Read], AllCodes);
         tenant.ClearDomainEvents();
 
-        tenant.UpdateRole(custom.Id, "renamed", [PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+        tenant.UpdateRole(custom.Id, "renamed", [StaffPermissions.Read, StaffPermissions.Update], AllCodes);
 
         custom.Name.Should().Be("renamed");
         custom.Permissions.Select(p => p.Code).Should()
-            .BeEquivalentTo([PermissionCatalog.Staff.Read, PermissionCatalog.Staff.Update]);
+            .BeEquivalentTo([StaffPermissions.Read, StaffPermissions.Update]);
         tenant.DomainEvents.Should().ContainSingle()
             .Which.Should().BeOfType<RoleUpdatedDomainEvent>();
     }
@@ -519,7 +561,7 @@ public class TenantTests
     {
         var (tenant, adminRoleId, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.UpdateRole(adminRoleId, "newname", [PermissionCatalog.Staff.Read]);
+        var act = () => tenant.UpdateRole(adminRoleId, "newname", [StaffPermissions.Read], AllCodes);
 
         act.Should().Throw<SystemRoleCannotBeModifiedException>();
     }
@@ -529,7 +571,7 @@ public class TenantTests
     {
         var (tenant, _, _) = CreateTenantWithRoles();
 
-        var act = () => tenant.UpdateRole(Guid.NewGuid(), "any", [PermissionCatalog.Staff.Read]);
+        var act = () => tenant.UpdateRole(Guid.NewGuid(), "any", [StaffPermissions.Read], AllCodes);
 
         act.Should().Throw<RoleNotFoundException>();
     }
@@ -538,10 +580,10 @@ public class TenantTests
     public void UpdateRole_ShouldThrow_WhenNameAlreadyExistsInAnotherRole()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        tenant.AddCustomRole("roleone", [PermissionCatalog.Staff.Read]);
-        var roleTwo = tenant.AddCustomRole("roletwo", [PermissionCatalog.Staff.Read]);
+        tenant.AddRole("roleone", [StaffPermissions.Read], AllCodes);
+        var roleTwo = tenant.AddRole("roletwo", [StaffPermissions.Read], AllCodes);
 
-        var act = () => tenant.UpdateRole(roleTwo.Id, "roleone", [PermissionCatalog.Staff.Read]);
+        var act = () => tenant.UpdateRole(roleTwo.Id, "roleone", [StaffPermissions.Read], AllCodes);
 
         act.Should().Throw<RoleAlreadyExistsException>();
     }
@@ -550,13 +592,13 @@ public class TenantTests
     public void UpdateRole_ShouldAllowKeepingSameName()
     {
         var (tenant, _, _) = CreateTenantWithRoles();
-        var custom = tenant.AddCustomRole("custom", [PermissionCatalog.Staff.Read]);
+        var custom = tenant.AddRole("custom", [StaffPermissions.Read], AllCodes);
         tenant.ClearDomainEvents();
 
-        var act = () => tenant.UpdateRole(custom.Id, "custom", [PermissionCatalog.Staff.Update]);
+        var act = () => tenant.UpdateRole(custom.Id, "custom", [StaffPermissions.Update], AllCodes);
 
         act.Should().NotThrow();
-        custom.Permissions.Select(p => p.Code).Should().BeEquivalentTo([PermissionCatalog.Staff.Update]);
+        custom.Permissions.Select(p => p.Code).Should().BeEquivalentTo([StaffPermissions.Update]);
     }
 
     // ============================================================

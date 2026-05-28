@@ -41,7 +41,7 @@ public sealed class RolesController(
     /// Used by the frontend to render permission selectors when creating or editing roles.
     /// </summary>
     [HttpGet("permissions")]
-    [HasPermission(PermissionCatalog.Tenant.Roles.Read)]
+    [HasPermission(IdentityPermissions.Tenant.Roles.Read)]
     [ProducesResponseType(typeof(IReadOnlyList<PermissionGroupResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListPermissions(CancellationToken ct)
     {
@@ -64,7 +64,7 @@ public sealed class RolesController(
     /// Requires InviteUser permission so invitation editors can use it without ManageRoles.
     /// </summary>
     [HttpGet("lookup")]
-    [HasPermission(PermissionCatalog.Tenant.Roles.Read)]
+    [HasPermission(IdentityPermissions.Tenant.Roles.Read)]
     [ProducesResponseType(typeof(IReadOnlyList<RoleLookupDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Lookup(CancellationToken ct)
     {
@@ -77,7 +77,7 @@ public sealed class RolesController(
     /// Lists all roles for the authenticated user's tenant, paginated.
     /// </summary>
     [HttpGet]
-    [HasPermission(PermissionCatalog.Tenant.Roles.Read)]
+    [HasPermission(IdentityPermissions.Tenant.Roles.Read)]
     [ProducesResponseType(typeof(PagedResult<RoleDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> List(
         [FromQuery] int page = 1,
@@ -97,7 +97,7 @@ public sealed class RolesController(
     /// Returns a single role by id. Returns both active and inactive roles.
     /// </summary>
     [HttpGet("{id:guid}")]
-    [HasPermission(PermissionCatalog.Tenant.Roles.Read)]
+    [HasPermission(IdentityPermissions.Tenant.Roles.Read)]
     [ProducesResponseType(typeof(Dtos.RoleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
@@ -116,7 +116,7 @@ public sealed class RolesController(
     /// System roles (root, admin, member) cannot be created via this endpoint.
     /// </summary>
     [HttpPost]
-    [HasPermission(PermissionCatalog.Tenant.Roles.Create)]
+    [HasPermission(IdentityPermissions.Tenant.Roles.Create)]
     [ProducesResponseType(typeof(CreateRoleResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
@@ -141,7 +141,7 @@ public sealed class RolesController(
     /// Role name must be unique within the tenant (including inactive roles).
     /// </summary>
     [HttpPut("{id:guid}")]
-    [HasPermission(PermissionCatalog.Tenant.Roles.Update)]
+    [HasPermission(IdentityPermissions.Tenant.Roles.Update)]
     [ProducesResponseType(typeof(UpdateRoleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
@@ -164,7 +164,7 @@ public sealed class RolesController(
     /// System roles cannot be removed.
     /// </summary>
     [HttpDelete("{id:guid}")]
-    [HasPermission(PermissionCatalog.Tenant.Roles.Delete)]
+    [HasPermission(IdentityPermissions.Tenant.Roles.Delete)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiProblemDetails), StatusCodes.Status409Conflict)]

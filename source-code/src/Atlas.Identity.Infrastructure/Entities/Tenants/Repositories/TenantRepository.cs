@@ -14,15 +14,39 @@ public sealed class TenantRepository : ITenantRepository
         _db = db;
     }
 
-    public async Task<Tenant?> GetByNameWithRolesAsync(
-        string name,
+    public async Task<Tenant?> GetByIdWithRolesAsync(
+        Guid id,
         CancellationToken ct)
     {
         return await _db.Tenants
             .Include(t => t.Roles)
                 .ThenInclude(r => r.Permissions)
             .AsSplitQuery()
-            .FirstOrDefaultAsync(t => t.Name == name && t.IsActive, ct);
+            .FirstOrDefaultAsync(t => t.Id == id && t.IsActive, ct);
+    }
+
+    public async Task<Tenant?> GetByIdWithUsersActiveInvitationsAndRolesAsync(
+        Guid id,
+        CancellationToken ct)
+    {
+        return await _db.Tenants
+            .Include(t => t.Roles)
+            .Include(t => t.Users)
+            .Include(t => t.Invitations.Where(i => !i.IsUsed && i.ExpiresAt > DateTime.UtcNow))
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(t => t.Id == id && t.IsActive, ct);
+    }
+
+    public async Task<Tenant?> GetByIdWithUsersAllInvitationsAndRolesAsync(
+        Guid id,
+        CancellationToken ct)
+    {
+        return await _db.Tenants
+            .Include(t => t.Roles)
+            .Include(t => t.Users)
+            .Include(t => t.Invitations)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(t => t.Id == id && t.IsActive, ct);
     }
 
     public async Task<Tenant?> GetByNameWithUsersInvitationsAndRolesAsync(

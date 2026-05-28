@@ -1,6 +1,7 @@
 using Atlas.Identity.Domain.Entities.Tenants.Roles.Exceptions;
 using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
 using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Domain.Permissions;
 
 namespace Atlas.Identity.Domain.Entities.Tenants.Roles;
 
@@ -9,11 +10,12 @@ namespace Atlas.Identity.Domain.Entities.Tenants.Roles;
 ///
 /// Invariants:
 /// - System roles (IsSystem=true) cannot have their permissions modified or be deleted.
-/// - Every permission code must exist in PermissionCatalog.All (or AllIncludingSystem for system roles).
+/// - Every permission code must exist in the provided validCodes set (supplied by the caller from IPermissionPolicy).
 /// - Role name is unique within the tenant (enforced by Tenant aggregate).
 ///
 /// Design: Role is an entity owned by the Tenant aggregate.
-/// Clients configure which permissions each role has from the static catalog.
+/// The domain does not reference IPermissionPolicy directly — callers pass the valid set as a parameter,
+/// keeping the domain pure and enabling modular permission registration.
 /// </summary>
 public sealed class Role : AuditableEntity
 {
@@ -53,6 +55,7 @@ public sealed class Role : AuditableEntity
         Guid tenantId,
         string name,
         IEnumerable<string> permissionCodes,
+        IReadOnlySet<string> validCodes,
         bool isSystem = false,
         Guid? id = null)
     {
@@ -61,21 +64,20 @@ public sealed class Role : AuditableEntity
 
         var codes = permissionCodes.ToList();
 
-        var validSet = isSystem ? PermissionCatalog.AllIncludingSystem : PermissionCatalog.All;
-        var unknown = codes.Except(validSet).ToList();
+        var unknown = codes.Except(validCodes).ToList();
         if (unknown.Count != 0)
             throw new RoleWithInvalidPermissionException(unknown);
 
         return new Role(id ?? Guid.NewGuid(), tenantId, name, isSystem, codes.Select(Permission.Of).ToList());
     }
 
-    internal void UpdatePermissions(IEnumerable<string> permissionCodes)
+    internal void UpdatePermissions(IEnumerable<string> permissionCodes, IReadOnlySet<string> validCodes)
     {
         if (IsSystem)
             throw new SystemRoleCannotBeModifiedException(Name);
 
         var codes = permissionCodes.ToList();
-        var unknown = codes.Except(PermissionCatalog.All).ToList();
+        var unknown = codes.Except(validCodes).ToList();
         if (unknown.Count != 0)
             throw new RoleWithInvalidPermissionException(unknown);
 
