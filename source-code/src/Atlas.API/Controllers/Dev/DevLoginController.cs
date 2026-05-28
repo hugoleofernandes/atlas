@@ -1,6 +1,5 @@
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.BuildingBlocks.AspNetCore.Security;
-using Atlas.Identity.Application.Tenants.Commands.ResolveTenantAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Atlas.Identity.Application.Tenants.Handlers.Commands.ResolveTenantAccess;
 
 namespace Atlas.API.Controllers.Dev;
 

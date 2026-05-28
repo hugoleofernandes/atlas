@@ -1,14 +1,12 @@
 using System.Net;
 using System.Net.Http.Json;
-using Atlas.API.Models.Invitations;
+using Atlas.API.Endpoints.Identity.Invitations.CreateInvitation;
 using Atlas.API.Tests.Infrastructure;
-using Atlas.Identity.Application.Tenants.Commands.InviteUser;
-using Atlas.Identity.Application.Tenants.Queries.Dtos;
-using Atlas.Identity.Application.Tenants.Queries.ListInvitations;
-using Atlas.Identity.Domain.Entities.Tenants.Exceptions;
-using Atlas.Identity.Domain.Entities.Tenants.Invitations.Exceptions;
-using Atlas.Identity.Domain.Entities.Tenants.Roles.Exceptions;
-using Atlas.Identity.Domain.Entities.Tenants.Roles.Permissions;
+using Atlas.Identity.Application.Invitations.Handlers.Commands.InviteUser;
+using Atlas.Identity.Application.Invitations.Handlers.Queries.ListInvitations;
+using Atlas.Identity.Domain.Invitations.Exceptions;
+using Atlas.Identity.Domain.Tenants.Roles.Exceptions;
+using Atlas.Identity.Domain.Tenants.Roles.Permissions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NSubstitute;
@@ -107,7 +105,7 @@ public sealed class InvitationControllerTests(AtlasApiFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var body = await response.Content.ReadFromJsonAsync<InviteUserResponse>();
+        var body = await response.Content.ReadFromJsonAsync<CreateInvitationResponse>();
         body!.InvitationId.Should().Be(invitationId);
         body.Email.Should().Be("new@acme.com");
         body.RoleId.Should().Be(roleId);

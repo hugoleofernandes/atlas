@@ -1,6 +1,7 @@
-using Atlas.Identity.Domain.Entities.Tenants;
-using Atlas.Identity.Domain.Entities.Tenants.Invitations;
-using Atlas.Identity.Domain.Entities.Tenants.Roles;
+using Atlas.Identity.Domain.Invitations;
+using Atlas.Identity.Domain.Shared;
+using Atlas.Identity.Domain.Tenants;
+using Atlas.Identity.Domain.Tenants.Roles;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.SharedKernel.Domain.Permissions;
 using Atlas.Staff.Domain.Permissions;
@@ -36,11 +37,14 @@ public sealed class GlobalIdentitySeeder : ISeeder
         db.Tenants.Add(tenant);
 
         // 🔹 Invite the system owner with the root role (fixed ID)
-        tenant.InviteUser(
+        var invitation = Invitation.Create(
+            tenant.Id,
             Email.Create("hugoleofernandes@gmail.com"),
             SystemRoleIds.Root,
             InvitationTtl.Create(TimeSpan.FromHours(24))
         );
+
+        db.Invitations.Add(invitation);
 
         await db.SaveChangesAsync();
     }

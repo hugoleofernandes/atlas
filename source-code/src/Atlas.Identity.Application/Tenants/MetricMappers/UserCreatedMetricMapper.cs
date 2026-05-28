@@ -1,5 +1,5 @@
 using Atlas.BuildingBlocks.Infrastructure.Observability;
-using Atlas.Identity.Domain.Entities.Tenants.Events;
+using Atlas.Identity.Domain.Users.Events;
 using Atlas.SharedKernel.Application.Metrics;
 using Atlas.SharedKernel.Domain.Events;
 

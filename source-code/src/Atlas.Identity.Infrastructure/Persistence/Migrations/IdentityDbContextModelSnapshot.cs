@@ -84,7 +84,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("idempotency_entries", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Invitation", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Invitations.Invitation", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -135,7 +135,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("invitations", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Role", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Tenants.Roles.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -186,7 +186,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("roles", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Tenant", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Tenants.Tenant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,7 +228,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("tenants", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.User", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -413,24 +413,24 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("outboxes", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Invitation", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Invitations.Invitation", b =>
                 {
-                    b.HasOne("Atlas.Identity.Domain.Entities.Tenants.Tenant", null)
-                        .WithMany("Invitations")
+                    b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
+                        .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Role", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Tenants.Roles.Role", b =>
                 {
-                    b.HasOne("Atlas.Identity.Domain.Entities.Tenants.Tenant", null)
+                    b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
                         .WithMany("Roles")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Atlas.Identity.Domain.ValueObjects.Permission", "Permissions", b1 =>
+                    b.OwnsMany("Atlas.Identity.Domain.Tenants.Roles.Permissions.Permission", "Permissions", b1 =>
                         {
                             b1.Property<Guid>("RoleId")
                                 .HasColumnType("uuid");
@@ -451,10 +451,10 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.User", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Users.User", b =>
                 {
-                    b.HasOne("Atlas.Identity.Domain.Entities.Tenants.Tenant", null)
-                        .WithMany("Users")
+                    b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
+                        .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -477,13 +477,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Entities.Tenants.Tenant", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Tenants.Tenant", b =>
                 {
-                    b.Navigation("Invitations");
-
                     b.Navigation("Roles");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

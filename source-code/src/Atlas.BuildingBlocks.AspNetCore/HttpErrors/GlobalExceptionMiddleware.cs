@@ -34,7 +34,7 @@ public sealed class GlobalExceptionMiddleware
             var problem = new ApiProblemDetails
             {
                 Title = localizer.Localize(error),
-                Status = MapCategory(ex.Category),
+                Status = ex.Category.ToHttpStatus(),
                 Detail = ex.Message,
                 Type = $"https://docs.atlas/errors/{ex.ErrorCode}"
             };
@@ -77,17 +77,6 @@ public sealed class GlobalExceptionMiddleware
         }
     }
 
-    private static int MapCategory(ErrorCategory category)
-        => category switch
-        {
-            ErrorCategory.Validation   => StatusCodes.Status400BadRequest,
-            ErrorCategory.Business     => StatusCodes.Status422UnprocessableEntity,
-            ErrorCategory.Conflict     => StatusCodes.Status409Conflict,
-            ErrorCategory.NotFound     => StatusCodes.Status404NotFound,
-            ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
-            ErrorCategory.Unexpected   => StatusCodes.Status500InternalServerError,
-            _                          => StatusCodes.Status500InternalServerError
-        };
 }
 
 

@@ -1,4 +1,4 @@
-using Atlas.Identity.Application.Tenants.Commands.SendWelcomeEmail;
+using Atlas.Identity.Application.Users.Handlers.Commands.SendWelcomeEmail;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.Outbox.Consumer.Identity.Tenants.UserCreatedFromInvitation.Identity;
 using Atlas.Outbox.Consumer.Identity.Tenants.UserCreatedFromInvitation.Staff;
