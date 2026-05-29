@@ -3,7 +3,7 @@ using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Application.Aggregates.Tenants._Roles.Handlers.Commands.RemoveRole;
+using Atlas.Identity.Application.Commands.RemoveRole;
 
 namespace Atlas.Identity.API.Endpoints.Tenants._Roles.RemoveRole;
 

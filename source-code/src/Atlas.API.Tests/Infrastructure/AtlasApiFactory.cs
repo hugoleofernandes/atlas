@@ -1,5 +1,5 @@
-using Atlas.Identity.Application.Aggregates.Invitations.Handlers.Commands.InviteUser;
-using Atlas.Identity.Application.Aggregates.Invitations.Handlers.Queries.ListInvitations;
+using Atlas.Identity.Application.Commands.InviteUser;
+using Atlas.Identity.Application.Queries.Invitations.ListInvitations;
 using Atlas.SharedKernel.Application;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;

@@ -3,8 +3,8 @@ using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Application.Aggregates.Tenants._Roles.Handlers.Queries.GetRoleById;
-using Atlas.Identity.Application.Aggregates.Tenants._Roles.Handlers.Queries.ListRoles;
+using Atlas.Identity.Application.Queries.Roles.ListRoles;
+using Atlas.Identity.Application.Queries.Roles.GetRoleById;
 
 namespace Atlas.Identity.API.Endpoints.Tenants._Roles.GetRoleById;
 

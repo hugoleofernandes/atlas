@@ -1,4 +1,4 @@
-using Atlas.Identity.Application.Aggregates.Invitations.Handlers.Commands.InviteUser;
+using Atlas.Identity.Application.Commands.InviteUser;
 
 namespace Atlas.Identity.API.Endpoints.Invitations.CreateInvitation;
 

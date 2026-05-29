@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Application.Aggregates.Tenants._Roles.Handlers.Commands.CreateRole;
+using Atlas.Identity.Application.Commands.CreateRole;
 
 namespace Atlas.Identity.API.Endpoints.Tenants._Roles.CreateRole;
 

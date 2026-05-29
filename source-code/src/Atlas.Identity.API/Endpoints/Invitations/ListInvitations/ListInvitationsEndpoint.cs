@@ -1,5 +1,5 @@
 using Atlas.BuildingBlocks.FastEndpoints;
-using Atlas.Identity.Application.Aggregates.Invitations.Handlers.Queries.ListInvitations;
+using Atlas.Identity.Application.Queries.Invitations.ListInvitations;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;

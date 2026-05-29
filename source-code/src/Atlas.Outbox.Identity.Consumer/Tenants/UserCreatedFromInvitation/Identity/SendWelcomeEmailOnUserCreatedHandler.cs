@@ -1,4 +1,4 @@
-using Atlas.Identity.Application.Aggregates.Users.Handlers.Commands.SendWelcomeEmail;
+using Atlas.Identity.Application.Commands.SendWelcomeEmail;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.IntegrationEvents;

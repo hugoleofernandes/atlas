@@ -1,4 +1,4 @@
-using Atlas.Identity.Application.Aggregates.Tenants._Roles.Handlers.Commands.CreateRole;
+using Atlas.Identity.Application.Commands.CreateRole;
 
 namespace Atlas.Identity.API.Endpoints.Tenants._Roles.CreateRole;
 

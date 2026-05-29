@@ -3,7 +3,7 @@ using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Application.Aggregates.Tenants._Roles.Handlers.Queries.LookupRoles;
+using Atlas.Identity.Application.Queries.Roles.LookupRoles;
 
 namespace Atlas.Identity.API.Endpoints.Tenants._Roles.LookupRoles;
 
