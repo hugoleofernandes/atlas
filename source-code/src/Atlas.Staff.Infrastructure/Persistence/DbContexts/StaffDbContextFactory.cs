@@ -16,6 +16,7 @@ public sealed class StaffDbContextFactory
 
         var options = new DbContextOptionsBuilder<StaffDbContext>()
             .UseNpgsql(connectionString)
+            .UseSnakeCaseNamingConvention()
             .Options;
 
         return new StaffDbContext(options, new DesignTimeRequestContext());
@@ -23,11 +24,12 @@ public sealed class StaffDbContextFactory
 
     private sealed class DesignTimeRequestContext : IRequestContext
     {
-        public bool IsAuthenticated  => false;
-        public Guid? TenantId        => null;
-        public string? TenantName    => null;
-        public Guid? UserId          => null;
-        public string? UserEmail     => null;
-        public string? CorrelationId => null;
+        public bool IsAuthenticated       => false;
+        public Guid? TenantId             => null;
+        public string? TenantName         => null;
+        public Guid? UserId               => null;
+        public string? UserEmail          => null;
+        public string? CorrelationId      => null;
+        public bool TenantFilterSuspended => false;
     }
 }

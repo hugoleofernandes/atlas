@@ -1,13 +1,13 @@
-using Atlas.SharedKernel.Application.Handlers;
+using System.Security.Claims;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Security;
-using Atlas.SharedKernel.Application.Errors;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
 using Atlas.Identity.API.Endpoints.Auth;
 using Atlas.Identity.Application.Commands.ResolveTenantAccess;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Application.Handlers;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Atlas.API.Security.Bootstrap;
 
@@ -38,7 +38,8 @@ public sealed class UserBootstrapMiddleware
         HttpContext context,
         IResolveTenantAccessCommandHandler resolveAccessHandler,
         IHandlerInvoker invoker,
-        IErrorMessageLocalizer errorLocalizer)
+        IErrorMessageLocalizer errorLocalizer
+    )
     {
         //
         // ==========================================
@@ -58,10 +59,7 @@ public sealed class UserBootstrapMiddleware
         // ==========================================
         //
 
-        var alreadyBootstrapped =
-            context.User.HasClaim(
-                AtlasClaims.BootstrapCompleted,
-                "true");
+        var alreadyBootstrapped = context.User.HasClaim(AtlasClaims.BootstrapCompleted, "true");
 
         if (alreadyBootstrapped)
         {
@@ -75,17 +73,11 @@ public sealed class UserBootstrapMiddleware
         // ==========================================
         //
 
-        var oid = context.User
-            .FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")
-            ?.Value;
+        var oid = context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value;
 
-        var email = context.User
-            .FindFirst("preferred_username")
-            ?.Value;
+        var email = context.User.FindFirst("preferred_username")?.Value;
 
-        var tenantName = context.User
-            .FindFirst("tenant_name")
-            ?.Value;
+        var tenantName = context.User.FindFirst("tenant_name")?.Value;
 
         //
         // ==========================================
@@ -93,9 +85,7 @@ public sealed class UserBootstrapMiddleware
         // ==========================================
         //
 
-        if (string.IsNullOrWhiteSpace(oid) ||
-            string.IsNullOrWhiteSpace(email) ||
-            string.IsNullOrWhiteSpace(tenantName))
+        if (string.IsNullOrWhiteSpace(oid) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(tenantName))
         {
             await WriteProblemAsync(context, AuthErrors.Claim.IdentityMissing, errorLocalizer);
             return;
@@ -134,12 +124,12 @@ public sealed class UserBootstrapMiddleware
 
         var identity = new ClaimsIdentity("atlas");
 
-        identity.AddClaim(new Claim(AtlasClaims.TenantId,   value.TenantId.ToString()));
+        identity.AddClaim(new Claim(AtlasClaims.TenantId, value.TenantId.ToString()));
         identity.AddClaim(new Claim(AtlasClaims.TenantName, value.TenantName));
-        identity.AddClaim(new Claim(AtlasClaims.UserId,     value.UserId.ToString()));
-        identity.AddClaim(new Claim(AtlasClaims.UserEmail,  email));
-        identity.AddClaim(new Claim(AtlasClaims.RoleId,     value.RoleId.ToString()));
-        identity.AddClaim(new Claim(ClaimTypes.Role,         value.RoleName));
+        identity.AddClaim(new Claim(AtlasClaims.UserId, value.UserId.ToString()));
+        identity.AddClaim(new Claim(AtlasClaims.UserEmail, email));
+        identity.AddClaim(new Claim(AtlasClaims.RoleId, value.RoleId.ToString()));
+        identity.AddClaim(new Claim(ClaimTypes.Role, value.RoleName));
         identity.AddClaim(new Claim(AtlasClaims.BootstrapCompleted, "true"));
 
         // One claim per permission — authorization handler checks HasClaim(type, value)
@@ -160,9 +150,7 @@ public sealed class UserBootstrapMiddleware
         // ==========================================
         //
 
-        await context.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            context.User);
+        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, context.User);
 
         //
         // ==========================================
@@ -173,37 +161,35 @@ public sealed class UserBootstrapMiddleware
         await _next(context);
     }
 
-    private static int MapCategory(ErrorCategory category) => category switch
-    {
-        ErrorCategory.Validation   => StatusCodes.Status400BadRequest,
-        ErrorCategory.Business     => StatusCodes.Status422UnprocessableEntity,
-        ErrorCategory.Conflict     => StatusCodes.Status409Conflict,
-        ErrorCategory.NotFound     => StatusCodes.Status404NotFound,
-        ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
-        _                          => StatusCodes.Status500InternalServerError
-    };
+    private static int MapCategory(ErrorCategory category) =>
+        category switch
+        {
+            ErrorCategory.Validation => StatusCodes.Status400BadRequest,
+            ErrorCategory.Business => StatusCodes.Status422UnprocessableEntity,
+            ErrorCategory.Conflict => StatusCodes.Status409Conflict,
+            ErrorCategory.NotFound => StatusCodes.Status404NotFound,
+            ErrorCategory.Unauthorized => StatusCodes.Status401Unauthorized,
+            _ => StatusCodes.Status500InternalServerError,
+        };
 
     private static async Task WriteProblemAsync(
         HttpContext context,
         ErrorDefinition error,
-        IErrorMessageLocalizer localizer)
+        IErrorMessageLocalizer localizer
+    )
     {
         var status = MapCategory(error.Category);
 
         var problem = new ApiProblemDetails
         {
-            Title  = localizer.Localize(error),
+            Title = localizer.Localize(error),
             Status = status,
-            Type   = $"https://docs.atlas/errors/{error.Code}"
+            Type = $"https://docs.atlas/errors/{error.Code}",
         };
 
-        problem.AddMetadata(
-            error.Code,
-            CorrelationIdMiddleware.Get(context),
-            TraceContextHelper.GetTraceId()
-        );
+        problem.AddMetadata(error.Code, CorrelationIdMiddleware.Get(context), TraceContextHelper.GetTraceId());
 
-        context.Response.StatusCode  = status;
+        context.Response.StatusCode = status;
         context.Response.ContentType = "application/problem+json";
 
         await context.Response.WriteAsJsonAsync(problem);

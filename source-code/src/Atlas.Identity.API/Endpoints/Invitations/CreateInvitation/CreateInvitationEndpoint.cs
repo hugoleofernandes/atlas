@@ -10,14 +10,12 @@ namespace Atlas.Identity.API.Endpoints.Invitations.CreateInvitation;
 /// Creates an invitation for a new user to join the authenticated user's tenant.
 /// The tenant is resolved from the session cookie — not from the URL.
 /// </summary>
-public sealed class CreateInvitationEndpoint(
-    IInviteUserCommandHandler handler,
-    IHandlerInvoker invoker
-) : AtlasEndpoint<CreateInvitationRequest, CreateInvitationResponse>
+public sealed class CreateInvitationEndpoint(IInviteUserCommandHandler handler, IHandlerInvoker invoker)
+    : AtlasEndpoint<CreateInvitationRequest, CreateInvitationResponse>
 {
     public override void Configure()
     {
-        Post("identity/invitations");
+        Post("invitations");
         Policies($"permission:{IdentityModulePermissions.Tenant.Invitations.Create}");
         Description(d => d.Produces<CreateInvitationResponse>(201));
     }

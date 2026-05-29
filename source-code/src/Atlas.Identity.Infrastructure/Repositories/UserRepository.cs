@@ -10,39 +10,24 @@ public sealed class UserRepository : IUserRepository
 {
     private readonly IdentityDbContext _db;
 
-    public UserRepository(IdentityDbContext db)
-    {
-        _db = db;
-    }
+    public UserRepository(IdentityDbContext db) => _db = db;
 
-    public async Task<User?> FindActiveByEmailAsync(Guid tenantId, Email email, CancellationToken ct)
-    {
-        return await _db.Users
-            .FirstOrDefaultAsync(u => u.TenantId == tenantId
-                                   && u.Email == email
-                                   && u.IsActive, ct);
-    }
+    public Task<User?> FindActiveByEmailAsync(Guid tenantId, Email email, CancellationToken ct)
+        => _db.Users
+            .FirstOrDefaultAsync(u => u.TenantId == tenantId && u.Email == email && u.IsActive, ct);
 
-    public async Task<bool> ExistsWithEmailAsync(Guid tenantId, Email email, CancellationToken ct)
-    {
-        return await _db.Users
+    public Task<bool> ExistsWithEmailAsync(Guid tenantId, Email email, CancellationToken ct)
+        => _db.Users
             .AnyAsync(u => u.TenantId == tenantId && u.Email == email, ct);
-    }
 
-    public async Task<bool> HasActiveWithRoleAsync(Guid tenantId, Guid roleId, CancellationToken ct)
-    {
-        return await _db.Users
+    public Task<bool> HasActiveWithRoleAsync(Guid tenantId, Guid roleId, CancellationToken ct)
+        => _db.Users
             .AnyAsync(u => u.TenantId == tenantId && u.RoleId == roleId && u.IsActive, ct);
-    }
 
-    public async Task<bool> HasAnyWithRoleAsync(Guid tenantId, Guid roleId, CancellationToken ct)
-    {
-        return await _db.Users
+    public Task<bool> HasAnyWithRoleAsync(Guid tenantId, Guid roleId, CancellationToken ct)
+        => _db.Users
             .AnyAsync(u => u.TenantId == tenantId && u.RoleId == roleId, ct);
-    }
 
     public async Task AddAsync(User user, CancellationToken ct)
-    {
-        await _db.Users.AddAsync(user, ct);
-    }
+        => await _db.Users.AddAsync(user, ct);
 }

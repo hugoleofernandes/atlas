@@ -51,11 +51,18 @@ migrate:
 update:
 	dotnet ef database update --project $(TARGET_PROJECT) --startup-project $(API) --context $(TARGET_CONTEXT)
 
+reset-db:
+	dotnet ef database drop  --project $(TARGET_PROJECT) --startup-project $(API) --context $(TARGET_CONTEXT) --force
+	dotnet ef database update --project $(TARGET_PROJECT) --startup-project $(API) --context $(TARGET_CONTEXT)
+	@echo "Done. Start the API to apply seed data."
+
 # SAMPLE:
 # make migrate context=identity name=Initial
 # make migrate context=staff name=Initial
 # make update context=identity
 # make update context=staff
+# make reset-db context=identity
+# make reset-db context=staff
 
 # =========================================
 # GLOBAL
@@ -69,9 +76,14 @@ update-all:
 	make update context=identity
 	make update context=staff
 
+reset-db-all:
+	make reset-db context=identity
+	make reset-db context=staff
+
 # SAMPLE
 # make migrate-all name=Initial
 # make update-all
+# make reset-db-all
 
 # =========================================
 # DOCS (DOCFX)

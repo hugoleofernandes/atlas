@@ -1,8 +1,6 @@
-using Atlas.SharedKernel.Application;
-
 namespace Atlas.Identity.Application.Queries.Roles.ListRoles;
 
 public interface IListRolesReader
 {
-    Task<PagedResult<RoleDto>> ListAsync(Guid tenantId, int page, int pageSize, bool includeInactive, CancellationToken ct);
+    Task<IReadOnlyList<RoleDto>> ListAsync(Guid tenantId, bool includeInactive, CancellationToken ct);
 }

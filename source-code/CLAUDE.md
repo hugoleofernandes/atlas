@@ -76,9 +76,9 @@ Os command handlers injetam `IPermissionPolicy` e passam `_permissionPolicy.All`
 
 ## Padrão de Query Handler
 
-Toda query segue as camadas: `Endpoint → IQueryHandler → QueryHandler → IReader → Reader (EF)`.
+Toda query segue as camadas: `Endpoint → IQueryHandler → QueryHandler → IReader → Reader (Dapper)`.
 
-Mesmo para dados estáticos/in-memory, o reader existe e fica em `Atlas.Identity.Infrastructure`. Não há exceções à estrutura de camadas.
+Mesmo para dados estáticos/in-memory, o reader existe e fica em `Atlas.{Module}.Infrastructure`. Não há exceções à estrutura de camadas.
 
 ### Reader é exclusivo do query handler
 
@@ -103,6 +103,143 @@ Cada query handler define seu próprio tipo de retorno. Nunca reutilize um DTO e
 ListInvitationsQueryHandler  → IReadOnlyList<InvitationSummary>  // visão de lista
 GetInvitationQueryHandler    → InvitationDetail                  // visão de detalhe
 ```
+
+---
+
+## Padrão de Reader (Dapper)
+
+Todos os readers usam **Dapper com SQL raw** — não EF Core LINQ. A única exceção é `ListPermissionsReader`, que é in-memory (dados estáticos do catálogo de permissões).
+
+### Nomenclatura de colunas
+
+O projeto usa `UseSnakeCaseNamingConvention()` em todos os DbContexts. As colunas no banco são snake_case (`tenant_id`, `created_at`, `role_id`). SQL raw deve usar snake_case **sem aspas**.
+
+```sql
+-- ✅ correto
+SELECT id, tenant_id, created_at FROM atlas_identity.roles
+
+-- ❌ errado — aspas não são necessárias com snake_case
+SELECT "Id", "TenantId", "CreatedAt" FROM atlas_identity.roles
+```
+
+### Mapeamento: quando usar DTO direto vs record intermediário
+
+**DTO direto** — quando as colunas do SQL casam 1:1 com o DTO:
+```csharp
+var results = await conn.QueryAsync<RoleLookupDto>(Sql, new { TenantId = tenantId });
+```
+
+**Record intermediário** — quando o resultado precisa de reshaping em C# (ex: 1:N):
+```csharp
+// RoleDto tem IReadOnlyList<string> PermissionCodes — SQL retorna linhas achatadas
+// Usa record intermediário + agrupa em C#
+private sealed record RoleRow(Guid Id, string Name, bool IsSystem);
+private sealed record PermissionRow(Guid RoleId, string Code);
+```
+
+### Parâmetros — sempre `new { }` anônimo
+
+```csharp
+// ✅ padrão Dapper — objeto anônimo é o bag de parâmetros
+conn.QueryAsync<Dto>(Sql, new { TenantId = tenantId, IsActive = isActive });
+```
+
+### Argumentos nomeados na construção manual
+
+Sempre usar argumentos nomeados ao construir DTOs ou records manualmente:
+
+```csharp
+// ✅
+return new RoleDto(
+    RoleId:          role.Id,
+    Name:            role.Name,
+    IsSystem:        role.IsSystem,
+    PermissionCodes: permissions);
+
+// ❌ — depende da ordem, frágil
+return new RoleDto(role.Id, role.Name, role.IsSystem, permissions);
+```
+
+### Constantes para predicados SQL reutilizados
+
+Quando a mesma expressão booleana aparece mais de uma vez no SQL (ex: no SELECT e no WHERE), extrair como constante evita dessincronização:
+
+```csharp
+// A mesma lógica aparece no SELECT (para projetar) e no WHERE (para filtrar)
+private const string IsActivePredicate = "NOT i.is_used AND i.expires_at >= @Now";
+
+private const string Sql = $"""
+    SELECT ({IsActivePredicate}) AS IsActive, ...
+    WHERE (@IsActive AND ({IsActivePredicate}))
+       OR (!@IsActive AND NOT ({IsActivePredicate}))
+    """;
+```
+
+### Paginação com 1:N — duas queries separadas
+
+Nunca fazer JOIN em query paginada quando o lado N pode multiplicar linhas. Usar duas queries:
+
+```csharp
+// Query 1: roles paginados
+var roles = await conn.QueryAsync<RoleRow>(RolesSql, ...);
+
+// Query 2: permissões só dos IDs retornados
+var permissions = await conn.QueryAsync<PermissionRow>(
+    PermissionsSql, new { RoleIds = roles.Select(r => r.Id).ToArray() });
+
+// Agrupa em C#
+var lookup = permissions.ToLookup(p => p.RoleId);
+```
+
+---
+
+## Multi-tenancy
+
+### Global query filter
+
+Todas as entidades que implementam `IMultiTenantEntity` têm um global query filter aplicado automaticamente em `DbContextBase`. O filter garante que queries retornem apenas dados do tenant do contexto atual.
+
+```csharp
+// Entidade multi-tenant
+public sealed class Invitation : AggregateRoot, IMultiTenantEntity { ... }
+
+// Entidade que não é multi-tenant (ex: Tenant em si)
+public sealed class Tenant : AggregateRoot, INotMultiTenant { ... }
+```
+
+### Suspender o filter — bootstrap e seeders
+
+Situações onde o `TenantId` ainda não está no contexto (ex: `ResolveTenantAccess`, seeders) exigem suspensão explícita do filter:
+
+```csharp
+// ResolveTenantAccessCommandHandler — roda antes do TenantId ser populado
+using (_contextSetter.SuspendTenantFilter())
+{
+    var user       = await _userRepository.FindActiveByEmailAsync(tenant.Id, email, ct);
+    var invitation = await _invitationRepository.FindByEmailAsync(tenant.Id, email, ct);
+}
+// filter reativado automaticamente ao sair do using
+```
+
+O filter é suspenso apenas dentro do `using` — nunca vaza para outras operações.
+
+### Seeders
+
+Seeders usam `IIdentityUnitOfWork` (não `db.SaveChangesAsync()` diretamente) para acionar o pipeline de auditoria, e populam o contexto com `SystemIdentity` antes de salvar:
+
+```csharp
+var uow    = services.GetRequiredService<IIdentityUnitOfWork>();
+var setter = services.GetRequiredService<IRequestContextSetter>();
+
+// Leitura cross-tenant: IgnoreQueryFilters()
+var exists = await db.Tenants.IgnoreQueryFilters().AnyAsync(ct);
+
+// Antes de salvar: popula contexto para o stamper de auditoria
+setter.Set(tenant.Id, tenant.Name, SystemIdentity.UserId, SystemIdentity.Email);
+await uow.SaveChangesAsync(ct);
+```
+
+`SystemIdentity.UserId = Guid.Empty` e `SystemIdentity.Email = "system@atlas"` — constantes em `Atlas.SharedKernel`.
 
 ---
 
@@ -206,6 +343,18 @@ public sealed record InviteUserCommand(string Email, Guid RoleId);
 // Endpoint faz a ponte — e pode enriquecer com dados da sessão
 var cmd = new InviteUserCommand(req.Email, req.RoleId);
 ```
+
+---
+
+## Formatação de Código
+
+O projeto usa **CSharpier** como formatador — equivalente ao Prettier para C#.
+
+- Extensão instalada no Visual Studio com **Format on Save** ativado
+- Configuração em `.csharpierrc.json` na raiz do repositório (`printWidth: 120`)
+- `.editorconfig` complementa com regras de estilo (indentação, line endings, `var`, modificadores)
+
+Nunca ajuste formatação manualmente — salvar o arquivo já formata. Se o código parecer "mal formatado" antes de salvar, é normal.
 
 ---
 

@@ -1,6 +1,5 @@
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.API.Configs;
-using Atlas.Identity.API.Endpoints.Auth;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -50,6 +49,10 @@ public sealed class LoginEndpoint(
             RedirectUri = $"{frontOptions.Value.BaseUrl}/admin/home"
         };
 
-        await HttpContext.ChallengeAsync(req.Tenant, props);
+        // Results.Challenge executes the IResult via the minimal-API pipeline,
+        // which is the correct FastEndpoints equivalent of MVC's ChallengeResult.
+        // Calling HttpContext.ChallengeAsync() directly bypasses that pipeline
+        // and does not trigger the OIDC redirect properly.
+        await Send.ResultAsync(Results.Challenge(props, [req.Tenant!]));
     }
 }

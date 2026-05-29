@@ -60,10 +60,12 @@ try
 
             // ── DbContexts — um por módulo que usa o outbox ───────────────────
             services.AddDbContext<IdentityDbContext>(o =>
-                o.UseNpgsql(configuration.GetConnectionString("Default")));
+                o.UseNpgsql(configuration.GetConnectionString("Default"))
+                 .UseSnakeCaseNamingConvention());
 
             services.AddDbContext<StaffDbContext>(o =>
-                o.UseNpgsql(configuration.GetConnectionString("Default")));
+                o.UseNpgsql(configuration.GetConnectionString("Default"))
+                 .UseSnakeCaseNamingConvention());
 
             // ── Assemblies dos tipos de integration events ────────────────────
             var integrationEventAssemblies = new[]

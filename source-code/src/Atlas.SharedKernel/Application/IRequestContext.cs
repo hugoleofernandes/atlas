@@ -1,4 +1,5 @@
-﻿namespace Atlas.SharedKernel.Application;
+namespace Atlas.SharedKernel.Application;
+
 public interface IRequestContext
 {
     bool IsAuthenticated { get; }
@@ -7,4 +8,5 @@ public interface IRequestContext
     Guid? UserId { get; }
     string? UserEmail { get; }
     string? CorrelationId { get; }
+    bool TenantFilterSuspended { get; }
 }

@@ -18,7 +18,7 @@ namespace Atlas.Identity.Domain.Users;
 /// - Authentication is delegated to external providers (OIDC).
 /// - The system does not manage passwords or credentials.
 /// </summary>
-public sealed class User : AggregateRoot
+public sealed class User : AggregateRoot, IMultiTenantEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
@@ -31,6 +31,8 @@ public sealed class User : AggregateRoot
     public Guid RoleId { get; private set; }
 
     public bool IsActive { get; private set; } = true;
+
+    void IMultiTenantEntity.SetTenantId(Guid tenantId) => TenantId = tenantId;
 
     private User() { }
 
@@ -50,8 +52,9 @@ public sealed class User : AggregateRoot
     public static User CreateFromInvitation(Invitation invitation, ExternalId externalId, string roleName)
     {
         var user = new User(invitation.TenantId, externalId, invitation.Email, invitation.RoleId);
-        user.AddDomainEvent(new UserCreatedFromInvitationDomainEvent(
-            invitation.TenantId, user.Id, invitation.Email.Value, roleName));
+        user.AddDomainEvent(
+            new UserCreatedFromInvitationDomainEvent(invitation.TenantId, user.Id, invitation.Email.Value, roleName)
+        );
         user.AddDomainEvent(new UserAccessResolvedDomainEvent(invitation.TenantId, user.Id));
         return user;
     }
@@ -64,7 +67,7 @@ public sealed class User : AggregateRoot
     public void ResolveExistingAccess(ExternalId externalId)
     {
         if (ExternalId.Value != externalId.Value)
-            throw new UserAlreadyExistsException(Email.Value);
+            throw new UserIdentityMismatchException(Email.Value);
 
         AddDomainEvent(new UserAccessResolvedDomainEvent(TenantId, Id));
     }

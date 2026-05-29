@@ -16,6 +16,7 @@ public sealed class IdentityDbContextFactory
 
         var options = new DbContextOptionsBuilder<IdentityDbContext>()
             .UseNpgsql(connectionString)
+            .UseSnakeCaseNamingConvention()
             .Options;
 
         return new IdentityDbContext(options, new DesignTimeRequestContext());
@@ -23,11 +24,12 @@ public sealed class IdentityDbContextFactory
 
     private sealed class DesignTimeRequestContext : IRequestContext
     {
-        public bool IsAuthenticated  => false;
-        public Guid? TenantId        => null;
-        public string? TenantName    => null;
-        public Guid? UserId          => null;
-        public string? UserEmail     => null;
-        public string? CorrelationId => null;
+        public bool IsAuthenticated       => false;
+        public Guid? TenantId             => null;
+        public string? TenantName         => null;
+        public Guid? UserId               => null;
+        public string? UserEmail          => null;
+        public string? CorrelationId      => null;
+        public bool TenantFilterSuspended => false;
     }
 }

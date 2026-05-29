@@ -1,9 +1,12 @@
+using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Domain.Tenants;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
+using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain.Permissions;
 using Atlas.Staff.Domain.Permissions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Atlas.Identity.Infrastructure.Seeders.Aggregates;
 
@@ -15,10 +18,18 @@ internal sealed class TenantSeeder
 {
     public async Task SeedAsync(IServiceProvider services, CancellationToken ct)
     {
-        var db = services.GetRequiredService<IdentityDbContext>();
+        var logger = services.GetRequiredService<ILogger<TenantSeeder>>();
+        var db     = services.GetRequiredService<IdentityDbContext>();
+        var uow    = services.GetRequiredService<IIdentityUnitOfWork>();
+        var setter = services.GetRequiredService<IRequestContextSetter>();
 
-        if (await db.Tenants.AnyAsync(ct))
+        if (await db.Tenants.IgnoreQueryFilters().AnyAsync(ct))
+        {
+            logger.LogInformation("TenantSeeder skipped — data already exists");
             return;
+        }
+
+        logger.LogInformation("TenantSeeder started");
 
         var policy = services.GetRequiredService<IPermissionPolicy>();
 
@@ -34,6 +45,12 @@ internal sealed class TenantSeeder
         tenant.SeedDefaultRoles(policy.All, policy.AllIncludingSystem, memberPermissions);
 
         db.Tenants.Add(tenant);
-        await db.SaveChangesAsync(ct);
+
+        setter.Set(tenant.Id, tenant.Name, SystemIdentity.UserId, SystemIdentity.Email);
+        await uow.SaveChangesAsync(ct);
+
+        logger.LogInformation("TenantSeeder completed:");
+        logger.LogInformation("  Tenant  : {Name} ({Id})", tenant.Name, tenant.Id);
+        logger.LogInformation("  Roles   : {Roles}", string.Join(", ", tenant.Roles.Select(r => r.Name)));
     }
 }

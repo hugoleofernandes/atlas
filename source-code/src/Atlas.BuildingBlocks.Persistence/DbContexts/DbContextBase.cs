@@ -11,6 +11,14 @@ public abstract class DbContextBase : DbContext
 
     protected Guid? CurrentTenantId => _requestContext.TenantId;
 
+    private Guid CurrentTenantIdOrThrow =>
+        _requestContext.TenantFilterSuspended
+            ? Guid.Empty
+            : _requestContext.TenantId ?? throw new InvalidOperationException(
+                "A multi-tenant query was executed without a TenantId in the request context. " +
+                "This is a bug — populate IRequestContextSetter before querying multi-tenant entities, " +
+                "or call SuspendTenantFilter() for intentional cross-tenant access (e.g. bootstrap).");
+
     protected virtual string Schema => "atlas";
 
     protected DbContextBase(
@@ -70,7 +78,8 @@ public abstract class DbContextBase : DbContext
     {
         modelBuilder.Entity<TEntity>()
             .HasQueryFilter(e =>
-                !CurrentTenantId.HasValue || e.TenantId == CurrentTenantId.Value);
+                _requestContext.TenantFilterSuspended
+                || e.TenantId == CurrentTenantIdOrThrow);
     }
 
     public IEnumerable<IDomainEvent> GetDomainEvents()

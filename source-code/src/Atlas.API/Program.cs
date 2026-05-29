@@ -148,10 +148,12 @@ try
     //
 
     services.AddDbContext<IdentityDbContext>(o =>
-        o.UseNpgsql(configuration.GetConnectionString("Default")));
+        o.UseNpgsql(configuration.GetConnectionString("Default"))
+         .UseSnakeCaseNamingConvention());
 
     services.AddDbContext<StaffDbContext>(o =>
-        o.UseNpgsql(configuration.GetConnectionString("Default")));
+        o.UseNpgsql(configuration.GetConnectionString("Default"))
+         .UseSnakeCaseNamingConvention());
 
     //
     // ==========================================
