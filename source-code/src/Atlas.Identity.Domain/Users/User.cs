@@ -60,6 +60,18 @@ public sealed class User : AggregateRoot, IMultiTenantEntity
     }
 
     /// <summary>
+    /// Dev-only: creates an in-memory, non-persisted user for development login bypass.
+    /// Uses a deterministic ExternalId derived from the email so that
+    /// <see cref="ResolveExistingAccess"/> passes on the same request.
+    /// Never call this outside of the Development environment.
+    /// </summary>
+    public static User CreateForDev(Guid tenantId, Email email, Guid roleId)
+    {
+        var externalId = ExternalId.Create($"dev:{email.Value}");
+        return new User(tenantId, externalId, email, roleId);
+    }
+
+    /// <summary>
     /// Resolves access for an already-existing user.
     /// Validates that the ExternalId from the token matches the stored one (security check).
     /// Emits UserAccessResolvedDomainEvent.

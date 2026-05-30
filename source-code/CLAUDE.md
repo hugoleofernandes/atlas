@@ -1,5 +1,43 @@
 # Atlas — Guia para Claude
 
+## Checklist DDD — Aggregate Root ou entidade filha?
+
+Aplicar antes de modelar qualquer nova entidade. Evita o erro de colocar uma entidade como filha de outra quando deveria ser raiz independente.
+
+### Perguntas — respostas SIM apontam para Aggregate Root
+
+| # | Pergunta | Exemplo: Role |
+|---|---|---|
+| 1 | **Tem ciclo de vida independente?** Pode ser criada/destruída sem passar pelo pai? | Sim — CreateRole existe fora do Tenant |
+| 2 | **É consultada diretamente por ID?** Existe um GetById sem carregar o pai? | Sim — GetRoleById |
+| 3 | **A coleção é unbounded?** Pode crescer sem limite com o uso do sistema? | Não — ~5-20 por tenant |
+| 4 | **É referenciada por ID de outros agregados?** Outros ARs guardam só o ID dela? | Sim — `User.RoleId` |
+| 5 | **Tem operações de escrita próprias?** Update/Delete que não afetam o pai? | Sim — UpdateRole, RemoveRole |
+
+### Perguntas — respostas SIM apontam para entidade filha
+
+| # | Pergunta | Exemplo: Permission |
+|---|---|---|
+| 6 | **Não faz sentido sem o pai?** É semanticamente vazia fora do contexto do pai? | Sim — Permission sem Role |
+| 7 | **A consistência é transacional com o pai?** Mudar ela e o pai deve ser uma operação atômica? | Sim |
+| 8 | **É bounded por natureza?** O tamanho máximo é previsível e pequeno? | Sim — ~10-20 por Role |
+
+### O sinal mais forte
+
+> **Se você já tem ou vai precisar de um repositório para essa entidade — ela é Aggregate Root.**
+
+O repositório é a consequência direta. Se precisar de `GetByIdAsync(id)` sem carregar o pai, é AR. Não tem como escapar.
+
+### Invariantes cruzadas com o pai não impedem ser AR
+
+Se o único motivo para ser filho é um invariante como "nome único dentro do pai" (ex: Role.Name único por Tenant), isso **não** justifica ser filho. A solução é:
+- Pre-check no command handler (`ExistsWithNameAsync`)
+- Unique index no banco como guard de race condition
+
+O domínio fica limpo e o AR fica independente.
+
+---
+
 ## Padrão de Permissões
 
 ### Nomenclatura: `{module}.{resource}.{verb}`
@@ -367,6 +405,41 @@ O projeto usa **CSharpier** como formatador — equivalente ao Prettier para C#.
 - `.editorconfig` complementa com regras de estilo (indentação, line endings, `var`, modificadores)
 
 Nunca ajuste formatação manualmente — salvar o arquivo já formata. Se o código parecer "mal formatado" antes de salvar, é normal.
+
+---
+
+## Regras de Migrations
+
+**Nunca gere nem aplique migrations.** Isso é sempre responsabilidade do desenvolvedor.
+
+```
+// ❌ Proibido
+dotnet ef migrations add ...
+dotnet ef database update
+```
+
+Ao criar um novo módulo com DbContext, documente o schema esperado no plano — o desenvolvedor gera a migration manualmente.
+
+---
+
+## Paginação
+
+**O padrão do projeto é sem paginação** — endpoints retornam `IReadOnlyList<T>` diretamente. Paginação server-side só é adicionada quando explicitamente solicitada. Nunca adicione `Page`/`PageSize` por iniciativa própria.
+
+---
+
+## Health Checks
+
+Os dois endpoints de health check ficam em `Atlas.API/Program.cs` — nunca nos módulos individuais.
+
+```csharp
+// /health/live  → processo rodando (sem tocar no banco) — livenessProbe
+// /health/ready → Postgres acessível — readinessProbe
+app.MapHealthChecks("/health/live",  new HealthCheckOptions { Predicate = c => c.Tags.Contains("live"),  ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse }).AllowAnonymous();
+app.MapHealthChecks("/health/ready", new HealthCheckOptions { Predicate = c => c.Tags.Contains("ready"), ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse }).AllowAnonymous();
+```
+
+Pacotes: `AspNetCore.HealthChecks.NpgSql` e `AspNetCore.HealthChecks.UI.Client` (versão 9.x).
 
 ---
 

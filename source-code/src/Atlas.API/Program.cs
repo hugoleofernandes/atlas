@@ -45,6 +45,9 @@ using Atlas.Identity.API;
 using Atlas.Staff.API;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Outbox.Identity.Publisher.DI;
+using Atlas.Platform.API;
+using Atlas.Platform.Infrastructure.DI;
+using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -158,6 +161,10 @@ try
         o.UseNpgsql(configuration.GetConnectionString("Default"))
          .UseSnakeCaseNamingConvention());
 
+    services.AddDbContext<PlatformDbContext>(o =>
+        o.UseNpgsql(configuration.GetConnectionString("Default"))
+         .UseSnakeCaseNamingConvention());
+
     //
     // ==========================================
     // MODULE REGISTRATION
@@ -171,6 +178,9 @@ try
 
     // STAFF
     services.AddStaffModuleDependencies();
+
+    // PLATFORM
+    services.AddPlatformModuleDependencies();
     //
 
     
@@ -198,6 +208,7 @@ try
         o.Assemblies = [
             typeof(IdentityApiAssemblyMarker).Assembly,
             typeof(StaffApiAssemblyMarker).Assembly,
+            typeof(PlatformApiAssemblyMarker).Assembly,
         ];
     });
 

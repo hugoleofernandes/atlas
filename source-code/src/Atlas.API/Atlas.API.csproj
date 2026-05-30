@@ -44,6 +44,8 @@
     <ProjectReference Include="..\Atlas.Staff.API\Atlas.Staff.API.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
+    <ProjectReference Include="..\Atlas.Platform.API\Atlas.Platform.API.csproj" />
+    <ProjectReference Include="..\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

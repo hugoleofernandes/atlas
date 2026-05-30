@@ -1,22 +1,18 @@
-using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants.Exceptions;
-using Atlas.Identity.Domain.Users.Exceptions;
+using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.Hosting;
 
 namespace Atlas.Identity.Application.Commands.DevLogin;
 
 /// <summary>
-/// Development-only command handler — resolves tenant access without going through OIDC.
+/// Development-only handler — resolves tenant access without going through OIDC.
+/// Read-only: no writes, implements IQueryHandler so the UoW pipeline is skipped.
 ///
-/// Existing user path: pulls the stored ExternalId from the database and passes it to
-/// ResolveExistingAccess, so the identity check always passes regardless of how the user
-/// was originally created (real Entra login or a previous dev login).
-///
-/// New user path: generates a deterministic fake OID from the email and creates the user
-/// from a pending invitation. Subsequent dev logins will use the stored OID (existing user path).
+/// Pulls the stored ExternalId from the database and passes it to ResolveExistingAccess,
+/// so the identity check always passes regardless of how the user was originally created.
 ///
 /// Throws InvalidOperationException outside of Development — the endpoint also guards this,
 /// but the handler is the last line of defense.
@@ -27,8 +23,6 @@ public sealed class DevLoginCommandHandler : IDevLoginCommandHandler
     private readonly IUserRepository       _userRepository;
     private readonly IRequestContextSetter _contextSetter;
     private readonly IHostEnvironment      _env;
-
-    public IUnitOfWork UnitOfWork => throw new NotSupportedException("DevLoginCommandHandler does not write to the database.");
 
     public DevLoginCommandHandler(
         ITenantRepository     tenantRepository,
@@ -55,8 +49,10 @@ public sealed class DevLoginCommandHandler : IDevLoginCommandHandler
 
         using (_contextSetter.SuspendTenantFilter())
         {
+            var firstActiveRole = tenant.Roles.First(r => r.IsActive);
+
             var user = await _userRepository.FindActiveByEmailAsync(tenant.Id, email, ct)
-                ?? throw new UserNotFoundException(cmd.Email);
+                ?? User.CreateForDev(tenant.Id, email, firstActiveRole.Id);
 
             user.ResolveExistingAccess(user.ExternalId);
 

@@ -19,6 +19,9 @@ identity_CONTEXT=IdentityDbContext
 staff_PROJECT=$(SRC)/Atlas.Staff.Infrastructure
 staff_CONTEXT=StaffDbContext
 
+platform_PROJECT=$(SRC)/Atlas.Platform.Infrastructure
+platform_CONTEXT=PlatformDbContext
+
 TARGET_PROJECT=$($(context)_PROJECT)
 TARGET_CONTEXT=$($(context)_CONTEXT)
 
@@ -59,29 +62,35 @@ reset-db:
 # SAMPLE:
 # make migrate context=identity name=Initial
 # make migrate context=staff name=Initial
+# make migrate context=platform name=Initial
 # make update context=identity
 # make update context=staff
+# make update context=platform
 # make reset-db context=identity
 # make reset-db context=staff
+# make reset-db context=platform
 
 # =========================================
 # GLOBAL
 # =========================================
 
-migrate-all:
+ef-migrate-all:
 	make migrate context=identity name=$(name)_Identity
 	make migrate context=staff name=$(name)_Staff
+	make migrate context=platform name=$(name)_Platform
 
-update-all:
+ef-update-all:
 	make update context=identity
 	make update context=staff
+	make update context=platform
 
 reset-db-all:
 	make reset-db context=identity
 	make reset-db context=staff
+	make reset-db context=platform
 
 # SAMPLE
-# make migrate-all name=Initial
+# make ef-migrate-all name=Initial
 # make update-all
 # make reset-db-all
 
@@ -132,6 +141,11 @@ clean-migrations:
 # make clean-migrations context=identity
 # make clean-migrations context=staff
 
-clean-migrations-all:
+# CLEAN ALL MIGRATIONS
+ef-clean-all-m:
 	make clean-migrations context=identity
 	make clean-migrations context=staff
+	make clean-migrations context=platform
+
+# SAMPLE
+# make ef-clean-all-m
