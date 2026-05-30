@@ -45,6 +45,9 @@ using Atlas.Identity.API;
 using Atlas.Staff.API;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Outbox.Identity.Publisher.DI;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 
 //
@@ -207,7 +210,13 @@ try
     services.AddAuthorization();
     services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
     services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
-    services.AddHealthChecks();
+    services
+        .AddHealthChecks()
+        .AddNpgSql(
+            configuration.GetConnectionString("Default")!,
+            name: "postgres",
+            tags: ["ready"])
+        .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["live"]);
 
     services.AddOpenApi(options =>
     {
@@ -312,6 +321,18 @@ try
 
     app.UseFastEndpoints();
     app.MapControllers();
+
+    app.MapHealthChecks("/health/live", new HealthCheckOptions
+    {
+        Predicate      = check => check.Tags.Contains("live"),
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+    }).AllowAnonymous();
+
+    app.MapHealthChecks("/health/ready", new HealthCheckOptions
+    {
+        Predicate      = check => check.Tags.Contains("ready"),
+        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+    }).AllowAnonymous();
 
     // Pre-load OIDC metadata for all tenants in background right after startup,
     // so the first login request doesn't pay the cold-start cost.
