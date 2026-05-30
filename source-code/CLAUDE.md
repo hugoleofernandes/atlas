@@ -122,6 +122,18 @@ SELECT id, tenant_id, created_at FROM atlas_identity.roles
 SELECT "Id", "TenantId", "CreatedAt" FROM atlas_identity.roles
 ```
 
+Dapper faz matching case-insensitive, mas **não converte underscore para PascalCase**. Colunas multi-palavra precisam de alias explícito:
+
+```sql
+-- ❌ Dapper não mapeia is_system → IsSystem
+SELECT id, name, is_system FROM atlas_identity.roles
+
+-- ✅ alias explícito para colunas com underscore
+SELECT id, name, is_system AS IsSystem FROM atlas_identity.roles
+```
+
+Colunas de uma só palavra (`id`, `name`, `code`) funcionam sem alias — Dapper resolve `id` → `Id` pelo case-insensitive.
+
 ### Mapeamento: quando usar DTO direto vs record intermediário
 
 **DTO direto** — quando as colunas do SQL casam 1:1 com o DTO:

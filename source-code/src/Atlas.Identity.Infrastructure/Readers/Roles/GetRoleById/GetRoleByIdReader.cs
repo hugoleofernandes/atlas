@@ -9,7 +9,7 @@ namespace Atlas.Identity.Infrastructure.Readers.Roles.GetRoleById;
 public sealed class GetRoleByIdReader(IdentityDbContext db) : IGetRoleByIdReader
 {
     private const string RoleSql = """
-        SELECT id, name, is_system
+        SELECT id, name, is_system AS IsSystem
         FROM atlas_identity.roles
         WHERE tenant_id = @TenantId
           AND id = @RoleId

@@ -8,7 +8,7 @@ namespace Atlas.Identity.Infrastructure.Readers.Roles.ListRoles;
 public sealed class ListRolesReader(IdentityDbContext db) : IListRolesReader
 {
     private const string RolesSql = """
-        SELECT id, name, is_system
+        SELECT id, name, is_system AS IsSystem
         FROM atlas_identity.roles
         WHERE tenant_id = @TenantId
           AND (@IncludeInactive OR is_active = true)
