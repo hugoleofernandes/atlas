@@ -18,6 +18,12 @@ public sealed class StaffPermissions : IModulePermissions
     public const string Deactivate = "staff.deactivate";
     public const string Manage     = "staff.manage";
 
+    public static class Audit
+    {
+        public const string Read   = "staff.audit.read";
+        public const string Manage = "staff.audit.manage";
+    }
+
     public IReadOnlySet<string> Permissions { get; }
         = PermissionExtractor.ExtractAll(typeof(StaffPermissions));
 

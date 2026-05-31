@@ -2,6 +2,9 @@ using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Domain.Modules;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
+using Atlas.SharedDomain.Identity;
+using Atlas.SharedDomain.Platform;
+using Atlas.SharedDomain.Staff;
 using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,16 +49,17 @@ internal sealed class PlatformModuleSeeder : IModuleSeeder
 
         db.Modules.AddRange(identityModule, staffModule, platformModule);
 
-        // EntityTypes — Identity module
+        // EntityTypes — use deterministic GUIDs from SharedDomain so the frontend
+        // can reference EntityTypeIds without querying the registry at runtime.
         db.EntityTypes.AddRange(
-            EntityType.Create(identityModule.Id, "User",       "atlas_identity"),
-            EntityType.Create(identityModule.Id, "Role",       "atlas_identity"),
-            EntityType.Create(identityModule.Id, "Invitation", "atlas_identity"),
-            EntityType.Create(platformModule.Id, "Tenant",     "atlas_platform"));
+            EntityType.Create(IdentityEntityTypes.User,       identityModule.Id, "User",       "atlas_identity"),
+            EntityType.Create(IdentityEntityTypes.Role,       identityModule.Id, "Role",       "atlas_identity"),
+            EntityType.Create(IdentityEntityTypes.Invitation, identityModule.Id, "Invitation", "atlas_identity"),
+            EntityType.Create(PlatformEntityTypes.Tenant,     platformModule.Id, "Tenant",     "atlas_platform"));
 
         // EntityTypes — Staff module
         db.EntityTypes.Add(
-            EntityType.Create(staffModule.Id, "StaffMember", "atlas_staff"));
+            EntityType.Create(StaffEntityTypes.StaffMember, staffModule.Id, "StaffMember", "atlas_staff"));
 
         var systemId    = Guid.NewGuid();
         var systemEmail = SystemIdentity.Email;

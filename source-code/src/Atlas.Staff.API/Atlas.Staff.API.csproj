@@ -12,7 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.AuditTrail.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Domain\Atlas.Staff.Domain.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Resources\Atlas.Staff.Resources.csproj" />
   </ItemGroup>
 

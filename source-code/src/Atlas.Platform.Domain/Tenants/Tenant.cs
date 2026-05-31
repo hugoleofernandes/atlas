@@ -1,5 +1,6 @@
 using Atlas.Platform.Domain.Tenants.Events;
 using Atlas.Platform.Domain.Tenants.Exceptions;
+using Atlas.SharedDomain.Platform;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Platform.Domain.Tenants;
@@ -16,8 +17,10 @@ namespace Atlas.Platform.Domain.Tenants;
 /// - Does NOT send emails or notifications.
 /// - Does NOT persist data (handled by repositories/UoW).
 /// </summary>
-public sealed class Tenant : AggregateRoot, INotMultiTenant
+public sealed class Tenant : AggregateRoot, INotMultiTenant, IAuditableAggregate
 {
+    public Guid EntityTypeId => PlatformEntityTypes.Tenant;
+
     public Guid Id { get; private set; } = Guid.NewGuid();
 
     /// <summary>

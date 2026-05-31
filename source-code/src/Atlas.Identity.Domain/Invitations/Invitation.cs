@@ -1,6 +1,7 @@
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;
+using Atlas.SharedDomain.Identity;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Invitations;
@@ -13,8 +14,10 @@ namespace Atlas.Identity.Domain.Invitations;
 /// - Invitation cannot be used after expiration.
 /// - RoleId references a valid Role within the same tenant.
 /// </summary>
-public sealed class Invitation : AggregateRoot, IMultiTenantEntity
+public sealed class Invitation : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
+    public Guid EntityTypeId => IdentityEntityTypes.Invitation;
+
     public Guid Id { get; private set; } = Guid.NewGuid();
 
     public Guid TenantId { get; private set; }

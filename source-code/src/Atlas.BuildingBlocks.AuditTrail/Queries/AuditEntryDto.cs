@@ -1,8 +1,8 @@
-namespace Atlas.Platform.Application.Queries.Audit.ListEntries;
+namespace Atlas.BuildingBlocks.AuditTrail.Queries;
 
 public sealed record AuditEntryDto(
     Guid     Id,
-    string   EntityName,
+    Guid     EntityTypeId,
     string   Action,
     string?  EntityId,
     string?  UserId,

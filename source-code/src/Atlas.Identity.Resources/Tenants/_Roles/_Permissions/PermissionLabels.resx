@@ -16,4 +16,7 @@
   <data name="tenant.invitations.update" xml:space="preserve"><value>Update invitations</value></data>
   <data name="tenant.invitations.delete" xml:space="preserve"><value>Delete invitations</value></data>
   <data name="tenant.invitations.manage" xml:space="preserve"><value>Manage invitations</value></data>
+
+  <data name="tenant.audit.read"   xml:space="preserve"><value>View audit log</value></data>
+  <data name="tenant.audit.manage" xml:space="preserve"><value>Manage audit log</value></data>
 </root>

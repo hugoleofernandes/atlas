@@ -1,22 +1,22 @@
 //using Atlas.BuildingBlocks.Audit.Queries;
 //using Atlas.BuildingBlocks.FastEndpoints;
-//using Atlas.Platform.Application.Queries.Audit.ListEntries;
-//using Atlas.Platform.Domain.Permissions;
+//using Atlas.Identity.Application.Queries.Audit.ListEntries;
+//using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 //using Atlas.SharedKernel.Application.Handlers;
 //using FastEndpoints;
 //using Microsoft.AspNetCore.Http;
 
-//namespace Atlas.Platform.API.Endpoints.Audit.ListEntries;
+//namespace Atlas.Identity.API.Endpoints.Audit.ListEntries;
 
 //public sealed class ListAuditEntriesEndpoint(
-//    IPlatformListAuditEntriesQueryHandler handler,
+//    IIdentityListAuditEntriesQueryHandler handler,
 //    IHandlerInvoker                       invoker
 //) : AtlasEndpoint<ListAuditEntriesRequest, IReadOnlyList<AuditEntryDto>>
 //{
 //    public override void Configure()
 //    {
-//        Get("audit/entries");
-//        Policies($"permission:{PlatformModulePermissions.Audit.Read}");
+//        Get("identity/audit/entries");
+//        Policies($"permission:{IdentityModulePermissions.Tenant.Audit.Read}");
 //        Description(d => d.Produces<IReadOnlyList<AuditEntryDto>>());
 //    }
 

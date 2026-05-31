@@ -45,11 +45,9 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("entity_id");
 
-                    b.Property<string>("EntityName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("entity_name");
+                    b.Property<Guid>("EntityTypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("entity_type_id");
 
                     b.Property<DateTime>("OccurredAtUtc")
                         .HasColumnType("timestamp with time zone")
@@ -67,8 +65,8 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_audits");
 
-                    b.HasIndex("EntityName")
-                        .HasDatabaseName("ix_audits_entity_name");
+                    b.HasIndex("EntityTypeId")
+                        .HasDatabaseName("ix_audits_entity_type_id");
 
                     b.HasIndex("OccurredAtUtc")
                         .HasDatabaseName("ix_audits_occurred_at_utc");

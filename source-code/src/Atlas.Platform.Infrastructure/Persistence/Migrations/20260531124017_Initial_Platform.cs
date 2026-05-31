@@ -20,7 +20,7 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    entity_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    entity_type_id = table.Column<Guid>(type: "uuid", nullable: false),
                     action = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     entity_id = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     user_id = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
@@ -199,10 +199,10 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_audits_entity_name",
+                name: "ix_audits_entity_type_id",
                 schema: "atlas_platform",
                 table: "audits",
-                column: "entity_name");
+                column: "entity_type_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_audits_occurred_at_utc",

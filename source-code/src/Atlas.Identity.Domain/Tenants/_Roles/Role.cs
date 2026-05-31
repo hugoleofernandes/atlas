@@ -1,6 +1,7 @@
 using Atlas.Identity.Domain.Tenants.Events;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
+using Atlas.SharedDomain.Identity;
 using Atlas.SharedKernel.Domain;
 using Atlas.SharedKernel.Domain.Permissions;
 
@@ -18,8 +19,10 @@ namespace Atlas.Identity.Domain.Tenants._Roles;
 /// The domain does not reference IPermissionPolicy directly — callers pass the valid set as a parameter,
 /// keeping the domain pure and enabling modular permission registration.
 /// </summary>
-public sealed class Role : AggregateRoot, IMultiTenantEntity
+public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
+    public Guid EntityTypeId => IdentityEntityTypes.Role;
+
     public Guid Id { get; private set; }
 
     /// <summary>

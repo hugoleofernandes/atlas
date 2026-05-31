@@ -10,4 +10,7 @@
   <data name="staff.update"     xml:space="preserve"><value>Atualizar membros da equipe</value></data>
   <data name="staff.deactivate" xml:space="preserve"><value>Desativar membros da equipe</value></data>
   <data name="staff.manage"     xml:space="preserve"><value>Gerenciar membros da equipe</value></data>
+
+  <data name="staff.audit.read"   xml:space="preserve"><value>Visualizar log de auditoria</value></data>
+  <data name="staff.audit.manage" xml:space="preserve"><value>Gerenciar log de auditoria</value></data>
 </root>

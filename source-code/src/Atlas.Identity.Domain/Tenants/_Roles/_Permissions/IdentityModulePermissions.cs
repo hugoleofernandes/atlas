@@ -31,6 +31,12 @@ public sealed class IdentityModulePermissions : IModulePermissions
             public const string Delete = "tenant.invitations.delete";
             public const string Manage = "tenant.invitations.manage";
         }
+
+        public static class Audit
+        {
+            public const string Read   = "tenant.audit.read";
+            public const string Manage = "tenant.audit.manage";
+        }
     }
 
     public IReadOnlySet<string> Permissions { get; }

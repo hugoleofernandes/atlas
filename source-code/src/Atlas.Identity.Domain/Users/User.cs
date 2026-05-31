@@ -2,6 +2,7 @@ using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Users.Events;
 using Atlas.Identity.Domain.Users.Exceptions;
+using Atlas.SharedDomain.Identity;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Users;
@@ -18,8 +19,10 @@ namespace Atlas.Identity.Domain.Users;
 /// - Authentication is delegated to external providers (OIDC).
 /// - The system does not manage passwords or credentials.
 /// </summary>
-public sealed class User : AggregateRoot, IMultiTenantEntity
+public sealed class User : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
+    public Guid EntityTypeId => IdentityEntityTypes.User;
+
     public Guid Id { get; private set; } = Guid.NewGuid();
 
     public Guid TenantId { get; private set; }

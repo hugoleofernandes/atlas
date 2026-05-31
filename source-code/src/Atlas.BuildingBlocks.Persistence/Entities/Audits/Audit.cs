@@ -6,7 +6,7 @@ public sealed class Audit : IMultiTenantEntity, INotAuditable
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 
-    public string EntityName { get; private set; } = default!;
+    public Guid EntityTypeId { get; private set; }
     public string Action { get; private set; } = default!;
     public string? EntityId { get; private set; }
     public string? UserId { get; private set; }
@@ -15,19 +15,19 @@ public sealed class Audit : IMultiTenantEntity, INotAuditable
     public DateTime OccurredAtUtc { get; private set; }
 
     public void Initialize(
-        string entityName,
-        string action,
+        Guid    entityTypeId,
+        string  action,
         string? entityId,
         string? userId,
-        Guid tenantId,
-        string changesJson)
+        Guid    tenantId,
+        string  changesJson)
     {
-        EntityName = entityName;
-        Action = action;
-        EntityId = entityId;
-        UserId = userId;
-        TenantId = tenantId;
-        ChangesJson = changesJson;
+        EntityTypeId  = entityTypeId;
+        Action        = action;
+        EntityId      = entityId;
+        UserId        = userId;
+        TenantId      = tenantId;
+        ChangesJson   = changesJson;
         OccurredAtUtc = DateTime.UtcNow;
     }
 

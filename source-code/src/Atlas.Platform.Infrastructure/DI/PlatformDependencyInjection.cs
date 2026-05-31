@@ -1,6 +1,5 @@
 using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.Platform.Application.Abstractions;
-using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
 using Atlas.Platform.Domain.Permissions;
@@ -26,14 +25,24 @@ public static class PlatformDependencyInjection
         services.AddSingleton<IModulePermissions, PlatformModulePermissions>();
 
         // READERS
-        services.AddScoped<ILookupEntityTypesReader,  LookupEntityTypesReader>();
-        services.AddScoped<IListAuditEntriesReader,   ListAuditEntriesReader>();
-        services.AddScoped<IGetTenantByNameReader,    GetTenantByNameReader>();
+        services.AddScoped<ILookupEntityTypesReader, LookupEntityTypesReader>();
+        services.AddScoped<IGetTenantByNameReader, GetTenantByNameReader>();
+
+        // Audit reader registered as concrete type to avoid DI conflict with
+        // other modules that also register IListAuditEntriesReader.
+        services.AddScoped<PlatformAuditEntriesReader>();
 
         // QUERY HANDLERS
-        services.AddScoped<ILookupEntityTypesQueryHandler,  LookupEntityTypesQueryHandler>();
-        services.AddScoped<IListAuditEntriesQueryHandler,   ListAuditEntriesQueryHandler>();
-        services.AddScoped<IGetTenantByNameQueryHandler,    GetTenantByNameQueryHandler>();
+        services.AddScoped<ILookupEntityTypesQueryHandler, LookupEntityTypesQueryHandler>();
+        services.AddScoped<IGetTenantByNameQueryHandler, GetTenantByNameQueryHandler>();
+
+        // Factory lambda wires the Platform-specific reader into the handler without
+        // exposing IListAuditEntriesReader in the shared DI container.
+        //services.AddScoped<IPlatformListAuditEntriesQueryHandler>(sp =>
+        //    new PlatformListAuditEntriesQueryHandler(
+        //        sp.GetRequiredService<PlatformAuditEntriesReader>(),
+        //        sp.GetRequiredService<IRequestContext>()));
+        //todo: rever
 
         return services;
     }

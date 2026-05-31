@@ -26,4 +26,19 @@ public sealed class EntityType : AggregateRoot, INotMultiTenant
             Schema   = schema,
             IsActive = true,
         };
+
+    /// <summary>
+    /// Creates an EntityType with an explicit, deterministic ID.
+    /// Use this overload in seeders with constants from Atlas.SharedDomain so that
+    /// the frontend can reference EntityTypeIds without querying the registry at runtime.
+    /// </summary>
+    public static EntityType Create(Guid id, Guid moduleId, string name, string schema)
+        => new()
+        {
+            Id       = id,
+            ModuleId = moduleId,
+            Name     = name,
+            Schema   = schema,
+            IsActive = true,
+        };
 }

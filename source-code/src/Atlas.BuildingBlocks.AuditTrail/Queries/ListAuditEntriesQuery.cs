@@ -1,4 +1,4 @@
-namespace Atlas.Platform.Application.Queries.Audit.ListEntries;
+namespace Atlas.BuildingBlocks.AuditTrail.Queries;
 
 public sealed record ListAuditEntriesQuery(
     Guid      EntityTypeId,

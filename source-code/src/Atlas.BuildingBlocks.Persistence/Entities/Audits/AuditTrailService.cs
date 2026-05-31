@@ -33,13 +33,16 @@ public sealed class AuditTrailService : IAuditTrailService
 
         var entries = db.ChangeTracker.Entries()
             .Where(e =>
-                e.Entity is not INotAuditable &&
+                e.Entity is IAuditableAggregate &&
                 e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
 
         var logs = new List<Audit>();
 
         foreach (var entry in entries)
         {
+            // Only entities that explicitly opt in to auditing are tracked.
+            var auditableAggregate = (IAuditableAggregate)entry.Entity;
+
             var changes = new Dictionary<string, object?>();
 
             foreach (var prop in entry.Properties)
@@ -66,7 +69,7 @@ public sealed class AuditTrailService : IAuditTrailService
 
             var audit = new Audit();
             audit.Initialize(
-                entry.Entity.GetType().Name,
+                auditableAggregate.EntityTypeId,
                 entry.State.ToString(),
                 GetPrimaryKey(entry),
                 _ctx.UserId?.ToString(),

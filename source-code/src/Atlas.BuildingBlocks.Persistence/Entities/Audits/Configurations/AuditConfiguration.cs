@@ -15,9 +15,8 @@ public sealed class AuditConfiguration : IEntityTypeConfiguration<Audit>
         b.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        b.Property(x => x.EntityName)
-            .IsRequired()
-            .HasMaxLength(200);
+        b.Property(x => x.EntityTypeId)
+            .IsRequired();
 
         b.Property(x => x.Action)
             .IsRequired()
@@ -41,6 +40,6 @@ public sealed class AuditConfiguration : IEntityTypeConfiguration<Audit>
 
         b.HasIndex(x => x.TenantId);
         b.HasIndex(x => x.OccurredAtUtc);
-        b.HasIndex(x => x.EntityName);
+        b.HasIndex(x => x.EntityTypeId);
     }
 }

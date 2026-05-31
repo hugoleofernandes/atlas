@@ -10,4 +10,7 @@
   <data name="staff.update"     xml:space="preserve"><value>Update staff members</value></data>
   <data name="staff.deactivate" xml:space="preserve"><value>Deactivate staff members</value></data>
   <data name="staff.manage"     xml:space="preserve"><value>Manage staff members</value></data>
+
+  <data name="staff.audit.read"   xml:space="preserve"><value>View audit log</value></data>
+  <data name="staff.audit.manage" xml:space="preserve"><value>Manage audit log</value></data>
 </root>
