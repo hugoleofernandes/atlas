@@ -28,6 +28,9 @@ public sealed class AuditConfiguration : IEntityTypeConfiguration<Audit>
         b.Property(x => x.UserId)
             .HasMaxLength(200);
 
+        b.Property(x => x.UserEmail)
+            .HasMaxLength(254);
+
         b.Property(x => x.TenantId)
             .IsRequired();
 
@@ -41,5 +44,8 @@ public sealed class AuditConfiguration : IEntityTypeConfiguration<Audit>
         b.HasIndex(x => x.TenantId);
         b.HasIndex(x => x.OccurredAtUtc);
         b.HasIndex(x => x.EntityTypeId);
+        b.HasIndex(x => new { x.TenantId, x.EntityTypeId, x.OccurredAtUtc });
+        b.HasIndex(x => new { x.TenantId, x.EntityTypeId, x.EntityId });
+        b.HasIndex(x => new { x.TenantId, x.EntityTypeId, x.Action, x.OccurredAtUtc });
     }
 }

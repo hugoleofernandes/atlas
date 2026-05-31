@@ -10,6 +10,7 @@ public sealed class Audit : IMultiTenantEntity, INotAuditable
     public string Action { get; private set; } = default!;
     public string? EntityId { get; private set; }
     public string? UserId { get; private set; }
+    public string? UserEmail { get; private set; }
     public Guid TenantId { get; private set; }
     public string ChangesJson { get; private set; } = default!;
     public DateTime OccurredAtUtc { get; private set; }
@@ -19,6 +20,7 @@ public sealed class Audit : IMultiTenantEntity, INotAuditable
         string  action,
         string? entityId,
         string? userId,
+        string? userEmail,
         Guid    tenantId,
         string  changesJson)
     {
@@ -26,6 +28,7 @@ public sealed class Audit : IMultiTenantEntity, INotAuditable
         Action        = action;
         EntityId      = entityId;
         UserId        = userId;
+        UserEmail     = userEmail;
         TenantId      = tenantId;
         ChangesJson   = changesJson;
         OccurredAtUtc = DateTime.UtcNow;

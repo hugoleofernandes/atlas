@@ -1,5 +1,6 @@
 using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.Platform.Application.Abstractions;
+using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
 using Atlas.Platform.Domain.Permissions;
@@ -8,6 +9,7 @@ using Atlas.Platform.Infrastructure.Readers.Audit.ListEntries;
 using Atlas.Platform.Infrastructure.Readers.EntityTypes.Lookup;
 using Atlas.Platform.Infrastructure.Readers.Tenants.GetTenantByName;
 using Atlas.Platform.Infrastructure.Seeders;
+using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain.Permissions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,13 +38,12 @@ public static class PlatformDependencyInjection
         services.AddScoped<ILookupEntityTypesQueryHandler, LookupEntityTypesQueryHandler>();
         services.AddScoped<IGetTenantByNameQueryHandler, GetTenantByNameQueryHandler>();
 
-        // Factory lambda wires the Platform-specific reader into the handler without
-        // exposing IListAuditEntriesReader in the shared DI container.
-        //services.AddScoped<IPlatformListAuditEntriesQueryHandler>(sp =>
-        //    new PlatformListAuditEntriesQueryHandler(
-        //        sp.GetRequiredService<PlatformAuditEntriesReader>(),
-        //        sp.GetRequiredService<IRequestContext>()));
-        //todo: rever
+        // Factory lambda wires the Platform-specific reader into the shared audit handler
+        // without exposing IListAuditEntriesReader in the root DI container.
+        services.AddScoped<IPlatformListAuditEntriesQueryHandler>(sp =>
+            new PlatformListAuditEntriesQueryHandler(
+                sp.GetRequiredService<PlatformAuditEntriesReader>(),
+                sp.GetRequiredService<IRequestContext>()));
 
         return services;
     }

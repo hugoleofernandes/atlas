@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail.FastEndpoints\Atlas.BuildingBlocks.AuditTrail.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.AuditTrail.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />

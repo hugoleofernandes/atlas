@@ -12,6 +12,8 @@ performance/security constraints that must survive across sessions.
 - This is especially important for audit trail queries and other high-growth tables, where indexes must remain usable.
 - For PostgreSQL/Npgsql with Dapper, nullable parameters in `@Param IS NULL OR ...` expressions can also fail type inference.
 - Keep tenant filters explicit in queries, even when automatic tenant safeguards exist.
+- Do not read another module's schema from a module-owned query. Even in the modular monolith,
+  schemas are module boundaries and may become separate databases/services later.
 
 Preferred pattern:
 

@@ -73,6 +73,7 @@ public sealed class AuditTrailService : IAuditTrailService
                 entry.State.ToString(),
                 GetPrimaryKey(entry),
                 _ctx.UserId?.ToString(),
+                _ctx.UserEmail,
                 tenantId.Value,
                 JsonSerializer.Serialize(changes)
             );

@@ -1,5 +1,6 @@
 using Atlas.SharedKernel.Application;
 using Atlas.Staff.Application.Abstractions;
+using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
 using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Application.StaffMembers.Queries.List;
 using Atlas.Staff.Infrastructure.Entities.StaffMembers.Audit;
@@ -22,14 +23,12 @@ public static class StaffDependencyInjection
         // other modules that also register IListAuditEntriesReader.
         services.AddScoped<StaffAuditEntriesReader>();
 
-        // Factory lambda wires the Staff-specific reader into the handler without
-        // exposing IListAuditEntriesReader in the shared DI container.
-        //services.AddScoped<IStaffListAuditEntriesQueryHandler>(sp =>
-        //    new StaffListAuditEntriesQueryHandler(
-        //        sp.GetRequiredService<StaffAuditEntriesReader>(),
-        //        sp.GetRequiredService<IRequestContext>()));
-
-        //todo: rever codigo acima.
+        // Factory lambda wires the Staff-specific reader into the shared audit handler
+        // without exposing IListAuditEntriesReader in the root DI container.
+        services.AddScoped<IStaffListAuditEntriesQueryHandler>(sp =>
+            new StaffListAuditEntriesQueryHandler(
+                sp.GetRequiredService<StaffAuditEntriesReader>(),
+                sp.GetRequiredService<IRequestContext>()));
 
         return services;
     }

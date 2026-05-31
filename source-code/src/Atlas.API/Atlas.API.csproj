@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.AuditTrail.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj" />
@@ -46,6 +47,7 @@
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.Platform.API\Atlas.Platform.API.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
+    <ProjectReference Include="..\Atlas.SharedDomain\Atlas.SharedDomain.csproj" />
   </ItemGroup>
 
 </Project>

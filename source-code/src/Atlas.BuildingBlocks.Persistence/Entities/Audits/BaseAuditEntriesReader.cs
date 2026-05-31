@@ -33,16 +33,18 @@ public abstract class BaseAuditEntriesReader : IListAuditEntriesReader
     {
         var sql = new StringBuilder($"""
             SELECT
-                id               AS Id,
-                entity_type_id   AS EntityTypeId,
-                action           AS Action,
-                entity_id        AS EntityId,
-                user_id          AS UserId,
-                occurred_at_utc  AS OccurredAtUtc,
-                changes_json     AS ChangesJson
-            FROM {_schema}.audits
-            WHERE tenant_id      = @TenantId
-              AND entity_type_id = @EntityTypeId
+                a.id              AS Id,
+                a.entity_type_id  AS EntityTypeId,
+                a.action          AS Action,
+                a.entity_id       AS EntityId,
+                a.user_id         AS UserId,
+                a.user_email      AS UserEmail,
+                a.occurred_at_utc AS OccurredAtUtc,
+                a.changes_json    AS ChangesJson
+            FROM {_schema}.audits a
+            WHERE a.tenant_id      = @TenantId
+              AND a.entity_type_id = @EntityTypeId
+
             """);
 
         var parameters = new DynamicParameters();
@@ -51,29 +53,29 @@ public abstract class BaseAuditEntriesReader : IListAuditEntriesReader
 
         if (query.From is not null)
         {
-            sql.AppendLine("  AND occurred_at_utc >= @From");
+            sql.AppendLine("  AND a.occurred_at_utc >= @From");
             parameters.Add("From", query.From);
         }
 
         if (query.To is not null)
         {
-            sql.AppendLine("  AND occurred_at_utc <= @To");
+            sql.AppendLine("  AND a.occurred_at_utc <= @To");
             parameters.Add("To", query.To);
         }
 
         if (!string.IsNullOrWhiteSpace(query.Action))
         {
-            sql.AppendLine("  AND action = @Action");
+            sql.AppendLine("  AND a.action = @Action");
             parameters.Add("Action", query.Action);
         }
 
         if (!string.IsNullOrWhiteSpace(query.EntityId))
         {
-            sql.AppendLine("  AND entity_id = @EntityId");
+            sql.AppendLine("  AND a.entity_id = @EntityId");
             parameters.Add("EntityId", query.EntityId);
         }
 
-        sql.AppendLine("ORDER BY occurred_at_utc DESC");
+        sql.AppendLine("ORDER BY a.occurred_at_utc DESC");
 
         var conn = _db.Database.GetDbConnection();
         var results = await conn.QueryAsync<AuditEntryDto>(

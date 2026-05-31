@@ -6,5 +6,6 @@ public sealed record AuditEntryDto(
     string   Action,
     string?  EntityId,
     string?  UserId,
+    string?  UserEmail,
     DateTime OccurredAtUtc,
     string   ChangesJson);
