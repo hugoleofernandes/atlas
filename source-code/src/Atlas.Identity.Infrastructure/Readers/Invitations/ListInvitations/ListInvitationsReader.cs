@@ -11,7 +11,7 @@ public sealed class ListInvitationsReader(IdentityDbContext db) : IListInvitatio
     // This predicate is used twice: once to project the IsActive column, once to filter.
     private const string IsActivePredicate = "NOT i.is_used AND i.expires_at >= @Now";
 
-    private const string Sql = $"""
+    private const string SqlTemplate = """
         SELECT
             i.id                AS InvitationId,
             i.email             AS Email,
@@ -31,10 +31,7 @@ public sealed class ListInvitationsReader(IdentityDbContext db) : IListInvitatio
         LEFT JOIN atlas_identity.roles r ON r.id = i.role_id
 
         WHERE i.tenant_id = @TenantId
-          AND (
-              (     @IsActive AND     ({IsActivePredicate}))
-           OR (NOT @IsActive AND NOT ({IsActivePredicate}))
-          )
+          AND ({StatusPredicate})
 
         ORDER BY i.created_at DESC, i.email ASC
         """;
@@ -42,16 +39,12 @@ public sealed class ListInvitationsReader(IdentityDbContext db) : IListInvitatio
     public async Task<IReadOnlyList<InvitationDto>> ListAsync(Guid tenantId, bool isActive, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
+        var statusPredicate = isActive ? IsActivePredicate : $"NOT ({IsActivePredicate})";
+        var sql = SqlTemplate
+            .Replace("{IsActivePredicate}", IsActivePredicate)
+            .Replace("{StatusPredicate}", statusPredicate);
 
-        var results = await conn.QueryAsync<InvitationDto>(
-            Sql,
-            new
-            {
-                TenantId = tenantId,
-                IsActive = isActive,
-                Now = DateTime.UtcNow,
-            }
-        );
+        var results = await conn.QueryAsync<InvitationDto>(sql, new { TenantId = tenantId, Now = DateTime.UtcNow });
 
         return results.ToList();
     }

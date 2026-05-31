@@ -5,6 +5,7 @@ using Atlas.Identity.Application.Commands.RemoveRole;
 using Atlas.Identity.Application.Commands.ResolveTenantAccess;
 using Atlas.Identity.Application.Commands.UpdateRole;
 using Atlas.Identity.Application.MetricMappers;
+using Atlas.Identity.Application.Queries.Audit.ListEntries;
 using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 using Atlas.Identity.Application.Queries.Roles.GetRoleById;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
@@ -45,13 +46,12 @@ internal static class TenantServicesExtensions
         services.AddScoped<ILookupRolesQueryHandler, LookupRolesQueryHandler>();
         services.AddScoped<IListPermissionsQueryHandler, ListPermissionsQueryHandler>();
 
-        // Factory lambda wires the Identity-specific reader into the handler without
-        // exposing IListAuditEntriesReader in the shared DI container.
-        //services.AddScoped<IIdentityListAuditEntriesQueryHandler>(sp =>
-        //    new IdentityListAuditEntriesQueryHandler(
-        //        sp.GetRequiredService<IdentityAuditEntriesReader>(),
-        //        sp.GetRequiredService<IRequestContext>()));
-        //todo: rever codigo acima.
+        // Factory lambda wires the Identity-specific reader into the shared audit handler
+        // without exposing IListAuditEntriesReader in the root DI container.
+        services.AddScoped<IIdentityListAuditEntriesQueryHandler>(sp => new IdentityListAuditEntriesQueryHandler(
+            sp.GetRequiredService<IdentityAuditEntriesReader>(),
+            sp.GetRequiredService<IRequestContext>()
+        ));
 
         // Command Handlers
         services.AddScoped<IDevLoginCommandHandler, DevLoginCommandHandler>();

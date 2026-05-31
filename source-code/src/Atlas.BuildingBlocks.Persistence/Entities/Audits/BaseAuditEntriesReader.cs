@@ -1,6 +1,7 @@
 using Atlas.BuildingBlocks.AuditTrail.Queries;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace Atlas.BuildingBlocks.Persistence.Entities.Audits;
 
@@ -30,7 +31,7 @@ public abstract class BaseAuditEntriesReader : IListAuditEntriesReader
         CancellationToken ct
     )
     {
-        var sql = $"""
+        var sql = new StringBuilder($"""
             SELECT
                 id               AS Id,
                 entity_type_id   AS EntityTypeId,
@@ -42,25 +43,41 @@ public abstract class BaseAuditEntriesReader : IListAuditEntriesReader
             FROM {_schema}.audits
             WHERE tenant_id      = @TenantId
               AND entity_type_id = @EntityTypeId
-              AND (@From     IS NULL OR occurred_at_utc >= @From)
-              AND (@To       IS NULL OR occurred_at_utc <= @To)
-              AND (@Action   IS NULL OR action           = @Action)
-              AND (@EntityId IS NULL OR entity_id        = @EntityId)
-            ORDER BY occurred_at_utc DESC
-            """;
+            """);
+
+        var parameters = new DynamicParameters();
+        parameters.Add("TenantId", tenantId);
+        parameters.Add("EntityTypeId", query.EntityTypeId);
+
+        if (query.From is not null)
+        {
+            sql.AppendLine("  AND occurred_at_utc >= @From");
+            parameters.Add("From", query.From);
+        }
+
+        if (query.To is not null)
+        {
+            sql.AppendLine("  AND occurred_at_utc <= @To");
+            parameters.Add("To", query.To);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.Action))
+        {
+            sql.AppendLine("  AND action = @Action");
+            parameters.Add("Action", query.Action);
+        }
+
+        if (!string.IsNullOrWhiteSpace(query.EntityId))
+        {
+            sql.AppendLine("  AND entity_id = @EntityId");
+            parameters.Add("EntityId", query.EntityId);
+        }
+
+        sql.AppendLine("ORDER BY occurred_at_utc DESC");
 
         var conn = _db.Database.GetDbConnection();
         var results = await conn.QueryAsync<AuditEntryDto>(
-            sql,
-            new
-            {
-                TenantId = tenantId,
-                EntityTypeId = query.EntityTypeId,
-                From = query.From,
-                To = query.To,
-                Action = query.Action,
-                EntityId = query.EntityId,
-            }
+            new CommandDefinition(sql.ToString(), parameters, cancellationToken: ct)
         );
 
         return results.ToList().AsReadOnly();

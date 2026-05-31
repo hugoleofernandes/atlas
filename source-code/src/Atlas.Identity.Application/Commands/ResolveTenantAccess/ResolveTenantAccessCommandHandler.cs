@@ -48,6 +48,7 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
             if (existingUser is not null)
             {
                 existingUser.ResolveExistingAccess(externalId);
+                _contextSetter.Set(tenantId, tenantName, existingUser.Id, email.Value);
 
                 var existingRole = await _roleRepository.GetByIdWithPermissionsAsync(existingUser.RoleId, ct)
                     ?? throw new RoleNotFoundException(existingUser.RoleId);
@@ -73,6 +74,7 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
                 ?? throw new RoleNotFoundException(invitation.RoleId);
 
             var user = User.CreateFromInvitation(invitation, externalId, role.Name);
+            _contextSetter.Set(tenantId, tenantName, user.Id, email.Value);
 
             await _userRepository.AddAsync(user, ct);
 

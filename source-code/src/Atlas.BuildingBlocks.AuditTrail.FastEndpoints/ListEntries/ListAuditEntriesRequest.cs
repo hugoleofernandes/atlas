@@ -1,4 +1,4 @@
-namespace Atlas.Identity.API.Endpoints.Audit.ListEntries;
+namespace Atlas.BuildingBlocks.AuditTrail.FastEndpoints.ListEntries;
 
 public sealed record ListAuditEntriesRequest(
     Guid      EntityTypeId,
