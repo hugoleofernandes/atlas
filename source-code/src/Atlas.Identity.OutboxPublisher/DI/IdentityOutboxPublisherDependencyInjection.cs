@@ -1,7 +1,7 @@
-using Atlas.Outbox.Identity.Publisher.Tenants.UserCreatedFromInvitation;
+using Atlas.Identity.OutboxPublisher.Users.UserCreatedFromInvitation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Atlas.Outbox.Identity.Publisher.DI;
+namespace Atlas.Identity.OutboxPublisher.DI;
 
 /// <summary>
 /// Registers all Identity domain event → outbox message mappers.
@@ -17,8 +17,7 @@ namespace Atlas.Outbox.Identity.Publisher.DI;
 /// </summary>
 public static class IdentityOutboxPublisherDependencyInjection
 {
-    public static IServiceCollection AddIdentityOutboxPublisherMappings(
-        this IServiceCollection services)
+    public static IServiceCollection AddIdentityOutboxPublisherMappings(this IServiceCollection services)
     {
         services.AddUserCreatedFromInvitationMapper();
 

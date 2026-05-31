@@ -2,90 +2,87 @@ using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Integration.Contracts.Tenants;
+using Atlas.Outbox.IdentityConsumer._DI;
 using Atlas.Outbox.Infrastructure.DI;
 using Atlas.Outbox.Worker.Hosting;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
-using Atlas.Outbox.Identity.Consumer.DI;
 
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Warning()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.Console().CreateBootstrapLogger();
 
 try
 {
     var host = Host.CreateDefaultBuilder(args)
-        .UseSerilog((ctx, services, cfg) =>
-        {
-            var otel = ctx.Configuration
-                .GetSection(ObservabilitySettings.SectionName)
-                .Get<ObservabilitySettings>() ?? new ObservabilitySettings();
-
-            cfg
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
-                .Enrich.FromLogContext()
-                .Enrich.WithThreadId()
-                .WriteTo.Console(outputTemplate:
-                    "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-                // Logs → Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
-                .WriteToAtlasObservability(otel, ctx.HostingEnvironment);
-
-            if (!otel.IsEnabled)
+        .UseSerilog(
+            (ctx, services, cfg) =>
             {
-                cfg.WriteTo.File(
-                    path: "logs/outbox-worker-.txt",
-                    rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 7,
-                    outputTemplate:
-                        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}" +
-                        " {Properties:j}{NewLine}{Exception}");
+                var otel =
+                    ctx.Configuration.GetSection(ObservabilitySettings.SectionName).Get<ObservabilitySettings>()
+                    ?? new ObservabilitySettings();
+
+                cfg.MinimumLevel.Information()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+                    .Enrich.FromLogContext()
+                    .Enrich.WithThreadId()
+                    .WriteTo.Console(
+                        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    )
+                    // Logs → Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
+                    .WriteToAtlasObservability(otel, ctx.HostingEnvironment);
+
+                if (!otel.IsEnabled)
+                {
+                    cfg.WriteTo.File(
+                        path: "logs/outbox-worker-.txt",
+                        rollingInterval: RollingInterval.Day,
+                        retainedFileCountLimit: 7,
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}"
+                            + " {Properties:j}{NewLine}{Exception}"
+                    );
+                }
             }
-        })
-        .ConfigureServices((ctx, services) =>
-        {
-            var configuration = ctx.Configuration;
-
-            // ── Observabilidade (Traces + Metrics → Grafana Cloud) ─────────────
-            // Sem AddAspNetCoreInstrumentation — o worker não tem pipeline HTTP.
-            services.AddAtlasObservability(configuration, ctx.HostingEnvironment);
-
-            // ── Email ─────────────────────────────────────────────────────────
-            services.AddResendEmailService(configuration);
-
-            // ── DbContexts — um por módulo que usa o outbox ───────────────────
-            services.AddDbContext<IdentityDbContext>(o =>
-                o.UseNpgsql(configuration.GetConnectionString("Default"))
-                 .UseSnakeCaseNamingConvention());
-
-            services.AddDbContext<StaffDbContext>(o =>
-                o.UseNpgsql(configuration.GetConnectionString("Default"))
-                 .UseSnakeCaseNamingConvention());
-
-            // ── Assemblies dos tipos de integration events ────────────────────
-            var integrationEventAssemblies = new[]
+        )
+        .ConfigureServices(
+            (ctx, services) =>
             {
-                typeof(UserCreatedFromInvitationIntegrationEvent).Assembly
-            };
+                var configuration = ctx.Configuration;
 
-            services.AddOutboxWorker(configuration, integrationEventAssemblies);
+                // ── Observabilidade (Traces + Metrics → Grafana Cloud) ─────────────
+                // Sem AddAspNetCoreInstrumentation — o worker não tem pipeline HTTP.
+                services.AddAtlasObservability(configuration, ctx.HostingEnvironment);
 
-            // ── Módulos — infraestrutura por módulo (repos, UoW, idempotência) ──
-            services.AddIdentityOutboxModuleDependencies();
-            services.AddStaffOutboxModuleDependencies();
+                // ── Email ─────────────────────────────────────────────────────────
+                services.AddResendEmailService(configuration);
 
-            // ── Bindings evento → handler ─────────────────────────────────────
-            // Abra OutboxIntegrationDependencyInjection para ver todos os mappings.
-            services.AddIdentityOutboxConsumerHandlers();
+                // ── DbContexts — um por módulo que usa o outbox ───────────────────
+                services.AddDbContext<IdentityDbContext>(o =>
+                    o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
+                );
 
-            // ── Entry point — loop de polling ─────────────────────────────────
-            services.AddHostedService<OutboxWorkerHostedService>();
-        })
+                services.AddDbContext<StaffDbContext>(o =>
+                    o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
+                );
+
+                // ── Assemblies dos tipos de integration events ────────────────────
+                var integrationEventAssemblies = new[] { typeof(UserCreatedFromInvitationIntegrationEvent).Assembly };
+
+                services.AddOutboxWorker(configuration, integrationEventAssemblies);
+
+                // ── Módulos — infraestrutura por módulo (repos, UoW, idempotência) ──
+                services.AddIdentityOutboxModuleDependencies();
+                services.AddStaffOutboxModuleDependencies();
+
+                // ── Bindings evento → handler ─────────────────────────────────────
+                // Abra OutboxIntegrationDependencyInjection para ver todos os mappings.
+                services.AddOutboxIdentityConsumerHandlers();
+
+                // ── Entry point — loop de polling ─────────────────────────────────
+                services.AddHostedService<OutboxWorkerHostedService>();
+            }
+        )
         .Build();
 
     await host.RunAsync();

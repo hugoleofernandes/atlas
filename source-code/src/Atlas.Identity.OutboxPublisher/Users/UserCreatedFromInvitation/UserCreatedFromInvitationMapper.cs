@@ -5,7 +5,7 @@ using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Domain.Events;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Atlas.Outbox.Identity.Publisher.Tenants.UserCreatedFromInvitation;
+namespace Atlas.Identity.OutboxPublisher.Users.UserCreatedFromInvitation;
 
 /// <summary>
 /// Maps <see cref="UserCreatedFromInvitationDomainEvent"/> (Identity domain) to
@@ -38,11 +38,7 @@ internal sealed class UserCreatedFromInvitationMapper : IIntegrationEventMapper
     {
         var e = (UserCreatedFromInvitationDomainEvent)domainEvent;
 
-        var integrationEvent = new UserCreatedFromInvitationIntegrationEvent(
-            e.TenantId,
-            e.UserId,
-            e.Email,
-            e.Role);
+        var integrationEvent = new UserCreatedFromInvitationIntegrationEvent(e.TenantId, e.UserId, e.Email, e.Role);
 
         // Pass identity values explicitly — IRequestContext is not yet populated
         // when this mapper runs during the bootstrap flow.
@@ -52,8 +48,7 @@ internal sealed class UserCreatedFromInvitationMapper : IIntegrationEventMapper
 
 internal static class UserCreatedFromInvitationPublishDependencyInjection
 {
-    internal static IServiceCollection AddUserCreatedFromInvitationMapper(
-        this IServiceCollection services)
+    internal static IServiceCollection AddUserCreatedFromInvitationMapper(this IServiceCollection services)
     {
         services.AddScoped<IIntegrationEventMapper, UserCreatedFromInvitationMapper>();
 

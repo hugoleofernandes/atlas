@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
+  </ItemGroup>
+
+</Project>

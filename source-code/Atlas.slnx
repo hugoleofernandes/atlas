@@ -34,14 +34,6 @@
     <Project Path="src/Atlas.Outbox.Worker/Atlas.Outbox.Worker.csproj" />
   </Folder>
   <Folder Name="/src/3-Modules/" />
-  <Folder Name="/src/3-Modules/3.0-Outbox/">
-    <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
-    <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
-  </Folder>
-  <Folder Name="/src/3-Modules/3.0-Outbox/3.1.1-Identity/">
-    <Project Path="src/Atlas.Outbox.Identity.Consumer/Atlas.Outbox.Identity.Consumer.csproj" />
-    <Project Path="src/Atlas.Outbox.Identity.Publisher/Atlas.Outbox.Identity.Publisher.csproj" />
-  </Folder>
   <Folder Name="/src/3-Modules/3.1-Plataform/">
     <Project Path="src/Atlas.Platform.API/Atlas.Platform.API.csproj" />
     <Project Path="src/Atlas.Platform.Application/Atlas.Platform.Application.csproj" />
@@ -53,6 +45,7 @@
     <Project Path="src/Atlas.Identity.Application/Atlas.Identity.Application.csproj" />
     <Project Path="src/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
     <Project Path="src/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
+    <Project Path="src/Atlas.Identity.OutboxPublisher/Atlas.Identity.OutboxPublisher.csproj" Id="0df38064-00e8-49b2-9883-91066c2d8d69" />
     <Project Path="src/Atlas.Identity.Resources/Atlas.Identity.Resources.csproj" Id="85200bc2-f5ad-46de-8410-db7976e623ae" />
   </Folder>
   <Folder Name="/src/3-Modules/3.3-Staff/">
@@ -62,10 +55,7 @@
     <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
     <Project Path="src/Atlas.Staff.Resources/Atlas.Staff.Resources.csproj" Id="dd314a04-85ad-4791-a9cd-ad172fa4738a" />
   </Folder>
-  <Folder Name="/src/5-IntegrationEvents/">
-    <Project Path="src/Atlas.Contracts/Atlas.Integration.Contracts.csproj" />
-  </Folder>
-  <Folder Name="/src/6-BuildingBlocks/">
+  <Folder Name="/src/4-BuildingBlocks/">
     <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Email/Atlas.BuildingBlocks.Email.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.FastEndpoints/Atlas.BuildingBlocks.FastEndpoints.csproj" />
@@ -73,8 +63,16 @@
     <Project Path="src/Atlas.BuildingBlocks.Observability/Atlas.BuildingBlocks.Observability.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
   </Folder>
-  <Folder Name="/src/7-Shared/">
+  <Folder Name="/src/5-Shared/">
+    <Project Path="src/Atlas.Contracts/Atlas.Integration.Contracts.csproj" />
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/src/5-Shared/Outbox/">
+    <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
+    <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/5-Shared/Outbox/Consumers/">
+    <Project Path="src/Atlas.Outbox.IdentityConsumer/Atlas.Outbox.IdentityConsumer.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />

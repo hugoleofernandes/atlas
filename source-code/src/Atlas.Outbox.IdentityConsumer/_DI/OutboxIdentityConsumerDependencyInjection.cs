@@ -1,7 +1,7 @@
-using Atlas.Outbox.Identity.Consumer.Tenants.UserCreatedFromInvitation;
+using Atlas.Outbox.IdentityConsumer.Users.UserCreatedFromInvitation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Atlas.Outbox.Identity.Consumer.DI;
+namespace Atlas.Outbox.IdentityConsumer._DI;
 
 /// <summary>
 /// Registers all handlers for integration events published by the Identity module.
@@ -16,10 +16,9 @@ namespace Atlas.Outbox.Identity.Consumer.DI;
 ///
 /// To add a new Identity event: create the matching folder and call its DI method below.
 /// </summary>
-public static class IdentityOutboxConsumerDependencyInjection
+public static class OutboxIdentityConsumerDependencyInjection
 {
-    public static IServiceCollection AddIdentityOutboxConsumerHandlers(
-        this IServiceCollection services)
+    public static IServiceCollection AddOutboxIdentityConsumerHandlers(this IServiceCollection services)
     {
         services.AddUserCreatedFromInvitationConsumeHandlers();
 

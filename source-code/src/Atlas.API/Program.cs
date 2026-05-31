@@ -1,57 +1,56 @@
-using Atlas.Identity.API.Configs;
 using Atlas.API.Errors;
-using FastEndpoints;
-using Atlas.BuildingBlocks.Observability;
-using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
-using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
+using Atlas.BuildingBlocks.Application.OutboxMessages;
+using Atlas.BuildingBlocks.Application.Seeding;
+using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Oidc;
 using Atlas.BuildingBlocks.AspNetCore.Oidc.Providers.EntraId;
 using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
-using Microsoft.AspNetCore.Authorization;
-using Atlas.BuildingBlocks.Application.OutboxMessages;
+using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.Observability;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges;
+using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
+using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
+using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
+using Atlas.Identity.API;
+using Atlas.Identity.API.Configs;
 using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
-using Atlas.BuildingBlocks.Application.Seeding;
-using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.OutboxMessages;
-using Atlas.Staff.Application;
-using Atlas.Staff.Infrastructure.DI;
-using Atlas.Staff.Infrastructure.Persistence.DbContexts;
-using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
-using Serilog;
-using Serilog.Events;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
-using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
-using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
-using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
-using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
-using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges;
-using Atlas.BuildingBlocks.Persistence.Entities.Audits;
-using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
-using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
-using Atlas.SharedKernel.Application.Errors;
-using Atlas.Identity.API;
-using Atlas.Staff.API;
-using Atlas.BuildingBlocks.FastEndpoints;
-using Atlas.Outbox.Identity.Publisher.DI;
+using Atlas.Identity.OutboxPublisher.DI;
 using Atlas.Platform.API;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Application.OutboxMessages;
+using Atlas.Staff.API;
+using Atlas.Staff.Application;
+using Atlas.Staff.Infrastructure.DI;
+using Atlas.Staff.Infrastructure.Persistence.DbContexts;
+using FastEndpoints;
+using FluentValidation;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using Scalar.AspNetCore;
+using Serilog;
+using Serilog.Events;
 
 //
 // ==========================================
@@ -59,10 +58,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 // ==========================================
 //
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Warning()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.Console().CreateBootstrapLogger();
 
 try
 {
@@ -74,36 +70,37 @@ try
     // ==========================================
     //
 
-    builder.Host.UseSerilog((context, services, config) =>
-    {
-        var otel = context.Configuration
-            .GetSection(ObservabilitySettings.SectionName)
-            .Get<ObservabilitySettings>() ?? new ObservabilitySettings();
-
-        config
-            .MinimumLevel.Information()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            .Enrich.WithThreadId()
-            // Console sempre ativo — saída limpa para desenvolvimento
-            .WriteTo.Console(outputTemplate:
-                "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-            // Logs → Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
-            .WriteToAtlasObservability(otel, context.HostingEnvironment);
-
-        if (!otel.IsEnabled)
+    builder.Host.UseSerilog(
+        (context, services, config) =>
         {
-            // Sem Grafana Cloud configurado: fallback para arquivo local
-            config.WriteTo.File(
-                path: "logs/log-.txt",
-                rollingInterval: RollingInterval.Day,
-                retainedFileCountLimit: 7,
-                outputTemplate:
-                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}" +
-                    " {Properties:j}{NewLine}{Exception}");
+            var otel =
+                context.Configuration.GetSection(ObservabilitySettings.SectionName).Get<ObservabilitySettings>()
+                ?? new ObservabilitySettings();
+
+            config
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .Enrich.WithThreadId()
+                // Console sempre ativo — saída limpa para desenvolvimento
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                // Logs → Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
+                .WriteToAtlasObservability(otel, context.HostingEnvironment);
+
+            if (!otel.IsEnabled)
+            {
+                // Sem Grafana Cloud configurado: fallback para arquivo local
+                config.WriteTo.File(
+                    path: "logs/log-.txt",
+                    rollingInterval: RollingInterval.Day,
+                    retainedFileCountLimit: 7,
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}"
+                        + " {Properties:j}{NewLine}{Exception}"
+                );
+            }
         }
-    });
+    );
 
     var services = builder.Services;
     var configuration = builder.Configuration;
@@ -117,15 +114,15 @@ try
     services.AddAtlasObservability(
         configuration,
         builder.Environment,
-        configureTracing: tracing => tracing
-            .AddAspNetCoreInstrumentation(o =>
+        configureTracing: tracing =>
+            tracing.AddAspNetCoreInstrumentation(o =>
             {
-                o.Filter        = ctx => !ctx.Request.Path.StartsWithSegments("/health");
+                o.Filter = ctx => !ctx.Request.Path.StartsWithSegments("/health");
                 o.RecordException = true;
             }),
-        configureMetrics: metrics => metrics
-            .AddAspNetCoreInstrumentation()
-            .AddMeter("Microsoft.AspNetCore.Server.Kestrel"));
+        configureMetrics: metrics =>
+            metrics.AddAspNetCoreInstrumentation().AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+    );
 
     //
     // ==========================================
@@ -154,16 +151,16 @@ try
     //
 
     services.AddDbContext<IdentityDbContext>(o =>
-        o.UseNpgsql(configuration.GetConnectionString("Default"))
-         .UseSnakeCaseNamingConvention());
+        o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
+    );
 
     services.AddDbContext<StaffDbContext>(o =>
-        o.UseNpgsql(configuration.GetConnectionString("Default"))
-         .UseSnakeCaseNamingConvention());
+        o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
+    );
 
     services.AddDbContext<PlatformDbContext>(o =>
-        o.UseNpgsql(configuration.GetConnectionString("Default"))
-         .UseSnakeCaseNamingConvention());
+        o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
+    );
 
     //
     // ==========================================
@@ -182,9 +179,6 @@ try
     // PLATFORM
     services.AddPlatformModuleDependencies();
     //
-
-    
-
 
     services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
     services.AddScoped<IOutboxMessageBuilder, OutboxMessageBuilder>();
@@ -205,28 +199,27 @@ try
 
     services.AddFastEndpoints(o =>
     {
-        o.Assemblies = [
+        o.Assemblies =
+        [
             typeof(IdentityApiAssemblyMarker).Assembly,
             typeof(StaffApiAssemblyMarker).Assembly,
             typeof(PlatformApiAssemblyMarker).Assembly,
         ];
     });
 
-    services.AddControllers().ConfigureApiBehaviorOptions(options =>
-    {
-        options.InvalidModelStateResponseFactory =
-            ValidationProblemDetailsFactory.Create;
-    });
+    services
+        .AddControllers()
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.InvalidModelStateResponseFactory = ValidationProblemDetailsFactory.Create;
+        });
 
     services.AddAuthorization();
     services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
     services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
     services
         .AddHealthChecks()
-        .AddNpgSql(
-            configuration.GetConnectionString("Default")!,
-            name: "postgres",
-            tags: ["ready"])
+        .AddNpgSql(configuration.GetConnectionString("Default")!, name: "postgres", tags: ["ready"])
         .AddCheck("self", () => HealthCheckResult.Healthy(), tags: ["live"]);
 
     services.AddOpenApi(options =>
@@ -236,8 +229,7 @@ try
 
     services.AddEndpointsApiExplorer();
 
-    services.Configure<FrontendConfig>(
-        configuration.GetSection("Frontend"));
+    services.Configure<FrontendConfig>(configuration.GetSection("Frontend"));
 
     //
     // ==========================================
@@ -249,7 +241,8 @@ try
     services.AddMultiTenantOidc(
         configuration,
         new EntraIdTenantConfigurator(AuthConstants.TenantHintCookie),
-        AuthConstants.AuthCookie);
+        AuthConstants.AuthCookie
+    );
     services.AddRateLimiting(configuration);
 
     services.AddHsts(options =>
@@ -306,9 +299,7 @@ try
     app.UseRequestLocalization(opts =>
     {
         var supported = new[] { "en", "pt" };
-        opts.SetDefaultCulture("en")
-            .AddSupportedCultures(supported)
-            .AddSupportedUICultures(supported);
+        opts.SetDefaultCulture("en").AddSupportedCultures(supported).AddSupportedUICultures(supported);
         opts.ApplyCurrentCultureToResponseHeaders = true;
     });
 
@@ -333,17 +324,25 @@ try
     app.UseFastEndpoints();
     app.MapControllers();
 
-    app.MapHealthChecks("/health/live", new HealthCheckOptions
-    {
-        Predicate      = check => check.Tags.Contains("live"),
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-    }).AllowAnonymous();
+    app.MapHealthChecks(
+            "/health/live",
+            new HealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains("live"),
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            }
+        )
+        .AllowAnonymous();
 
-    app.MapHealthChecks("/health/ready", new HealthCheckOptions
-    {
-        Predicate      = check => check.Tags.Contains("ready"),
-        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
-    }).AllowAnonymous();
+    app.MapHealthChecks(
+            "/health/ready",
+            new HealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains("ready"),
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+            }
+        )
+        .AllowAnonymous();
 
     // Pre-load OIDC metadata for all tenants in background right after startup,
     // so the first login request doesn't pay the cold-start cost.

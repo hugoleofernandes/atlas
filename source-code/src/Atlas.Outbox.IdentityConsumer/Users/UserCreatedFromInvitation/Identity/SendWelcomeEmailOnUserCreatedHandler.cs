@@ -3,7 +3,7 @@ using Atlas.Integration.Contracts.Tenants;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 
-namespace Atlas.Outbox.Identity.Consumer.Tenants.UserCreatedFromInvitation.Identity;
+namespace Atlas.Outbox.IdentityConsumer.Users.UserCreatedFromInvitation.Identity;
 
 /// <summary>
 /// Adapter — Identity module.
@@ -16,21 +16,18 @@ internal sealed class SendWelcomeEmailOnUserCreatedHandler
     : IIntegrationEventHandler<UserCreatedFromInvitationIntegrationEvent>
 {
     private readonly ISendWelcomeEmailCommandHandler _handler;
-    private readonly IHandlerInvoker                _invoker;
+    private readonly IHandlerInvoker _invoker;
 
-    public SendWelcomeEmailOnUserCreatedHandler(
-        ISendWelcomeEmailCommandHandler handler,
-        IHandlerInvoker                 invoker)
+    public SendWelcomeEmailOnUserCreatedHandler(ISendWelcomeEmailCommandHandler handler, IHandlerInvoker invoker)
     {
         _handler = handler;
-        _invoker  = invoker;
+        _invoker = invoker;
     }
 
-    public Task HandleAsync(
-        UserCreatedFromInvitationIntegrationEvent @event,
-        CancellationToken                         ct)
-        => _invoker.InvokeOrThrowAsync(
+    public Task HandleAsync(UserCreatedFromInvitationIntegrationEvent @event, CancellationToken ct) =>
+        _invoker.InvokeOrThrowAsync(
             _handler,
             new SendWelcomeEmailCommand(@event.TenantId, @event.UserId, @event.Email),
-            ct);
+            ct
+        );
 }

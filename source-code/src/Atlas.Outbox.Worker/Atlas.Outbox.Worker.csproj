@@ -1,44 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <!-- Mesmo UserSecretsId da API — compartilha OpenTelemetry:Endpoint e ApiKey -->
+        <UserSecretsId>a75bf6d9-dca8-4164-b7f2-b6d774848cad</UserSecretsId>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <!-- Mesmo UserSecretsId da API — compartilha OpenTelemetry:Endpoint e ApiKey -->
-    <UserSecretsId>a75bf6d9-dca8-4164-b7f2-b6d774848cad</UserSecretsId>
-  </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Atlas.BuildingBlocks.Email\Atlas.BuildingBlocks.Email.csproj" />
+        <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
+        <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
+        <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
+        <ProjectReference Include="..\Atlas.Outbox.IdentityConsumer\Atlas.Outbox.IdentityConsumer.csproj" />
+        <ProjectReference Include="..\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
+        <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
+        <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
+        <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Atlas.BuildingBlocks.Email\Atlas.BuildingBlocks.Email.csproj" />
-    <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
-    <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Identity.Consumer\Atlas.Outbox.Identity.Consumer.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
-    <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Test project — direct access to internal types (OutboxWorkerHostedService). -->
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>Atlas.Outbox.Worker.Tests</_Parameter1>
-    </AssemblyAttribute>
-    <!-- Castle DynamicProxy (NSubstitute) — required to proxy ILogger<OutboxWorkerHostedService> at runtime. -->
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
-    </AssemblyAttribute>
-  </ItemGroup>
-
+    <ItemGroup>
+        <!-- Test project — direct access to internal types (OutboxWorkerHostedService). -->
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>Atlas.Outbox.Worker.Tests</_Parameter1>
+        </AssemblyAttribute>
+        <!-- Castle DynamicProxy (NSubstitute) — required to proxy ILogger<OutboxWorkerHostedService> at runtime. -->
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 </Project>

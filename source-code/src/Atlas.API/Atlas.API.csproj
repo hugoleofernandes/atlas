@@ -40,7 +40,7 @@
     <ProjectReference Include="..\Atlas.Identity.API\Atlas.Identity.API.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Identity.Publisher\Atlas.Outbox.Identity.Publisher.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.OutboxPublisher\Atlas.Identity.OutboxPublisher.csproj" />
     <ProjectReference Include="..\Atlas.Staff.API\Atlas.Staff.API.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
