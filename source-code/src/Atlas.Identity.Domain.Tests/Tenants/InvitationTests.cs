@@ -2,10 +2,11 @@ using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;
-using Atlas.Identity.Domain.Tenants;
+using Atlas.Identity.Domain.Tenants._Roles;
+using Atlas.Platform.Domain.Tenants;
+using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Staff.Domain.Permissions;
 using FluentAssertions;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
@@ -52,10 +53,9 @@ public class InvitationTests
 
     private static (Tenant tenant, Guid adminRoleId) CreateTenantWithRoles()
     {
-        var tenant = new Tenant("test");
-        tenant.SeedDefaultRoles(AllCodes, AllIncludingSystemCodes, DefaultMemberPermissions);
-        tenant.ClearDomainEvents();
-        return (tenant, tenant.Roles.Single(r => r.Name == "admin").Id);
+        var tenant    = new Tenant("test");
+        var adminRole = Role.Create(tenant.Id, "admin", AllCodes, AllCodes, isSystem: true, id: SystemRoleIds.Admin);
+        return (tenant, adminRole.Id);
     }
 
     private static Invitation MakeInvitation(Guid tenantId, Guid roleId, string email = "user@test.com")

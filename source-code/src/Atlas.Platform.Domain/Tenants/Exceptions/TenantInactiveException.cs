@@ -1,7 +1,7 @@
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Domain;
 
-namespace Atlas.Identity.Domain.Tenants.Exceptions;
+namespace Atlas.Platform.Domain.Tenants.Exceptions;
 
 public sealed class TenantInactiveException : DomainException
 {

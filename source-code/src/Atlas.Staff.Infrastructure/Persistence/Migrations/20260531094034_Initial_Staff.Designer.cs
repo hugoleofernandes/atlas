@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(StaffDbContext))]
-    [Migration("20260530135506_Initial_Staff")]
+    [Migration("20260531094034_Initial_Staff")]
     partial class Initial_Staff
     {
         /// <inheritdoc />

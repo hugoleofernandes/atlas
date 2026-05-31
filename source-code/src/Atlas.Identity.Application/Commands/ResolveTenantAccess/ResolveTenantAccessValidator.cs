@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace Atlas.Identity.Application.Commands.ResolveTenantAccess;
 
@@ -7,6 +7,9 @@ public sealed class ResolveTenantAccessValidator
 {
     public ResolveTenantAccessValidator()
     {
+        RuleFor(x => x.TenantId)
+            .NotEmpty();
+
         RuleFor(x => x.TenantName)
             .NotEmpty();
 

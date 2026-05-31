@@ -48,6 +48,29 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "invitations",
+                schema: "atlas_identity",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    is_used = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    created_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    updated_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_invitations", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "outboxes",
                 schema: "atlas_identity",
                 columns: table => new
@@ -86,80 +109,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "tenants",
-                schema: "atlas_identity",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
-                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_by_email = table.Column<string>(type: "text", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    updated_by_email = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_tenants", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "outbox_handler_executions",
-                schema: "atlas_identity",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    outbox_message_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    handler_name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    error_message = table.Column<string>(type: "text", nullable: true),
-                    attempted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_outbox_handler_executions", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_outbox_handler_executions_outbox_messages_outbox_message_id",
-                        column: x => x.outbox_message_id,
-                        principalSchema: "atlas_identity",
-                        principalTable: "outboxes",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "invitations",
-                schema: "atlas_identity",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    is_used = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    updated_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_invitations", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_invitations_tenants_tenant_id",
-                        column: x => x.tenant_id,
-                        principalSchema: "atlas_identity",
-                        principalTable: "tenants",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "roles",
                 schema: "atlas_identity",
                 columns: table => new
@@ -179,13 +128,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_roles", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_roles_tenants_tenant_id",
-                        column: x => x.tenant_id,
-                        principalSchema: "atlas_identity",
-                        principalTable: "tenants",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -209,11 +151,28 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "outbox_handler_executions",
+                schema: "atlas_identity",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    outbox_message_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    handler_name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    status = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    error_message = table.Column<string>(type: "text", nullable: true),
+                    attempted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_outbox_handler_executions", x => x.id);
                     table.ForeignKey(
-                        name: "fk_users_tenants_tenant_id",
-                        column: x => x.tenant_id,
+                        name: "fk_outbox_handler_executions_outbox_messages_outbox_message_id",
+                        column: x => x.outbox_message_id,
                         principalSchema: "atlas_identity",
-                        principalTable: "tenants",
+                        principalTable: "outboxes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -324,13 +283,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_tenants_name",
-                schema: "atlas_identity",
-                table: "tenants",
-                column: "name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "ix_users_external_id",
                 schema: "atlas_identity",
                 table: "users",
@@ -377,10 +329,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "roles",
-                schema: "atlas_identity");
-
-            migrationBuilder.DropTable(
-                name: "tenants",
                 schema: "atlas_identity");
         }
     }

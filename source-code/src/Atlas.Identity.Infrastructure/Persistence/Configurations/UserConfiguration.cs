@@ -1,6 +1,5 @@
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
 using Atlas.Identity.Domain.Shared;
-using Atlas.Identity.Domain.Tenants;
 using Atlas.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -46,11 +45,8 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         b.HasIndex(x => x.ExternalId);
         b.HasIndex(x => new { x.TenantId, x.Email }).IsUnique();
 
-        // User is its own aggregate root — FK to Tenant without navigation property
-        b.HasOne<Tenant>()
-            .WithMany()
-            .HasForeignKey(x => x.TenantId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // TenantId is a plain column — no FK constraint (Tenant lives in atlas_platform, cross-module boundary)
+        b.Property(x => x.TenantId).IsRequired();
 
         EntityChangeConfiguration.Configure(b);
     }

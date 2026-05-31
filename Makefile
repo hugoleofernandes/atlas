@@ -84,15 +84,15 @@ ef-update-all:
 	make update context=staff
 	make update context=platform
 
-reset-db-all:
+ef-reset-db-all:
 	make reset-db context=identity
 	make reset-db context=staff
 	make reset-db context=platform
 
 # SAMPLE
 # make ef-migrate-all name=Initial
-# make update-all
-# make reset-db-all
+# make ef-update-all
+# make ef-reset-db-all
 
 # =========================================
 # DOCS (DOCFX)

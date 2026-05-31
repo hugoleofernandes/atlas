@@ -16,10 +16,12 @@ namespace Atlas.Platform.Infrastructure.Seeders;
 /// </summary>
 internal sealed class PlatformModuleSeeder : IModuleSeeder
 {
-    public int Order => 10;
+    public int Order => 0;
 
     public async Task SeedAsync(IServiceProvider services, CancellationToken ct)
     {
+        await new PlatformTenantSeeder().SeedAsync(services, ct);
+
         var logger = services.GetRequiredService<ILogger<PlatformModuleSeeder>>();
         var db     = services.GetRequiredService<PlatformDbContext>();
         var uow    = services.GetRequiredService<IPlatformUnitOfWork>();
@@ -49,7 +51,7 @@ internal sealed class PlatformModuleSeeder : IModuleSeeder
             EntityType.Create(identityModule.Id, "User",       "atlas_identity"),
             EntityType.Create(identityModule.Id, "Role",       "atlas_identity"),
             EntityType.Create(identityModule.Id, "Invitation", "atlas_identity"),
-            EntityType.Create(identityModule.Id, "Tenant",     "atlas_identity"));
+            EntityType.Create(platformModule.Id, "Tenant",     "atlas_platform"));
 
         // EntityTypes — Staff module
         db.EntityTypes.Add(

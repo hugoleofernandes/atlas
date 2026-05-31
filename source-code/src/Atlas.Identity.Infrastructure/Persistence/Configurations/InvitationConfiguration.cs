@@ -1,7 +1,6 @@
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Shared;
-using Atlas.Identity.Domain.Tenants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -43,11 +42,8 @@ public sealed class InvitationConfiguration : IEntityTypeConfiguration<Invitatio
         b.Ignore(x => x.IsActive);
         b.Ignore(x => x.IsExpired);
 
-        // Invitation is its own aggregate root — FK to Tenant without navigation property
-        b.HasOne<Tenant>()
-            .WithMany()
-            .HasForeignKey(x => x.TenantId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // TenantId is a plain column — no FK constraint (Tenant lives in atlas_platform, cross-module boundary)
+        b.Property(x => x.TenantId).IsRequired();
 
         EntityChangeConfiguration.Configure(b);
     }

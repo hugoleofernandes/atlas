@@ -1,6 +1,7 @@
 using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.DbContexts;
 using Atlas.Platform.Domain.Modules;
+using Atlas.Platform.Domain.Tenants;
 using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 using AtlasSystem = Atlas.Platform.Domain.Systems.AtlasSystem;
@@ -14,6 +15,7 @@ public sealed class PlatformDbContext : DbContextBase
     public DbSet<AtlasSystem> Systems     => Set<AtlasSystem>();
     public DbSet<Module>      Modules     => Set<Module>();
     public DbSet<EntityType>  EntityTypes => Set<EntityType>();
+    public DbSet<Tenant>      Tenants     => Set<Tenant>();
 
     public PlatformDbContext(
         DbContextOptions<PlatformDbContext> options,

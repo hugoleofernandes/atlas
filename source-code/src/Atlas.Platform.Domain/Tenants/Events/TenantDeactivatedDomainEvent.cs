@@ -1,6 +1,6 @@
-﻿using Atlas.SharedKernel.Domain.Events;
+using Atlas.SharedKernel.Domain.Events;
 
-namespace Atlas.Identity.Domain.Tenants.Events;
+namespace Atlas.Platform.Domain.Tenants.Events;
 
 /// <summary>
 /// Represents the business fact that a tenant has been deactivated.
@@ -18,13 +18,10 @@ namespace Atlas.Identity.Domain.Tenants.Events;
 public sealed class TenantDeactivatedDomainEvent : IDomainEvent
 {
     public Guid TenantId { get; }
-    //public Guid UserId { get; }
     public DateTime OccurredOn { get; } = DateTime.UtcNow;
 
-
-    public TenantDeactivatedDomainEvent(Guid tenantId)//, Guid userId)
+    public TenantDeactivatedDomainEvent(Guid tenantId)
     {
         TenantId = tenantId;
-        //UserId = userId;
     }
 }

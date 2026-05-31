@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Atlas.Platform.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Initial_Platform : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -123,6 +123,26 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_systems", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tenants",
+                schema: "atlas_platform",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    created_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    updated_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_tenants", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -270,6 +290,13 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 table: "systems",
                 column: "name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_tenants_name",
+                schema: "atlas_platform",
+                table: "tenants",
+                column: "name",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -293,6 +320,10 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "systems",
+                schema: "atlas_platform");
+
+            migrationBuilder.DropTable(
+                name: "tenants",
                 schema: "atlas_platform");
 
             migrationBuilder.DropTable(

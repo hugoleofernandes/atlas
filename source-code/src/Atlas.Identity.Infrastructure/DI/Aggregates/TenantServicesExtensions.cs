@@ -24,8 +24,8 @@ internal static class TenantServicesExtensions
 {
     internal static IServiceCollection AddTenantAggregateServices(this IServiceCollection services)
     {
-        // Repository
-        services.AddScoped<ITenantRepository, TenantRepository>();
+        // Repositories
+        services.AddScoped<IRoleRepository, RoleRepository>();
 
         // Readers
         services.AddScoped<IListRolesReader,       ListRolesReader>();

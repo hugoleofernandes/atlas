@@ -4,6 +4,7 @@ using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.Identity.API.Endpoints.Auth;
 using Atlas.Identity.Application.Commands.ResolveTenantAccess;
+using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Authentication;
@@ -15,7 +16,8 @@ namespace Atlas.API.Security.Bootstrap;
 /// Executes the application bootstrap for authenticated users.
 ///
 /// Responsibilities:
-/// - Resolve tenant access
+/// - Resolve tenant info from Platform (step 1)
+/// - Resolve user access from Identity (step 2)
 /// - Create internal application claims (tenantId, userId, roleId, permissions)
 /// - Persist claims into the auth cookie
 /// - Ensure bootstrap runs only once
@@ -36,6 +38,7 @@ public sealed class UserBootstrapMiddleware
 
     public async Task InvokeAsync(
         HttpContext context,
+        IGetTenantByNameQueryHandler     getTenantHandler,
         IResolveTenantAccessCommandHandler resolveAccessHandler,
         IHandlerInvoker invoker,
         IErrorMessageLocalizer errorLocalizer
@@ -93,11 +96,30 @@ public sealed class UserBootstrapMiddleware
 
         //
         // ==========================================
-        // RESOLVE TENANT ACCESS
+        // STEP 1 — RESOLVE TENANT (Platform)
         // ==========================================
         //
 
-        var cmd = new ResolveTenantAccessCommand(tenantName, oid, email);
+        var tenantResult = await invoker.InvokeAsync(
+            getTenantHandler,
+            new GetTenantByNameQuery(tenantName),
+            context.RequestAborted);
+
+        if (!tenantResult.IsSuccess)
+        {
+            await WriteProblemAsync(context, tenantResult.ErrorDefinition!, errorLocalizer);
+            return;
+        }
+
+        var tenant = tenantResult.Value!;
+
+        //
+        // ==========================================
+        // STEP 2 — RESOLVE USER ACCESS (Identity)
+        // ==========================================
+        //
+
+        var cmd = new ResolveTenantAccessCommand(tenant.TenantId, tenant.TenantName, oid, email);
 
         var result = await invoker.InvokeAsync(resolveAccessHandler, cmd, context.RequestAborted);
 

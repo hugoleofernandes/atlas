@@ -165,59 +165,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("invitations", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Tenants.Tenant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("created_by");
-
-                    b.Property<string>("CreatedByEmail")
-                        .HasColumnType("text")
-                        .HasColumnName("created_by_email");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(80)
-                        .HasColumnType("character varying(80)")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("UpdatedByEmail")
-                        .HasColumnType("text")
-                        .HasColumnName("updated_by_email");
-
-                    b.HasKey("Id")
-                        .HasName("pk_tenants");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_tenants_name");
-
-                    b.ToTable("tenants", "atlas_identity");
-                });
-
             modelBuilder.Entity("Atlas.Identity.Domain.Tenants._Roles.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -519,25 +466,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("outboxes", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Invitations.Invitation", b =>
-                {
-                    b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_invitations_tenants_tenant_id");
-                });
-
             modelBuilder.Entity("Atlas.Identity.Domain.Tenants._Roles.Role", b =>
                 {
-                    b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_roles_tenants_tenant_id");
-
                     b.OwnsMany("Atlas.Identity.Domain.Tenants._Roles._Permissions.Permission", "Permissions", b1 =>
                         {
                             b1.Property<Guid>("RoleId")
@@ -562,16 +492,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Navigation("Permissions");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Users.User", b =>
-                {
-                    b.HasOne("Atlas.Identity.Domain.Tenants.Tenant", null)
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_users_tenants_tenant_id");
-                });
-
             modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxHandlerExecution", b =>
                 {
                     b.HasOne("Atlas.SharedKernel.Application.OutboxMessages.OutboxMessage", null)
@@ -589,11 +509,6 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ParentOutboxMessageId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_outboxes_outboxes_parent_outbox_message_id");
-                });
-
-            modelBuilder.Entity("Atlas.Identity.Domain.Tenants.Tenant", b =>
-                {
-                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

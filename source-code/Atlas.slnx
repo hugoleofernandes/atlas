@@ -34,13 +34,19 @@
     <Project Path="src/Atlas.Outbox.Worker/Atlas.Outbox.Worker.csproj" />
   </Folder>
   <Folder Name="/src/3-Modules/" />
-  <Folder Name="/src/3-Modules/3.1-Outbox/">
+  <Folder Name="/src/3-Modules/3.0-Outbox/">
     <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
     <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/src/3-Modules/3.1-Outbox/3.1.1-Identity/">
+  <Folder Name="/src/3-Modules/3.0-Outbox/3.1.1-Identity/">
     <Project Path="src/Atlas.Outbox.Identity.Consumer/Atlas.Outbox.Identity.Consumer.csproj" />
     <Project Path="src/Atlas.Outbox.Identity.Publisher/Atlas.Outbox.Identity.Publisher.csproj" />
+  </Folder>
+  <Folder Name="/src/3-Modules/3.1-Plataform/">
+    <Project Path="src/Atlas.Platform.API/Atlas.Platform.API.csproj" />
+    <Project Path="src/Atlas.Platform.Application/Atlas.Platform.Application.csproj" />
+    <Project Path="src/Atlas.Platform.Domain/Atlas.Platform.Domain.csproj" />
+    <Project Path="src/Atlas.Platform.Infrastructure/Atlas.Platform.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/3-Modules/3.2-Identity/">
     <Project Path="src/Atlas.Identity.API/Atlas.Identity.API.csproj" />
@@ -69,12 +75,6 @@
   </Folder>
   <Folder Name="/src/7-Shared/">
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
-  </Folder>
-  <Folder Name="/src/7-Shared/Plataform/">
-    <Project Path="src/Atlas.Platform.API/Atlas.Platform.API.csproj" />
-    <Project Path="src/Atlas.Platform.Application/Atlas.Platform.Application.csproj" />
-    <Project Path="src/Atlas.Platform.Domain/Atlas.Platform.Domain.csproj" />
-    <Project Path="src/Atlas.Platform.Infrastructure/Atlas.Platform.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />
