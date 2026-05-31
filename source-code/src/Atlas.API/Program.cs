@@ -13,6 +13,7 @@ using Atlas.BuildingBlocks.AspNetCore.Oidc.Providers.EntraId;
 using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
+using Atlas.BuildingBlocks.AuditTrail.Labels;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
@@ -32,6 +33,7 @@ using Atlas.Identity.OutboxPublisher.DI;
 using Atlas.Platform.API;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
+using Atlas.SharedDomain.Resources.Audit;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -142,6 +144,8 @@ try
     services.AddScoped<IPermissionLabelProvider, IdentityPermissionLabelProvider>();
     services.AddScoped<IPermissionLabelProvider, StaffPermissionLabelProvider>();
     services.AddScoped<PermissionLabelLocalizer>();
+    services.AddScoped<IAuditLabelProvider, SharedDomainAuditLabelProvider>();
+    services.AddScoped<AuditLabelLocalizer>();
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
     //

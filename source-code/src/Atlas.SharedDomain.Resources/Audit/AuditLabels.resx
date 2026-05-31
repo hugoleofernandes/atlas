@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="audit.action.Added" xml:space="preserve"><value>Created</value></data>
+  <data name="audit.action.Modified" xml:space="preserve"><value>Updated</value></data>
+  <data name="audit.action.Deleted" xml:space="preserve"><value>Deleted</value></data>
+  <data name="audit.entity.identity.user" xml:space="preserve"><value>User</value></data>
+  <data name="audit.entity.identity.role" xml:space="preserve"><value>Role</value></data>
+  <data name="audit.entity.identity.invitation" xml:space="preserve"><value>Invitation</value></data>
+  <data name="audit.entity.staff.staff-member" xml:space="preserve"><value>Staff member</value></data>
+  <data name="audit.entity.platform.tenant" xml:space="preserve"><value>Tenant</value></data>
+</root>

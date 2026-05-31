@@ -3,20 +3,20 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Atlas.Identity.Infrastructure.Persistence.Migrations
+namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial_Identity : Migration
+    public partial class Initial_Staff : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "atlas_identity");
+                name: "atlas_staff");
 
             migrationBuilder.CreateTable(
                 name: "audits",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -24,6 +24,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     action = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     entity_id = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     user_id = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    user_email = table.Column<string>(type: "character varying(254)", maxLength: 254, nullable: true),
                     tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
                     changes_json = table.Column<string>(type: "jsonb", nullable: false),
                     occurred_at_utc = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -35,7 +36,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             migrationBuilder.CreateTable(
                 name: "idempotency_entries",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 columns: table => new
                 {
                     idempotency_key = table.Column<Guid>(type: "uuid", nullable: false),
@@ -48,31 +49,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "invitations",
-                schema: "atlas_identity",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    is_used = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    updated_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_invitations", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "outboxes",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -102,60 +80,34 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     table.ForeignKey(
                         name: "fk_outboxes_outboxes_parent_outbox_message_id",
                         column: x => x.parent_outbox_message_id,
-                        principalSchema: "atlas_identity",
+                        principalSchema: "atlas_staff",
                         principalTable: "outboxes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
-                name: "roles",
-                schema: "atlas_identity",
+                name: "staff_members",
+                schema: "atlas_staff",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
-                    is_system = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    first_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    last_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    updated_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_roles", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "users",
-                schema: "atlas_identity",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    tenant_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    external_id = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
-                    updated_by_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_users", x => x.id);
+                    table.PrimaryKey("pk_staff_members", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "outbox_handler_executions",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -171,128 +123,107 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     table.ForeignKey(
                         name: "fk_outbox_handler_executions_outbox_messages_outbox_message_id",
                         column: x => x.outbox_message_id,
-                        principalSchema: "atlas_identity",
+                        principalSchema: "atlas_staff",
                         principalTable: "outboxes",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "role_permissions",
-                schema: "atlas_identity",
-                columns: table => new
-                {
-                    code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_role_permissions", x => new { x.role_id, x.code });
-                    table.ForeignKey(
-                        name: "fk_role_permissions_roles_role_id",
-                        column: x => x.role_id,
-                        principalSchema: "atlas_identity",
-                        principalTable: "roles",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "ix_audits_entity_type_id",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "audits",
                 column: "entity_type_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_audits_occurred_at_utc",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "audits",
                 column: "occurred_at_utc");
 
             migrationBuilder.CreateIndex(
                 name: "ix_audits_tenant_id",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "audits",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_invitations_tenant_id_email",
-                schema: "atlas_identity",
-                table: "invitations",
-                columns: new[] { "tenant_id", "email" });
+                name: "ix_audits_tenant_id_entity_type_id_action_occurred_at_utc",
+                schema: "atlas_staff",
+                table: "audits",
+                columns: new[] { "tenant_id", "entity_type_id", "action", "occurred_at_utc" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_audits_tenant_id_entity_type_id_entity_id",
+                schema: "atlas_staff",
+                table: "audits",
+                columns: new[] { "tenant_id", "entity_type_id", "entity_id" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_audits_tenant_id_entity_type_id_occurred_at_utc",
+                schema: "atlas_staff",
+                table: "audits",
+                columns: new[] { "tenant_id", "entity_type_id", "occurred_at_utc" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_outbox_handler_executions_attempted_at",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outbox_handler_executions",
                 column: "attempted_at");
 
             migrationBuilder.CreateIndex(
                 name: "ix_outbox_handler_executions_handler_name_status",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outbox_handler_executions",
                 columns: new[] { "handler_name", "status" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_outbox_handler_executions_outbox_message_id",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outbox_handler_executions",
                 column: "outbox_message_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_outboxes_idempotency_key",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outboxes",
                 column: "idempotency_key");
 
             migrationBuilder.CreateIndex(
                 name: "ix_outboxes_module",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outboxes",
                 column: "module");
 
             migrationBuilder.CreateIndex(
                 name: "ix_outboxes_parent_outbox_message_id",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outboxes",
                 column: "parent_outbox_message_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_outboxes_processed_on_dead_lettered_on_failed_at_locked_unt",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outboxes",
                 columns: new[] { "processed_on", "dead_lettered_on", "failed_at", "locked_until", "occurred_on" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_outboxes_tenant_id",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outboxes",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_outboxes_type",
-                schema: "atlas_identity",
+                schema: "atlas_staff",
                 table: "outboxes",
                 column: "type");
 
             migrationBuilder.CreateIndex(
-                name: "ix_roles_tenant_id_name",
-                schema: "atlas_identity",
-                table: "roles",
-                columns: new[] { "tenant_id", "name" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_users_external_id",
-                schema: "atlas_identity",
-                table: "users",
-                column: "external_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_users_tenant_id_email",
-                schema: "atlas_identity",
-                table: "users",
-                columns: new[] { "tenant_id", "email" },
+                name: "ix_staff_members_tenant_id_user_id",
+                schema: "atlas_staff",
+                table: "staff_members",
+                columns: new[] { "tenant_id", "user_id" },
                 unique: true);
         }
 
@@ -301,35 +232,23 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
         {
             migrationBuilder.DropTable(
                 name: "audits",
-                schema: "atlas_identity");
+                schema: "atlas_staff");
 
             migrationBuilder.DropTable(
                 name: "idempotency_entries",
-                schema: "atlas_identity");
-
-            migrationBuilder.DropTable(
-                name: "invitations",
-                schema: "atlas_identity");
+                schema: "atlas_staff");
 
             migrationBuilder.DropTable(
                 name: "outbox_handler_executions",
-                schema: "atlas_identity");
+                schema: "atlas_staff");
 
             migrationBuilder.DropTable(
-                name: "role_permissions",
-                schema: "atlas_identity");
-
-            migrationBuilder.DropTable(
-                name: "users",
-                schema: "atlas_identity");
+                name: "staff_members",
+                schema: "atlas_staff");
 
             migrationBuilder.DropTable(
                 name: "outboxes",
-                schema: "atlas_identity");
-
-            migrationBuilder.DropTable(
-                name: "roles",
-                schema: "atlas_identity");
+                schema: "atlas_staff");
         }
     }
 }

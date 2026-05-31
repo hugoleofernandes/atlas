@@ -48,6 +48,7 @@
     <ProjectReference Include="..\Atlas.Platform.API\Atlas.Platform.API.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.SharedDomain\Atlas.SharedDomain.csproj" />
+    <ProjectReference Include="..\Atlas.SharedDomain.Resources\Atlas.SharedDomain.Resources.csproj" />
   </ItemGroup>
 
 </Project>

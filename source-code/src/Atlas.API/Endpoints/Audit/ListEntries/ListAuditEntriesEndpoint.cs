@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.AuditTrail.Labels;
 using Atlas.BuildingBlocks.AuditTrail.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
@@ -26,13 +27,14 @@ public sealed class ListAuditEntriesEndpoint(
     IStaffListAuditEntriesQueryHandler staffHandler,
     IPlatformListAuditEntriesQueryHandler platformHandler,
     IHandlerInvoker invoker,
-    IAuthorizationService authorizationService
-) : AtlasEndpoint<ListAuditEntriesRequest, IReadOnlyList<AuditEntryDto>>
+    IAuthorizationService authorizationService,
+    AuditLabelLocalizer auditLabelLocalizer
+) : AtlasEndpoint<ListAuditEntriesRequest, IReadOnlyList<AuditEntryResponse>>
 {
     public override void Configure()
     {
         Get("audit/entries");
-        Description(d => d.Produces<IReadOnlyList<AuditEntryDto>>());
+        Description(d => d.Produces<IReadOnlyList<AuditEntryResponse>>());
     }
 
     public override async Task HandleAsync(ListAuditEntriesRequest req, CancellationToken ct)
@@ -64,7 +66,10 @@ public sealed class ListAuditEntriesEndpoint(
         );
 
         var result = await target.ExecuteAsync(query, ct);
-        await OkFromResultAsync(result, ct);
+        await OkFromResultAsync(
+            result,
+            entries => entries.Select(entry => AuditEntryResponse.From(entry, auditLabelLocalizer)).ToList(),
+            ct);
     }
 
     private AuditTarget? ResolveTarget(Guid entityTypeId)

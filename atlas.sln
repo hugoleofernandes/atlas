@@ -67,6 +67,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.BuildingBlocks.AuditT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.BuildingBlocks.FastEndpoints", "source-code\src\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj", "{6F1E2F74-D9C2-499B-B0A9-66DA63746EF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.SharedDomain.Resources", "source-code\src\Atlas.SharedDomain.Resources\Atlas.SharedDomain.Resources.csproj", "{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atlas.SharedDomain", "source-code\src\Atlas.SharedDomain\Atlas.SharedDomain.csproj", "{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -425,6 +429,30 @@ Global
 		{6F1E2F74-D9C2-499B-B0A9-66DA63746EF7}.Release|x64.Build.0 = Release|Any CPU
 		{6F1E2F74-D9C2-499B-B0A9-66DA63746EF7}.Release|x86.ActiveCfg = Release|Any CPU
 		{6F1E2F74-D9C2-499B-B0A9-66DA63746EF7}.Release|x86.Build.0 = Release|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Debug|x64.Build.0 = Debug|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Release|x64.ActiveCfg = Release|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Release|x64.Build.0 = Release|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF}.Release|x86.Build.0 = Release|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Debug|x64.Build.0 = Debug|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Debug|x86.Build.0 = Debug|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Release|x64.ActiveCfg = Release|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Release|x64.Build.0 = Release|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Release|x86.ActiveCfg = Release|Any CPU
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -461,6 +489,8 @@ Global
 		{F936F9AC-8DF7-4F26-B091-19B077588A5A} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 		{47E32F69-49CC-4C4B-B4BA-DF851489361B} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 		{6F1E2F74-D9C2-499B-B0A9-66DA63746EF7} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
+		{22664C98-CA5F-4B69-90CA-36E62F8CC4BF} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
+		{DF4E477E-1848-4F4E-B2AE-0E8461C5AAA1} = {C4B547C3-B88B-06FD-50C8-C0379CFBED21}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB7E32C7-6D55-4E6E-BB3C-D6AAAB6BD9CA}

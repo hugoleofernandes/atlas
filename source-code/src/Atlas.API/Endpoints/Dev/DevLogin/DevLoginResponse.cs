@@ -1,4 +1,4 @@
-namespace Atlas.Identity.API.Endpoints.Dev.DevLogin;
+namespace Atlas.API.Endpoints.Dev.DevLogin;
 
 public sealed record DevLoginResponse(
     Guid TenantId,

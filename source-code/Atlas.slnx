@@ -83,7 +83,6 @@
   </Folder>
   <Folder Name="/src/3-BuildingBlocks/">
     <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.AuditTrail.FastEndpoints/Atlas.BuildingBlocks.AuditTrail.FastEndpoints.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.AuditTrail/Atlas.BuildingBlocks.AuditTrail.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.Email/Atlas.BuildingBlocks.Email.csproj" />
     <Project Path="src/Atlas.BuildingBlocks.FastEndpoints/Atlas.BuildingBlocks.FastEndpoints.csproj" />
@@ -94,6 +93,7 @@
   <Folder Name="/src/4-Shared/">
     <Project Path="src/Atlas.Contracts/Atlas.Integration.Contracts.csproj" />
     <Project Path="src/Atlas.SharedDomain/Atlas.SharedDomain.csproj" />
+    <Project Path="src/Atlas.SharedDomain.Resources/Atlas.SharedDomain.Resources.csproj" />
     <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">

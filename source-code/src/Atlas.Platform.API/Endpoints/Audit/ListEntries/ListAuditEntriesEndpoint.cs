@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.AuditTrail.Labels;
 using Atlas.BuildingBlocks.AuditTrail.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
@@ -12,14 +13,17 @@ namespace Atlas.Platform.API.Endpoints.Audit.ListEntries;
 /// Platform audit entries endpoint.
 /// Invokes the Platform audit query handler through the standard handler pipeline.
 /// </summary>
-public sealed class ListAuditEntriesEndpoint(IPlatformListAuditEntriesQueryHandler handler, IHandlerInvoker invoker)
-    : AtlasEndpoint<ListAuditEntriesRequest, IReadOnlyList<AuditEntryDto>>
+public sealed class ListAuditEntriesEndpoint(
+    IPlatformListAuditEntriesQueryHandler handler,
+    IHandlerInvoker invoker,
+    AuditLabelLocalizer auditLabelLocalizer)
+    : AtlasEndpoint<ListAuditEntriesRequest, IReadOnlyList<AuditEntryResponse>>
 {
     public override void Configure()
     {
         Get("platform/audit/entries");
         Policies($"permission:{PlatformModulePermissions.Audit.Read}");
-        Description(d => d.Produces<IReadOnlyList<AuditEntryDto>>());
+        Description(d => d.Produces<IReadOnlyList<AuditEntryResponse>>());
     }
 
     public override async Task HandleAsync(ListAuditEntriesRequest req, CancellationToken ct)
@@ -32,6 +36,9 @@ public sealed class ListAuditEntriesEndpoint(IPlatformListAuditEntriesQueryHandl
             EntityId:     req.EntityId);
 
         var result = await invoker.InvokeAsync(handler, query, ct);
-        await OkFromResultAsync(result, ct);
+        await OkFromResultAsync(
+            result,
+            entries => entries.Select(entry => AuditEntryResponse.From(entry, auditLabelLocalizer)).ToList(),
+            ct);
     }
 }

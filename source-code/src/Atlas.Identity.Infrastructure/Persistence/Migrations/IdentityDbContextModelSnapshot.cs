@@ -57,6 +57,11 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("tenant_id");
 
+                    b.Property<string>("UserEmail")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("user_email");
+
                     b.Property<string>("UserId")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
@@ -73,6 +78,15 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("TenantId")
                         .HasDatabaseName("ix_audits_tenant_id");
+
+                    b.HasIndex("TenantId", "EntityTypeId", "EntityId")
+                        .HasDatabaseName("ix_audits_tenant_id_entity_type_id_entity_id");
+
+                    b.HasIndex("TenantId", "EntityTypeId", "OccurredAtUtc")
+                        .HasDatabaseName("ix_audits_tenant_id_entity_type_id_occurred_at_utc");
+
+                    b.HasIndex("TenantId", "EntityTypeId", "Action", "OccurredAtUtc")
+                        .HasDatabaseName("ix_audits_tenant_id_entity_type_id_action_occurred_at_utc");
 
                     b.ToTable("audits", "atlas_identity");
                 });
