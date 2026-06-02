@@ -3,7 +3,7 @@ using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
-using Atlas.Identity.API.Endpoints.Auth;
+using Atlas.Identity.BffApi.Endpoints.Auth;
 using Atlas.Identity.Application.Commands.ResolveTenantAccess;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
 using Atlas.SharedKernel.Application.Errors;

@@ -1,0 +1,3 @@
+namespace Atlas.Identity.BffApi.Endpoints.Roles.CreateRole;
+
+public sealed record CreateRoleRequest(string Name, IEnumerable<string> PermissionCodes);

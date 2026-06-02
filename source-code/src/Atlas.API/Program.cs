@@ -16,7 +16,9 @@ using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
+using Atlas.BuildingBlocks.AspNetCore.Security.Xsrf;
 using Atlas.BuildingBlocks.AuditTrail.Labels;
+using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
@@ -27,15 +29,17 @@ using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
-using Atlas.Identity.API;
-using Atlas.Identity.API.Configs;
+using Atlas.Identity.BffApi;
+using Atlas.Identity.BffApi.Configs;
 using Atlas.Identity.Application;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
+using Atlas.Identity.InternalApi;
 using Atlas.Identity.OutboxPublisher.DI;
-using Atlas.Platform.API;
+using Atlas.Platform.BffApi;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
+using Atlas.Platform.InternalApi;
 using Atlas.SharedDomain.Resources.Audit;
 using Atlas.SharedDomain.Resources.Permissions;
 using Atlas.SharedDomain.Permissions;
@@ -43,11 +47,13 @@ using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.OutboxMessages;
+using Atlas.SharedKernel.Configuration;
 using Atlas.SharedKernel.Domain.Permissions;
-using Atlas.Staff.API;
+using Atlas.Staff.BffApi;
 using Atlas.Staff.Application;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
+using Atlas.Staff.InternalApi;
 using FastEndpoints;
 using FluentValidation;
 using HealthChecks.UI.Client;
@@ -68,6 +74,7 @@ using Serilog.Events;
 //
 
 Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.Console().CreateBootstrapLogger();
+DotEnvLoader.Load();
 
 try
 {
@@ -235,9 +242,12 @@ try
     {
         o.Assemblies =
         [
-            typeof(IdentityApiAssemblyMarker).Assembly,
-            typeof(StaffApiAssemblyMarker).Assembly,
-            typeof(PlatformApiAssemblyMarker).Assembly,
+            typeof(IdentityBffApiAssemblyMarker).Assembly,
+            typeof(StaffBffApiAssemblyMarker).Assembly,
+            typeof(PlatformBffApiAssemblyMarker).Assembly,
+            typeof(IdentityInternalApiAssemblyMarker).Assembly,
+            typeof(StaffInternalApiAssemblyMarker).Assembly,
+            typeof(PlatformInternalApiAssemblyMarker).Assembly,
         ];
     });
 
@@ -272,6 +282,8 @@ try
     //
 
     services.AddAppCors(configuration);
+    services.AddBffXsrf();
+    services.AddResendEmailService(configuration);
     services.AddMultiTenantOidc(
         configuration,
         new EntraIdTenantConfigurator(AuthConstants.TenantHintCookie),
@@ -355,6 +367,7 @@ try
     app.UseMiddleware<TenantResolverMiddleware>();
     app.UseMiddleware<UserBootstrapMiddleware>();
     app.UseAuthorization();
+    app.UseBffXsrf();
 
     app.UseFastEndpoints();
     app.MapControllers();

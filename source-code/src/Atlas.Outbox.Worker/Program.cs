@@ -3,12 +3,14 @@ using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.Outbox.Infrastructure.DI;
 using Atlas.Outbox.Worker.Hosting;
+using Atlas.SharedKernel.Configuration;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
 Log.Logger = new LoggerConfiguration().MinimumLevel.Warning().WriteTo.Console().CreateBootstrapLogger();
+DotEnvLoader.Load();
 
 try
 {

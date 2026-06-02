@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -22,11 +22,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
-    <!-- Apenas instrumentação AspNetCore — o resto vem via Atlas.BuildingBlocks.Observability -->
+    <!-- Apenas instrumenta��o AspNetCore � o resto vem via Atlas.BuildingBlocks.Observability -->
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.12.54" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
-    <!-- Enrichers, Console e File ficam na API — OTLP sink vem via Atlas.BuildingBlocks.Observability -->
+    <!-- Enrichers, Console e File ficam na API � OTLP sink vem via Atlas.BuildingBlocks.Observability -->
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
@@ -37,16 +37,20 @@
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Email\Atlas.BuildingBlocks.Email.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
-    <ProjectReference Include="..\Atlas.Identity.API\Atlas.Identity.API.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.BffApi\Atlas.Identity.BffApi.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.InternalApi\Atlas.Identity.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.Identity.OutboxPublisher\Atlas.Identity.OutboxPublisher.csproj" />
-    <ProjectReference Include="..\Atlas.Staff.API\Atlas.Staff.API.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.BffApi\Atlas.Staff.BffApi.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.API\Atlas.Platform.API.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.InternalApi\Atlas.Staff.InternalApi.csproj" />
+    <ProjectReference Include="..\Atlas.Platform.BffApi\Atlas.Platform.BffApi.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
+    <ProjectReference Include="..\Atlas.Platform.InternalApi\Atlas.Platform.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.SharedDomain\Atlas.SharedDomain.csproj" />
     <ProjectReference Include="..\Atlas.SharedDomain.Resources\Atlas.SharedDomain.Resources.csproj" />
   </ItemGroup>

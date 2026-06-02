@@ -33,8 +33,9 @@
   </Folder>
   <Folder Name="/src/2-Modules/" />
   <Folder Name="/src/2-Modules/Identity/" />
-  <Folder Name="/src/2-Modules/Identity/1-API/">
-    <Project Path="src/Atlas.Identity.API/Atlas.Identity.API.csproj" />
+  <Folder Name="/src/2-Modules/Identity/1-Api/">
+    <Project Path="src/Atlas.Identity.BffApi/Atlas.Identity.BffApi.csproj" />
+    <Project Path="src/Atlas.Identity.InternalApi/Atlas.Identity.InternalApi.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Identity/2-Infrastructure/">
     <Project Path="src/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
@@ -47,16 +48,17 @@
     <Project Path="src/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
     <Project Path="src/Atlas.Identity.Resources/Atlas.Identity.Resources.csproj" Id="85200bc2-f5ad-46de-8410-db7976e623ae" />
   </Folder>
-  <Folder Name="/src/2-Modules/Outbox/">
-    <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
+  <Folder Name="/src/2-Modules/Outbox/" />
+  <Folder Name="/src/2-Modules/Outbox/2-Infrastructure/">
     <Project Path="src/Atlas.Outbox.Infrastructure/Atlas.Outbox.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/src/2-Modules/Outbox/Consumers/">
-    <Project Path="src/Atlas.Outbox.IdentityConsumer/Atlas.Outbox.IdentityConsumer.csproj" />
+  <Folder Name="/src/2-Modules/Outbox/3-AppServices/">
+    <Project Path="src/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/" />
-  <Folder Name="/src/2-Modules/Plataform/1-API/">
-    <Project Path="src/Atlas.Platform.API/Atlas.Platform.API.csproj" />
+  <Folder Name="/src/2-Modules/Plataform/1-Api/">
+    <Project Path="src/Atlas.Platform.BffApi/Atlas.Platform.BffApi.csproj" />
+    <Project Path="src/Atlas.Platform.InternalApi/Atlas.Platform.InternalApi.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/2-Infrastructure/">
     <Project Path="src/Atlas.Platform.Infrastructure/Atlas.Platform.Infrastructure.csproj" />
@@ -68,8 +70,9 @@
     <Project Path="src/Atlas.Platform.Domain/Atlas.Platform.Domain.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/" />
-  <Folder Name="/src/2-Modules/Staff/1-API/">
-    <Project Path="src/Atlas.Staff.API/Atlas.Staff.API.csproj" />
+  <Folder Name="/src/2-Modules/Staff/1-Api/">
+    <Project Path="src/Atlas.Staff.BffApi/Atlas.Staff.BffApi.csproj" />
+    <Project Path="src/Atlas.Staff.InternalApi/Atlas.Staff.InternalApi.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/2-Infrastructure/">
     <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
