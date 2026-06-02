@@ -1,8 +1,7 @@
 using Atlas.Identity.Domain.Tenants._Roles;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Events;
-using Atlas.Staff.Domain.Permissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;

@@ -16,8 +16,13 @@ public sealed class ListPermissionsReader : IListPermissionsReader
         _policy = policy;
     }
 
-    public IReadOnlyList<PermissionGroupDto> List()
+    public IReadOnlyList<PermissionModuleDto> List()
     {
-        return _policy.Groups.Select(g => new PermissionGroupDto(g.Manage, g.Granular)).ToList();
+        return _policy.Modules
+            .Select(module => new PermissionModuleDto(
+                module.ModuleId,
+                module.ModuleName,
+                module.Groups.Select(g => new PermissionGroupDto(g.Manage, g.Granular)).ToList()))
+            .ToList();
     }
 }

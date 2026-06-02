@@ -1,5 +1,4 @@
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Staff.Domain.Permissions;
+using Atlas.SharedDomain.Permissions;
 
 using FluentAssertions;
 using System.Xml.Linq;
@@ -15,8 +14,7 @@ namespace Atlas.Identity.Tests.Permissions;
 /// </summary>
 public sealed class PermissionCatalogTranslationTests
 {
-    private static readonly string IdentityResxDirectory = FindResxDirectory("Atlas.Identity.Resources");
-    private static readonly string StaffResxDirectory    = FindResxDirectory("Atlas.Staff.Resources");
+    private static readonly string SharedResxDirectory = FindResxDirectory();
 
     /// <summary>
     /// The full permission policy built from all registered modules — same as runtime.
@@ -25,6 +23,7 @@ public sealed class PermissionCatalogTranslationTests
     [
         new IdentityModulePermissions(),
         new StaffPermissions(),
+        new PlatformModulePermissions(),
     ]);
 
     [Fact]
@@ -77,41 +76,33 @@ public sealed class PermissionCatalogTranslationTests
 
     // -------------------------------------------------------
 
-    /// <summary>Merges labels from all module resource projects for the given file extension.</summary>
+    /// <summary>Loads labels from the shared domain resource project for the given file extension.</summary>
     private static Dictionary<string, string> LoadAllLabels(string extension)
     {
-        var files = new[]
-        {
-            Path.Combine(IdentityResxDirectory, $"IdentityPermissionLabels.{extension}"),
-            Path.Combine(StaffResxDirectory,    $"StaffPermissionLabels.{extension}"),
-        };
+        var path = Path.Combine(SharedResxDirectory, $"PermissionLabels.{extension}");
+        File.Exists(path).Should().BeTrue(because: $"resource file must exist at {path}");
 
-        return files
-            .SelectMany(path =>
-            {
-                File.Exists(path).Should().BeTrue(because: $"resource file must exist at {path}");
-                return XDocument.Load(path)
-                    .Descendants("data")
-                    .Where(e => e.Attribute("name") is not null)
-                    .Select(e => (
-                        Key:   e.Attribute("name")!.Value,
-                        Value: e.Element("value")?.Value ?? string.Empty));
-            })
+        return XDocument.Load(path)
+            .Descendants("data")
+            .Where(e => e.Attribute("name") is not null)
+            .Select(e => (
+                Key:   e.Attribute("name")!.Value,
+                Value: e.Element("value")?.Value ?? string.Empty))
             .ToDictionary(x => x.Key, x => x.Value);
     }
 
     /// <summary>
     /// Walks up from the test output directory until it finds the solution root
-    /// (identified by the presence of Atlas.slnx), then navigates to the module resource project.
+    /// (identified by the presence of Atlas.slnx), then navigates to the shared resource project.
     /// </summary>
-    private static string FindResxDirectory(string resourceProject)
+    private static string FindResxDirectory()
     {
         var dir = AppContext.BaseDirectory;
 
         while (dir is not null)
         {
             if (Directory.GetFiles(dir, "*.slnx").Length > 0)
-                return Path.Combine(dir, "source-code", resourceProject, "Resources");
+                return Path.Combine(dir, "src", "Atlas.SharedDomain.Resources", "Permissions");
 
             dir = Path.GetDirectoryName(dir);
         }

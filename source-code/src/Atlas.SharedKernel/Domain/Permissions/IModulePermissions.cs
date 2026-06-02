@@ -10,6 +10,12 @@ namespace Atlas.SharedKernel.Domain.Permissions;
 /// </summary>
 public interface IModulePermissions
 {
+    /// <summary>Canonical module id shared with the Platform module registry.</summary>
+    Guid ModuleId { get; }
+
+    /// <summary>Stable technical module name, e.g. identity, staff, platform.</summary>
+    string ModuleName { get; }
+
     /// <summary>All assignable permission codes owned by this module (no system.root).</summary>
     IReadOnlySet<string> Permissions { get; }
 

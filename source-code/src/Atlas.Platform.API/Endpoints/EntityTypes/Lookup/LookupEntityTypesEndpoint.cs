@@ -1,6 +1,6 @@
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
-using Atlas.Platform.Domain.Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;

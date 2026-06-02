@@ -3,7 +3,7 @@ using Atlas.BuildingBlocks.AuditTrail.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
-using Atlas.Staff.Domain.Permissions;
+using Atlas.SharedDomain.Permissions;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 

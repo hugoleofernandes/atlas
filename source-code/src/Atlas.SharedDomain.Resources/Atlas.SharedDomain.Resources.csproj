@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.AuditTrail.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.SharedDomain\Atlas.SharedDomain.csproj" />
   </ItemGroup>
 

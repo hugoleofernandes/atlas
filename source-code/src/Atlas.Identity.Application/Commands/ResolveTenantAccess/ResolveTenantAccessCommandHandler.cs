@@ -53,6 +53,9 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
                 var existingRole = await _roleRepository.GetByIdWithPermissionsAsync(existingUser.RoleId, ct)
                     ?? throw new RoleNotFoundException(existingUser.RoleId);
 
+                if (!existingRole.IsActive)
+                    throw new RoleInactiveException(existingRole.Name);
+
                 var existingPermissions = existingRole.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
                 return new ResolveTenantAccessOutput(
@@ -72,6 +75,9 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
 
             var role = await _roleRepository.GetByIdWithPermissionsAsync(invitation.RoleId, ct)
                 ?? throw new RoleNotFoundException(invitation.RoleId);
+
+            if (!role.IsActive)
+                throw new RoleInactiveException(role.Name);
 
             var user = User.CreateFromInvitation(invitation, externalId, role.Name);
             _contextSetter.Set(tenantId, tenantName, user.Id, email.Value);

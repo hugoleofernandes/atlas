@@ -5,7 +5,7 @@ namespace Atlas.BuildingBlocks.FastEndpoints;
 /// implementations. Each module registers its own provider; this class aggregates them.
 ///
 /// Registration (per module in its DI extension):
-///   services.AddScoped&lt;IPermissionLabelProvider, IdentityPermissionLabelProvider&gt;();
+///   services.AddScoped&lt;IPermissionLabelProvider, SharedDomainPermissionLabelProvider&gt;();
 ///
 /// Falls back to the raw permission code if no provider claims the key.
 /// </summary>

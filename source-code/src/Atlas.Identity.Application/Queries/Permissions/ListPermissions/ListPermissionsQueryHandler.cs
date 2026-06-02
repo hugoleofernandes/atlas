@@ -13,9 +13,9 @@ public sealed class ListPermissionsQueryHandler : IListPermissionsQueryHandler
         _reader = reader;
     }
 
-    public Task<IReadOnlyList<PermissionGroupDto>> ExecuteAsync(ListPermissionsQuery query, CancellationToken ct)
+    public Task<IReadOnlyList<PermissionModuleDto>> ExecuteAsync(ListPermissionsQuery query, CancellationToken ct)
     {
-        IReadOnlyList<PermissionGroupDto> result = _reader.List();
+        IReadOnlyList<PermissionModuleDto> result = _reader.List();
         return Task.FromResult(result);
     }
 }

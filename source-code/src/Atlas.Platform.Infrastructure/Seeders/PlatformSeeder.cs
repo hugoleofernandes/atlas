@@ -3,6 +3,7 @@ using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Domain.Modules;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using Atlas.SharedDomain.Identity;
+using Atlas.SharedDomain.Modules;
 using Atlas.SharedDomain.Platform;
 using Atlas.SharedDomain.Staff;
 using Atlas.SharedKernel.Application;
@@ -43,9 +44,9 @@ internal sealed class PlatformModuleSeeder : IModuleSeeder
         db.Systems.Add(mlab);
 
         // Modules
-        var identityModule = Module.Create("identity");
-        var staffModule    = Module.Create("staff");
-        var platformModule = Module.Create("platform");
+        var identityModule = Module.Create(AtlasModules.Identity, AtlasModules.IdentityName);
+        var staffModule    = Module.Create(AtlasModules.Staff, AtlasModules.StaffName);
+        var platformModule = Module.Create(AtlasModules.Platform, AtlasModules.PlatformName);
 
         db.Modules.AddRange(identityModule, staffModule, platformModule);
 

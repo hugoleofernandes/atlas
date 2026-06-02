@@ -12,4 +12,7 @@ public sealed class Module : AggregateRoot, INotMultiTenant
 
     public static Module Create(string name)
         => new() { Id = Guid.NewGuid(), Name = name, IsActive = true };
+
+    public static Module Create(Guid id, string name)
+        => new() { Id = id, Name = name, IsActive = true };
 }

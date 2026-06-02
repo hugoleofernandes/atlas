@@ -1,6 +1,6 @@
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -15,13 +15,13 @@ public sealed class ListPermissionsEndpoint(
     IListPermissionsQueryHandler handler,
     PermissionLabelLocalizer labelLocalizer,
     IHandlerInvoker invoker
-) : AtlasEndpoint<EmptyRequest, IReadOnlyList<PermissionGroupResponse>>
+) : AtlasEndpoint<EmptyRequest, IReadOnlyList<PermissionModuleResponse>>
 {
     public override void Configure()
     {
         Get("permissions");
         Policies($"permission:{IdentityModulePermissions.Tenant.Roles.Read}");
-        Description(d => d.Produces<IReadOnlyList<PermissionGroupResponse>>());
+        Description(d => d.Produces<IReadOnlyList<PermissionModuleResponse>>());
     }
 
     public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
@@ -31,17 +31,23 @@ public sealed class ListPermissionsEndpoint(
 
         await OkFromResultAsync(
             result,
-            groups =>
-                groups
-                    .Select(g => new PermissionGroupResponse(
-                        Manage: new PermissionItemResponse(g.Manage, labelLocalizer.Localize(g.Manage)),
-                        Granular: g.Granular.Select(code => new PermissionItemResponse(
-                                code,
-                                labelLocalizer.Localize(code)
+            modules =>
+                modules
+                    .Select(module => new PermissionModuleResponse(
+                        ModuleId: module.ModuleId,
+                        ModuleName: module.ModuleName,
+                        Groups: module.Groups
+                            .Select(g => new PermissionGroupResponse(
+                                Manage: new PermissionItemResponse(g.Manage, labelLocalizer.Localize(g.Manage)),
+                                Granular: g.Granular.Select(code => new PermissionItemResponse(
+                                        code,
+                                        labelLocalizer.Localize(code)
+                                    ))
+                                    .ToList()
                             ))
                             .ToList()
                     ))
-                    .ToList<PermissionGroupResponse>(),
+                    .ToList(),
             ct
         );
     }

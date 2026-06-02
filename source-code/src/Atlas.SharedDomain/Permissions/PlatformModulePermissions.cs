@@ -1,13 +1,18 @@
+using Atlas.SharedDomain.Modules;
 using Atlas.SharedKernel.Domain.Permissions;
 
-namespace Atlas.Platform.Domain.Permissions;
+namespace Atlas.SharedDomain.Permissions;
 
 /// <summary>
-/// Single source of truth for Platform module permissions.
-/// Convention: a nested class with a "Manage" field produces one PermissionGroup.
+/// Canonical permission codes for Platform-owned product capabilities.
+/// Permission codes are shared contracts used by authorization, role management,
+/// claims, and frontend permission catalogs.
 /// </summary>
 public sealed class PlatformModulePermissions : IModulePermissions
 {
+    public Guid ModuleId => AtlasModules.Platform;
+    public string ModuleName => AtlasModules.PlatformName;
+
     public static class Audit
     {
         public const string Read   = "platform.audit.read";

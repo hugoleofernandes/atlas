@@ -2,16 +2,14 @@ using Atlas.BuildingBlocks.AuditTrail.Labels;
 using Atlas.BuildingBlocks.AuditTrail.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
-using Atlas.Platform.Domain.Permissions;
 using Atlas.SharedDomain.Identity;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedDomain.Platform;
 using Atlas.SharedDomain.Staff;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
-using Atlas.Staff.Domain.Permissions;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -69,7 +67,8 @@ public sealed class ListAuditEntriesEndpoint(
         await OkFromResultAsync(
             result,
             entries => entries.Select(entry => AuditEntryResponse.From(entry, auditLabelLocalizer)).ToList(),
-            ct);
+            ct
+        );
     }
 
     private AuditTarget? ResolveTarget(Guid entityTypeId)

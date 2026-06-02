@@ -2,11 +2,10 @@ using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Platform.Domain.Tenants;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.Identity.Domain.Users;
 using Atlas.Identity.Domain.Users.Events;
 using Atlas.Identity.Domain.Users.Exceptions;
-using Atlas.Staff.Domain.Permissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;

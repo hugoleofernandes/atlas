@@ -1,15 +1,12 @@
 using Atlas.BuildingBlocks.FastEndpoints;
-using Atlas.Identity.Resources.Tenants._Roles._Permissions;
 using Microsoft.Extensions.Localization;
 
-namespace Atlas.Identity.API;
+namespace Atlas.SharedDomain.Resources.Permissions;
 
 /// <summary>
-/// Provides localized labels for Identity module permission codes
-/// (tenant.roles.* and tenant.invitations.*).
-/// Reads from IdentityPermissionLabels.resx / IdentityPermissionLabels.pt.resx.
+/// Provides localized labels for the canonical shared permission catalog.
 /// </summary>
-public sealed class IdentityPermissionLabelProvider(
+public sealed class SharedDomainPermissionLabelProvider(
     IStringLocalizer<PermissionLabels> localizer
 ) : IPermissionLabelProvider
 {

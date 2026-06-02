@@ -44,6 +44,6 @@ public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
 
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
-        return new UpdateRoleOutput(role.Id, role.Name, permissions);
+        return new UpdateRoleOutput(role.Id, role.Name, role.IsActive, permissions);
     }
 }

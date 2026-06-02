@@ -43,6 +43,6 @@ public sealed class CreateRoleCommandHandler : ICreateRoleCommandHandler
 
         var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
-        return new CreateRoleOutput(role.Id, role.Name, permissions);
+        return new CreateRoleOutput(role.Id, role.Name, role.IsActive, permissions);
     }
 }

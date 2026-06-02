@@ -5,9 +5,10 @@ namespace Atlas.Identity.API.Endpoints.Roles.CreateRole;
 public sealed record CreateRoleResponse(
     Guid                    RoleId,
     string                  Name,
+    bool                    IsActive,
     IReadOnlyList<string>   PermissionCodes
 )
 {
     public static CreateRoleResponse From(CreateRoleOutput output)
-        => new(output.RoleId, output.Name, output.PermissionCodes);
+        => new(output.RoleId, output.Name, output.IsActive, output.PermissionCodes);
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Atlas.API.Errors;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
@@ -34,9 +35,12 @@ using Atlas.Platform.API;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using Atlas.SharedDomain.Resources.Audit;
+using Atlas.SharedDomain.Resources.Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.OutboxMessages;
+using Atlas.SharedKernel.Domain.Permissions;
 using Atlas.Staff.API;
 using Atlas.Staff.Application;
 using Atlas.Staff.Infrastructure.DI;
@@ -141,12 +145,32 @@ try
     services.AddLocalization(opts => opts.ResourcesPath = "Resources");
     services.AddScoped<ErrorMessageLocalizer>();
     services.AddScoped<IErrorMessageLocalizer>(sp => sp.GetRequiredService<ErrorMessageLocalizer>());
-    services.AddScoped<IPermissionLabelProvider, IdentityPermissionLabelProvider>();
-    services.AddScoped<IPermissionLabelProvider, StaffPermissionLabelProvider>();
+    services.AddScoped<IPermissionLabelProvider, SharedDomainPermissionLabelProvider>();
     services.AddScoped<PermissionLabelLocalizer>();
     services.AddScoped<IAuditLabelProvider, SharedDomainAuditLabelProvider>();
     services.AddScoped<AuditLabelLocalizer>();
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
+
+    services.AddSingleton<IModulePermissions, IdentityModulePermissions>();
+    services.AddSingleton<IModulePermissions, StaffPermissions>();
+    services.AddSingleton<IModulePermissions, PlatformModulePermissions>();
+    services.AddSingleton<IPermissionPolicy>(sp =>
+    {
+        var logger = sp.GetRequiredService<ILogger<PermissionPolicyService>>();
+        var sw     = Stopwatch.StartNew();
+        var modules = sp.GetServices<IModulePermissions>().ToList();
+        var policy  = new PermissionPolicyService(modules);
+        sw.Stop();
+
+        logger.LogInformation(
+            "Permission catalog built in {ElapsedMs} ms - {PermissionCount} codes, {GroupCount} groups, {ModuleCount} modules",
+            sw.ElapsedMilliseconds,
+            policy.All.Count,
+            policy.Groups.Count,
+            modules.Count);
+
+        return policy;
+    });
 
     //
     // ==========================================

@@ -1,5 +1,6 @@
 using Atlas.Identity.Domain.Tenants.Events;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.SharedDomain.Identity;
 using Atlas.SharedKernel.Domain;
@@ -90,8 +91,23 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
     /// </summary>
     public void Deactivate()
     {
+        if (!IsActive)
+            return;
+
         IsActive = false;
         AddDomainEvent(new RoleDeactivatedDomainEvent(TenantId, Id));
+    }
+
+    /// <summary>
+    /// Re-enables a previously deactivated role.
+    /// </summary>
+    public void Activate()
+    {
+        if (IsActive)
+            return;
+
+        IsActive = true;
+        AddDomainEvent(new RoleActivatedDomainEvent(TenantId, Id));
     }
 
     public void Rename(string name)

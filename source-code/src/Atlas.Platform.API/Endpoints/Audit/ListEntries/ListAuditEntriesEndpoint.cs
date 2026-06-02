@@ -2,7 +2,7 @@ using Atlas.BuildingBlocks.AuditTrail.Labels;
 using Atlas.BuildingBlocks.AuditTrail.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
-using Atlas.Platform.Domain.Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;

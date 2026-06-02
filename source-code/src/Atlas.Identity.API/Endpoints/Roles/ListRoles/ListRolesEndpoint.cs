@@ -1,6 +1,6 @@
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -18,7 +18,7 @@ public sealed class ListRolesEndpoint(IListRolesQueryHandler handler, IHandlerIn
 
     public override async Task HandleAsync(ListRolesRequest req, CancellationToken ct)
     {
-        var query = new ListRolesQuery(req.IncludeInactive);
+        var query = new ListRolesQuery(req.IsActive);
         var result = await invoker.InvokeAsync(handler, query, ct);
         await OkFromResultAsync(result, ct);
     }

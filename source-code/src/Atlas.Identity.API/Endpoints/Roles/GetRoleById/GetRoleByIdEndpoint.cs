@@ -1,7 +1,7 @@
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Roles.GetRoleById;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;

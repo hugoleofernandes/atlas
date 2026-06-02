@@ -1,17 +1,18 @@
+using Atlas.SharedDomain.Modules;
 using Atlas.SharedKernel.Domain.Permissions;
 
-namespace Atlas.Identity.Domain.Tenants._Roles._Permissions;
+namespace Atlas.SharedDomain.Permissions;
 
 /// <summary>
-/// Single source of truth for Identity module permissions.
-/// Declares the permission codes as typed constants (used in [HasPermission] attributes)
-/// and implements IModulePermissions so the codes and groups are automatically derived
-/// via PermissionExtractor — no duplication required.
-///
-/// Convention: a nested class with a "Manage" field produces one PermissionGroup.
+/// Canonical permission codes for Identity-owned product capabilities.
+/// Permission codes are shared contracts used by authorization, role management,
+/// claims, and frontend permission catalogs.
 /// </summary>
 public sealed class IdentityModulePermissions : IModulePermissions
 {
+    public Guid ModuleId => AtlasModules.Identity;
+    public string ModuleName => AtlasModules.IdentityName;
+
     public static class Tenant
     {
         public static class Roles

@@ -3,7 +3,7 @@ using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain.Permissions;
-using Atlas.Staff.Domain.Permissions;
+using Atlas.SharedDomain.Permissions;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

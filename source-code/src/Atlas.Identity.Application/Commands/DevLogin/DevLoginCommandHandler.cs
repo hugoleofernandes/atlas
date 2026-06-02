@@ -1,5 +1,6 @@
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Shared;
+using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.Hosting;
@@ -49,14 +50,19 @@ public sealed class DevLoginCommandHandler : IDevLoginCommandHandler
         {
             var roles = await _roleRepository.GetByTenantIdWithPermissionsAsync(cmd.TenantId, ct);
 
-            var firstActiveRole = roles.First(r => r.IsActive);
-
-            var user = await _userRepository.FindActiveByEmailAsync(cmd.TenantId, email, ct)
-                ?? User.CreateForDev(cmd.TenantId, email, firstActiveRole.Id);
+            var user = await _userRepository.FindActiveByEmailAsync(cmd.TenantId, email, ct);
+            if (user is null)
+            {
+                var firstActiveRole = roles.First(r => r.IsActive);
+                user = User.CreateForDev(cmd.TenantId, email, firstActiveRole.Id);
+            }
 
             user.ResolveExistingAccess(user.ExternalId);
 
             var role        = roles.Single(r => r.Id == user.RoleId);
+            if (!role.IsActive)
+                throw new RoleInactiveException(role.Name);
+
             var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
 
             return new DevLoginOutput(

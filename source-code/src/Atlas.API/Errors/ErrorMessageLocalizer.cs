@@ -2,6 +2,7 @@ using Atlas.Identity.Resources.Auth;
 using Atlas.Identity.Resources.Common;
 using Atlas.Identity.Resources.Invitations;
 using Atlas.Identity.Resources.Tenants;
+using Atlas.Identity.Resources.Tenants._Roles;
 using Atlas.Identity.Resources.Users;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.Staff.Resources.StaffMember;
@@ -23,6 +24,7 @@ public sealed class ErrorMessageLocalizer : IErrorMessageLocalizer
     public ErrorMessageLocalizer(
         IStringLocalizer<SystemErrors>     system,
         IStringLocalizer<TenantErrors>     tenant,
+        IStringLocalizer<RoleErrors>       role,
         IStringLocalizer<UserErrors>       user,
         IStringLocalizer<InvitationErrors> invitation,
         IStringLocalizer<ClaimErrors>      claim,
@@ -32,6 +34,7 @@ public sealed class ErrorMessageLocalizer : IErrorMessageLocalizer
         [
             system,
             tenant,
+            role,
             user,
             invitation,
             claim,

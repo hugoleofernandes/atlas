@@ -1,6 +1,6 @@
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.UpdateRole;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 

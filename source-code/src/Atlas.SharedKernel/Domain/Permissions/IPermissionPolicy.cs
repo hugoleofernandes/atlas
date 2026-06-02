@@ -19,4 +19,7 @@ public interface IPermissionPolicy
 
     /// <summary>All manage → granular groups across all modules.</summary>
     IReadOnlyList<PermissionGroup> Groups { get; }
+
+    /// <summary>Permission catalog grouped by owning module.</summary>
+    IReadOnlyList<ModulePermissionCatalog> Modules { get; }
 }

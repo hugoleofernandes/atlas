@@ -4,8 +4,7 @@ using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Platform.Domain.Tenants;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Staff.Domain.Permissions;
+using Atlas.SharedDomain.Permissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;
