@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Security;
+using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.Identity.API.Endpoints.Auth;
 using Atlas.Identity.Application.Commands.ResolveTenantAccess;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
@@ -51,6 +52,12 @@ public sealed class UserBootstrapMiddleware
         //
 
         if (context.User?.Identity?.IsAuthenticated != true)
+        {
+            await _next(context);
+            return;
+        }
+
+        if (context.User.HasClaim(InternalApiKeyDefaults.ActorTypeClaim, InternalApiKeyDefaults.ServiceActorType))
         {
             await _next(context);
             return;

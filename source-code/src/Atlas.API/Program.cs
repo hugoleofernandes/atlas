@@ -14,6 +14,7 @@ using Atlas.BuildingBlocks.AspNetCore.Oidc;
 using Atlas.BuildingBlocks.AspNetCore.Oidc.Providers.EntraId;
 using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
+using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
 using Atlas.BuildingBlocks.AuditTrail.Labels;
 using Atlas.BuildingBlocks.FastEndpoints;
@@ -247,7 +248,7 @@ try
             options.InvalidModelStateResponseFactory = ValidationProblemDetailsFactory.Create;
         });
 
-    services.AddAuthorization();
+    services.AddAuthorization(options => options.AddInternalApiPolicy());
     services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
     services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
     services
@@ -276,6 +277,7 @@ try
         new EntraIdTenantConfigurator(AuthConstants.TenantHintCookie),
         AuthConstants.AuthCookie
     );
+    services.AddAuthentication().AddInternalApiKey(configuration);
     services.AddRateLimiting(configuration);
 
     services.AddHsts(options =>

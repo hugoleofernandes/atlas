@@ -1,4 +1,5 @@
 using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.Identity.Application.Commands.SendWelcomeEmail;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.SharedKernel.Application.Handlers;
@@ -15,13 +16,13 @@ public sealed class SendWelcomeEmailEndpoint(
     public override void Configure()
     {
         Post("internal/identity/events/user-created-from-invitation/send-welcome-email");
-        AllowAnonymous();
+        Policies(InternalApiKeyDefaults.PolicyName);
         Description(d => d.Produces(204));
     }
 
     public override async Task HandleAsync(UserCreatedFromInvitationIntegrationEvent req, CancellationToken ct)
     {
-        if (!await AuthorizeAndHydrateOutboxContextAsync(ct))
+        if (!await HydrateOutboxContextAsync(ct))
             return;
 
         var command = new SendWelcomeEmailCommand(req.TenantId, req.UserId, req.Email);

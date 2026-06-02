@@ -1,10 +1,7 @@
-using System.Security.Cryptography;
-using System.Text;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Idempotency;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
 namespace Atlas.BuildingBlocks.FastEndpoints;
@@ -12,14 +9,8 @@ namespace Atlas.BuildingBlocks.FastEndpoints;
 public abstract class InternalAtlasEndpoint<TReq, TRes> : AtlasEndpoint<TReq, TRes>
     where TReq : notnull
 {
-    protected async Task<bool> AuthorizeAndHydrateOutboxContextAsync(CancellationToken ct)
+    protected async Task<bool> HydrateOutboxContextAsync(CancellationToken ct)
     {
-        if (!IsInternalApiKeyValid())
-        {
-            await Send.UnauthorizedAsync(ct);
-            return false;
-        }
-
         if (!TryGetGuidHeader(InternalApiHeaders.TenantId, out var tenantId)
             || !TryGetGuidHeader(InternalApiHeaders.UserId, out var userId)
             || !TryGetGuidHeader(InternalApiHeaders.IdempotencyKey, out var idempotencyKey)
@@ -41,22 +32,6 @@ public abstract class InternalAtlasEndpoint<TReq, TRes> : AtlasEndpoint<TReq, TR
         Resolve<IIdempotencyContextSetter>().Set(idempotencyKey, subscription);
 
         return true;
-    }
-
-    private bool IsInternalApiKeyValid()
-    {
-        var expected = Resolve<IConfiguration>()["OutboxWorker:InternalApiKey"];
-        if (string.IsNullOrWhiteSpace(expected))
-            return false;
-
-        if (!TryGetStringHeader(InternalApiHeaders.ApiKey, out var actual))
-            return false;
-
-        var expectedBytes = Encoding.UTF8.GetBytes(expected);
-        var actualBytes = Encoding.UTF8.GetBytes(actual);
-
-        return expectedBytes.Length == actualBytes.Length
-            && CryptographicOperations.FixedTimeEquals(expectedBytes, actualBytes);
     }
 
     private bool TryGetGuidHeader(string name, out Guid value)
