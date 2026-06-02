@@ -46,7 +46,7 @@ public static class OutboxDependencyInjection
         services.AddScoped<IHandlerInvoker, HandlerInvoker>();
 
         // Dispatcher — resolves handlers per event type, delegates to invoker
-        services.AddOutboxInfrastructure(integrationEventAssemblies);
+        services.AddOutboxInfrastructure(configuration, integrationEventAssemblies);
 
         return services;
     }

@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Worker\Atlas.Outbox.Worker.csproj" />
   </ItemGroup>

@@ -18,11 +18,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Atlas.BuildingBlocks.Email\Atlas.BuildingBlocks.Email.csproj" />
         <ProjectReference Include="..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
         <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
         <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
-        <ProjectReference Include="..\Atlas.Outbox.IdentityConsumer\Atlas.Outbox.IdentityConsumer.csproj" />
         <ProjectReference Include="..\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
         <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
         <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />

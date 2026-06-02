@@ -5,6 +5,7 @@ using Atlas.Identity.Application.Commands.DeactivateRole;
 using Atlas.Identity.Application.Commands.DevLogin;
 using Atlas.Identity.Application.Commands.RemoveRole;
 using Atlas.Identity.Application.Commands.ResolveTenantAccess;
+using Atlas.Identity.Application.Commands.SendWelcomeEmail;
 using Atlas.Identity.Application.Commands.UpdateRole;
 using Atlas.Identity.Application.MetricMappers;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
@@ -62,6 +63,7 @@ internal static class TenantServicesExtensions
         services.AddScoped<ICreateRoleCommandHandler, CreateRoleCommandHandler>();
         services.AddScoped<IDeactivateRoleCommandHandler, DeactivateRoleCommandHandler>();
         services.AddScoped<IRemoveRoleCommandHandler, RemoveRoleCommandHandler>();
+        services.AddScoped<ISendWelcomeEmailCommandHandler, SendWelcomeEmailCommandHandler>();
         services.AddScoped<IUpdateRoleCommandHandler, UpdateRoleCommandHandler>();
 
         // Metrics

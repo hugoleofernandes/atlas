@@ -7,6 +7,7 @@ using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Application.Seeding;
+using Atlas.BuildingBlocks.Application.Idempotency;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Oidc;
@@ -39,6 +40,7 @@ using Atlas.SharedDomain.Resources.Permissions;
 using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
+using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Domain.Permissions;
 using Atlas.Staff.API;
@@ -139,6 +141,9 @@ try
     services.AddScoped<RequestContext>();
     services.AddScoped<IRequestContextSetter>(sp => sp.GetRequiredService<RequestContext>());
     services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
+    services.AddScoped<MutableIdempotencyContext>();
+    services.AddScoped<IIdempotencyContext>(sp => sp.GetRequiredService<MutableIdempotencyContext>());
+    services.AddScoped<IIdempotencyContextSetter>(sp => sp.GetRequiredService<MutableIdempotencyContext>());
 
     services.AddHttpContextAccessor();
     services.AddProblemDetails();

@@ -1,5 +1,8 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.Staff.Application.Abstractions;
+using Atlas.Staff.Application.StaffMembers.Commands.CreateFromInvitation;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
 using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Application.StaffMembers.Queries.List;
@@ -16,8 +19,10 @@ public static class StaffDependencyInjection
     public static IServiceCollection AddStaffModuleDependencies(this IServiceCollection services)
     {
         services.AddScoped<IStaffMemberRepository, StaffMemberRepository>();
+        services.AddScoped<ICreateStaffMemberFromInvitationCommandHandler, CreateStaffMemberFromInvitationCommandHandler>();
         services.AddScoped<IListStaffMembersReader, ListStaffMembersReader>();
         services.AddScoped<IStaffUnitOfWork, StaffUnitOfWork>();
+        services.AddScoped<IIdempotencyService, IdempotencyService<StaffDbContext>>();
 
         // Audit reader registered as concrete type to avoid DI conflict with
         // other modules that also register IListAuditEntriesReader.

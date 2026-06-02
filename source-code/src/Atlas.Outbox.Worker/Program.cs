@@ -1,8 +1,6 @@
-using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Integration.Contracts.Tenants;
-using Atlas.Outbox.IdentityConsumer._DI;
 using Atlas.Outbox.Infrastructure.DI;
 using Atlas.Outbox.Worker.Hosting;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
@@ -55,8 +53,6 @@ try
                 services.AddAtlasObservability(configuration, ctx.HostingEnvironment);
 
                 // ── Email ─────────────────────────────────────────────────────────
-                services.AddResendEmailService(configuration);
-
                 // ── DbContexts — um por módulo que usa o outbox ───────────────────
                 services.AddDbContext<IdentityDbContext>(o =>
                     o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
@@ -77,8 +73,6 @@ try
 
                 // ── Bindings evento → handler ─────────────────────────────────────
                 // Abra OutboxIntegrationDependencyInjection para ver todos os mappings.
-                services.AddOutboxIdentityConsumerHandlers();
-
                 // ── Entry point — loop de polling ─────────────────────────────────
                 services.AddHostedService<OutboxWorkerHostedService>();
             }
