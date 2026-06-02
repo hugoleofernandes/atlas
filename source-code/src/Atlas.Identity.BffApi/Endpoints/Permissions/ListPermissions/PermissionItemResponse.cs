@@ -5,6 +5,15 @@ namespace Atlas.Identity.BffApi.Endpoints.Permissions.ListPermissions;
 
 public sealed record PermissionItemResponse(Guid ModuleId, string ModuleName, string Code, string Label)
 {
-    public static PermissionItemResponse From(PermissionItemDto dto, PermissionLabelLocalizer localizer) =>
+    public static IReadOnlyList<PermissionItemResponse> FromList(
+        IReadOnlyList<PermissionItemDto> result,
+        PermissionLabelLocalizer localizer
+    )
+    {
+        var response = result.Select(x => ToResponse(x, localizer)).ToList();
+        return response;
+    }
+
+    private static PermissionItemResponse ToResponse(PermissionItemDto dto, PermissionLabelLocalizer localizer) =>
         new(dto.ModuleId, dto.ModuleName, dto.Code, localizer.Localize(dto.Code));
 }

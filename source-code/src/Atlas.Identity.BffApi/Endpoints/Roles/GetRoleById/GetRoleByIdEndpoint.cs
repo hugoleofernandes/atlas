@@ -2,7 +2,6 @@ using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Roles.GetRoleById;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
 using Atlas.SharedDomain.Permissions;
-using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -24,27 +23,6 @@ public sealed class GetRoleByIdEndpoint(IGetRoleByIdQueryHandler handler, IHandl
     public override async Task HandleAsync(GetRoleByIdRequest req, CancellationToken ct)
     {
         var result = await invoker.InvokeAsync(handler, new GetRoleByIdQuery(req.Id), ct);
-
-        if (!result.IsSuccess)
-        {
-            var localizer = Resolve<IErrorMessageLocalizer>();
-            var statusCode = result.ErrorDefinition!.Category.ToHttpStatus();
-            await Send.ResultAsync(
-                Results.Problem(
-                    title: localizer.Localize(result.ErrorDefinition!),
-                    detail: result.ErrorDefinition!.FallbackMessage,
-                    statusCode: statusCode
-                )
-            );
-            return;
-        }
-
-        if (result.Value is null)
-        {
-            await Send.ResultAsync(Results.NotFound());
-            return;
-        }
-
-        await Send.OkAsync(result.Value, ct);
+        await OkFromResultAsync(result, ct);
     }
 }

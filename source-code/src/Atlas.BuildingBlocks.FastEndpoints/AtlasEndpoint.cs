@@ -29,13 +29,12 @@ public abstract class AtlasEndpoint<TReq, TRes> : Endpoint<TReq, TRes>
 
     private Task SendProblemAsync(ErrorDefinition error)
     {
-        var localizer  = Resolve<IErrorMessageLocalizer>();
+        var localizer = Resolve<IErrorMessageLocalizer>();
         var statusCode = error.Category.ToHttpStatus();
 
-        return Send.ResultAsync(Results.Problem(
-            title:      localizer.Localize(error),
-            detail:     error.FallbackMessage,
-            statusCode: statusCode));
+        return Send.ResultAsync(
+            Results.Problem(title: localizer.Localize(error), detail: error.FallbackMessage, statusCode: statusCode)
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -51,18 +50,6 @@ public abstract class AtlasEndpoint<TReq, TRes> : Endpoint<TReq, TRes>
         return Send.OkAsync(result.Value!, ct);
     }
 
-    /// <summary>200 OK — use when the result value needs to be mapped to the response type.</summary>
-    protected Task OkFromResultAsync<TOutput>(
-        Result<TOutput> result,
-        Func<TOutput, TRes> map,
-        CancellationToken ct = default)
-    {
-        if (!result.IsSuccess)
-            return SendProblemAsync(result.ErrorDefinition!);
-
-        return Send.OkAsync(map(result.Value!), ct);
-    }
-
     // -------------------------------------------------------------------------
     // Create — 201 Created
     // -------------------------------------------------------------------------
@@ -71,7 +58,8 @@ public abstract class AtlasEndpoint<TReq, TRes> : Endpoint<TReq, TRes>
     protected Task CreatedFromResultAsync<TOutput>(
         Result<TOutput> result,
         Func<TOutput, TRes> map,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         if (!result.IsSuccess)
             return SendProblemAsync(result.ErrorDefinition!);
@@ -87,7 +75,8 @@ public abstract class AtlasEndpoint<TReq, TRes> : Endpoint<TReq, TRes>
     protected Task UpdatedFromResultAsync<TOutput>(
         Result<TOutput> result,
         Func<TOutput, TRes> map,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         if (!result.IsSuccess)
             return SendProblemAsync(result.ErrorDefinition!);
@@ -121,7 +110,8 @@ public abstract class AtlasEndpoint<TReq, TRes> : Endpoint<TReq, TRes>
     protected Task DeletedWithBodyFromResultAsync<TOutput>(
         Result<TOutput> result,
         Func<TOutput, TRes> map,
-        CancellationToken ct = default)
+        CancellationToken ct = default
+    )
     {
         if (!result.IsSuccess)
             return SendProblemAsync(result.ErrorDefinition!);

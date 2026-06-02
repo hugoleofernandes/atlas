@@ -35,10 +35,8 @@ public sealed class ListAuditEntriesEndpoint(
             EntityId: req.EntityId
         );
 
-        var result = await invoker.InvokeAsync(handler, query, ct);
-        await OkFromResultAsync(
-            result,
-            entries => entries.Select(entry => AuditEntryResponse.From(entry, auditLabelLocalizer)).ToList(),
-            ct);
+        var result   = await invoker.InvokeAsync(handler, query, ct);
+        var response = result.Map(x => AuditEntryResponse.FromList(x, auditLabelLocalizer));
+        await OkFromResultAsync(response, ct);
     }
 }

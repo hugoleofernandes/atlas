@@ -24,6 +24,12 @@ public sealed class Result<T> : IResponse
     }
 
     public object? GetValue() => Value;
+
+    /// <summary>
+    /// Projects the value into a new Result. If this Result is a failure, propagates the error unchanged.
+    /// </summary>
+    public Result<TOut> Map<TOut>(Func<T, TOut> mapper) =>
+        IsSuccess ? Result.Ok(mapper(Value!)) : Result.Fail<TOut>(ErrorDefinition!);
 }
 
 /// <summary>

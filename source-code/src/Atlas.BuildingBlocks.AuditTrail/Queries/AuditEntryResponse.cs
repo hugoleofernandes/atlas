@@ -16,7 +16,15 @@ public sealed record AuditEntryResponse(
     string   ChangesJson,
     IReadOnlyList<AuditChangeResponse> Changes)
 {
-    public static AuditEntryResponse From(AuditEntryDto entry, AuditLabelLocalizer localizer)
+    public static IReadOnlyList<AuditEntryResponse> FromList(
+        IReadOnlyList<AuditEntryDto> result,
+        AuditLabelLocalizer localizer)
+    {
+        var response = result.Select(x => From(x, localizer)).ToList();
+        return response;
+    }
+
+    private static AuditEntryResponse From(AuditEntryDto entry, AuditLabelLocalizer localizer)
         => new(
             entry.Id,
             entry.EntityTypeId,

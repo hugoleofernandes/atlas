@@ -28,10 +28,8 @@ public sealed class ListPermissionsEndpoint(
     {
         var result = await invoker.InvokeAsync(handler, new ListPermissionsQuery(), ct);
 
-        await OkFromResultAsync(
-            result,
-            x => x.Select(i => PermissionItemResponse.From(i, labelLocalizer)).ToList(),
-            ct
-        );
+        var response = result.Map(x => PermissionItemResponse.FromList(x, labelLocalizer));
+
+        await OkFromResultAsync(response, ct);
     }
 }
