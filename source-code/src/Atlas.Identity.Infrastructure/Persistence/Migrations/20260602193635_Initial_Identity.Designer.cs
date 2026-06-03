@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260531185514_Initial_Identity")]
+    [Migration("20260602193635_Initial_Identity")]
     partial class Initial_Identity
     {
         /// <inheritdoc />

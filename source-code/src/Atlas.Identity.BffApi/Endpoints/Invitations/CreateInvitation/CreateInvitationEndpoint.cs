@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.InviteUser;
-using Atlas.SharedDomain.Permissions;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -8,7 +8,7 @@ namespace Atlas.Identity.BffApi.Endpoints.Invitations.CreateInvitation;
 
 /// <summary>
 /// Creates an invitation for a new user to join the authenticated user's tenant.
-/// The tenant is resolved from the session cookie — not from the URL.
+/// The tenant is resolved from the session cookie â€” not from the URL.
 /// </summary>
 public sealed class CreateInvitationEndpoint(IInviteUserCommandHandler handler, IHandlerInvoker invoker)
     : AtlasEndpoint<CreateInvitationRequest, CreateInvitationResponse>
@@ -16,7 +16,7 @@ public sealed class CreateInvitationEndpoint(IInviteUserCommandHandler handler, 
     public override void Configure()
     {
         Post("bff/identity/invitations");
-        Policies($"permission:{IdentityModulePermissions.Tenant.Invitations.Create}");
+        Policies($"permission:{ModulePermissions.Invitations.Create}");
         Description(d => d.Produces<CreateInvitationResponse>(201));
     }
 

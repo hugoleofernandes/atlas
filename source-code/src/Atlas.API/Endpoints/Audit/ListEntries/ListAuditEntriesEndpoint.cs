@@ -1,12 +1,15 @@
-using Atlas.BuildingBlocks.AuditTrail.Labels;
+﻿using Atlas.BuildingBlocks.AuditTrail.Labels;
 using Atlas.BuildingBlocks.AuditTrail.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
+using Atlas.Identity.Contracts;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
-using Atlas.SharedDomain.Identity;
-using Atlas.SharedDomain.Permissions;
-using Atlas.SharedDomain.Platform;
-using Atlas.SharedDomain.Staff;
+using Atlas.SharedKernel.Domain.Permissions;
+using StaffPermissions = Atlas.Staff.Contracts.Permissions;
+using PlatformPermissions = Atlas.Platform.Contracts.Permissions;
+using PlatformContracts = Atlas.Platform.Contracts;
+using StaffContracts = Atlas.Staff.Contracts;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
@@ -63,7 +66,7 @@ public sealed class ListAuditEntriesEndpoint(
             EntityId: req.EntityId
         );
 
-        var result   = await target.ExecuteAsync(query, ct);
+        var result = await target.ExecuteAsync(query, ct);
         var response = result.Map(x => AuditEntryResponse.FromList(x, auditLabelLocalizer));
         await OkFromResultAsync(response, ct);
     }
@@ -71,29 +74,29 @@ public sealed class ListAuditEntriesEndpoint(
     private AuditTarget? ResolveTarget(Guid entityTypeId)
     {
         if (
-            entityTypeId == IdentityEntityTypes.User
-            || entityTypeId == IdentityEntityTypes.Role
-            || entityTypeId == IdentityEntityTypes.Invitation
+            entityTypeId == EntityTypes.UserId
+            || entityTypeId == EntityTypes.RoleId
+            || entityTypeId == EntityTypes.InvitationId
         )
         {
             return new AuditTarget(
-                IdentityModulePermissions.Tenant.Audit.Read,
+                ModulePermissions.Audit.Read,
                 (query, ct) => invoker.InvokeAsync(identityHandler, query, ct)
             );
         }
 
-        if (entityTypeId == StaffEntityTypes.StaffMember)
+        if (entityTypeId == StaffContracts.EntityTypes.StaffMemberId)
         {
             return new AuditTarget(
-                StaffPermissions.Audit.Read,
+                StaffPermissions.ModulePermissions.Audit.Read,
                 (query, ct) => invoker.InvokeAsync(staffHandler, query, ct)
             );
         }
 
-        if (entityTypeId == PlatformEntityTypes.Tenant)
+        if (entityTypeId == PlatformContracts.EntityTypes.TenantId)
         {
             return new AuditTarget(
-                PlatformModulePermissions.Audit.Read,
+                PlatformPermissions.ModulePermissions.Audit.Read,
                 (query, ct) => invoker.InvokeAsync(platformHandler, query, ct)
             );
         }

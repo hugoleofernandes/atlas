@@ -29,19 +29,22 @@ TARGET_CONTEXT=$($(context)_CONTEXT)
 # DOCKER
 # =========================================
 
-up:
+ensure-env:
+	if (!(Test-Path "$(ENV_FILE)")) { Copy-Item "$(ROOT_DIR)/.env.example" "$(ENV_FILE)"; Write-Host "Created $(ENV_FILE) from .env.example"; }
+
+up: ensure-env
 	$(COMPOSE) up --build -d
 
-down:
+down: ensure-env
 	$(COMPOSE) down
 
-logs:
+logs: ensure-env
 	$(COMPOSE) logs -f
 
-ps:
+ps: ensure-env
 	$(COMPOSE) ps
 
-reset:
+reset: ensure-env
 	$(COMPOSE) down -v
 
 # =========================================

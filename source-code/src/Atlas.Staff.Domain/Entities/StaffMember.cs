@@ -1,11 +1,11 @@
-﻿using Atlas.SharedDomain.Staff;
+﻿using Atlas.Staff.Contracts;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Staff.Domain.Entities;
 
 public sealed class StaffMember : IAuditableAggregate
 {
-    public Guid EntityTypeId => StaffEntityTypes.StaffMember;
+    public Guid EntityTypeId => EntityTypes.StaffMemberId;
 
     public Guid Id { get; private set; }
 

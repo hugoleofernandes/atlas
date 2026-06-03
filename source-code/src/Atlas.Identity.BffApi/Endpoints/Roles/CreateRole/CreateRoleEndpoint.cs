@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.CreateRole;
-using Atlas.SharedDomain.Permissions;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -16,7 +16,7 @@ public sealed class CreateRoleEndpoint(ICreateRoleCommandHandler handler, IHandl
     public override void Configure()
     {
         Post("bff/identity/roles");
-        Policies($"permission:{IdentityModulePermissions.Tenant.Roles.Create}");
+        Policies($"permission:{ModulePermissions.Roles.Create}");
         Description(d => d.Produces<CreateRoleResponse>(201));
     }
 

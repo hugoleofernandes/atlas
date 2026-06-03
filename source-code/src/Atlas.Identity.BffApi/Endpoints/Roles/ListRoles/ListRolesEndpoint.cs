@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
-using Atlas.SharedDomain.Permissions;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -12,7 +12,7 @@ public sealed class ListRolesEndpoint(IListRolesQueryHandler handler, IHandlerIn
     public override void Configure()
     {
         Get("bff/identity/roles");
-        Policies($"permission:{IdentityModulePermissions.Tenant.Roles.Read}");
+        Policies($"permission:{ModulePermissions.Roles.Read}");
         Description(d => d.Produces<IReadOnlyList<RoleDto>>());
     }
 

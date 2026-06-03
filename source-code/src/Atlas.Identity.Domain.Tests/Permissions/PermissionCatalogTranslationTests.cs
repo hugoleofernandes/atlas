@@ -1,7 +1,9 @@
-using Atlas.SharedDomain.Permissions;
-
+﻿using System.Xml.Linq;
+using Atlas.Identity.Contracts.Permissions;
+using Atlas.SharedKernel.Domain.Permissions;
+using StaffContracts = Atlas.Staff.Contracts.Permissions;
+using PlatformContracts = Atlas.Platform.Contracts.Permissions;
 using FluentAssertions;
-using System.Xml.Linq;
 
 namespace Atlas.Identity.Tests.Permissions;
 
@@ -10,68 +12,71 @@ namespace Atlas.Identity.Tests.Permissions;
 /// a non-empty label in both the English and Portuguese PermissionLabels.resx files.
 ///
 /// Why: the compiler guarantees the code exists, but cannot guarantee the translation.
-/// This test closes that gap — a missing translation fails the build immediately.
+/// This test closes that gap â€” a missing translation fails the build immediately.
 /// </summary>
 public sealed class PermissionCatalogTranslationTests
 {
     private static readonly string SharedResxDirectory = FindResxDirectory();
 
     /// <summary>
-    /// The full permission policy built from all registered modules — same as runtime.
+    /// The full permission policy built from all registered modules â€” same as runtime.
     /// </summary>
-    private static readonly PermissionPolicyService Policy = new(
-    [
-        new IdentityModulePermissions(),
-        new StaffPermissions(),
-        new PlatformModulePermissions(),
+    private static readonly PermissionPolicyService Policy = new([
+        new ModulePermissions(),
+        new StaffContracts.ModulePermissions(),
+        new PlatformContracts.ModulePermissions(),
     ]);
 
     [Fact]
     public void AllPermissions_ShouldHaveLabel_InEnglishResx()
     {
         var labels = LoadAllLabels("resx");
-        var missing = Policy.All
-            .Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
+        var missing = Policy
+            .All.Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
             .ToList();
 
-        missing.Should().BeEmpty(
-            because: $"every permission must have an English label. Missing: {string.Join(", ", missing)}");
+        missing
+            .Should()
+            .BeEmpty(because: $"every permission must have an English label. Missing: {string.Join(", ", missing)}");
     }
 
     [Fact]
     public void AllPermissions_ShouldHaveLabel_InPortugueseResx()
     {
         var labels = LoadAllLabels("pt.resx");
-        var missing = Policy.All
-            .Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
+        var missing = Policy
+            .All.Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
             .ToList();
 
-        missing.Should().BeEmpty(
-            because: $"every permission must have a Portuguese label. Missing: {string.Join(", ", missing)}");
+        missing
+            .Should()
+            .BeEmpty(because: $"every permission must have a Portuguese label. Missing: {string.Join(", ", missing)}");
     }
 
     [Fact]
     public void EnglishResx_ShouldNotHaveOrphanedKeys_NotInCatalog()
     {
         var labels = LoadAllLabels("resx");
-        var orphaned = labels.Keys
-            .Where(key => !Policy.All.Contains(key))
-            .ToList();
+        var orphaned = labels.Keys.Where(key => !Policy.All.Contains(key)).ToList();
 
-        orphaned.Should().BeEmpty(
-            because: $"Permission resx files contain keys not in any module catalog (dead translations): {string.Join(", ", orphaned)}");
+        orphaned
+            .Should()
+            .BeEmpty(
+                because: $"Permission resx files contain keys not in any module catalog (dead translations): {string.Join(", ", orphaned)}"
+            );
     }
 
     [Fact]
     public void PortugueseResx_ShouldNotHaveOrphanedKeys_NotInCatalog()
     {
         var labels = LoadAllLabels("pt.resx");
-        var orphaned = labels.Keys
-            .Where(key => !Policy.All.Contains(key))
-            .ToList();
+        var orphaned = labels.Keys.Where(key => !Policy.All.Contains(key)).ToList();
 
-        orphaned.Should().BeEmpty(
-            because: $"Permission resx files contain keys not in any module catalog (dead translations): {string.Join(", ", orphaned)}");
+        orphaned
+            .Should()
+            .BeEmpty(
+                because: $"Permission resx files contain keys not in any module catalog (dead translations): {string.Join(", ", orphaned)}"
+            );
     }
 
     // -------------------------------------------------------
@@ -82,12 +87,11 @@ public sealed class PermissionCatalogTranslationTests
         var path = Path.Combine(SharedResxDirectory, $"PermissionLabels.{extension}");
         File.Exists(path).Should().BeTrue(because: $"resource file must exist at {path}");
 
-        return XDocument.Load(path)
+        return XDocument
+            .Load(path)
             .Descendants("data")
             .Where(e => e.Attribute("name") is not null)
-            .Select(e => (
-                Key:   e.Attribute("name")!.Value,
-                Value: e.Element("value")?.Value ?? string.Empty))
+            .Select(e => (Key: e.Attribute("name")!.Value, Value: e.Element("value")?.Value ?? string.Empty))
             .ToDictionary(x => x.Key, x => x.Value);
     }
 
@@ -108,6 +112,7 @@ public sealed class PermissionCatalogTranslationTests
         }
 
         throw new DirectoryNotFoundException(
-            "Could not find solution root (no *.slnx file found walking up from test output).");
+            "Could not find solution root (no *.slnx file found walking up from test output)."
+        );
     }
 }

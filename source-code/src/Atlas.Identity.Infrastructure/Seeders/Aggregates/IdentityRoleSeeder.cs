@@ -1,21 +1,22 @@
-using Atlas.Identity.Application.Abstractions;
+﻿using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Tenants._Roles;
+using Atlas.Identity.Infrastructure.Persistence.DbContexts;
+using Atlas.Identity.Contracts.Permissions;
+using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain.Permissions;
-using Atlas.SharedDomain.Permissions;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 
 namespace Atlas.Identity.Infrastructure.Seeders.Aggregates;
 
 /// <summary>
 /// Seeds the default system roles (root, admin, member) for the tenant that lives in Atlas.Platform.
 /// Reads atlas_platform.tenants via Dapper to avoid a cross-module project reference.
-/// Idempotent — skips if any role already exists.
+/// Idempotent â€” skips if any role already exists.
 /// </summary>
 internal sealed class IdentityRoleSeeder
 {
@@ -31,45 +32,66 @@ internal sealed class IdentityRoleSeeder
     public async Task SeedAsync(IServiceProvider services, CancellationToken ct)
     {
         var logger = services.GetRequiredService<ILogger<IdentityRoleSeeder>>();
-        var db     = services.GetRequiredService<IdentityDbContext>();
-        var uow    = services.GetRequiredService<IIdentityUnitOfWork>();
+        var db = services.GetRequiredService<IdentityDbContext>();
+        var uow = services.GetRequiredService<IIdentityUnitOfWork>();
         var setter = services.GetRequiredService<IRequestContextSetter>();
 
         if (await db.Roles.IgnoreQueryFilters().AnyAsync(ct))
         {
-            logger.LogInformation("IdentityRoleSeeder skipped — data already exists");
+            logger.LogInformation("IdentityRoleSeeder skipped â€” data already exists");
             return;
         }
 
         logger.LogInformation("IdentityRoleSeeder started");
 
-        var conn   = db.Database.GetDbConnection();
+        var conn = db.Database.GetDbConnection();
         var tenant = await conn.QueryFirstOrDefaultAsync<TenantRow>(GetFirstTenantSql);
 
         if (tenant is null)
         {
-            logger.LogWarning("IdentityRoleSeeder skipped — no tenant found in atlas_platform.tenants");
+            logger.LogWarning("IdentityRoleSeeder skipped â€” no tenant found in atlas_platform.tenants");
             return;
         }
 
         var policy = services.GetRequiredService<IPermissionPolicy>();
 
-        var memberPermissions = new[]
-        {
-            StaffPermissions.Read,
-            StaffPermissions.Create,
-            StaffPermissions.Update,
-            StaffPermissions.Deactivate,
-        };
+        IEnumerable<string> memberPermissions =
+        [
+            StaffPermissions.ModulePermissions.Staff.Read,
+            StaffPermissions.ModulePermissions.Staff.Create,
+            StaffPermissions.ModulePermissions.Staff.Update,
+            StaffPermissions.ModulePermissions.Staff.Deactivate,
+        ];
 
         var roleRepository = services.GetRequiredService<IRoleRepository>();
 
-        var root   = Role.Create(tenant.TenantId, "root",   policy.AllIncludingSystem, policy.AllIncludingSystem, isSystem: true, id: SystemRoleIds.Root);
-        var admin  = Role.Create(tenant.TenantId, "admin",  policy.All,                policy.All,                isSystem: true, id: SystemRoleIds.Admin);
-        var member = Role.Create(tenant.TenantId, "member", memberPermissions,          policy.All,                isSystem: true, id: SystemRoleIds.Member);
+        var root = Role.Create(
+            tenant.TenantId,
+            "root",
+            policy.AllIncludingSystem,
+            policy.AllIncludingSystem,
+            isSystem: true,
+            id: SystemRoleIds.Root
+        );
+        var admin = Role.Create(
+            tenant.TenantId,
+            "admin",
+            policy.All,
+            policy.All,
+            isSystem: true,
+            id: SystemRoleIds.Admin
+        );
+        var member = Role.Create(
+            tenant.TenantId,
+            "member",
+            memberPermissions,
+            policy.All,
+            isSystem: true,
+            id: SystemRoleIds.Member
+        );
 
-        await roleRepository.AddAsync(root,   ct);
-        await roleRepository.AddAsync(admin,  ct);
+        await roleRepository.AddAsync(root, ct);
+        await roleRepository.AddAsync(admin, ct);
         await roleRepository.AddAsync(member, ct);
 
         setter.Set(tenant.TenantId, tenant.TenantName, SystemIdentity.UserId, SystemIdentity.Email);

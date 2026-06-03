@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.ActivateRole;
-using Atlas.SharedDomain.Permissions;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +17,7 @@ public sealed class ActivateRoleEndpoint(IActivateRoleCommandHandler handler, IH
     public override void Configure()
     {
         Patch("bff/identity/roles/{id}/activate");
-        Policies($"permission:{IdentityModulePermissions.Tenant.Roles.Update}");
+        Policies($"permission:{ModulePermissions.Roles.Update}");
         Description(d => d.Produces(204));
     }
 

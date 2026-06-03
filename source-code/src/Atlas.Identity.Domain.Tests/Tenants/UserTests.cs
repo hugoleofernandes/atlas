@@ -1,11 +1,14 @@
-using Atlas.Identity.Domain.Invitations;
+﻿using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
-using Atlas.Platform.Domain.Tenants;
-using Atlas.SharedDomain.Permissions;
 using Atlas.Identity.Domain.Users;
 using Atlas.Identity.Domain.Users.Events;
 using Atlas.Identity.Domain.Users.Exceptions;
+using Atlas.Platform.Domain.Tenants;
+using Atlas.Identity.Contracts.Permissions;
+using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.SharedKernel.Application;
+using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;
@@ -14,21 +17,21 @@ public class UserTests
 {
     private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
     {
-        IdentityModulePermissions.Tenant.Roles.Read,
-        IdentityModulePermissions.Tenant.Roles.Create,
-        IdentityModulePermissions.Tenant.Roles.Update,
-        IdentityModulePermissions.Tenant.Roles.Delete,
-        IdentityModulePermissions.Tenant.Roles.Manage,
-        IdentityModulePermissions.Tenant.Invitations.Read,
-        IdentityModulePermissions.Tenant.Invitations.Create,
-        IdentityModulePermissions.Tenant.Invitations.Update,
-        IdentityModulePermissions.Tenant.Invitations.Delete,
-        IdentityModulePermissions.Tenant.Invitations.Manage,
-        StaffPermissions.Read,
-        StaffPermissions.Create,
-        StaffPermissions.Update,
-        StaffPermissions.Deactivate,
-        StaffPermissions.Manage,
+        ModulePermissions.Roles.Read,
+        ModulePermissions.Roles.Create,
+        ModulePermissions.Roles.Update,
+        ModulePermissions.Roles.Delete,
+        ModulePermissions.Roles.Manage,
+        ModulePermissions.Invitations.Read,
+        ModulePermissions.Invitations.Create,
+        ModulePermissions.Invitations.Update,
+        ModulePermissions.Invitations.Delete,
+        ModulePermissions.Invitations.Manage,
+        StaffPermissions.ModulePermissions.Staff.Read,
+        StaffPermissions.ModulePermissions.Staff.Create,
+        StaffPermissions.ModulePermissions.Staff.Update,
+        StaffPermissions.ModulePermissions.Staff.Deactivate,
+        StaffPermissions.ModulePermissions.Staff.Manage,
     };
 
     private static readonly IReadOnlySet<string> AllIncludingSystemCodes = new HashSet<string>(AllCodes)
@@ -38,15 +41,15 @@ public class UserTests
 
     private static readonly IEnumerable<string> DefaultMemberPermissions =
     [
-        StaffPermissions.Read,
-        StaffPermissions.Create,
-        StaffPermissions.Update,
-        StaffPermissions.Deactivate,
+        StaffPermissions.ModulePermissions.Staff.Read,
+        StaffPermissions.ModulePermissions.Staff.Create,
+        StaffPermissions.ModulePermissions.Staff.Update,
+        StaffPermissions.ModulePermissions.Staff.Deactivate,
     ];
 
     private static (Tenant tenant, Guid adminRoleId) CreateTenantWithRoles()
     {
-        var tenant    = new Tenant("test");
+        var tenant = new Tenant("test");
         var adminRole = Role.Create(tenant.Id, "admin", AllCodes, AllCodes, isSystem: true, id: SystemRoleIds.Admin);
         return (tenant, adminRole.Id);
     }
@@ -54,7 +57,11 @@ public class UserTests
     private static Invitation CreateUsedInvitation(Tenant tenant, Guid roleId, string email = "user@test.com")
     {
         var invitation = Invitation.Create(
-            tenant.Id, Email.Create(email), roleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
+            tenant.Id,
+            Email.Create(email),
+            roleId,
+            InvitationTtl.Create(TimeSpan.FromHours(1))
+        );
         invitation.Use();
         invitation.ClearDomainEvents();
         return invitation;
@@ -143,7 +150,7 @@ public class UserTests
     public void ResolveExistingAccess_ShouldThrow_WhenExternalIdDoesNotMatch()
     {
         // Security invariant: same email but different OID means a different identity
-        // provider account is trying to claim the same user slot — must be rejected.
+        // provider account is trying to claim the same user slot â€” must be rejected.
         var (tenant, adminRoleId) = CreateTenantWithRoles();
         var invitation = CreateUsedInvitation(tenant, adminRoleId);
         var user = User.CreateFromInvitation(invitation, ExternalId.Create("oid-legitimate"), "admin");

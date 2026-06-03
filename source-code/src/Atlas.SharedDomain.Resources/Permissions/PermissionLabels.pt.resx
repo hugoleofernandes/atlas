@@ -5,20 +5,25 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="tenant.roles.read" xml:space="preserve"><value>Visualizar perfis de acesso</value></data>
-  <data name="tenant.roles.create" xml:space="preserve"><value>Criar perfis de acesso</value></data>
-  <data name="tenant.roles.update" xml:space="preserve"><value>Atualizar perfis de acesso</value></data>
-  <data name="tenant.roles.delete" xml:space="preserve"><value>Remover perfis de acesso</value></data>
-  <data name="tenant.roles.manage" xml:space="preserve"><value>Gerenciar perfis de acesso</value></data>
+  <data name="identity.users.read" xml:space="preserve"><value>Visualizar usuários</value></data>
+  <data name="identity.users.update" xml:space="preserve"><value>Atualizar usuários</value></data>
+  <data name="identity.users.deactivate" xml:space="preserve"><value>Desativar usuários</value></data>
+  <data name="identity.users.manage" xml:space="preserve"><value>Gerenciar usuários</value></data>
 
-  <data name="tenant.invitations.read" xml:space="preserve"><value>Visualizar convites</value></data>
-  <data name="tenant.invitations.create" xml:space="preserve"><value>Criar convites</value></data>
-  <data name="tenant.invitations.update" xml:space="preserve"><value>Atualizar convites</value></data>
-  <data name="tenant.invitations.delete" xml:space="preserve"><value>Remover convites</value></data>
-  <data name="tenant.invitations.manage" xml:space="preserve"><value>Gerenciar convites</value></data>
+  <data name="identity.roles.read" xml:space="preserve"><value>Visualizar perfis de acesso</value></data>
+  <data name="identity.roles.create" xml:space="preserve"><value>Criar perfis de acesso</value></data>
+  <data name="identity.roles.update" xml:space="preserve"><value>Atualizar perfis de acesso</value></data>
+  <data name="identity.roles.delete" xml:space="preserve"><value>Remover perfis de acesso</value></data>
+  <data name="identity.roles.manage" xml:space="preserve"><value>Gerenciar perfis de acesso</value></data>
 
-  <data name="tenant.audit.read" xml:space="preserve"><value>Visualizar auditoria do tenant</value></data>
-  <data name="tenant.audit.manage" xml:space="preserve"><value>Gerenciar auditoria do tenant</value></data>
+  <data name="identity.invitations.read" xml:space="preserve"><value>Visualizar convites</value></data>
+  <data name="identity.invitations.create" xml:space="preserve"><value>Criar convites</value></data>
+  <data name="identity.invitations.update" xml:space="preserve"><value>Atualizar convites</value></data>
+  <data name="identity.invitations.delete" xml:space="preserve"><value>Remover convites</value></data>
+  <data name="identity.invitations.manage" xml:space="preserve"><value>Gerenciar convites</value></data>
+
+  <data name="identity.audit.read" xml:space="preserve"><value>Visualizar auditoria de identidade</value></data>
+  <data name="identity.audit.manage" xml:space="preserve"><value>Gerenciar auditoria de identidade</value></data>
 
   <data name="staff.read" xml:space="preserve"><value>Visualizar membros da equipe</value></data>
   <data name="staff.create" xml:space="preserve"><value>Criar membros da equipe</value></data>

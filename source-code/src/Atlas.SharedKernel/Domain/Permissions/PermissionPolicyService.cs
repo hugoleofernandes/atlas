@@ -1,6 +1,4 @@
-using Atlas.SharedKernel.Domain.Permissions;
-
-namespace Atlas.SharedDomain.Permissions;
+namespace Atlas.SharedKernel.Domain.Permissions;
 
 /// <summary>
 /// Aggregates the canonical permission catalog into a single policy.
@@ -17,7 +15,7 @@ public sealed class PermissionPolicyService : IPermissionPolicy
 
         AllIncludingSystem = new HashSet<string>(All)
         {
-            SystemPermissions.Root,
+            Atlas.SharedKernel.Application.SystemPermissions.Root,
         };
 
         Modules = moduleList

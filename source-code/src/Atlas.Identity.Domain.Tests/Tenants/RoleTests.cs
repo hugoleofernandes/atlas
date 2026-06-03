@@ -1,8 +1,11 @@
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.Identity.Domain.Tenants._Roles;
-using Atlas.SharedDomain.Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Events;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Domain.Permissions;
 using FluentAssertions;
+using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
@@ -14,23 +17,21 @@ public class RoleTests
 
     private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
     {
-        IdentityModulePermissions.Tenant.Roles.Read,
-        IdentityModulePermissions.Tenant.Roles.Create,
-        IdentityModulePermissions.Tenant.Roles.Update,
-        IdentityModulePermissions.Tenant.Roles.Delete,
-        IdentityModulePermissions.Tenant.Roles.Manage,
-
-        IdentityModulePermissions.Tenant.Invitations.Read,
-        IdentityModulePermissions.Tenant.Invitations.Create,
-        IdentityModulePermissions.Tenant.Invitations.Update,
-        IdentityModulePermissions.Tenant.Invitations.Delete,
-        IdentityModulePermissions.Tenant.Invitations.Manage,
-
-        StaffPermissions.Read,
-        StaffPermissions.Create,
-        StaffPermissions.Update,
-        StaffPermissions.Deactivate,
-        StaffPermissions.Manage,
+        ModulePermissions.Roles.Read,
+        ModulePermissions.Roles.Create,
+        ModulePermissions.Roles.Update,
+        ModulePermissions.Roles.Delete,
+        ModulePermissions.Roles.Manage,
+        ModulePermissions.Invitations.Read,
+        ModulePermissions.Invitations.Create,
+        ModulePermissions.Invitations.Update,
+        ModulePermissions.Invitations.Delete,
+        ModulePermissions.Invitations.Manage,
+        StaffPermissions.ModulePermissions.Staff.Read,
+        StaffPermissions.ModulePermissions.Staff.Create,
+        StaffPermissions.ModulePermissions.Staff.Update,
+        StaffPermissions.ModulePermissions.Staff.Deactivate,
+        StaffPermissions.ModulePermissions.Staff.Manage,
     };
 
     private static readonly IReadOnlySet<string> AllIncludingSystemCodes = new HashSet<string>(AllCodes)
@@ -47,13 +48,13 @@ public class RoleTests
     [Fact]
     public void Create_ShouldCreateRole_WithCorrectData()
     {
-        var role = Role.Create(TenantId, "support", [StaffPermissions.Read], AllCodes);
+        var role = Role.Create(TenantId, "support", [StaffPermissions.ModulePermissions.Staff.Read], AllCodes);
 
         role.TenantId.Should().Be(TenantId);
         role.Name.Should().Be("support");
         role.IsSystem.Should().BeFalse();
         role.IsActive.Should().BeTrue();
-        role.Permissions.Select(p => p.Code).Should().Contain(StaffPermissions.Read);
+        role.Permissions.Select(p => p.Code).Should().Contain(StaffPermissions.ModulePermissions.Staff.Read);
     }
 
     [Fact]
@@ -193,13 +194,20 @@ public class RoleTests
     [Fact]
     public void UpdatePermissions_ShouldReplacePermissions_WhenRoleIsCustom()
     {
-        var role = Role.Create(TenantId, "custom", [StaffPermissions.Read], AllCodes);
+        var role = Role.Create(TenantId, "custom", [StaffPermissions.ModulePermissions.Staff.Read], AllCodes);
         role.ClearDomainEvents();
 
-        role.UpdatePermissions([StaffPermissions.Read, StaffPermissions.Update], AllCodes);
+        role.UpdatePermissions(
+            [StaffPermissions.ModulePermissions.Staff.Read, StaffPermissions.ModulePermissions.Staff.Update],
+            AllCodes
+        );
 
-        role.Permissions.Select(p => p.Code).Should()
-            .BeEquivalentTo([StaffPermissions.Read, StaffPermissions.Update]);
+        role.Permissions.Select(p => p.Code)
+            .Should()
+            .BeEquivalentTo([
+                StaffPermissions.ModulePermissions.Staff.Read,
+                StaffPermissions.ModulePermissions.Staff.Update,
+            ]);
     }
 
     [Fact]
@@ -208,7 +216,7 @@ public class RoleTests
         var role = Role.Create(TenantId, "custom", [], AllCodes);
         role.ClearDomainEvents();
 
-        role.UpdatePermissions([StaffPermissions.Read], AllCodes);
+        role.UpdatePermissions([StaffPermissions.ModulePermissions.Staff.Read], AllCodes);
 
         var evt = role.DomainEvents.OfType<RoleUpdatedDomainEvent>().Single();
         evt.TenantId.Should().Be(TenantId);
@@ -220,7 +228,7 @@ public class RoleTests
     {
         var role = Role.Create(TenantId, "admin", AllCodes, AllCodes, isSystem: true);
 
-        var act = () => role.UpdatePermissions([StaffPermissions.Read], AllCodes);
+        var act = () => role.UpdatePermissions([StaffPermissions.ModulePermissions.Staff.Read], AllCodes);
 
         act.Should().Throw<SystemRoleCannotBeModifiedException>();
     }

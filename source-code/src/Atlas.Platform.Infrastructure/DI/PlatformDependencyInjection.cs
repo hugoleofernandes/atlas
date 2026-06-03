@@ -19,7 +19,6 @@ public static class PlatformDependencyInjection
     {
         // GENERAL
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
-        services.AddScoped<IModuleSeeder, PlatformModuleSeeder>();
 
         // READERS
         services.AddScoped<ILookupEntityTypesReader, LookupEntityTypesReader>();
@@ -35,10 +34,10 @@ public static class PlatformDependencyInjection
 
         // Factory lambda wires the Platform-specific reader into the shared audit handler
         // without exposing IListAuditEntriesReader in the root DI container.
-        services.AddScoped<IPlatformListAuditEntriesQueryHandler>(sp =>
-            new PlatformListAuditEntriesQueryHandler(
-                sp.GetRequiredService<PlatformAuditEntriesReader>(),
-                sp.GetRequiredService<IRequestContext>()));
+        services.AddScoped<IPlatformListAuditEntriesQueryHandler>(sp => new PlatformListAuditEntriesQueryHandler(
+            sp.GetRequiredService<PlatformAuditEntriesReader>(),
+            sp.GetRequiredService<IRequestContext>()
+        ));
 
         return services;
     }

@@ -1,4 +1,4 @@
-namespace Atlas.SharedDomain.Permissions;
+namespace Atlas.SharedKernel.Application;
 
 /// <summary>
 /// System-only permissions that are not assignable to custom roles.

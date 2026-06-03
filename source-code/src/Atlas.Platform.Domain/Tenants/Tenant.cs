@@ -1,6 +1,6 @@
-using Atlas.Platform.Domain.Tenants.Events;
+﻿using Atlas.Platform.Domain.Tenants.Events;
 using Atlas.Platform.Domain.Tenants.Exceptions;
-using Atlas.SharedDomain.Platform;
+using Atlas.Platform.Contracts;
 using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Platform.Domain.Tenants;
@@ -12,14 +12,14 @@ namespace Atlas.Platform.Domain.Tenants;
 /// - A tenant cannot be inactive when performing domain operations.
 ///
 /// Boundaries:
-/// - Does NOT own Roles, Users, or Invitations — they are separate aggregate roots.
+/// - Does NOT own Roles, Users, or Invitations â€” they are separate aggregate roots.
 /// - Does NOT validate external identity providers.
 /// - Does NOT send emails or notifications.
 /// - Does NOT persist data (handled by repositories/UoW).
 /// </summary>
 public sealed class Tenant : AggregateRoot, INotMultiTenant, IAuditableAggregate
 {
-    public Guid EntityTypeId => PlatformEntityTypes.Tenant;
+    public Guid EntityTypeId => EntityTypes.TenantId;
 
     public Guid Id { get; private set; } = Guid.NewGuid();
 

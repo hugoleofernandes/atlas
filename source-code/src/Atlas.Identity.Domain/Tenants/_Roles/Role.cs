@@ -1,10 +1,8 @@
-using Atlas.Identity.Domain.Tenants.Events;
+using Atlas.Identity.Contracts;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.SharedDomain.Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
-using Atlas.SharedDomain.Identity;
+using Atlas.Identity.Domain.Tenants.Events;
 using Atlas.SharedKernel.Domain;
-using Atlas.SharedKernel.Domain.Permissions;
 
 namespace Atlas.Identity.Domain.Tenants._Roles;
 
@@ -22,7 +20,7 @@ namespace Atlas.Identity.Domain.Tenants._Roles;
 /// </summary>
 public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
-    public Guid EntityTypeId => IdentityEntityTypes.Role;
+    public Guid EntityTypeId => EntityTypes.RoleId;
 
     public Guid Id { get; private set; }
 
@@ -44,10 +42,10 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
 
     private Role(Guid id, Guid tenantId, string name, bool isSystem, List<Permission> permissions)
     {
-        Id          = id;
-        TenantId    = tenantId;
-        Name        = name;
-        IsSystem    = isSystem;
+        Id = id;
+        TenantId = tenantId;
+        Name = name;
+        IsSystem = isSystem;
         _permissions = permissions;
     }
 
@@ -57,7 +55,8 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
         IEnumerable<string> permissionCodes,
         IReadOnlySet<string> validCodes,
         bool isSystem = false,
-        Guid? id = null)
+        Guid? id = null
+    )
     {
         if (name.Length is < 3 or > 10)
             throw new InvalidRoleNameException();

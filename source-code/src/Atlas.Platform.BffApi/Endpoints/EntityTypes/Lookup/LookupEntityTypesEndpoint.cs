@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
-using Atlas.SharedDomain.Permissions;
+using Atlas.Platform.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +15,7 @@ public sealed class LookupEntityTypesEndpoint(
     public override void Configure()
     {
         Get("bff/platform/entity-types/lookup");
-        Policies($"permission:{PlatformModulePermissions.Audit.Read}");
+        Policies($"permission:{ModulePermissions.Audit.Read}");
         Description(d => d.Produces<IReadOnlyList<EntityTypeLookupDto>>());
     }
 

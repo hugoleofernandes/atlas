@@ -1,12 +1,8 @@
-using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Domain.Modules;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
-using Atlas.SharedDomain.Identity;
-using Atlas.SharedDomain.Modules;
-using Atlas.SharedDomain.Platform;
-using Atlas.SharedDomain.Staff;
 using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -16,13 +12,16 @@ namespace Atlas.Platform.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds the Platform module registry: Systems, Modules, and EntityTypes.
-/// Idempotent — skips if data already exists.
+/// Called directly from Atlas.API — not via SeedOrchestrator.
+/// Receives module registrations as explicit parameters so Platform stays
+/// fully decoupled from other modules. Any executable only needs *.Contracts references.
 /// </summary>
-internal sealed class PlatformModuleSeeder : IModuleSeeder
+public sealed class PlatformModuleSeeder
 {
-    public int Order => 0;
-
-    public async Task SeedAsync(IServiceProvider services, CancellationToken ct)
+    public async Task SeedAsync(
+        IServiceProvider services,
+        IReadOnlyList<IModuleRegistration> registrations,
+        CancellationToken ct)
     {
         await new PlatformTenantSeeder().SeedAsync(services, ct);
 
@@ -39,38 +38,20 @@ internal sealed class PlatformModuleSeeder : IModuleSeeder
 
         logger.LogInformation("PlatformSeeder started");
 
-        // Systems
-        var mlab = AtlasSystem.Create("mlab");
-        db.Systems.Add(mlab);
+        db.Systems.Add(AtlasSystem.Create("mlab"));
 
-        // Modules
-        var identityModule = Module.Create(AtlasModules.Identity, AtlasModules.IdentityName);
-        var staffModule    = Module.Create(AtlasModules.Staff, AtlasModules.StaffName);
-        var platformModule = Module.Create(AtlasModules.Platform, AtlasModules.PlatformName);
+        foreach (var registration in registrations)
+        {
+            var module = Module.Create(registration.ModuleId, registration.ModuleName);
+            db.Modules.Add(module);
 
-        db.Modules.AddRange(identityModule, staffModule, platformModule);
+            foreach (var entityType in registration.EntityTypes)
+                db.EntityTypes.Add(EntityType.Create(entityType.Id, module.Id, entityType.Name, entityType.Schema));
+        }
 
-        // EntityTypes — use deterministic GUIDs from SharedDomain so the frontend
-        // can reference EntityTypeIds without querying the registry at runtime.
-        db.EntityTypes.AddRange(
-            EntityType.Create(IdentityEntityTypes.User,       identityModule.Id, "User",       "atlas_identity"),
-            EntityType.Create(IdentityEntityTypes.Role,       identityModule.Id, "Role",       "atlas_identity"),
-            EntityType.Create(IdentityEntityTypes.Invitation, identityModule.Id, "Invitation", "atlas_identity"),
-            EntityType.Create(PlatformEntityTypes.Tenant,     platformModule.Id, "Tenant",     "atlas_platform"));
-
-        // EntityTypes — Staff module
-        db.EntityTypes.Add(
-            EntityType.Create(StaffEntityTypes.StaffMember, staffModule.Id, "StaffMember", "atlas_staff"));
-
-        var systemId    = Guid.NewGuid();
-        var systemEmail = SystemIdentity.Email;
-
-        setter.Set(systemId, "platform-seed", SystemIdentity.UserId, systemEmail);
+        setter.Set(Guid.NewGuid(), "platform-seed", SystemIdentity.UserId, SystemIdentity.Email);
         await uow.SaveChangesAsync(ct);
 
-        logger.LogInformation("PlatformSeeder completed:");
-        logger.LogInformation("  Systems : {Systems}", mlab.Name);
-        logger.LogInformation("  Modules : identity, staff, platform");
-        logger.LogInformation("  EntityTypes : User, Role, Invitation, Tenant (identity) | StaffMember (staff)");
+        logger.LogInformation("PlatformSeeder completed — {Count} modules seeded", registrations.Count);
     }
 }

@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Roles.LookupRoles;
-using Atlas.SharedDomain.Permissions;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +16,7 @@ public sealed class LookupRolesEndpoint(ILookupRolesQueryHandler handler, IHandl
     public override void Configure()
     {
         Get("bff/identity/roles/lookup");
-        Policies($"permission:{IdentityModulePermissions.Tenant.Roles.Read}");
+        Policies($"permission:{ModulePermissions.Roles.Read}");
         Description(d => d.Produces<IReadOnlyList<RoleLookupDto>>());
     }
 

@@ -5,9 +5,9 @@ using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
+using Atlas.BuildingBlocks.Application.Idempotency;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Application.Seeding;
-using Atlas.BuildingBlocks.Application.Idempotency;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Oidc;
@@ -29,9 +29,10 @@ using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
 using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
+using Atlas.Identity.Application;
 using Atlas.Identity.BffApi;
 using Atlas.Identity.BffApi.Configs;
-using Atlas.Identity.Application;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.InternalApi;
@@ -39,18 +40,19 @@ using Atlas.Identity.OutboxPublisher.DI;
 using Atlas.Platform.BffApi;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
+using Atlas.Platform.Infrastructure.Seeders;
 using Atlas.Platform.InternalApi;
 using Atlas.SharedDomain.Resources.Audit;
 using Atlas.SharedDomain.Resources.Permissions;
-using Atlas.SharedDomain.Permissions;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.OutboxMessages;
+using Atlas.SharedKernel.Application.Seeding;
 using Atlas.SharedKernel.Configuration;
 using Atlas.SharedKernel.Domain.Permissions;
-using Atlas.Staff.BffApi;
 using Atlas.Staff.Application;
+using Atlas.Staff.BffApi;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Atlas.Staff.InternalApi;
@@ -66,10 +68,16 @@ using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
+using IdentityContracts = Atlas.Identity.Contracts;
+using IdentityPermissions = Atlas.Identity.Contracts.Permissions;
+using PlatformContracts = Atlas.Platform.Contracts;
+using PlatformPermissions = Atlas.Platform.Contracts.Permissions;
+using StaffContracts = Atlas.Staff.Contracts;
+using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 
 //
 // ==========================================
-// 🔹 SERILOG BOOTSTRAP (captura erros de startup)
+// ðŸ”¹ SERILOG BOOTSTRAP (captura erros de startup)
 // ==========================================
 //
 
@@ -82,7 +90,7 @@ try
 
     //
     // ==========================================
-    // 🔹 SERILOG FULL CONFIG (hosted — acessa IConfiguration)
+    // ðŸ”¹ SERILOG FULL CONFIG (hosted â€” acessa IConfiguration)
     // ==========================================
     //
 
@@ -99,9 +107,9 @@ try
                 .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .Enrich.WithThreadId()
-                // Console sempre ativo — saída limpa para desenvolvimento
+                // Console sempre ativo â€” saÃ­da limpa para desenvolvimento
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-                // Logs → Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
+                // Logs â†’ Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
                 .WriteToAtlasObservability(otel, context.HostingEnvironment);
 
             if (!otel.IsEnabled)
@@ -123,7 +131,7 @@ try
 
     //
     // ==========================================
-    // 🔹 OBSERVABILITY (OTel traces + metrics → Grafana Cloud)
+    // ðŸ”¹ OBSERVABILITY (OTel traces + metrics â†’ Grafana Cloud)
     // ==========================================
     //
 
@@ -164,15 +172,17 @@ try
     services.AddScoped<AuditLabelLocalizer>();
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
-    services.AddSingleton<IModulePermissions, IdentityModulePermissions>();
-    services.AddSingleton<IModulePermissions, StaffPermissions>();
-    services.AddSingleton<IModulePermissions, PlatformModulePermissions>();
+    // Module permissions — one per module
+    services.AddSingleton<IModulePermissions, IdentityPermissions.ModulePermissions>();
+    services.AddSingleton<IModulePermissions, StaffPermissions.ModulePermissions>();
+    services.AddSingleton<IModulePermissions, PlatformPermissions.ModulePermissions>();
+
     services.AddSingleton<IPermissionPolicy>(sp =>
     {
         var logger = sp.GetRequiredService<ILogger<PermissionPolicyService>>();
-        var sw     = Stopwatch.StartNew();
+        var sw = Stopwatch.StartNew();
         var modules = sp.GetServices<IModulePermissions>().ToList();
-        var policy  = new PermissionPolicyService(modules);
+        var policy = new PermissionPolicyService(modules);
         sw.Stop();
 
         logger.LogInformation(
@@ -180,7 +190,8 @@ try
             sw.ElapsedMilliseconds,
             policy.All.Count,
             policy.Groups.Count,
-            modules.Count);
+            modules.Count
+        );
 
         return policy;
     });
@@ -325,6 +336,16 @@ try
     {
         using var scope = app.Services.CreateScope();
 
+        // Platform module seeder called directly — receives registrations as explicit parameters.
+        // Only *.Contracts references needed; no cross-module DI coupling.
+        IReadOnlyList<IModuleRegistration> moduleRegistrations =
+        [
+            new IdentityContracts.Registration(),
+            new StaffContracts.Registration(),
+            new PlatformContracts.Registration(),
+        ];
+        await new PlatformModuleSeeder().SeedAsync(scope.ServiceProvider, moduleRegistrations, CancellationToken.None);
+
         var orchestrator = scope.ServiceProvider.GetRequiredService<SeedOrchestrator>();
         await orchestrator.RunAsync(scope.ServiceProvider);
 
@@ -350,13 +371,13 @@ try
         opts.ApplyCurrentCultureToResponseHeaders = true;
     });
 
-    // 🔹 CorrelationId PRIMEIRO
+    // ðŸ”¹ CorrelationId PRIMEIRO
     app.UseMiddleware<CorrelationIdMiddleware>();
 
-    // 🔹 Serilog HTTP logging
+    // ðŸ”¹ Serilog HTTP logging
     app.UseSerilogRequestLogging();
 
-    // 🔹 Exception handling global
+    // ðŸ”¹ Exception handling global
     app.UseMiddleware<GlobalExceptionMiddleware>();
 
     app.UseSecurityHeaders();
@@ -397,6 +418,11 @@ try
     app.UseOidcMetadataWarmup(configuration);
 
     app.Run();
+}
+catch (HostAbortedException)
+{
+    // EF Core design-time tooling intentionally aborts the host after building it
+    // to resolve DbContext services. This is not an application startup failure.
 }
 catch (Exception ex)
 {

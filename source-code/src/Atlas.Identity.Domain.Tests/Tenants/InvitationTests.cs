@@ -1,11 +1,15 @@
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Platform.Domain.Tenants;
-using Atlas.SharedDomain.Permissions;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Domain.Permissions;
 using FluentAssertions;
+using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
@@ -13,21 +17,21 @@ public class InvitationTests
 {
     private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
     {
-        IdentityModulePermissions.Tenant.Roles.Read,
-        IdentityModulePermissions.Tenant.Roles.Create,
-        IdentityModulePermissions.Tenant.Roles.Update,
-        IdentityModulePermissions.Tenant.Roles.Delete,
-        IdentityModulePermissions.Tenant.Roles.Manage,
-        IdentityModulePermissions.Tenant.Invitations.Read,
-        IdentityModulePermissions.Tenant.Invitations.Create,
-        IdentityModulePermissions.Tenant.Invitations.Update,
-        IdentityModulePermissions.Tenant.Invitations.Delete,
-        IdentityModulePermissions.Tenant.Invitations.Manage,
-        StaffPermissions.Read,
-        StaffPermissions.Create,
-        StaffPermissions.Update,
-        StaffPermissions.Deactivate,
-        StaffPermissions.Manage,
+        ModulePermissions.Roles.Read,
+        ModulePermissions.Roles.Create,
+        ModulePermissions.Roles.Update,
+        ModulePermissions.Roles.Delete,
+        ModulePermissions.Roles.Manage,
+        ModulePermissions.Invitations.Read,
+        ModulePermissions.Invitations.Create,
+        ModulePermissions.Invitations.Update,
+        ModulePermissions.Invitations.Delete,
+        ModulePermissions.Invitations.Manage,
+        StaffPermissions.ModulePermissions.Staff.Read,
+        StaffPermissions.ModulePermissions.Staff.Create,
+        StaffPermissions.ModulePermissions.Staff.Update,
+        StaffPermissions.ModulePermissions.Staff.Deactivate,
+        StaffPermissions.ModulePermissions.Staff.Manage,
     };
 
     private static readonly IReadOnlySet<string> AllIncludingSystemCodes = new HashSet<string>(AllCodes)
@@ -37,10 +41,10 @@ public class InvitationTests
 
     private static readonly IEnumerable<string> DefaultMemberPermissions =
     [
-        StaffPermissions.Read,
-        StaffPermissions.Create,
-        StaffPermissions.Update,
-        StaffPermissions.Deactivate,
+        StaffPermissions.ModulePermissions.Staff.Read,
+        StaffPermissions.ModulePermissions.Staff.Create,
+        StaffPermissions.ModulePermissions.Staff.Update,
+        StaffPermissions.ModulePermissions.Staff.Deactivate,
     ];
 
     private static void ForceExpire(Invitation invitation)
@@ -52,13 +56,13 @@ public class InvitationTests
 
     private static (Tenant tenant, Guid adminRoleId) CreateTenantWithRoles()
     {
-        var tenant    = new Tenant("test");
+        var tenant = new Tenant("test");
         var adminRole = Role.Create(tenant.Id, "admin", AllCodes, AllCodes, isSystem: true, id: SystemRoleIds.Admin);
         return (tenant, adminRole.Id);
     }
 
-    private static Invitation MakeInvitation(Guid tenantId, Guid roleId, string email = "user@test.com")
-        => Invitation.Create(tenantId, Email.Create(email), roleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
+    private static Invitation MakeInvitation(Guid tenantId, Guid roleId, string email = "user@test.com") =>
+        Invitation.Create(tenantId, Email.Create(email), roleId, InvitationTtl.Create(TimeSpan.FromHours(1)));
 
     // ============================================================
     // 1. CREATE (FACTORY)

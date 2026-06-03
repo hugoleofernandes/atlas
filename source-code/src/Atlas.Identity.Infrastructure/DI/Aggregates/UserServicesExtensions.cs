@@ -1,4 +1,6 @@
+using Atlas.Identity.Application.Queries.Users.ListUsers;
 using Atlas.Identity.Application.Repositories;
+using Atlas.Identity.Infrastructure.Readers.Users.ListUsers;
 using Atlas.Identity.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +12,12 @@ internal static class UserServicesExtensions
     {
         // Repository
         services.AddScoped<IUserRepository, UserRepository>();
+
+        // Readers
+        services.AddScoped<IListUsersReader, ListUsersReader>();
+
+        // Query Handlers
+        services.AddScoped<IListUsersQueryHandler, ListUsersQueryHandler>();
 
         return services;
     }

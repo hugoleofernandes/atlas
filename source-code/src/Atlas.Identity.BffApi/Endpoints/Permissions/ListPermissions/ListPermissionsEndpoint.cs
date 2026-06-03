@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
-using Atlas.SharedDomain.Permissions;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +20,7 @@ public sealed class ListPermissionsEndpoint(
     public override void Configure()
     {
         Get("bff/identity/permissions");
-        Policies($"permission:{IdentityModulePermissions.Tenant.Roles.Read}");
+        Policies($"permission:{ModulePermissions.Roles.Read}");
         Description(d => d.Produces<IReadOnlyList<PermissionItemResponse>>());
     }
 

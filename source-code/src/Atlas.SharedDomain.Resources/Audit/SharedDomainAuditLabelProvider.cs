@@ -1,31 +1,25 @@
 using Atlas.BuildingBlocks.AuditTrail.Labels;
-using Atlas.SharedDomain.Identity;
-using Atlas.SharedDomain.Platform;
-using Atlas.SharedDomain.Staff;
 using Microsoft.Extensions.Localization;
+using StaffContracts = Atlas.Staff.Contracts;
+using PlatformContracts = Atlas.Platform.Contracts;
 
 namespace Atlas.SharedDomain.Resources.Audit;
 
 /// <summary>
-/// Provides localized audit labels for shared domain concepts:
-/// canonical audit actions and deterministic EntityTypeId values.
+/// Provides localized audit labels for shared domain concepts.
+/// Entity type localization is delegated to each module's own provider.
+/// TODO: migrate LocalizeAction to Atlas.BuildingBlocks.AuditTrail.
 /// </summary>
-public sealed class SharedDomainAuditLabelProvider(
-    IStringLocalizer<AuditLabels> localizer
-) : IAuditLabelProvider
+public sealed class SharedDomainAuditLabelProvider(IStringLocalizer<AuditLabels> localizer) : IAuditLabelProvider
 {
-    public string? LocalizeAction(string action)
-        => Localize($"audit.action.{action}");
+    public string? LocalizeAction(string action) => Localize($"audit.action.{action}");
 
     public string? LocalizeEntityType(Guid entityTypeId)
     {
         var key =
-            entityTypeId == IdentityEntityTypes.User       ? "audit.entity.identity.user" :
-            entityTypeId == IdentityEntityTypes.Role       ? "audit.entity.identity.role" :
-            entityTypeId == IdentityEntityTypes.Invitation ? "audit.entity.identity.invitation" :
-            entityTypeId == StaffEntityTypes.StaffMember   ? "audit.entity.staff.staff-member" :
-            entityTypeId == PlatformEntityTypes.Tenant     ? "audit.entity.platform.tenant" :
-            null;
+            entityTypeId == StaffContracts.EntityTypes.StaffMemberId    ? "audit.entity.staff.staff-member"
+            : entityTypeId == PlatformContracts.EntityTypes.TenantId    ? "audit.entity.platform.tenant"
+            : null;
 
         return key is null ? null : Localize(key);
     }
