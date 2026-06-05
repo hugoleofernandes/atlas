@@ -15,8 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
-
-    <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Persistence\Atlas.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
@@ -24,6 +22,7 @@
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Resources\Atlas.Staff.Resources.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
+    <ProjectReference Include="..\BuildingBlocks\Atlas.BuildingBlocks.Outbox\Atlas.BuildingBlocks.Outbox.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

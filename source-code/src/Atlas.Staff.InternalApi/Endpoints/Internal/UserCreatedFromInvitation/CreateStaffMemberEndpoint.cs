@@ -1,6 +1,6 @@
-using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
-using Atlas.Integration.Contracts.Tenants;
+using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.Identity.Contracts.IntegrationEvents.Users;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Staff.Application.StaffMembers.Commands.CreateFromInvitation;
 using FastEndpoints;
@@ -10,8 +10,8 @@ namespace Atlas.Staff.InternalApi.Endpoints.Internal.UserCreatedFromInvitation;
 
 public sealed class CreateStaffMemberEndpoint(
     ICreateStaffMemberFromInvitationCommandHandler handler,
-    IHandlerInvoker invoker)
-    : InternalAtlasEndpoint<UserCreatedFromInvitationIntegrationEvent, EmptyResponse>
+    IHandlerInvoker invoker
+) : InternalAtlasEndpoint<UserCreatedFromInvitationIntegrationEvent, EmptyResponse>
 {
     public override void Configure()
     {

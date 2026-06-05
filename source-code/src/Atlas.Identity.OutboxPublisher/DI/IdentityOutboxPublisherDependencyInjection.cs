@@ -1,3 +1,4 @@
+using Atlas.Identity.OutboxPublisher.Invitations.UserInvited;
 using Atlas.Identity.OutboxPublisher.Users.UserCreatedFromInvitation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,7 @@ public static class IdentityOutboxPublisherDependencyInjection
 {
     public static IServiceCollection AddIdentityOutboxPublisherMappings(this IServiceCollection services)
     {
+        services.AddUserInvitedMapper();
         services.AddUserCreatedFromInvitationMapper();
 
         return services;

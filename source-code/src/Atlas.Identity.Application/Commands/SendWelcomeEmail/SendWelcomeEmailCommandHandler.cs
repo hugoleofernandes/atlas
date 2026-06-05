@@ -1,4 +1,5 @@
 using Atlas.BuildingBlocks.Email;
+using Atlas.Identity.Contracts.Commands.SendWelcomeEmail;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.Idempotency;
@@ -20,22 +21,20 @@ namespace Atlas.Identity.Application.Commands.SendWelcomeEmail;
 /// </summary>
 public sealed class SendWelcomeEmailCommandHandler : ISendWelcomeEmailCommandHandler
 {
-    private readonly IEmailService       _emailService;
+    private readonly IEmailService _emailService;
     private readonly IIdempotencyContext _idempotencyContext;
 
     /// <inheritdoc/>
     public IUnitOfWork UnitOfWork => NullUnitOfWork.Instance;
 
-    public SendWelcomeEmailCommandHandler(
-        IEmailService       emailService,
-        IIdempotencyContext idempotencyContext)
+    public SendWelcomeEmailCommandHandler(IEmailService emailService, IIdempotencyContext idempotencyContext)
     {
-        _emailService       = emailService;
+        _emailService = emailService;
         _idempotencyContext = idempotencyContext;
     }
 
-    public Task<Unit> ExecuteAsync(SendWelcomeEmailCommand command, CancellationToken ct)
-        => _emailService
+    public Task<Unit> ExecuteAsync(SendWelcomeEmailCommand command, CancellationToken ct) =>
+        _emailService
             .SendAsync(BuildMessage(command), ct)
             .ContinueWith(_ => Unit.Value, ct, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
 
@@ -48,18 +47,20 @@ public sealed class SendWelcomeEmailCommandHandler : ISendWelcomeEmailCommandHan
         // <event-type>/<entity-id>.
         // Guard against Guid.Empty — which means the handler is running outside an outbox
         // context (tests, direct invocation) where no idempotency context is available.
-        string? idempotencyKey = _idempotencyContext.IdempotencyKey != Guid.Empty
-            ? $"send-welcome-email/{_idempotencyContext.IdempotencyKey}"
-            : null;
+        string? idempotencyKey =
+            _idempotencyContext.IdempotencyKey != Guid.Empty
+                ? $"send-welcome-email/{_idempotencyContext.IdempotencyKey}"
+                : null;
 
         return new EmailMessage(
-            To:             command.Email,
-            Subject:        "Welcome to Atlas",
-            HtmlBody:       $"""
-                <h2>Welcome to Atlas!</h2>
-                <p>Your account is ready. You can now sign in and start using the platform.</p>
-                <p>If you have any questions, just reply to this email.</p>
-                """,
-            IdempotencyKey: idempotencyKey);
+            To: command.Email,
+            Subject: "Welcome to Atlas",
+            HtmlBody: $"""
+            <h2>Welcome to Atlas!</h2>
+            <p>Your account is ready. You can now sign in and start using the platform.</p>
+            <p>If you have any questions, just reply to this email.</p>
+            """,
+            IdempotencyKey: idempotencyKey
+        );
     }
 }

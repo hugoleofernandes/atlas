@@ -1,16 +1,15 @@
-using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.SendWelcomeEmail;
-using Atlas.Integration.Contracts.Tenants;
+using Atlas.Identity.Contracts.Commands.SendWelcomeEmail;
+using Atlas.Identity.Contracts.IntegrationEvents.Users;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
 namespace Atlas.Identity.InternalApi.Endpoints.Internal.UserCreatedFromInvitation;
 
-public sealed class SendWelcomeEmailEndpoint(
-    ISendWelcomeEmailCommandHandler handler,
-    IHandlerInvoker invoker)
+public sealed class SendWelcomeEmailEndpoint(ISendWelcomeEmailCommandHandler handler, IHandlerInvoker invoker)
     : InternalAtlasEndpoint<UserCreatedFromInvitationIntegrationEvent, EmptyResponse>
 {
     public override void Configure()
