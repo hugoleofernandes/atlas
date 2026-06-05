@@ -1,7 +1,7 @@
-using Atlas.BuildingBlocks.AuditTrail.Labels;
+﻿using Atlas.BuildingBlocks.Audit.Labels;
 using System.Text.Json;
 
-namespace Atlas.BuildingBlocks.AuditTrail.Queries;
+namespace Atlas.BuildingBlocks.Audit.Queries;
 
 public sealed record AuditEntryResponse(
     Guid     Id,

@@ -1,4 +1,4 @@
-using Atlas.Identity.Contracts.Permissions;
+﻿using Atlas.Identity.Contracts.Permissions;
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
@@ -7,7 +7,7 @@ using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Platform.Domain.Tenants;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.BuildingBlocks.Permissions;
 using FluentAssertions;
 using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 

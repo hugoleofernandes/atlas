@@ -9,6 +9,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
   </ItemGroup>
@@ -18,10 +19,12 @@
     <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Persistence\Atlas.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.Resources\Atlas.Identity.Resources.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
 
     <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

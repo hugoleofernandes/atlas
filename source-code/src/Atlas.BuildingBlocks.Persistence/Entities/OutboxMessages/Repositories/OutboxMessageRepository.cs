@@ -33,6 +33,12 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
         await _db.Set<OutboxMessage>().AddRangeAsync(messages, ct);
     }
 
+    public Task<OutboxMessage?> GetByIdAsync(Guid id, CancellationToken ct)
+    {
+        return _db.Set<OutboxMessage>()
+            .FirstOrDefaultAsync(message => message.Id == id, ct);
+    }
+
     // ── IOutboxWorkerRepository (Outbox Worker — read/process side) ───────────
 
     public async Task<IReadOnlyList<OutboxMessage>> GetPendingBatchAsync(

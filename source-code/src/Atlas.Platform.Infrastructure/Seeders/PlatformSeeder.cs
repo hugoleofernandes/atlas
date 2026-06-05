@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Domain.Modules;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
@@ -12,23 +13,24 @@ namespace Atlas.Platform.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds the Platform module registry: Systems, Modules, and EntityTypes.
-/// Called directly from Atlas.API — not via SeedOrchestrator.
-/// Receives module registrations as explicit parameters so Platform stays
-/// fully decoupled from other modules. Any executable only needs *.Contracts references.
+/// Module registrations are injected via IModuleRegistration — each module's
+/// Contracts project registers one implementation in Atlas.API.
+/// Platform stays decoupled from other modules.
+/// Idempotent — skips if data already exists.
 /// </summary>
-public sealed class PlatformModuleSeeder
+internal sealed class PlatformModuleSeeder : IModuleSeeder
 {
-    public async Task SeedAsync(
-        IServiceProvider services,
-        IReadOnlyList<IModuleRegistration> registrations,
-        CancellationToken ct)
+    public int Order => 0;
+
+    public async Task SeedAsync(IServiceProvider services, CancellationToken ct)
     {
         await new PlatformTenantSeeder().SeedAsync(services, ct);
 
-        var logger = services.GetRequiredService<ILogger<PlatformModuleSeeder>>();
-        var db     = services.GetRequiredService<PlatformDbContext>();
-        var uow    = services.GetRequiredService<IPlatformUnitOfWork>();
-        var setter = services.GetRequiredService<IRequestContextSetter>();
+        var logger        = services.GetRequiredService<ILogger<PlatformModuleSeeder>>();
+        var db            = services.GetRequiredService<PlatformDbContext>();
+        var uow           = services.GetRequiredService<IPlatformUnitOfWork>();
+        var setter        = services.GetRequiredService<IRequestContextSetter>();
+        var registrations = services.GetServices<IModuleRegistration>().ToList();
 
         if (await db.Modules.AnyAsync(ct))
         {

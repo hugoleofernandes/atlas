@@ -1,4 +1,4 @@
-using Atlas.SharedKernel.Domain;
+﻿using Atlas.SharedKernel.Domain;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;

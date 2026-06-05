@@ -2,6 +2,8 @@ namespace Atlas.SharedKernel.Application.OutboxMessages;
 
 public interface IOutboxWorkerRepository
 {
+    Task<OutboxMessage?> GetByIdAsync(Guid id, CancellationToken ct);
+
     Task<IReadOnlyList<OutboxMessage>> GetPendingBatchAsync(
         int batchSize,
         TimeSpan lockDuration,

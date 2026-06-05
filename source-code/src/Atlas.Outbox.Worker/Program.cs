@@ -1,9 +1,12 @@
+using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.Observability;
+using Atlas.Identity.Application.Commands.SendWelcomeEmail;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Integration.Contracts.Tenants;
 using Atlas.Outbox.Infrastructure.DI;
 using Atlas.Outbox.Worker.Hosting;
 using Atlas.SharedKernel.Configuration;
+using Atlas.Staff.Application.StaffMembers.Commands.CreateFromInvitation;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -68,6 +71,12 @@ try
                 var integrationEventAssemblies = new[] { typeof(UserCreatedFromInvitationIntegrationEvent).Assembly };
 
                 services.AddOutboxWorker(configuration, integrationEventAssemblies);
+                services.AddResendEmailService(configuration);
+                services.AddScoped<ISendWelcomeEmailCommandHandler, SendWelcomeEmailCommandHandler>();
+                services.AddScoped<
+                    ICreateStaffMemberFromInvitationCommandHandler,
+                    CreateStaffMemberFromInvitationCommandHandler
+                >();
 
                 // ── Módulos — infraestrutura por módulo (repos, UoW, idempotência) ──
                 services.AddIdentityOutboxModuleDependencies();
@@ -75,8 +84,10 @@ try
 
                 // ── Bindings evento → handler ─────────────────────────────────────
                 // Abra OutboxIntegrationDependencyInjection para ver todos os mappings.
+
                 // ── Entry point — loop de polling ─────────────────────────────────
-                services.AddHostedService<OutboxWorkerHostedService>();
+                // services.AddHostedService<OutboxWorkerHostedService>();  // V1 — mantido como referência
+                services.AddHostedService<OutboxWorkerHostedServiceV2>(); // V2 — workflow explícito
             }
         )
         .Build();

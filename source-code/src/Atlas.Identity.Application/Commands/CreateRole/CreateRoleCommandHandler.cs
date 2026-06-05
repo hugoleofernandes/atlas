@@ -1,10 +1,10 @@
-using Atlas.Identity.Application.Abstractions;
+﻿using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Exceptions;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.BuildingBlocks.Permissions;
 
 namespace Atlas.Identity.Application.Commands.CreateRole;
 

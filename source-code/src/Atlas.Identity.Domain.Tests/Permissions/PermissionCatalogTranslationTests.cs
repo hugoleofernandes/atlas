@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 using Atlas.Identity.Contracts.Permissions;
-using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.BuildingBlocks.Permissions;
 using StaffContracts = Atlas.Staff.Contracts.Permissions;
 using PlatformContracts = Atlas.Platform.Contracts.Permissions;
 using FluentAssertions;

@@ -1,10 +1,10 @@
-using Atlas.SharedKernel.Domain;
+﻿using Atlas.SharedKernel.Domain;
 
 namespace Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 
 /// <summary>
 /// Records that a specific handler successfully processed a specific outbox message.
-/// The composite primary key (MessageId, HandlerName) acts as the unique constraint —
+/// The composite primary key (MessageId, HandlerName) acts as the unique constraint â€”
 /// the INSERT ON CONFLICT pattern uses it to guarantee atomic check-and-mark.
 ///
 /// Implements INotAuditable: infrastructure record, must not generate audit trail entries.
@@ -12,7 +12,7 @@ namespace Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 public sealed class IdempotencyEntry : INotAuditable
 {
     /// <summary>
-    /// OutboxMessage.IdempotencyKey — stable across retries.
+    /// OutboxMessage.IdempotencyKey â€” stable across retries.
     /// Even when a retry generates a new OutboxMessage row (new Id),
     /// this value is copied from the original so the check still matches.
     /// </summary>

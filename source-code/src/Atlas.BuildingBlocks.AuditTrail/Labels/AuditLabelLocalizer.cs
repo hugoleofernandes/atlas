@@ -1,4 +1,4 @@
-namespace Atlas.BuildingBlocks.AuditTrail.Labels;
+﻿namespace Atlas.BuildingBlocks.Audit.Labels;
 
 public sealed class AuditLabelLocalizer(IEnumerable<IAuditLabelProvider> providers)
 {

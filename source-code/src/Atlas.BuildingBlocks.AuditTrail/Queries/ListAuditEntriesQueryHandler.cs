@@ -1,12 +1,12 @@
-using Atlas.SharedKernel.Application;
+﻿using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Handlers;
 
-namespace Atlas.BuildingBlocks.AuditTrail.Queries;
+namespace Atlas.BuildingBlocks.Audit.Queries;
 
 /// <summary>
 /// Base query handler for listing audit entries.
 /// Each module subclasses this via a marker interface (e.g. IIdentityListAuditEntriesQueryHandler)
-/// and wires in the module-specific concrete reader through a factory lambda in DI —
+/// and wires in the module-specific concrete reader through a factory lambda in DI â€”
 /// avoiding the registration conflict that occurs when every module registers IListAuditEntriesReader.
 /// </summary>
 public class ListAuditEntriesQueryHandler : IQueryHandler<ListAuditEntriesQuery, IReadOnlyList<AuditEntryDto>>

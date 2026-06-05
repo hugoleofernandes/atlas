@@ -1,4 +1,4 @@
-using Atlas.SharedKernel.Domain;
+﻿using Atlas.SharedKernel.Domain;
 
 namespace Atlas.BuildingBlocks.Persistence.Entities.Audits;
 

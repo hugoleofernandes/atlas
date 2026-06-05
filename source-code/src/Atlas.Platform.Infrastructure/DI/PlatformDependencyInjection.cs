@@ -1,4 +1,7 @@
-using Atlas.BuildingBlocks.Application.Seeding;
+﻿using Atlas.BuildingBlocks.Application.Seeding;
+using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.BuildingBlocks.Permissions;
+using Atlas.Platform.Infrastructure.Labels;
 using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
@@ -19,6 +22,9 @@ public static class PlatformDependencyInjection
     {
         // GENERAL
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
+        services.AddScoped<IModuleSeeder, PlatformModuleSeeder>();
+        services.AddScoped<IAuditLabelProvider, PlatformAuditLabelProvider>();
+        services.AddScoped<IPermissionLabelProvider, PlatformPermissionLabelProvider>();
 
         // READERS
         services.AddScoped<ILookupEntityTypesReader, LookupEntityTypesReader>();

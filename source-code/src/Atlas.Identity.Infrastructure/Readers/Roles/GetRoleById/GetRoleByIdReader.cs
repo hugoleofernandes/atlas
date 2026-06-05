@@ -53,7 +53,8 @@ public sealed class GetRoleByIdReader(IdentityDbContext db) : IGetRoleByIdReader
             UpdatedAt: role.UpdatedAt,
             UpdatedBy: role.UpdatedBy,
             UpdatedByEmail: role.UpdatedByEmail,
-            PermissionCodes: permissions);
+            PermissionCodes: permissions
+        );
     }
 
     private sealed record RoleRow(
@@ -66,5 +67,6 @@ public sealed class GetRoleByIdReader(IdentityDbContext db) : IGetRoleByIdReader
         string? CreatedByEmail,
         DateTime? UpdatedAt,
         Guid? UpdatedBy,
-        string? UpdatedByEmail);
+        string? UpdatedByEmail
+    );
 }

@@ -5,7 +5,7 @@ using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Contracts.Permissions;
 using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.BuildingBlocks.Permissions;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

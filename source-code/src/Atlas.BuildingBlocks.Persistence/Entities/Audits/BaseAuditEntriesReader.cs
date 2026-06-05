@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.AuditTrail.Queries;
+﻿using Atlas.BuildingBlocks.Audit.Queries;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
@@ -12,7 +12,7 @@ namespace Atlas.BuildingBlocks.Persistence.Entities.Audits;
 ///   public sealed class IdentityAuditEntriesReader(IdentityDbContext db)
 ///       : BaseAuditEntriesReader(db, "atlas_identity") { }
 ///
-/// The schema string is seeded/known at compile-time — safe to interpolate (not user input).
+/// The schema string is seeded/known at compile-time â€” safe to interpolate (not user input).
 /// </summary>
 public abstract class BaseAuditEntriesReader : IListAuditEntriesReader
 {

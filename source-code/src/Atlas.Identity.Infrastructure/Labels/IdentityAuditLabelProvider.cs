@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.AuditTrail.Labels;
+﻿using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.Identity.Contracts;
 
 namespace Atlas.Identity.Infrastructure.Labels;

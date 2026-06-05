@@ -1,4 +1,5 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;

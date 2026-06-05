@@ -1,4 +1,4 @@
-using Atlas.Identity.Contracts;
+﻿using Atlas.Identity.Contracts;
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;

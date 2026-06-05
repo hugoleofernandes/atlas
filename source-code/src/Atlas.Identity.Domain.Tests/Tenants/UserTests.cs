@@ -6,7 +6,7 @@ using Atlas.Identity.Domain.Users.Events;
 using Atlas.Identity.Domain.Users.Exceptions;
 using Atlas.Platform.Domain.Tenants;
 using Atlas.Identity.Contracts.Permissions;
-using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.SharedKernel.Application;
 using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 using FluentAssertions;

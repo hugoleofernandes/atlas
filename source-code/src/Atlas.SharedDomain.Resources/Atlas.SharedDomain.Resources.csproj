@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.AuditTrail.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />

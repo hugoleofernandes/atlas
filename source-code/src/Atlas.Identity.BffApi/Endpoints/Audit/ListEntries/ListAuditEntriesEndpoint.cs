@@ -1,5 +1,5 @@
-﻿using Atlas.BuildingBlocks.AuditTrail.Labels;
-using Atlas.BuildingBlocks.AuditTrail.Queries;
+﻿using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.BuildingBlocks.Audit.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
 using Atlas.Identity.Contracts.Permissions;

@@ -1,4 +1,4 @@
-using Atlas.SharedKernel.Domain.Permissions;
+﻿using Atlas.BuildingBlocks.Permissions;
 
 namespace Atlas.Staff.Contracts.Permissions;
 

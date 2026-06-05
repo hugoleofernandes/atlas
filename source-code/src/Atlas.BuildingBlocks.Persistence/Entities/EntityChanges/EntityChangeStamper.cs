@@ -1,4 +1,4 @@
-using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
+﻿using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain;
 using Microsoft.EntityFrameworkCore;

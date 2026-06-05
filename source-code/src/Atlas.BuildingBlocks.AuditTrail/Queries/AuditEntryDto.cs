@@ -1,4 +1,4 @@
-namespace Atlas.BuildingBlocks.AuditTrail.Queries;
+﻿namespace Atlas.BuildingBlocks.Audit.Queries;
 
 public sealed record AuditEntryDto(
     Guid     Id,

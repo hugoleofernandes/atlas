@@ -1,12 +1,13 @@
-using Atlas.BuildingBlocks.Application.HandlerInvokers;
+﻿using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.BuildingBlocks.Application.Seeding;
-using Atlas.BuildingBlocks.AuditTrail.Labels;
+using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Infrastructure.DI.Aggregates;
 using Atlas.Identity.Infrastructure.Labels;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Seeders;
 using Atlas.SharedKernel.Application.Handlers;
+using Atlas.BuildingBlocks.Permissions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Atlas.Identity.Infrastructure.DI;
@@ -18,8 +19,9 @@ public static class IdentityDependencyInjection
         // GENERAL
         services.AddScoped<IModuleSeeder, IdentityModuleSeeder>();
         services.AddScoped<IIdentityUnitOfWork, IdentityUnitOfWork>();
-        services.AddScoped<IHandlerInvoker, HandlerInvoker>();//todo: move to BuildingBlocks.DI when it exists
+        services.AddScoped<IHandlerInvoker, HandlerInvoker>(); //todo: move to BuildingBlocks.DI when it exists
         services.AddScoped<IAuditLabelProvider, IdentityAuditLabelProvider>();
+        services.AddScoped<IPermissionLabelProvider, IdentityPermissionLabelProvider>();
 
         // AGGREGATES
         services.AddTenantAggregateServices();

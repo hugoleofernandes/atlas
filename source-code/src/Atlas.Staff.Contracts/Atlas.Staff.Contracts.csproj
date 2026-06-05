@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,6 +19,8 @@
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.Contracts\Atlas.Integration.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Contracts\Atlas.Outbox.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>
 

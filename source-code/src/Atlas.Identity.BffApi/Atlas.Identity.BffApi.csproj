@@ -15,9 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.AuditTrail.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.Audit.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
+    <ProjectReference Include="..\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Resources\Atlas.Identity.Resources.csproj" />

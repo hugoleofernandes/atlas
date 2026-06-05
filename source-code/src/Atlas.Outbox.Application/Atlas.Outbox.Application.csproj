@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Contracts\Atlas.Outbox.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
   </ItemGroup>
 

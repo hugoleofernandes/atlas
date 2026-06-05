@@ -1,4 +1,4 @@
-namespace Atlas.BuildingBlocks.AuditTrail.Labels;
+﻿namespace Atlas.BuildingBlocks.Audit.Labels;
 
 public interface IAuditLabelProvider
 {

@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Atlas.API.Errors;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
@@ -9,6 +9,7 @@ using Atlas.BuildingBlocks.Application.Idempotency;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
+using Atlas.BuildingBlocks.AspNetCore.Localization;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Oidc;
 using Atlas.BuildingBlocks.AspNetCore.Oidc.Providers.EntraId;
@@ -17,7 +18,7 @@ using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
 using Atlas.BuildingBlocks.AspNetCore.Security.Xsrf;
-using Atlas.BuildingBlocks.AuditTrail.Labels;
+using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.Observability;
@@ -40,17 +41,17 @@ using Atlas.Identity.OutboxPublisher.DI;
 using Atlas.Platform.BffApi;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
-using Atlas.Platform.Infrastructure.Seeders;
+
 using Atlas.Platform.InternalApi;
-using Atlas.SharedDomain.Resources.Audit;
-using Atlas.SharedDomain.Resources.Permissions;
+using Atlas.BuildingBlocks.Audit.Resources;
+
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Application.Seeding;
 using Atlas.SharedKernel.Configuration;
-using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.Staff.Application;
 using Atlas.Staff.BffApi;
 using Atlas.Staff.Infrastructure.DI;
@@ -77,7 +78,7 @@ using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 
 //
 // ==========================================
-// ðŸ”¹ SERILOG BOOTSTRAP (captura erros de startup)
+// Ã°Å¸â€Â¹ SERILOG BOOTSTRAP (captura erros de startup)
 // ==========================================
 //
 
@@ -90,7 +91,7 @@ try
 
     //
     // ==========================================
-    // ðŸ”¹ SERILOG FULL CONFIG (hosted â€” acessa IConfiguration)
+    // Ã°Å¸â€Â¹ SERILOG FULL CONFIG (hosted Ã¢â‚¬â€ acessa IConfiguration)
     // ==========================================
     //
 
@@ -107,9 +108,9 @@ try
                 .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .Enrich.WithThreadId()
-                // Console sempre ativo â€” saÃ­da limpa para desenvolvimento
+                // Console sempre ativo Ã¢â‚¬â€ saÃƒÂ­da limpa para desenvolvimento
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-                // Logs â†’ Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
+                // Logs Ã¢â€ â€™ Grafana Cloud Loki via OTLP (no-op se IsEnabled=false)
                 .WriteToAtlasObservability(otel, context.HostingEnvironment);
 
             if (!otel.IsEnabled)
@@ -131,7 +132,7 @@ try
 
     //
     // ==========================================
-    // ðŸ”¹ OBSERVABILITY (OTel traces + metrics â†’ Grafana Cloud)
+    // Ã°Å¸â€Â¹ OBSERVABILITY (OTel traces + metrics Ã¢â€ â€™ Grafana Cloud)
     // ==========================================
     //
 
@@ -163,19 +164,24 @@ try
 
     services.AddHttpContextAccessor();
     services.AddProblemDetails();
-    services.AddLocalization(opts => opts.ResourcesPath = "Resources");
+    services.AddAtlasLocalization();
     services.AddScoped<ErrorMessageLocalizer>();
     services.AddScoped<IErrorMessageLocalizer>(sp => sp.GetRequiredService<ErrorMessageLocalizer>());
-    services.AddScoped<IPermissionLabelProvider, SharedDomainPermissionLabelProvider>();
+
     services.AddScoped<PermissionLabelLocalizer>();
-    services.AddScoped<IAuditLabelProvider, SharedDomainAuditLabelProvider>();
+    services.AddScoped<IAuditLabelProvider, AuditActionLabelProvider>();
     services.AddScoped<AuditLabelLocalizer>();
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
-    // Module permissions — one per module
+    // Module permissions â€” one per module
     services.AddSingleton<IModulePermissions, IdentityPermissions.ModulePermissions>();
     services.AddSingleton<IModulePermissions, StaffPermissions.ModulePermissions>();
     services.AddSingleton<IModulePermissions, PlatformPermissions.ModulePermissions>();
+
+    // Module registrations â€” consumed by PlatformModuleSeeder via SeedOrchestrator
+    services.AddSingleton<IModuleRegistration, IdentityContracts.Registration>();
+    services.AddSingleton<IModuleRegistration, StaffContracts.Registration>();
+    services.AddSingleton<IModuleRegistration, PlatformContracts.Registration>();
 
     services.AddSingleton<IPermissionPolicy>(sp =>
     {
@@ -336,16 +342,6 @@ try
     {
         using var scope = app.Services.CreateScope();
 
-        // Platform module seeder called directly — receives registrations as explicit parameters.
-        // Only *.Contracts references needed; no cross-module DI coupling.
-        IReadOnlyList<IModuleRegistration> moduleRegistrations =
-        [
-            new IdentityContracts.Registration(),
-            new StaffContracts.Registration(),
-            new PlatformContracts.Registration(),
-        ];
-        await new PlatformModuleSeeder().SeedAsync(scope.ServiceProvider, moduleRegistrations, CancellationToken.None);
-
         var orchestrator = scope.ServiceProvider.GetRequiredService<SeedOrchestrator>();
         await orchestrator.RunAsync(scope.ServiceProvider);
 
@@ -371,13 +367,13 @@ try
         opts.ApplyCurrentCultureToResponseHeaders = true;
     });
 
-    // ðŸ”¹ CorrelationId PRIMEIRO
+    // Ã°Å¸â€Â¹ CorrelationId PRIMEIRO
     app.UseMiddleware<CorrelationIdMiddleware>();
 
-    // ðŸ”¹ Serilog HTTP logging
+    // Ã°Å¸â€Â¹ Serilog HTTP logging
     app.UseSerilogRequestLogging();
 
-    // ðŸ”¹ Exception handling global
+    // Ã°Å¸â€Â¹ Exception handling global
     app.UseMiddleware<GlobalExceptionMiddleware>();
 
     app.UseSecurityHeaders();

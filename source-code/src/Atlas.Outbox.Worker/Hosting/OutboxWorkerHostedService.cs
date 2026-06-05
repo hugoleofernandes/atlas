@@ -1,6 +1,6 @@
-using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Outbox.Application.ProcessOutbox;
 using Atlas.Outbox.Infrastructure.Configuration;
+using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.Extensions.Options;
 
 namespace Atlas.Outbox.Worker.Hosting;
@@ -14,11 +14,12 @@ internal sealed class OutboxWorkerHostedService : BackgroundService
     public OutboxWorkerHostedService(
         IServiceScopeFactory scopeFactory,
         IOptions<OutboxWorkerOptions> options,
-        ILogger<OutboxWorkerHostedService> logger)
+        ILogger<OutboxWorkerHostedService> logger
+    )
     {
         _scopeFactory = scopeFactory;
-        _options      = options.Value;
-        _logger       = logger;
+        _options = options.Value;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -29,14 +30,14 @@ internal sealed class OutboxWorkerHostedService : BackgroundService
         {
             try
             {
-                await using var scope   = _scopeFactory.CreateAsyncScope();
-                var invoker             = scope.ServiceProvider.GetRequiredService<IHandlerInvoker>();
-                var identityHandler     = scope.ServiceProvider.GetRequiredService<IIdentityOutboxCommandHandler>();
-                var staffHandler        = scope.ServiceProvider.GetRequiredService<IStaffOutboxCommandHandler>();
-                var command             = new ProcessOutboxCommand(_options.BatchSize, _options.MaxRetries, _options.LockDuration);
+                await using var scope = _scopeFactory.CreateAsyncScope();
+                var invoker = scope.ServiceProvider.GetRequiredService<IHandlerInvoker>();
+                var identityHandler = scope.ServiceProvider.GetRequiredService<IIdentityOutboxCommandHandler>();
+                var staffHandler = scope.ServiceProvider.GetRequiredService<IStaffOutboxCommandHandler>();
+                var command = new ProcessOutboxCommand(_options.BatchSize, _options.MaxRetries, _options.LockDuration);
 
                 await invoker.InvokeAsync(identityHandler, command, stoppingToken);
-                await invoker.InvokeAsync(staffHandler,    command, stoppingToken);
+                await invoker.InvokeAsync(staffHandler, command, stoppingToken);
             }
             catch (OperationCanceledException)
             {

@@ -9,16 +9,21 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
+
     <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Persistence\Atlas.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Domain\Atlas.Staff.Domain.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Resources\Atlas.Staff.Resources.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

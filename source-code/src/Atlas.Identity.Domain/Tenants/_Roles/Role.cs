@@ -1,4 +1,4 @@
-using Atlas.Identity.Contracts;
+﻿using Atlas.Identity.Contracts;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Events;
@@ -14,8 +14,8 @@ namespace Atlas.Identity.Domain.Tenants._Roles;
 /// - Every permission code must exist in the provided validCodes set (supplied by the caller from IPermissionPolicy).
 /// - Role name uniqueness within the tenant is enforced by a unique index and pre-checked by command handlers.
 ///
-/// Design: Role is an Aggregate Root — it has its own repository, lifecycle, and domain events.
-/// The domain does not reference IPermissionPolicy directly — callers pass the valid set as a parameter,
+/// Design: Role is an Aggregate Root â€” it has its own repository, lifecycle, and domain events.
+/// The domain does not reference IPermissionPolicy directly â€” callers pass the valid set as a parameter,
 /// keeping the domain pure and enabling modular permission registration.
 /// </summary>
 public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
@@ -25,7 +25,7 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
     public Guid Id { get; private set; }
 
     /// <summary>
-    /// Tenant this role belongs to. Stored as a plain column — no FK constraint (modular monolith boundary).
+    /// Tenant this role belongs to. Stored as a plain column â€” no FK constraint (modular monolith boundary).
     /// </summary>
     public Guid TenantId { get; private set; }
 

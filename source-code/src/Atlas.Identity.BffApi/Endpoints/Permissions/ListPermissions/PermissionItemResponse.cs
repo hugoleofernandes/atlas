@@ -1,4 +1,5 @@
-using Atlas.BuildingBlocks.FastEndpoints;
+﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 
 namespace Atlas.Identity.BffApi.Endpoints.Permissions.ListPermissions;

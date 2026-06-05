@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -22,18 +22,17 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
-    <!-- Apenas instrumenta��o AspNetCore � o resto vem via Atlas.BuildingBlocks.Observability -->
+    <!-- Apenas instrumentaï¿½ï¿½o AspNetCore ï¿½ o resto vem via Atlas.BuildingBlocks.Observability -->
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.12.54" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
-    <!-- Enrichers, Console e File ficam na API � OTLP sink vem via Atlas.BuildingBlocks.Observability -->
+    <!-- Enrichers, Console e File ficam na API ï¿½ OTLP sink vem via Atlas.BuildingBlocks.Observability -->
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.AuditTrail.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.FastEndpoints\Atlas.BuildingBlocks.FastEndpoints.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AspNetCore\Atlas.BuildingBlocks.AspNetCore.csproj" />
@@ -54,7 +53,8 @@
     <ProjectReference Include="..\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.SharedDomain.Resources\Atlas.SharedDomain.Resources.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail.Resources\Atlas.BuildingBlocks.Audit.Resources.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
   </ItemGroup>
 
 </Project>

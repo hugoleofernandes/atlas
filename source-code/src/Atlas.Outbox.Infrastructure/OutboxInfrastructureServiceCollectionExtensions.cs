@@ -1,5 +1,12 @@
 using Atlas.BuildingBlocks.Application.ApiInvokers;
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
+using Atlas.BuildingBlocks.Application.InternalApiInvokers;
+using Atlas.Outbox.Application.DirectTargets;
+using Atlas.Outbox.Application.Commands.ProcessOutboxTargets;
+using Atlas.Outbox.Application.Queries.ResolveOutboxTargets;
+using Atlas.Outbox.DirectTargets.IdentityEvents.UserCreatedFromInvitation;
+using Atlas.Outbox.DirectTargets.IdentityEvents.UserCreatedFromInvitation.Identity;
+using Atlas.Outbox.DirectTargets.IdentityEvents.UserCreatedFromInvitation.Staff;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -21,6 +28,7 @@ public static class OutboxInfrastructureServiceCollectionExtensions
             _ => new IntegrationEventTypeResolver(integrationEventAssemblies));
 
         services.AddHttpClient(nameof(ApiInvoker));
+        services.AddHttpClient(nameof(InternalApiInvoker));
         services.Configure<ApiInvokerOptions>(options =>
         {
             var workerOptions = configuration.GetSection("OutboxWorker").Get<OutboxWorkerOptions>()
@@ -28,7 +36,21 @@ public static class OutboxInfrastructureServiceCollectionExtensions
 
             options.InternalApiKey = workerOptions.InternalApiKey;
         });
+        services.Configure<InternalApiInvokerOptions>(options =>
+        {
+            var workerOptions = configuration.GetSection("OutboxWorker").Get<OutboxWorkerOptions>()
+                ?? new OutboxWorkerOptions();
+
+            options.InternalApiKey = workerOptions.InternalApiKey;
+        });
         services.AddScoped<IApiInvoker, ApiInvoker>();
+        services.AddScoped<IInternalApiInvoker, InternalApiInvoker>();
+        services.AddSingleton<IDirectOutboxTargetCatalog, UserCreatedFromInvitationDirectTargetCatalog>();
+        services.AddScoped<IOutboxTargetResolver, DirectOutboxTargetResolver>();
+        services.AddScoped<IResolveOutboxTargetsQueryHandler, ResolveOutboxTargetsQueryHandler>();
+        services.AddScoped<IProcessOutboxTargetsCommandHandler, ProcessOutboxTargetsCommandHandler>();
+        services.AddScoped<IOutboxTargetExecutor, CreateStaffMemberFromInvitationDirectTargetExecutor>();
+        services.AddScoped<IOutboxTargetExecutor, SendWelcomeEmailDirectTargetExecutor>();
 
         // DispatcherInvoker wraps every dispatcher in the generic observability pipeline
         // (LoggingDispatcherDecorator → TracingDispatcherDecorator → core) using ITraceContext.

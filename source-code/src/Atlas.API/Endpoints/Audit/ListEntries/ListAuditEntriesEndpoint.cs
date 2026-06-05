@@ -1,11 +1,11 @@
-﻿using Atlas.BuildingBlocks.AuditTrail.Labels;
-using Atlas.BuildingBlocks.AuditTrail.Queries;
+﻿using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.BuildingBlocks.Audit.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
 using Atlas.Identity.Contracts;
 using Atlas.Identity.Contracts.Permissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
-using Atlas.SharedKernel.Domain.Permissions;
+using Atlas.BuildingBlocks.Permissions;
 using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 using PlatformPermissions = Atlas.Platform.Contracts.Permissions;
 using PlatformContracts = Atlas.Platform.Contracts;
