@@ -1,5 +1,5 @@
-using Atlas.Outbox.Contracts.Commands.ProcessOutbox;
-using Atlas.Outbox.Contracts.Workflows.OutboxProcessing;
+using Atlas.Outbox.Application.Commands.ProcessOutbox;
+using Atlas.Outbox.Application.Workflows.OutboxProcessing;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 

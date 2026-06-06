@@ -1,4 +1,5 @@
-using Atlas.Outbox.Contracts.Targets;
+using Atlas.Outbox.Application.Targets;
+using Atlas.Outbox.Domain.Targets;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 

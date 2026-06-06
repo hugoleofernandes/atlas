@@ -1,4 +1,3 @@
-using Atlas.Outbox.Contracts.Queries.ListPendingMessages;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 

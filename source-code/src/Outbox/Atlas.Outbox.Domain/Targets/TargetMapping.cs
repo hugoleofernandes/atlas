@@ -1,4 +1,4 @@
-namespace Atlas.Outbox.Contracts.Targets;
+namespace Atlas.Outbox.Domain.Targets;
 
 /// <summary>
 /// Explicit mapping for one outbox event target.

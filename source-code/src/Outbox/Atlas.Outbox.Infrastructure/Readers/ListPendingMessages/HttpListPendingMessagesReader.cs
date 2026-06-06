@@ -1,5 +1,5 @@
 using Atlas.BuildingBlocks.Application.InternalApiInvokers;
-using Atlas.Outbox.Contracts.Queries.ListPendingMessages;
+using Atlas.BuildingBlocks.Outbox.ListPendingMessages;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 

@@ -1,6 +1,6 @@
-using Atlas.Outbox.Contracts.Commands.ProcessOutbox;
+using Atlas.Outbox.Application.Commands.ProcessOutbox;
 
-namespace Atlas.Outbox.Contracts.Workflows.OutboxProcessing;
+namespace Atlas.Outbox.Application.Workflows.OutboxProcessing;
 
 public interface IOutboxProcessingWorkflow
 {

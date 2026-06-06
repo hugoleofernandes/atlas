@@ -13,9 +13,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Atlas.BuildingBlocks.Persistence\Atlas.BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Outbox\Atlas.BuildingBlocks.Outbox.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Catalog\Atlas.Outbox.Catalog.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Contracts\Atlas.Outbox.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

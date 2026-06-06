@@ -1,6 +1,6 @@
 using Atlas.SharedKernel.Application.Handlers;
 
-namespace Atlas.Outbox.Contracts.Commands.ProcessOutbox;
+namespace Atlas.Outbox.Application.Commands.ProcessOutbox;
 
 public interface IProcessOutboxCommandHandler : ICommandHandler<ProcessOutboxCommand, ProcessOutboxOutput> { }
 

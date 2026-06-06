@@ -1,5 +1,6 @@
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;
+using Atlas.Outbox.Domain.Processing;
 
 namespace Atlas.Outbox.Application.Commands.UpdateOutboxMessageStatus;
 
@@ -21,36 +22,33 @@ public sealed class UpdateOutboxMessageStatusCommandHandler(
         var executions = BuildExecutions(message.Id, command.Results);
         await repository.AddExecutionsAsync(executions, ct);
 
-        var failureCount = command.Results.Count(result => !result.IsSuccess);
+        var decision = OutboxProcessingDecision.Decide(message, command.Results, command.MaxRetries);
 
-        if (failureCount == 0)
+        if (decision.Status == OutboxMessageFinalStatus.Processed)
         {
             message.MarkAsProcessed();
             return new UpdateOutboxMessageStatusOutput(
                 OutboxMessageFinalStatus.Processed,
                 executions.Count,
-                failureCount);
+                decision.FailureCount);
         }
 
-        if (message.IsMaxAttemptReached(command.MaxRetries))
+        if (decision.Status == OutboxMessageFinalStatus.DeadLettered)
         {
             message.MarkAsDeadLettered();
             return new UpdateOutboxMessageStatusOutput(
                 OutboxMessageFinalStatus.DeadLettered,
                 executions.Count,
-                failureCount);
+                decision.FailureCount);
         }
 
-        var errorSummary =
-            $"{failureCount} of {command.Results.Count} handler(s) failed on attempt {message.AttemptNumber}.";
-
-        var retry = message.CreateRetryAttempt(errorSummary);
+        var retry = message.CreateRetryAttempt(decision.ErrorSummary);
         await repository.AddRetryAsync(retry, ct);
 
         return new UpdateOutboxMessageStatusOutput(
             OutboxMessageFinalStatus.RetryScheduled,
             executions.Count,
-            failureCount);
+            decision.FailureCount);
     }
 
     private static IReadOnlyList<OutboxHandlerExecution> BuildExecutions(

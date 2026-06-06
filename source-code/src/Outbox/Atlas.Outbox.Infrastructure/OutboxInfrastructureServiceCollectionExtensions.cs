@@ -4,7 +4,7 @@ using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.BuildingBlocks.Application.InternalApiInvokers;
 using Atlas.Outbox.Application.Commands.ProcessOutboxTargets;
 using Atlas.Outbox.Application.Queries.ResolveOutboxTargets;
-using Atlas.Outbox.Contracts.Targets;
+using Atlas.Outbox.Application.Targets;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.OutboxMessages;

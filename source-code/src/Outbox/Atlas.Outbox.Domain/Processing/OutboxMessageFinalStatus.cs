@@ -1,4 +1,4 @@
-namespace Atlas.Outbox.Application.Commands.UpdateOutboxMessageStatus;
+namespace Atlas.Outbox.Domain.Processing;
 
 public enum OutboxMessageFinalStatus
 {

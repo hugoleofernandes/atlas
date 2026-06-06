@@ -1,4 +1,6 @@
-namespace Atlas.Outbox.Contracts.Targets;
+using Atlas.Outbox.Domain.Targets;
+
+namespace Atlas.Outbox.Application.Targets;
 
 public interface ITargetCatalog
 {

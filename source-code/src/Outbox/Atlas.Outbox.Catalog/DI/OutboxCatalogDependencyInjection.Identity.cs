@@ -1,5 +1,5 @@
+using Atlas.Outbox.Application.Targets;
 using Atlas.Outbox.Catalog.Identity;
-using Atlas.Outbox.Contracts.Targets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

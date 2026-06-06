@@ -8,7 +8,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
-    <ProjectReference Include="..\Atlas.Outbox.Contracts\Atlas.Outbox.Contracts.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Outbox\Atlas.BuildingBlocks.Outbox.csproj" />
+    <ProjectReference Include="..\Atlas.Outbox.Domain\Atlas.Outbox.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Queries\GetPendingMessages\" />
   </ItemGroup>
 
 </Project>

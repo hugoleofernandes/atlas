@@ -1,4 +1,4 @@
-using Atlas.Outbox.Contracts.Targets;
+using Atlas.Outbox.Domain.Targets;
 
 namespace Atlas.Outbox.Application.Queries.ResolveOutboxTargets;
 
@@ -13,24 +13,9 @@ public sealed class ResolveOutboxTargetsQueryHandler(
             typeResolver.Resolve(query.Message.Type)
             ?? throw new InvalidOperationException($"Integration event type '{query.Message.Type}' not found.");
 
-        var targets = (await catalogReader.ReadAsync(eventType, ct))
-            .OrderBy(target => target.Order)
-            .ThenBy(target => target.Name, StringComparer.Ordinal)
-            .ToList();
+        var rawTargets = await catalogReader.ReadAsync(eventType, ct);
+        var targetSet = OutboxTargetSet.Create(eventType, rawTargets);
 
-        var duplicateTargets = targets
-            .GroupBy(target => target.Name, StringComparer.Ordinal)
-            .Where(group => group.Count() > 1)
-            .Select(group => $"{group.Key} [{string.Join(", ", group.Select(target => target.Mode).Distinct())}]")
-            .ToList();
-
-        if (duplicateTargets.Count > 0)
-        {
-            throw new InvalidOperationException(
-                $"Duplicate target mapping detected for '{eventType.Name}': {string.Join("; ", duplicateTargets)}."
-            );
-        }
-
-        return targets;
+        return targetSet.Items;
     }
 }

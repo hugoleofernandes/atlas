@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Atlas.BuildingBlocks.Application.InternalApiInvokers;
-using Atlas.Outbox.Contracts.Queries.ListPendingMessages;
-using Atlas.Outbox.Contracts.Targets;
+using Atlas.BuildingBlocks.Outbox.ListPendingMessages;
+using Atlas.Outbox.Domain.Targets;
 using Atlas.SharedKernel.Application.OutboxMessages;
 
 namespace Atlas.Outbox.Application.Commands.ProcessOutboxTargets;

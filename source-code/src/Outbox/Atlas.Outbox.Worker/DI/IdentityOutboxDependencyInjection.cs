@@ -1,9 +1,8 @@
 using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Readers.Outbox.GetPendingMessages;
-using Atlas.Outbox.Contracts.Commands.ProcessOutbox;
-using Atlas.Outbox.Contracts.Queries.ListPendingMessages;
-using Atlas.Outbox.Contracts.Workflows.OutboxProcessing;
+using Atlas.Outbox.Application.Commands.ProcessOutbox;
+using Atlas.Outbox.Application.Workflows.OutboxProcessing;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Atlas.Outbox.Infrastructure.Readers.ListPendingMessages;
 using Atlas.SharedKernel.Application.Idempotency;

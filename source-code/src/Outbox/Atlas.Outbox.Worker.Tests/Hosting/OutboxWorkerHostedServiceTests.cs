@@ -1,9 +1,7 @@
-using Atlas.Outbox.Application.ProcessOutbox;
-using Atlas.Outbox.Contracts.Commands.ProcessOutbox;
+using Atlas.Outbox.Application.Commands.ProcessOutbox;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Atlas.Outbox.Worker.Hosting;
 using Atlas.SharedKernel.Application.Commands;
-using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.Handlers;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;

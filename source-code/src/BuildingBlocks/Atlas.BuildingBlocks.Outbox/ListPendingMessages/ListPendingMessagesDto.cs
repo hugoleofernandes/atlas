@@ -1,4 +1,4 @@
-namespace Atlas.Outbox.Contracts.Queries.ListPendingMessages;
+namespace Atlas.BuildingBlocks.Outbox.ListPendingMessages;
 
 public sealed record ListPendingMessagesDto(
     Guid Id,

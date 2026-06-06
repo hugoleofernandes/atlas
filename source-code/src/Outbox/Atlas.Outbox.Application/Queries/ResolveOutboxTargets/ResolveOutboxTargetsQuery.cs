@@ -1,4 +1,4 @@
-using Atlas.Outbox.Contracts.Queries.ListPendingMessages;
+using Atlas.BuildingBlocks.Outbox.ListPendingMessages;
 
 namespace Atlas.Outbox.Application.Queries.ResolveOutboxTargets;
 

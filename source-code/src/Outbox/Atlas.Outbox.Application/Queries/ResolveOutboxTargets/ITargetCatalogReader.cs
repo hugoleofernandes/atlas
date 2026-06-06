@@ -1,4 +1,4 @@
-using Atlas.Outbox.Contracts.Targets;
+using Atlas.Outbox.Domain.Targets;
 
 namespace Atlas.Outbox.Application.Queries.ResolveOutboxTargets;
 

@@ -1,4 +1,4 @@
-namespace Atlas.Outbox.Contracts.Queries.ListPendingMessages;
+namespace Atlas.BuildingBlocks.Outbox.ListPendingMessages;
 
 public interface IListPendingMessagesReader
 {

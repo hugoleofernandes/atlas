@@ -1,6 +1,7 @@
 using Atlas.Identity.Contracts.IntegrationEvents.Users;
-using Atlas.Outbox.Contracts.Targets;
-using Atlas.Outbox.Contracts.Targets.Names;
+using Atlas.Outbox.Application.Targets;
+using Atlas.Outbox.Domain.Targets;
+using Atlas.Outbox.Domain.Targets.Names;
 
 namespace Atlas.Outbox.Catalog.Identity;
 

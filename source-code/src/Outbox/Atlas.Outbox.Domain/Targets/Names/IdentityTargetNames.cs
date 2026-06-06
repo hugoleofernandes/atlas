@@ -1,4 +1,4 @@
-namespace Atlas.Outbox.Contracts.Targets.Names;
+namespace Atlas.Outbox.Domain.Targets.Names;
 
 public static class IdentityTargetNames
 {

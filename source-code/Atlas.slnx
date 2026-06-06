@@ -58,13 +58,13 @@
   <Folder Name="/src/2-Modules/Outbox/3-AppServices/">
     <Project Path="src/Outbox/Atlas.Outbox.Application/Atlas.Outbox.Application.csproj" />
   </Folder>
-  <Folder Name="/src/2-Modules/Outbox/4-MappingTargets/">
+  <Folder Name="/src/2-Modules/Outbox/3-MappingTargets/">
     <Project Path="src/Outbox/Atlas.Outbox.Catalog/Atlas.Outbox.Catalog.csproj" />
     <Project Path="src/Outbox/Atlas.Outbox.Targets.Identity/Atlas.Outbox.Targets.Identity.csproj" Id="0ce58649-79a1-4890-ae13-6cdaa25539a3" />
     <Project Path="src/Outbox/Atlas.Outbox.Targets.Staff/Atlas.Outbox.Targets.Staff.csproj" Id="f351df91-cf03-4dc5-89ef-466ebd7eee2f" />
   </Folder>
-  <Folder Name="/src/2-Modules/Outbox/5-Contracts/">
-    <Project Path="src/Outbox/Atlas.Outbox.Contracts/Atlas.Outbox.Contracts.csproj" />
+  <Folder Name="/src/2-Modules/Outbox/4-Domain/">
+    <Project Path="src/Outbox/Atlas.Outbox.Domain/Atlas.Outbox.Domain.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Outbox/_tests/">
     <Project Path="src/Outbox/Atlas.Outbox.Worker.Tests/Atlas.Outbox.Worker.Tests.csproj" />

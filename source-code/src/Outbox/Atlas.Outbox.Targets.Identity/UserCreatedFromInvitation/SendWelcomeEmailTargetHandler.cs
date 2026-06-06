@@ -1,9 +1,9 @@
 using System.Text.Json;
+using Atlas.BuildingBlocks.Outbox.ListPendingMessages;
 using Atlas.Identity.Contracts.Commands.SendWelcomeEmail;
 using Atlas.Identity.Contracts.IntegrationEvents.Users;
-using Atlas.Outbox.Contracts.Queries.ListPendingMessages;
-using Atlas.Outbox.Contracts.Targets;
-using Atlas.Outbox.Contracts.Targets.Names;
+using Atlas.Outbox.Application.Targets;
+using Atlas.Outbox.Domain.Targets.Names;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.OutboxMessages;

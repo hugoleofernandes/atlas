@@ -1,9 +1,8 @@
-using Atlas.Outbox.Contracts.Commands.ProcessOutbox;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Dispatching;
 using Atlas.SharedKernel.Application.OutboxMessages;
 
-namespace Atlas.Outbox.Application.ProcessOutbox;
+namespace Atlas.Outbox.Application.Commands.ProcessOutbox;
 
 /// <summary>
 /// Reads a batch of pending outbox messages, dispatches each one, and persists the outcome.

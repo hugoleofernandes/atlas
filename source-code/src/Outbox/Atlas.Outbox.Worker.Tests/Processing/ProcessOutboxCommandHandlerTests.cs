@@ -1,5 +1,4 @@
-using Atlas.Outbox.Application.ProcessOutbox;
-using Atlas.Outbox.Contracts.Commands.ProcessOutbox;
+using Atlas.Outbox.Application.Commands.ProcessOutbox;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Dispatching;
 using Atlas.SharedKernel.Application.OutboxMessages;

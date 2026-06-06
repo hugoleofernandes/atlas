@@ -1,6 +1,6 @@
 using Atlas.Identity.Application.Commands.SendInvitationEmail;
 using Atlas.Identity.Contracts.Commands.SendInvitationEmail;
-using Atlas.Outbox.Contracts.Targets;
+using Atlas.Outbox.Application.Targets;
 using Atlas.Outbox.Targets.Identity.UserInvited;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
