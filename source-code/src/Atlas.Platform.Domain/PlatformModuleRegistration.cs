@@ -1,9 +1,9 @@
 using Atlas.SharedKernel.Application.Seeding;
-using Atlas.SharedKernel.Platform.Domain;
+using Atlas.SharedKernel.EntityTypes;
 
 namespace Atlas.Platform.Domain;
 
-public sealed class Registration : IModuleRegistration
+public sealed class PlatformModuleRegistration : IModuleRegistration
 {
     public Guid ModuleId => PlatformEntityTypes.ModuleId;
     public string ModuleName => PlatformEntityTypes.ModuleName;

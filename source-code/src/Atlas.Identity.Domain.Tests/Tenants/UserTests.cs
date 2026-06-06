@@ -1,14 +1,13 @@
-﻿using Atlas.Identity.Domain.Invitations;
+using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Domain.Users;
 using Atlas.Identity.Domain.Users.Events;
 using Atlas.Identity.Domain.Users.Exceptions;
 using Atlas.Platform.Domain.Tenants;
-using Atlas.Identity.Contracts.Permissions;
-using Atlas.BuildingBlocks.Permissions;
 using Atlas.SharedKernel.Application;
-using StaffPermissions = Atlas.Staff.Contracts.Permissions;
+using Atlas.Staff.Domain.ModulePermissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;
@@ -27,11 +26,11 @@ public class UserTests
         ModulePermissions.Invitations.Update,
         ModulePermissions.Invitations.Delete,
         ModulePermissions.Invitations.Manage,
-        StaffPermissions.ModulePermissions.Staff.Read,
-        StaffPermissions.ModulePermissions.Staff.Create,
-        StaffPermissions.ModulePermissions.Staff.Update,
-        StaffPermissions.ModulePermissions.Staff.Deactivate,
-        StaffPermissions.ModulePermissions.Staff.Manage,
+        StaffModulePermissions.StaffMember.Read,
+        StaffModulePermissions.StaffMember.Create,
+        StaffModulePermissions.StaffMember.Update,
+        StaffModulePermissions.StaffMember.Deactivate,
+        StaffModulePermissions.StaffMember.Manage,
     };
 
     private static readonly IReadOnlySet<string> AllIncludingSystemCodes = new HashSet<string>(AllCodes)
@@ -41,10 +40,10 @@ public class UserTests
 
     private static readonly IEnumerable<string> DefaultMemberPermissions =
     [
-        StaffPermissions.ModulePermissions.Staff.Read,
-        StaffPermissions.ModulePermissions.Staff.Create,
-        StaffPermissions.ModulePermissions.Staff.Update,
-        StaffPermissions.ModulePermissions.Staff.Deactivate,
+        StaffModulePermissions.StaffMember.Read,
+        StaffModulePermissions.StaffMember.Create,
+        StaffModulePermissions.StaffMember.Update,
+        StaffModulePermissions.StaffMember.Deactivate,
     ];
 
     private static (Tenant tenant, Guid adminRoleId) CreateTenantWithRoles()

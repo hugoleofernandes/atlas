@@ -1,5 +1,5 @@
 using Atlas.BuildingBlocks.Audit.Labels;
-using Atlas.SharedKernel.Platform.Domain;
+using Atlas.SharedKernel.EntityTypes;
 
 namespace Atlas.Platform.Infrastructure.Labels;
 

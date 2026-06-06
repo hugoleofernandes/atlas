@@ -1,4 +1,4 @@
-namespace Atlas.SharedKernel.Platform.Domain;
+namespace Atlas.SharedKernel.EntityTypes;
 
 /// <summary>
 /// Deterministic GUIDs for Platform module aggregate roots.

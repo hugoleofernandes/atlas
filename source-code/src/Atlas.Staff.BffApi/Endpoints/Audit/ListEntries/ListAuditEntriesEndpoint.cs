@@ -1,9 +1,9 @@
-﻿using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Audit.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
-using Atlas.Staff.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
+using Atlas.Staff.Domain.ModulePermissions;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
@@ -22,7 +22,7 @@ public sealed class ListAuditEntriesEndpoint(
     public override void Configure()
     {
         Get("bff/staff/audit/entries");
-        Policies($"permission:{ModulePermissions.Audit.Read}");
+        Policies($"permission:{StaffModulePermissions.Audit.Read}");
         Description(d => d.Produces<IReadOnlyList<AuditEntryResponse>>());
     }
 

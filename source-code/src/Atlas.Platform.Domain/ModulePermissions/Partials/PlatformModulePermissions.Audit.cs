@@ -1,6 +1,6 @@
 namespace Atlas.Platform.Domain.ModulePermissions;
 
-public sealed partial class ModulePermissions
+public sealed partial class PlatformModulePermissions
 {
     public static class Audit
     {

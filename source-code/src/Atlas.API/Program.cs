@@ -53,6 +53,7 @@ using Atlas.SharedKernel.Application.Seeding;
 using Atlas.SharedKernel.Configuration;
 using Atlas.Staff.Application;
 using Atlas.Staff.BffApi;
+using Atlas.Staff.Domain.ModulePermissions;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Atlas.Staff.InternalApi;
@@ -71,12 +72,10 @@ using Serilog.Events;
 using IdentityContracts = Atlas.Identity.Contracts;
 using IdentityPermissions = Atlas.Identity.Contracts.Permissions;
 using PlatformPermissions = Atlas.Platform.Domain.ModulePermissions;
-using StaffContracts = Atlas.Staff.Contracts;
-using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 
 //
 // ==========================================
-// Ã°Å¸â€Â¹ SERILOG BOOTSTRAP (captura erros de startup)
+// SERILOG BOOTSTRAP (captura erros de startup)
 // ==========================================
 //
 
@@ -89,7 +88,7 @@ try
 
     //
     // ==========================================
-    // Ã°Å¸â€Â¹ SERILOG FULL CONFIG (hosted Ã¢â‚¬â€ acessa IConfiguration)
+    // SERILOG FULL CONFIG (hosted  IConfiguration)
     // ==========================================
     //
 
@@ -130,7 +129,7 @@ try
 
     //
     // ==========================================
-    // Ã°Å¸â€Â¹ OBSERVABILITY (OTel traces + metrics Ã¢â€ â€™ Grafana Cloud)
+    // OBSERVABILITY (OTel traces + metrics  Grafana Cloud)
     // ==========================================
     //
 
@@ -173,13 +172,13 @@ try
 
     // Module permissions â€” one per module
     services.AddSingleton<IModulePermissions, IdentityPermissions.ModulePermissions>();
-    services.AddSingleton<IModulePermissions, StaffPermissions.ModulePermissions>();
-    services.AddSingleton<IModulePermissions, PlatformPermissions.ModulePermissions>();
+    services.AddSingleton<IModulePermissions, StaffModulePermissions>();
+    services.AddSingleton<IModulePermissions, PlatformPermissions.PlatformModulePermissions>();
 
     // Module registrations â€” consumed by PlatformModuleSeeder via SeedOrchestrator
     services.AddSingleton<IModuleRegistration, IdentityContracts.Registration>();
-    services.AddSingleton<IModuleRegistration, StaffContracts.Registration>();
-    services.AddSingleton<IModuleRegistration, Registration>();
+    services.AddSingleton<IModuleRegistration, StaffModuleRegistration>();
+    services.AddSingleton<IModuleRegistration, PlatformModuleRegistration>();
 
     services.AddSingleton<IPermissionPolicy>(sp =>
     {
@@ -365,13 +364,13 @@ try
         opts.ApplyCurrentCultureToResponseHeaders = true;
     });
 
-    // Ã°Å¸â€Â¹ CorrelationId PRIMEIRO
+    // CorrelationId PRIMEIRO
     app.UseMiddleware<CorrelationIdMiddleware>();
 
-    // Ã°Å¸â€Â¹ Serilog HTTP logging
+    // Serilog HTTP logging
     app.UseSerilogRequestLogging();
 
-    // Ã°Å¸â€Â¹ Exception handling global
+    // Exception handling global
     app.UseMiddleware<GlobalExceptionMiddleware>();
 
     app.UseSecurityHeaders();

@@ -1,7 +1,7 @@
 using Atlas.Platform.Domain.Tenants.Events;
 using Atlas.Platform.Domain.Tenants.Exceptions;
 using Atlas.SharedKernel.Domain;
-using Atlas.SharedKernel.Platform.Domain;
+using Atlas.SharedKernel.EntityTypes;
 
 namespace Atlas.Platform.Domain.Tenants;
 

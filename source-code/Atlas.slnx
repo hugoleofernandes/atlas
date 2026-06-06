@@ -95,7 +95,6 @@
     <Project Path="src/Atlas.Staff.Application/Atlas.Staff.Application.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/4-Domain/">
-    <Project Path="src/Atlas.Staff.Contracts/Atlas.Staff.Contracts.csproj" Id="db528671-3cd4-4565-8fcd-2f69d9796d05" />
     <Project Path="src/Atlas.Staff.Domain/Atlas.Staff.Domain.csproj" />
     <Project Path="src/Atlas.Staff.Resources/Atlas.Staff.Resources.csproj" Id="dd314a04-85ad-4791-a9cd-ad172fa4738a" />
   </Folder>

@@ -1,8 +1,9 @@
 using System.Xml.Linq;
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Contracts.Permissions;
+using Atlas.Platform.Domain.ModulePermissions;
+using Atlas.Staff.Domain.ModulePermissions;
 using FluentAssertions;
-using StaffContracts = Atlas.Staff.Contracts.Permissions;
 
 namespace Atlas.Identity.Tests.Permissions;
 
@@ -22,8 +23,8 @@ public sealed class PermissionCatalogTranslationTests
     /// </summary>
     private static readonly PermissionPolicyService Policy = new([
         new ModulePermissions(),
-        new StaffContracts.ModulePermissions(),
-        new Platform.Domain.ModulePermissions.ModulePermissions(),
+        new StaffModulePermissions(),
+        new PlatformModulePermissions(),
     ]);
 
     [Fact]

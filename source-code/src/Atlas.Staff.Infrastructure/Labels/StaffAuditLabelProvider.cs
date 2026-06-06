@@ -1,5 +1,5 @@
-﻿using Atlas.BuildingBlocks.Audit.Labels;
-using Atlas.Staff.Contracts;
+using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.SharedKernel.EntityTypes;
 
 namespace Atlas.Staff.Infrastructure.Labels;
 
@@ -13,7 +13,8 @@ public sealed class StaffAuditLabelProvider : IAuditLabelProvider
 
     public string? LocalizeEntityType(Guid entityTypeId)
     {
-        if (entityTypeId == EntityTypes.StaffMemberId) return "Staff member";
+        if (entityTypeId == StaffEntityTypes.StaffMemberId)
+            return "Staff member";
         return null;
     }
 }

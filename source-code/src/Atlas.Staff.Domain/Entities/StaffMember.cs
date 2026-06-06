@@ -1,11 +1,11 @@
-﻿using Atlas.Staff.Contracts;
 using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.EntityTypes;
 
 namespace Atlas.Staff.Domain.Entities;
 
 public sealed class StaffMember : IAuditableAggregate
 {
-    public Guid EntityTypeId => EntityTypes.StaffMemberId;
+    public Guid EntityTypeId => StaffEntityTypes.StaffMemberId;
 
     public Guid Id { get; private set; }
 
@@ -25,12 +25,7 @@ public sealed class StaffMember : IAuditableAggregate
 
     private StaffMember() { }
 
-    public StaffMember(
-        Guid tenantId,
-        Guid UserId,
-        string firstName,
-        string lastName,
-        string role)
+    public StaffMember(Guid tenantId, Guid UserId, string firstName, string lastName, string role)
     {
         Id = Guid.NewGuid();
         TenantId = tenantId;
