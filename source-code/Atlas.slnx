@@ -81,7 +81,6 @@
     <Project Path="src/Atlas.Platform.Application/Atlas.Platform.Application.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/4-Domain/">
-    <Project Path="src/Atlas.Platform.Contracts/Atlas.Platform.Contracts.csproj" Id="3f84f745-1aa8-4aaf-ac81-0644100be8de" />
     <Project Path="src/Atlas.Platform.Domain/Atlas.Platform.Domain.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/" />

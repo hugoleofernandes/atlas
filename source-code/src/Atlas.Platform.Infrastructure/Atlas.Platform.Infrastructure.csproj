@@ -21,7 +21,6 @@
     <ProjectReference Include="..\Atlas.BuildingBlocks.Infrastructure\Atlas.BuildingBlocks.Application.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Persistence\Atlas.BuildingBlocks.Persistence.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Application\Atlas.Platform.Application.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Domain\Atlas.Platform.Domain.csproj" />
 
     <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />

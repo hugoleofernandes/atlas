@@ -1,16 +1,14 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
-using Atlas.Platform.Contracts.Permissions;
+using Atlas.Platform.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
 namespace Atlas.Platform.BffApi.Endpoints.EntityTypes.Lookup;
 
-public sealed class LookupEntityTypesEndpoint(
-    ILookupEntityTypesQueryHandler handler,
-    IHandlerInvoker                invoker
-) : AtlasEndpoint<EmptyRequest, IReadOnlyList<EntityTypeLookupDto>>
+public sealed class LookupEntityTypesEndpoint(ILookupEntityTypesQueryHandler handler, IHandlerInvoker invoker)
+    : AtlasEndpoint<EmptyRequest, IReadOnlyList<EntityTypeLookupDto>>
 {
     public override void Configure()
     {

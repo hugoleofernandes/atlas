@@ -1,7 +1,7 @@
-﻿using Atlas.Platform.Domain.Tenants.Events;
+using Atlas.Platform.Domain.Tenants.Events;
 using Atlas.Platform.Domain.Tenants.Exceptions;
-using Atlas.Platform.Contracts;
 using Atlas.SharedKernel.Domain;
+using Atlas.SharedKernel.Platform.Domain;
 
 namespace Atlas.Platform.Domain.Tenants;
 
@@ -19,7 +19,7 @@ namespace Atlas.Platform.Domain.Tenants;
 /// </summary>
 public sealed class Tenant : AggregateRoot, INotMultiTenant, IAuditableAggregate
 {
-    public Guid EntityTypeId => EntityTypes.TenantId;
+    public Guid EntityTypeId => PlatformEntityTypes.RootTenantId;
 
     public Guid Id { get; private set; } = Guid.NewGuid();
 

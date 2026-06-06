@@ -1,10 +1,9 @@
-﻿using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Audit.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
-using Atlas.Platform.Contracts.Permissions;
+using Atlas.Platform.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
-using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
 namespace Atlas.Platform.BffApi.Endpoints.Audit.ListEntries;
@@ -16,8 +15,8 @@ namespace Atlas.Platform.BffApi.Endpoints.Audit.ListEntries;
 public sealed class ListAuditEntriesEndpoint(
     IPlatformListAuditEntriesQueryHandler handler,
     IHandlerInvoker invoker,
-    AuditLabelLocalizer auditLabelLocalizer)
-    : AtlasEndpoint<ListAuditEntriesRequest, IReadOnlyList<AuditEntryResponse>>
+    AuditLabelLocalizer auditLabelLocalizer
+) : AtlasEndpoint<ListAuditEntriesRequest, IReadOnlyList<AuditEntryResponse>>
 {
     public override void Configure()
     {
@@ -30,12 +29,13 @@ public sealed class ListAuditEntriesEndpoint(
     {
         var query = new ListAuditEntriesQuery(
             EntityTypeId: req.EntityTypeId,
-            From:         req.From,
-            To:           req.To,
-            Action:       req.Action,
-            EntityId:     req.EntityId);
+            From: req.From,
+            To: req.To,
+            Action: req.Action,
+            EntityId: req.EntityId
+        );
 
-        var result   = await invoker.InvokeAsync(handler, query, ct);
+        var result = await invoker.InvokeAsync(handler, query, ct);
         var response = result.Map(x => AuditEntryResponse.FromList(x, auditLabelLocalizer));
         await OkFromResultAsync(response, ct);
     }

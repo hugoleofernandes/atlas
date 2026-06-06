@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Atlas.API.Errors;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
@@ -19,9 +19,11 @@ using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
 using Atlas.BuildingBlocks.AspNetCore.Security.Xsrf;
 using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.BuildingBlocks.Audit.Resources;
 using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.Observability;
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges;
@@ -39,19 +41,16 @@ using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.InternalApi;
 using Atlas.Identity.OutboxPublisher.DI;
 using Atlas.Platform.BffApi;
+using Atlas.Platform.Domain;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
-
 using Atlas.Platform.InternalApi;
-using Atlas.BuildingBlocks.Audit.Resources;
-
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Application.Seeding;
 using Atlas.SharedKernel.Configuration;
-using Atlas.BuildingBlocks.Permissions;
 using Atlas.Staff.Application;
 using Atlas.Staff.BffApi;
 using Atlas.Staff.Infrastructure.DI;
@@ -71,8 +70,7 @@ using Serilog;
 using Serilog.Events;
 using IdentityContracts = Atlas.Identity.Contracts;
 using IdentityPermissions = Atlas.Identity.Contracts.Permissions;
-using PlatformContracts = Atlas.Platform.Contracts;
-using PlatformPermissions = Atlas.Platform.Contracts.Permissions;
+using PlatformPermissions = Atlas.Platform.Domain.ModulePermissions;
 using StaffContracts = Atlas.Staff.Contracts;
 using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 
@@ -181,7 +179,7 @@ try
     // Module registrations â€” consumed by PlatformModuleSeeder via SeedOrchestrator
     services.AddSingleton<IModuleRegistration, IdentityContracts.Registration>();
     services.AddSingleton<IModuleRegistration, StaffContracts.Registration>();
-    services.AddSingleton<IModuleRegistration, PlatformContracts.Registration>();
+    services.AddSingleton<IModuleRegistration, Registration>();
 
     services.AddSingleton<IPermissionPolicy>(sp =>
     {

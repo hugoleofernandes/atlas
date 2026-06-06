@@ -1,11 +1,12 @@
-﻿using Atlas.BuildingBlocks.Permissions;
+using Atlas.BuildingBlocks.Permissions;
+using Atlas.SharedKernel.Platform.Domain;
 
-namespace Atlas.Platform.Contracts.Permissions;
+namespace Atlas.Platform.Domain.ModulePermissions;
 
 public sealed partial class ModulePermissions : IModulePermissions
 {
-    public Guid ModuleId => Module.Id;
-    public string ModuleName => Module.Name;
+    public Guid ModuleId => PlatformEntityTypes.ModuleId;
+    public string ModuleName => PlatformEntityTypes.ModuleName;
 
     public IReadOnlySet<string> Permissions { get; } = PermissionExtractor.ExtractAll(typeof(ModulePermissions));
 

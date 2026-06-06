@@ -1,21 +1,19 @@
-﻿using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Audit.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
 using Atlas.Identity.Contracts;
 using Atlas.Identity.Contracts.Permissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
-using Atlas.BuildingBlocks.Permissions;
-using StaffPermissions = Atlas.Staff.Contracts.Permissions;
-using PlatformPermissions = Atlas.Platform.Contracts.Permissions;
-using PlatformContracts = Atlas.Platform.Contracts;
-using StaffContracts = Atlas.Staff.Contracts;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
+using Atlas.SharedKernel.Platform.Domain;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
-using FastEndpoints;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+using PlatformPermissions = Atlas.Platform.Domain.ModulePermissions;
+using StaffContracts = Atlas.Staff.Contracts;
+using StaffPermissions = Atlas.Staff.Contracts.Permissions;
 
 namespace Atlas.API.Endpoints.Audit.ListEntries;
 
@@ -93,7 +91,7 @@ public sealed class ListAuditEntriesEndpoint(
             );
         }
 
-        if (entityTypeId == PlatformContracts.EntityTypes.TenantId)
+        if (entityTypeId == PlatformEntityTypes.RootTenantId)
         {
             return new AuditTarget(
                 PlatformPermissions.ModulePermissions.Audit.Read,
