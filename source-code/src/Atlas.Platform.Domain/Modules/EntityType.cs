@@ -5,25 +5,22 @@ namespace Atlas.Platform.Domain.Modules;
 /// <summary>
 /// Represents an auditable entity type within a module.
 /// Name = CLR class name stored in the audits table (e.g. "User", "Role").
-/// Schema = PostgreSQL schema where that module's audits table lives (e.g. "atlas_identity").
 /// </summary>
 public sealed class EntityType : AggregateRoot, INotMultiTenant
 {
     public Guid   Id       { get; private set; }
     public Guid   ModuleId { get; private set; }
     public string Name     { get; private set; } = default!;
-    public string Schema   { get; private set; } = default!;
     public bool   IsActive { get; private set; }
 
     private EntityType() { }
 
-    public static EntityType Create(Guid moduleId, string name, string schema)
+    public static EntityType Create(Guid moduleId, string name)
         => new()
         {
             Id       = Guid.NewGuid(),
             ModuleId = moduleId,
             Name     = name,
-            Schema   = schema,
             IsActive = true,
         };
 
@@ -32,13 +29,12 @@ public sealed class EntityType : AggregateRoot, INotMultiTenant
     /// Use this overload in seeders with constants from Atlas.SharedDomain so that
     /// the frontend can reference EntityTypeIds without querying the registry at runtime.
     /// </summary>
-    public static EntityType Create(Guid id, Guid moduleId, string name, string schema)
+    public static EntityType Create(Guid id, Guid moduleId, string name)
         => new()
         {
             Id       = id,
             ModuleId = moduleId,
             Name     = name,
-            Schema   = schema,
             IsActive = true,
         };
 }

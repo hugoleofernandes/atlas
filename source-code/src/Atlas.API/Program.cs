@@ -21,7 +21,6 @@ using Atlas.BuildingBlocks.AspNetCore.Security.Xsrf;
 using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Audit.Resources;
 using Atlas.BuildingBlocks.Email.DI;
-using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
@@ -35,7 +34,7 @@ using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
 using Atlas.Identity.Application;
 using Atlas.Identity.BffApi;
 using Atlas.Identity.BffApi.Configs;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain;
 using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.InternalApi;
@@ -49,7 +48,6 @@ using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.OutboxMessages;
-using Atlas.SharedKernel.Application.Seeding;
 using Atlas.SharedKernel.Configuration;
 using Atlas.Staff.Application;
 using Atlas.Staff.BffApi;
@@ -69,8 +67,7 @@ using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
-using IdentityContracts = Atlas.Identity.Contracts;
-using IdentityPermissions = Atlas.Identity.Contracts.Permissions;
+using IdentityPermissions = Atlas.Identity.Domain.ModulePermissions;
 using PlatformPermissions = Atlas.Platform.Domain.ModulePermissions;
 
 //
@@ -171,15 +168,11 @@ try
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
     // Module permissions â€” one per module
-    services.AddSingleton<IModulePermissions, IdentityPermissions.ModulePermissions>();
+    services.AddSingleton<IModulePermissions, IdentityPermissions.IdentityModulePermissions>();
     services.AddSingleton<IModulePermissions, StaffModulePermissions>();
     services.AddSingleton<IModulePermissions, PlatformPermissions.PlatformModulePermissions>();
 
     // Module registrations â€” consumed by PlatformModuleSeeder via SeedOrchestrator
-    services.AddSingleton<IModuleRegistration, IdentityContracts.Registration>();
-    services.AddSingleton<IModuleRegistration, StaffModuleRegistration>();
-    services.AddSingleton<IModuleRegistration, PlatformModuleRegistration>();
-
     services.AddSingleton<IPermissionPolicy>(sp =>
     {
         var logger = sp.GetRequiredService<ILogger<PermissionPolicyService>>();

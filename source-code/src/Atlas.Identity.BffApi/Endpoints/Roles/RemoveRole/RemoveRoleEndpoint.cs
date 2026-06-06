@@ -1,6 +1,6 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.RemoveRole;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +18,7 @@ public sealed class RemoveRoleEndpoint(IRemoveRoleCommandHandler handler, IHandl
     public override void Configure()
     {
         Delete("bff/identity/roles/{id}");
-        Policies($"permission:{ModulePermissions.Roles.Delete}");
+        Policies($"permission:{IdentityModulePermissions.Roles.Delete}");
         Description(d => d.Produces(204));
     }
 

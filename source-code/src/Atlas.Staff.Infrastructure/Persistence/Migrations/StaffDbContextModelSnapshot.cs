@@ -255,27 +255,27 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasColumnName("user_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_outboxes");
+                        .HasName("pk_outbox_messages");
 
                     b.HasIndex("IdempotencyKey")
-                        .HasDatabaseName("ix_outboxes_idempotency_key");
+                        .HasDatabaseName("ix_outbox_messages_idempotency_key");
 
                     b.HasIndex("Module")
-                        .HasDatabaseName("ix_outboxes_module");
+                        .HasDatabaseName("ix_outbox_messages_module");
 
                     b.HasIndex("ParentOutboxMessageId")
-                        .HasDatabaseName("ix_outboxes_parent_outbox_message_id");
+                        .HasDatabaseName("ix_outbox_messages_parent_outbox_message_id");
 
                     b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_outboxes_tenant_id");
+                        .HasDatabaseName("ix_outbox_messages_tenant_id");
 
                     b.HasIndex("Type")
-                        .HasDatabaseName("ix_outboxes_type");
+                        .HasDatabaseName("ix_outbox_messages_type");
 
                     b.HasIndex("ProcessedOn", "DeadLetteredOn", "FailedAt", "LockedUntil", "OccurredOn")
-                        .HasDatabaseName("ix_outboxes_processed_on_dead_lettered_on_failed_at_locked_unt");
+                        .HasDatabaseName("ix_outbox_messages_processed_on_dead_lettered_on_failed_at_loc");
 
-                    b.ToTable("outboxes", "atlas_staff");
+                    b.ToTable("outbox_messages", "atlas_staff");
                 });
 
             modelBuilder.Entity("Atlas.Staff.Domain.Entities.StaffMember", b =>
@@ -347,7 +347,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ParentOutboxMessageId")
                         .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("fk_outboxes_outboxes_parent_outbox_message_id");
+                        .HasConstraintName("fk_outbox_messages_outbox_messages_parent_outbox_message_id");
                 });
 #pragma warning restore 612, 618
         }

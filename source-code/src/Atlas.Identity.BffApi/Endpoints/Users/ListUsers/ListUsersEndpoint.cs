@@ -1,6 +1,6 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Users.ListUsers;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -15,7 +15,7 @@ public sealed class ListUsersEndpoint(IListUsersQueryHandler handler, IHandlerIn
     public override void Configure()
     {
         Get("bff/identity/users");
-        Policies($"permission:{ModulePermissions.Users.Read}");
+        Policies($"permission:{IdentityModulePermissions.Users.Read}");
         Description(d => d.Produces<IReadOnlyList<UserDto>>());
     }
 

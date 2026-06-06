@@ -1,5 +1,4 @@
 using Atlas.Identity.Application.Commands.SendInvitationEmail;
-using Atlas.Identity.Contracts.Commands.SendInvitationEmail;
 using Atlas.Outbox.Application.Targets;
 using Atlas.Outbox.Targets.Identity.UserInvited;
 using Microsoft.Extensions.Configuration;

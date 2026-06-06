@@ -1,3 +1,5 @@
+using Atlas.SharedKernel.Modules;
+
 namespace Atlas.SharedKernel.EntityTypes;
 
 /// <summary>
@@ -6,8 +8,7 @@ namespace Atlas.SharedKernel.EntityTypes;
 /// </summary>
 public static class StaffEntityTypes
 {
-    public static readonly Guid ModuleId = new("e24bf9cf-84aa-4f55-884c-9784e2278d2e");
-    public const string ModuleName = "staff";
+    public static AtlasModule Module => AtlasModules.Staff;
 
-    public static readonly Guid StaffMemberId = new("00000002-0000-0000-0000-000000000001");
+    public static readonly AtlasEntityType StaffMember = AtlasEntityType.Create("1", "StaffMember", Module);
 }

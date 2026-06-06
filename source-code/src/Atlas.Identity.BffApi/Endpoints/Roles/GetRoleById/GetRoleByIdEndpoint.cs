@@ -1,7 +1,7 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Roles.GetRoleById;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -16,7 +16,7 @@ public sealed class GetRoleByIdEndpoint(IGetRoleByIdQueryHandler handler, IHandl
     public override void Configure()
     {
         Get("bff/identity/roles/{id}");
-        Policies($"permission:{ModulePermissions.Roles.Read}");
+        Policies($"permission:{IdentityModulePermissions.Roles.Read}");
         Description(d => d.Produces<RoleDto>());
     }
 

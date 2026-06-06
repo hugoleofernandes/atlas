@@ -1,6 +1,6 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.InviteUser;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -16,7 +16,7 @@ public sealed class CreateInvitationEndpoint(IInviteUserCommandHandler handler, 
     public override void Configure()
     {
         Post("bff/identity/invitations");
-        Policies($"permission:{ModulePermissions.Invitations.Create}");
+        Policies($"permission:{IdentityModulePermissions.Invitations.Create}");
         Description(d => d.Produces<CreateInvitationResponse>(201));
     }
 

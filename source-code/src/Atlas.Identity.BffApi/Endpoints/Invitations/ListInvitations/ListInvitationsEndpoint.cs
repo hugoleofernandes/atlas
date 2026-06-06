@@ -1,6 +1,6 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Invitations.ListInvitations;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -15,7 +15,7 @@ public sealed class ListInvitationsEndpoint(IListInvitationsQueryHandler handler
     public override void Configure()
     {
         Get("bff/identity/invitations");
-        Policies($"permission:{ModulePermissions.Invitations.Read}");
+        Policies($"permission:{IdentityModulePermissions.Invitations.Read}");
         Description(d => d.Produces<IReadOnlyList<InvitationDto>>());
     }
 

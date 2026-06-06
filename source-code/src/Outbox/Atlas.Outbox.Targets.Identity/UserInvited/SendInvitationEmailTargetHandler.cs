@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Atlas.BuildingBlocks.Outbox.ListPendingMessages;
-using Atlas.Identity.Contracts.Commands.SendInvitationEmail;
+using Atlas.Identity.Application.Commands.SendInvitationEmail;
 using Atlas.Identity.Contracts.IntegrationEvents.Users;
 using Atlas.Outbox.Application.Targets;
 using Atlas.Outbox.Domain.Targets.Names;

@@ -1,7 +1,7 @@
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Handlers;
 
-namespace Atlas.Identity.Contracts.Commands.SendWelcomeEmail;
+namespace Atlas.Identity.Application.Commands.SendWelcomeEmail;
 
 /// <summary>
 /// Sending a welcome e-mail is a side-effecting command with no database writes.

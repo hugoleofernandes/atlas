@@ -11,6 +11,7 @@ using Atlas.Platform.Infrastructure.Readers.Audit.ListEntries;
 using Atlas.Platform.Infrastructure.Readers.EntityTypes.Lookup;
 using Atlas.Platform.Infrastructure.Readers.Tenants.GetTenantByName;
 using Atlas.Platform.Infrastructure.Seeders;
+using Atlas.Platform.Infrastructure.Seeders.Discovery;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +24,8 @@ public static class PlatformDependencyInjection
         // GENERAL
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
         services.AddScoped<IModuleSeeder, PlatformModuleSeeder>();
+        services.AddScoped<IAtlasModuleDiscovery, AtlasModuleDiscovery>();
+        services.AddScoped<IAtlasEntityTypeDiscovery, AtlasEntityTypeDiscovery>();
         services.AddScoped<IAuditLabelProvider, PlatformAuditLabelProvider>();
         services.AddScoped<IPermissionLabelProvider, PlatformPermissionLabelProvider>();
 

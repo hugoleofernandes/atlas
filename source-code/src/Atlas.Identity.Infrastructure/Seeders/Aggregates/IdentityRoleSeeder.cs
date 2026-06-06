@@ -15,7 +15,7 @@ namespace Atlas.Identity.Infrastructure.Seeders.Aggregates;
 /// <summary>
 /// Seeds the default system roles (root, admin, member) for the tenant that lives in Atlas.Platform.
 /// Reads atlas_platform.tenants via Dapper to avoid a cross-module project reference.
-/// Idempotent â€” skips if any role already exists.
+/// Idempotent - skips if any role already exists.
 /// </summary>
 internal sealed class IdentityRoleSeeder
 {
@@ -37,7 +37,7 @@ internal sealed class IdentityRoleSeeder
 
         if (await db.Roles.IgnoreQueryFilters().AnyAsync(ct))
         {
-            logger.LogInformation("IdentityRoleSeeder skipped â€” data already exists");
+            logger.LogInformation("IdentityRoleSeeder skipped - data already exists");
             return;
         }
 
@@ -48,7 +48,7 @@ internal sealed class IdentityRoleSeeder
 
         if (tenant is null)
         {
-            logger.LogWarning("IdentityRoleSeeder skipped â€” no tenant found in atlas_platform.tenants");
+            logger.LogWarning("IdentityRoleSeeder skipped - no tenant found in atlas_platform.tenants");
             return;
         }
 

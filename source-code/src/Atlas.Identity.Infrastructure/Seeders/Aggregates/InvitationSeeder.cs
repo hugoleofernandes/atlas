@@ -14,7 +14,7 @@ namespace Atlas.Identity.Infrastructure.Seeders.Aggregates;
 /// <summary>
 /// Seeds the bootstrap invitation for the system owner (root role).
 /// Reads atlas_platform.tenants via Dapper to avoid a cross-module project reference.
-/// Idempotent — skips if any invitation already exists.
+/// Idempotent - skips if any invitation already exists.
 /// </summary>
 internal sealed class InvitationSeeder
 {
@@ -30,16 +30,16 @@ internal sealed class InvitationSeeder
     public async Task SeedAsync(IServiceProvider services, CancellationToken ct)
     {
         var logger = services.GetRequiredService<ILogger<InvitationSeeder>>();
-        var db     = services.GetRequiredService<IdentityDbContext>();
-        var uow    = services.GetRequiredService<IIdentityUnitOfWork>();
+        var db = services.GetRequiredService<IdentityDbContext>();
+        var uow = services.GetRequiredService<IIdentityUnitOfWork>();
         var setter = services.GetRequiredService<IRequestContextSetter>();
 
-        var conn   = db.Database.GetDbConnection();
+        var conn = db.Database.GetDbConnection();
         var tenant = await conn.QueryFirstOrDefaultAsync<TenantRow>(GetFirstTenantSql);
 
         if (tenant is null)
         {
-            logger.LogWarning("InvitationSeeder skipped — no tenant found in atlas_platform.tenants");
+            logger.LogWarning("InvitationSeeder skipped - no tenant found in atlas_platform.tenants");
             return;
         }
 
@@ -47,7 +47,7 @@ internal sealed class InvitationSeeder
 
         if (await db.Invitations.AnyAsync(ct))
         {
-            logger.LogInformation("InvitationSeeder skipped — data already exists");
+            logger.LogInformation("InvitationSeeder skipped - data already exists");
             return;
         }
 

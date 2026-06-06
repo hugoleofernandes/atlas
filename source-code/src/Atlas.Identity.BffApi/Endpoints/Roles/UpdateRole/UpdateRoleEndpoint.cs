@@ -1,6 +1,6 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.UpdateRole;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 
@@ -17,7 +17,7 @@ public sealed class UpdateRoleEndpoint(IUpdateRoleCommandHandler handler, IHandl
     public override void Configure()
     {
         Put("bff/identity/roles/{id}");
-        Policies($"permission:{ModulePermissions.Roles.Update}");
+        Policies($"permission:{IdentityModulePermissions.Roles.Update}");
         Description(d => d.Produces<UpdateRoleResponse>());
     }
 

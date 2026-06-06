@@ -1,7 +1,6 @@
-// Permissions.Invitations.cs
-namespace Atlas.Identity.Contracts.Permissions;
+namespace Atlas.Identity.Domain.ModulePermissions;
 
-public sealed partial class ModulePermissions
+public sealed partial class IdentityModulePermissions
 {
     public static class Invitations
     {

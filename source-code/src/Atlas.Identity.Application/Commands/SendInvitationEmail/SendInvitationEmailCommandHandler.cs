@@ -1,7 +1,5 @@
 using Atlas.BuildingBlocks.Email;
-using Atlas.Identity.Contracts.Commands.SendInvitationEmail;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.Idempotency;
 
 namespace Atlas.Identity.Application.Commands.SendInvitationEmail;

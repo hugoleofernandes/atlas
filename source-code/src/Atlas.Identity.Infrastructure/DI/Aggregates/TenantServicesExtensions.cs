@@ -14,7 +14,6 @@ using Atlas.Identity.Application.Queries.Roles.GetRoleById;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
 using Atlas.Identity.Application.Queries.Roles.LookupRoles;
 using Atlas.Identity.Application.Repositories;
-using Atlas.Identity.Contracts.Commands.SendWelcomeEmail;
 using Atlas.Identity.Infrastructure.Readers.Audit.ListEntries;
 using Atlas.Identity.Infrastructure.Readers.Permissions.ListPermissions;
 using Atlas.Identity.Infrastructure.Readers.Roles.GetRoleById;

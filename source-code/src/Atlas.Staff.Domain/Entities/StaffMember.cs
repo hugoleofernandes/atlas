@@ -5,7 +5,7 @@ namespace Atlas.Staff.Domain.Entities;
 
 public sealed class StaffMember : IAuditableAggregate
 {
-    public Guid EntityTypeId => StaffEntityTypes.StaffMemberId;
+    public Guid EntityTypeId => StaffEntityTypes.StaffMember.Id;
 
     public Guid Id { get; private set; }
 
@@ -25,11 +25,11 @@ public sealed class StaffMember : IAuditableAggregate
 
     private StaffMember() { }
 
-    public StaffMember(Guid tenantId, Guid UserId, string firstName, string lastName, string role)
+    public StaffMember(Guid tenantId, Guid userId, string firstName, string lastName, string role)
     {
         Id = Guid.NewGuid();
         TenantId = tenantId;
-        UserId = UserId;
+        UserId = userId;
         FirstName = firstName;
         LastName = lastName;
         Role = role;

@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 using Atlas.BuildingBlocks.Permissions;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.Platform.Domain.ModulePermissions;
 using Atlas.Staff.Domain.ModulePermissions;
 using FluentAssertions;
@@ -22,7 +22,7 @@ public sealed class PermissionCatalogTranslationTests
     /// The full permission policy built from all registered modules â€” same as runtime.
     /// </summary>
     private static readonly PermissionPolicyService Policy = new([
-        new ModulePermissions(),
+        new IdentityModulePermissions(),
         new StaffModulePermissions(),
         new PlatformModulePermissions(),
     ]);

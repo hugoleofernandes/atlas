@@ -25,10 +25,10 @@ namespace Atlas.Staff.Application.StaffMembers.Commands.CreateFromInvitation;
 /// </summary>
 public sealed class CreateStaffMemberFromInvitationCommandHandler
     : ICreateStaffMemberFromInvitationCommandHandler,
-      IIdempotentHandler
+        IIdempotentHandler
 {
-    private readonly IStaffMemberRepository                          _repository;
-    private readonly IStaffUnitOfWork                               _unitOfWork;
+    private readonly IStaffMemberRepository _repository;
+    private readonly IStaffUnitOfWork _unitOfWork;
     private readonly ILogger<CreateStaffMemberFromInvitationCommandHandler> _logger;
 
     /// <inheritdoc/>
@@ -36,22 +36,24 @@ public sealed class CreateStaffMemberFromInvitationCommandHandler
     public IUnitOfWork UnitOfWork => _unitOfWork;
 
     public CreateStaffMemberFromInvitationCommandHandler(
-        IStaffMemberRepository                                 repository,
-        IStaffUnitOfWork                                       unitOfWork,
-        ILogger<CreateStaffMemberFromInvitationCommandHandler> logger)
+        IStaffMemberRepository repository,
+        IStaffUnitOfWork unitOfWork,
+        ILogger<CreateStaffMemberFromInvitationCommandHandler> logger
+    )
     {
         _repository = repository;
         _unitOfWork = unitOfWork;
-        _logger     = logger;
+        _logger = logger;
     }
 
-    public async Task<Unit> ExecuteAsync(
-        CreateStaffMemberFromInvitationCommand command,
-        CancellationToken                      ct)
+    public async Task<Unit> ExecuteAsync(CreateStaffMemberFromInvitationCommand command, CancellationToken ct)
     {
         _logger.LogInformation(
             "CreateStaffMember — TenantId={TenantId} UserId={UserId} Role={Role}",
-            command.TenantId, command.UserId, command.Role);
+            command.TenantId,
+            command.UserId,
+            command.Role
+        );
 
         // Domain idempotency: same business outcome may arrive via messages with different
         // IdempotencyKeys (e.g. two separate invitations for the same user).
@@ -60,7 +62,8 @@ public sealed class CreateStaffMemberFromInvitationCommandHandler
         {
             _logger.LogInformation(
                 "CreateStaffMember skipped — StaffMember already exists (UserId={UserId})",
-                command.UserId);
+                command.UserId
+            );
 
             return Unit.Value;
         }
@@ -68,23 +71,20 @@ public sealed class CreateStaffMemberFromInvitationCommandHandler
         // Derive placeholder name from email until the user fills their profile.
         // e.g. "hugo.silva@company.com" → firstName="hugo.silva", lastName=""
         var emailLocalPart = command.Email.Split('@')[0];
-        var firstName      = emailLocalPart.Length <= 100
-            ? emailLocalPart
-            : emailLocalPart[..100];
+        var firstName = emailLocalPart.Length <= 100 ? emailLocalPart : emailLocalPart[..100];
 
         var staff = new StaffMember(
-            tenantId:  command.TenantId,
-            UserId:    command.UserId,
+            tenantId: command.TenantId,
+            userId: command.UserId,
             firstName: firstName,
-            lastName:  string.Empty,
-            role:      command.Role);
+            lastName: string.Empty,
+            role: command.Role
+        );
 
         await _repository.AddAsync(staff, ct);
         // SaveChangesAsync is called by PersistDbDecorator — do NOT call it here.
 
-        _logger.LogInformation(
-            "StaffMember created — Id={StaffId} UserId={UserId}",
-            staff.Id, command.UserId);
+        _logger.LogInformation("StaffMember created — Id={StaffId} UserId={UserId}", staff.Id, command.UserId);
 
         return Unit.Value;
     }

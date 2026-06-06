@@ -5,8 +5,8 @@ namespace Atlas.Staff.Domain.ModulePermissions;
 
 public sealed partial class StaffModulePermissions : IModulePermissions
 {
-    public Guid ModuleId => StaffEntityTypes.ModuleId;
-    public string ModuleName => StaffEntityTypes.ModuleName;
+    public Guid ModuleId => StaffEntityTypes.StaffMember.Module.Id;
+    public string ModuleName => StaffEntityTypes.StaffMember.Module.Name;
 
     public IReadOnlySet<string> Permissions { get; } = PermissionExtractor.ExtractAll(typeof(StaffModulePermissions));
 

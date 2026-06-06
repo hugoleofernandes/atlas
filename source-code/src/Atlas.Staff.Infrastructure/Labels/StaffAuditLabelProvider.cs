@@ -13,7 +13,7 @@ public sealed class StaffAuditLabelProvider : IAuditLabelProvider
 
     public string? LocalizeEntityType(Guid entityTypeId)
     {
-        if (entityTypeId == StaffEntityTypes.StaffMemberId)
+        if (entityTypeId == StaffEntityTypes.StaffMember.Id)
             return "Staff member";
         return null;
     }

@@ -1,7 +1,6 @@
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.SendWelcomeEmail;
-using Atlas.Identity.Contracts.Commands.SendWelcomeEmail;
 using Atlas.Identity.Contracts.IntegrationEvents.Users;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;

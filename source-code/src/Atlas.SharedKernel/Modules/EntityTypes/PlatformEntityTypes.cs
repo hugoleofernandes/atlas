@@ -1,3 +1,5 @@
+using Atlas.SharedKernel.Modules;
+
 namespace Atlas.SharedKernel.EntityTypes;
 
 /// <summary>
@@ -6,8 +8,7 @@ namespace Atlas.SharedKernel.EntityTypes;
 /// </summary>
 public static class PlatformEntityTypes
 {
-    public static readonly Guid ModuleId = new("b4d35314-b7b1-4a56-8bb6-fd1beedf5070");
-    public const string ModuleName = "platform";
+    public static AtlasModule Module => AtlasModules.Platform;
 
-    public static readonly Guid RootTenantId = new("00000003-0000-0000-0000-000000000001");
+    public static readonly AtlasEntityType Tenant = AtlasEntityType.Create("1", "Tenant", Module);
 }

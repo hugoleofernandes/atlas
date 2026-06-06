@@ -20,10 +20,6 @@ public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<EntityTyp
             .HasMaxLength(200)
             .IsRequired();
 
-        b.Property(x => x.Schema)
-            .HasMaxLength(100)
-            .IsRequired();
-
         b.Property(x => x.IsActive).IsRequired();
 
         b.HasIndex(x => new { x.ModuleId, x.Name }).IsUnique();

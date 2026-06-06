@@ -1,5 +1,7 @@
-﻿using Atlas.BuildingBlocks.Audit.Labels;
-using Atlas.Identity.Contracts;
+using Atlas.BuildingBlocks.Audit.Labels;
+using Atlas.SharedKernel.EntityTypes;
+using Atlas.SharedKernel.Modules;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Atlas.Identity.Infrastructure.Labels;
 
@@ -13,9 +15,12 @@ public sealed class IdentityAuditLabelProvider : IAuditLabelProvider
 
     public string? LocalizeEntityType(Guid entityTypeId)
     {
-        if (entityTypeId == EntityTypes.UserId)       return "User";
-        if (entityTypeId == EntityTypes.RoleId)       return "Role";
-        if (entityTypeId == EntityTypes.InvitationId) return "Invitation";
+        if (entityTypeId == IdentityEntityTypes.User.Id)
+            return "User";
+        if (entityTypeId == IdentityEntityTypes.Role.Id)
+            return "Role";
+        if (entityTypeId == IdentityEntityTypes.Invitation.Id)
+            return "Invitation";
         return null;
     }
 }

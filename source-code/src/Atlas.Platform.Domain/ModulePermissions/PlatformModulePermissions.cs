@@ -5,8 +5,8 @@ namespace Atlas.Platform.Domain.ModulePermissions;
 
 public sealed partial class PlatformModulePermissions : IModulePermissions
 {
-    public Guid ModuleId => PlatformEntityTypes.ModuleId;
-    public string ModuleName => PlatformEntityTypes.ModuleName;
+    public Guid ModuleId => PlatformEntityTypes.Tenant.Module.Id;
+    public string ModuleName => PlatformEntityTypes.Tenant.Module.Name;
 
     public IReadOnlySet<string> Permissions { get; } =
         PermissionExtractor.ExtractAll(typeof(PlatformModulePermissions));

@@ -2,8 +2,8 @@ using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Domain.Modules;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
+using Atlas.Platform.Infrastructure.Seeders.Discovery;
 using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,12 +13,14 @@ namespace Atlas.Platform.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds the Platform module registry: Systems, Modules, and EntityTypes.
-/// Module registrations are injected via IModuleRegistration — each module's
-/// Contracts project registers one implementation in Atlas.API.
-/// Platform stays decoupled from other modules.
-/// Idempotent — skips if data already exists.
+/// Metadata is discovered from Atlas.SharedKernel by scanning AtlasModule
+/// and AtlasEntityType static fields.
+/// Idempotent - skips if data already exists.
 /// </summary>
-internal sealed class PlatformModuleSeeder : IModuleSeeder
+internal sealed class PlatformModuleSeeder(
+    IAtlasModuleDiscovery moduleDiscovery,
+    IAtlasEntityTypeDiscovery entityTypeDiscovery
+) : IModuleSeeder
 {
     public int Order => 0;
 
@@ -26,15 +28,16 @@ internal sealed class PlatformModuleSeeder : IModuleSeeder
     {
         await new PlatformTenantSeeder().SeedAsync(services, ct);
 
-        var logger        = services.GetRequiredService<ILogger<PlatformModuleSeeder>>();
-        var db            = services.GetRequiredService<PlatformDbContext>();
-        var uow           = services.GetRequiredService<IPlatformUnitOfWork>();
-        var setter        = services.GetRequiredService<IRequestContextSetter>();
-        var registrations = services.GetServices<IModuleRegistration>().ToList();
+        var logger = services.GetRequiredService<ILogger<PlatformModuleSeeder>>();
+        var db = services.GetRequiredService<PlatformDbContext>();
+        var uow = services.GetRequiredService<IPlatformUnitOfWork>();
+        var setter = services.GetRequiredService<IRequestContextSetter>();
+        var modules = moduleDiscovery.Discover();
+        var entityTypes = entityTypeDiscovery.Discover();
 
         if (await db.Modules.AnyAsync(ct))
         {
-            logger.LogInformation("PlatformSeeder skipped — data already exists");
+            logger.LogInformation("PlatformSeeder skipped - data already exists");
             return;
         }
 
@@ -42,18 +45,18 @@ internal sealed class PlatformModuleSeeder : IModuleSeeder
 
         db.Systems.Add(AtlasSystem.Create("mlab"));
 
-        foreach (var registration in registrations)
+        foreach (var discoveredModule in modules)
         {
-            var module = Module.Create(registration.ModuleId, registration.ModuleName);
+            var module = Module.Create(discoveredModule.Id, discoveredModule.Name);
             db.Modules.Add(module);
 
-            foreach (var entityType in registration.EntityTypes)
-                db.EntityTypes.Add(EntityType.Create(entityType.Id, module.Id, entityType.Name, entityType.Schema));
+            foreach (var entityType in entityTypes.Where(x => x.Module.Id == discoveredModule.Id))
+                db.EntityTypes.Add(EntityType.Create(entityType.Id, module.Id, entityType.Name));
         }
 
         setter.Set(Guid.NewGuid(), "platform-seed", SystemIdentity.UserId, SystemIdentity.Email);
         await uow.SaveChangesAsync(ct);
 
-        logger.LogInformation("PlatformSeeder completed — {Count} modules seeded", registrations.Count);
+        logger.LogInformation("PlatformSeeder completed - {Count} modules seeded", modules.Count);
     }
 }

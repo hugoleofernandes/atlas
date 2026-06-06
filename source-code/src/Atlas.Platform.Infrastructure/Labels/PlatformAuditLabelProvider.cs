@@ -13,7 +13,7 @@ public sealed class PlatformAuditLabelProvider : IAuditLabelProvider
 
     public string? LocalizeEntityType(Guid entityTypeId)
     {
-        if (entityTypeId == PlatformEntityTypes.RootTenantId)
+        if (entityTypeId == PlatformEntityTypes.Tenant.Id)
             return "Tenant";
         return null;
     }

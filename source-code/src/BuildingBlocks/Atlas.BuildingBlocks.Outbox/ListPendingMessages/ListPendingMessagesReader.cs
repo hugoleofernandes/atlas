@@ -16,7 +16,7 @@ namespace Atlas.BuildingBlocks.Outbox.ListPendingMessages;
 /// </summary>
 public abstract class ListPendingMessagesReader : IListPendingMessagesReader
 {
-    private const string OutboxTableName = "outboxes";
+    private const string OutboxTableName = "outbox_messages";
 
     private readonly DbContext _db;
     private readonly string _schema;

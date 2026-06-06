@@ -1,6 +1,6 @@
-﻿using Atlas.BuildingBlocks.FastEndpoints;
+using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Commands.DeactivateRole;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.SharedKernel.Application.Handlers;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +18,7 @@ public sealed class DeactivateRoleEndpoint(IDeactivateRoleCommandHandler handler
     public override void Configure()
     {
         Patch("bff/identity/roles/{id}/deactivate");
-        Policies($"permission:{ModulePermissions.Roles.Update}");
+        Policies($"permission:{IdentityModulePermissions.Roles.Update}");
         Description(d => d.Produces(204));
     }
 

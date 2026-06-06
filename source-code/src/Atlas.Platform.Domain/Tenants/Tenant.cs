@@ -19,7 +19,7 @@ namespace Atlas.Platform.Domain.Tenants;
 /// </summary>
 public sealed class Tenant : AggregateRoot, INotMultiTenant, IAuditableAggregate
 {
-    public Guid EntityTypeId => PlatformEntityTypes.RootTenantId;
+    public Guid EntityTypeId => PlatformEntityTypes.Tenant.Id;
 
     public Guid Id { get; private set; } = Guid.NewGuid();
 

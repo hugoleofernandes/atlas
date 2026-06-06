@@ -2,8 +2,7 @@ using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Audit.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
-using Atlas.Identity.Contracts;
-using Atlas.Identity.Contracts.Permissions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
@@ -69,18 +68,18 @@ public sealed class ListAuditEntriesEndpoint(
     private AuditTarget? ResolveTarget(Guid entityTypeId)
     {
         if (
-            entityTypeId == EntityTypes.UserId
-            || entityTypeId == EntityTypes.RoleId
-            || entityTypeId == EntityTypes.InvitationId
+            entityTypeId == IdentityEntityTypes.User.Id
+            || entityTypeId == IdentityEntityTypes.Role.Id
+            || entityTypeId == IdentityEntityTypes.Invitation.Id
         )
         {
             return new AuditTarget(
-                ModulePermissions.Audit.Read,
+                IdentityModulePermissions.Audit.Read,
                 (query, ct) => invoker.InvokeAsync(identityHandler, query, ct)
             );
         }
 
-        if (entityTypeId == StaffEntityTypes.StaffMemberId)
+        if (entityTypeId == StaffEntityTypes.StaffMember.Id)
         {
             return new AuditTarget(
                 StaffModulePermissions.Audit.Read,
@@ -88,7 +87,7 @@ public sealed class ListAuditEntriesEndpoint(
             );
         }
 
-        if (entityTypeId == PlatformEntityTypes.RootTenantId)
+        if (entityTypeId == PlatformEntityTypes.Tenant.Id)
         {
             return new AuditTarget(
                 StaffModulePermissions.Audit.Read,

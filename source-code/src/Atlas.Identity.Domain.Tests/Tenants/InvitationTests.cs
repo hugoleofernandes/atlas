@@ -1,7 +1,7 @@
-using Atlas.Identity.Contracts.Permissions;
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
+using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Platform.Domain.Tenants;
@@ -15,16 +15,16 @@ public class InvitationTests
 {
     private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
     {
-        ModulePermissions.Roles.Read,
-        ModulePermissions.Roles.Create,
-        ModulePermissions.Roles.Update,
-        ModulePermissions.Roles.Delete,
-        ModulePermissions.Roles.Manage,
-        ModulePermissions.Invitations.Read,
-        ModulePermissions.Invitations.Create,
-        ModulePermissions.Invitations.Update,
-        ModulePermissions.Invitations.Delete,
-        ModulePermissions.Invitations.Manage,
+        IdentityModulePermissions.Roles.Read,
+        IdentityModulePermissions.Roles.Create,
+        IdentityModulePermissions.Roles.Update,
+        IdentityModulePermissions.Roles.Delete,
+        IdentityModulePermissions.Roles.Manage,
+        IdentityModulePermissions.Invitations.Read,
+        IdentityModulePermissions.Invitations.Create,
+        IdentityModulePermissions.Invitations.Update,
+        IdentityModulePermissions.Invitations.Delete,
+        IdentityModulePermissions.Invitations.Manage,
         StaffModulePermissions.StaffMember.Read,
         StaffModulePermissions.StaffMember.Create,
         StaffModulePermissions.StaffMember.Update,

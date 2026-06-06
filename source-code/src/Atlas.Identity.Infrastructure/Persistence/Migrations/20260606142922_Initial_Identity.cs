@@ -72,7 +72,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "outboxes",
+                name: "outbox_messages",
                 schema: "atlas_identity",
                 columns: table => new
                 {
@@ -99,12 +99,12 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_outboxes", x => x.id);
+                    table.PrimaryKey("pk_outbox_messages", x => x.id);
                     table.ForeignKey(
-                        name: "fk_outboxes_outboxes_parent_outbox_message_id",
+                        name: "fk_outbox_messages_outbox_messages_parent_outbox_message_id",
                         column: x => x.parent_outbox_message_id,
                         principalSchema: "atlas_identity",
-                        principalTable: "outboxes",
+                        principalTable: "outbox_messages",
                         principalColumn: "id",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -173,7 +173,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         name: "fk_outbox_handler_executions_outbox_messages_outbox_message_id",
                         column: x => x.outbox_message_id,
                         principalSchema: "atlas_identity",
-                        principalTable: "outboxes",
+                        principalTable: "outbox_messages",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -259,39 +259,39 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 column: "outbox_message_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_outboxes_idempotency_key",
+                name: "ix_outbox_messages_idempotency_key",
                 schema: "atlas_identity",
-                table: "outboxes",
+                table: "outbox_messages",
                 column: "idempotency_key");
 
             migrationBuilder.CreateIndex(
-                name: "ix_outboxes_module",
+                name: "ix_outbox_messages_module",
                 schema: "atlas_identity",
-                table: "outboxes",
+                table: "outbox_messages",
                 column: "module");
 
             migrationBuilder.CreateIndex(
-                name: "ix_outboxes_parent_outbox_message_id",
+                name: "ix_outbox_messages_parent_outbox_message_id",
                 schema: "atlas_identity",
-                table: "outboxes",
+                table: "outbox_messages",
                 column: "parent_outbox_message_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_outboxes_processed_on_dead_lettered_on_failed_at_locked_unt",
+                name: "ix_outbox_messages_processed_on_dead_lettered_on_failed_at_loc",
                 schema: "atlas_identity",
-                table: "outboxes",
+                table: "outbox_messages",
                 columns: new[] { "processed_on", "dead_lettered_on", "failed_at", "locked_until", "occurred_on" });
 
             migrationBuilder.CreateIndex(
-                name: "ix_outboxes_tenant_id",
+                name: "ix_outbox_messages_tenant_id",
                 schema: "atlas_identity",
-                table: "outboxes",
+                table: "outbox_messages",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_outboxes_type",
+                name: "ix_outbox_messages_type",
                 schema: "atlas_identity",
-                table: "outboxes",
+                table: "outbox_messages",
                 column: "type");
 
             migrationBuilder.CreateIndex(
@@ -343,7 +343,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 schema: "atlas_identity");
 
             migrationBuilder.DropTable(
-                name: "outboxes",
+                name: "outbox_messages",
                 schema: "atlas_identity");
 
             migrationBuilder.DropTable(

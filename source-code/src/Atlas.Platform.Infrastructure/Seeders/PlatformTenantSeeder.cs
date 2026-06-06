@@ -11,20 +11,20 @@ namespace Atlas.Platform.Infrastructure.Seeders;
 /// <summary>
 /// Seeds the default Tenant into atlas_platform.tenants.
 /// Must run before IdentityModuleSeeder (Order = 0) so roles can be seeded against a known TenantId.
-/// Idempotent — skips if any tenant already exists.
+/// Idempotent - skips if any tenant already exists.
 /// </summary>
 internal sealed class PlatformTenantSeeder
 {
     public async Task SeedAsync(IServiceProvider services, CancellationToken ct)
     {
         var logger = services.GetRequiredService<ILogger<PlatformTenantSeeder>>();
-        var db     = services.GetRequiredService<PlatformDbContext>();
-        var uow    = services.GetRequiredService<IPlatformUnitOfWork>();
+        var db = services.GetRequiredService<PlatformDbContext>();
+        var uow = services.GetRequiredService<IPlatformUnitOfWork>();
         var setter = services.GetRequiredService<IRequestContextSetter>();
 
         if (await db.Tenants.AnyAsync(ct))
         {
-            logger.LogInformation("PlatformTenantSeeder skipped — data already exists");
+            logger.LogInformation("PlatformTenantSeeder skipped - data already exists");
             return;
         }
 

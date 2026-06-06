@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Atlas.Outbox.Domain\Atlas.Outbox.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserInvited\" />
+  </ItemGroup>
+
 </Project>
