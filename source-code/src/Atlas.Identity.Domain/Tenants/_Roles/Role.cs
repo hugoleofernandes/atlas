@@ -3,33 +3,18 @@ using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Events;
 using Atlas.SharedKernel.Domain;
 using Atlas.SharedKernel.EntityTypes;
-using Atlas.SharedKernel.Modules;
 
 namespace Atlas.Identity.Domain.Tenants._Roles;
 
 /// <summary>
 /// A named set of permissions scoped to a tenant.
-///
-/// Invariants:
-/// - System roles (IsSystem=true) cannot have their permissions modified or be deleted.
-/// - Every permission code must exist in the provided validCodes set (supplied by the caller from IPermissionPolicy).
-/// - Role name uniqueness within the tenant is enforced by a unique index and pre-checked by command handlers.
-///
-/// Design: Role is an Aggregate Root â€” it has its own repository, lifecycle, and domain events.
-/// The domain does not reference IPermissionPolicy directly â€” callers pass the valid set as a parameter,
-/// keeping the domain pure and enabling modular permission registration.
 /// </summary>
 public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
     public Guid EntityTypeId => IdentityEntityTypes.Role.Id;
 
     public Guid Id { get; private set; }
-
-    /// <summary>
-    /// Tenant this role belongs to. Stored as a plain column â€” no FK constraint (modular monolith boundary).
-    /// </summary>
     public Guid TenantId { get; private set; }
-
     public string Name { get; private set; } = default!;
     public bool IsSystem { get; private set; }
     public bool IsActive { get; private set; } = true;
@@ -53,8 +38,7 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
     public static Role Create(
         Guid tenantId,
         string name,
-        IEnumerable<string> permissionCodes,
-        IReadOnlySet<string> validCodes,
+        IEnumerable<Permission> permissions,
         bool isSystem = false,
         Guid? id = null
     )
@@ -62,33 +46,22 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
         if (name.Length is < 3 or > 10)
             throw new InvalidRoleNameException();
 
-        var codes = permissionCodes.ToList();
+        var normalizedPermissions = permissions
+            .DistinctBy(permission => permission.Code, StringComparer.Ordinal)
+            .ToList();
 
-        var unknown = codes.Except(validCodes).ToList();
-        if (unknown.Count != 0)
-            throw new RoleWithInvalidPermissionException(unknown);
-
-        var role = new Role(id ?? Guid.NewGuid(), tenantId, name, isSystem, codes.Select(Permission.Of).ToList());
+        var role = new Role(id ?? Guid.NewGuid(), tenantId, name, isSystem, normalizedPermissions);
 
         role.AddDomainEvent(new RoleCreatedDomainEvent(tenantId, role.Id));
 
         return role;
     }
 
-    /// <summary>
-    /// Marks the role for physical deletion.
-    /// The caller must remove the entity via repository after calling this.
-    /// Emits RoleDeletedDomainEvent.
-    /// </summary>
     public void Delete()
     {
         AddDomainEvent(new RoleDeletedDomainEvent(TenantId, Id));
     }
 
-    /// <summary>
-    /// Soft-deactivates the role when it has historical references.
-    /// Emits RoleDeactivatedDomainEvent.
-    /// </summary>
     public void Deactivate()
     {
         if (!IsActive)
@@ -98,9 +71,6 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
         AddDomainEvent(new RoleDeactivatedDomainEvent(TenantId, Id));
     }
 
-    /// <summary>
-    /// Re-enables a previously deactivated role.
-    /// </summary>
     public void Activate()
     {
         if (IsActive)
@@ -118,18 +88,17 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
         Name = name;
     }
 
-    public void UpdatePermissions(IEnumerable<string> permissionCodes, IReadOnlySet<string> validCodes)
+    public void UpdatePermissions(IEnumerable<Permission> permissions)
     {
         if (IsSystem)
             throw new SystemRoleCannotBeModifiedException(Name);
 
-        var codes = permissionCodes.ToList();
-        var unknown = codes.Except(validCodes).ToList();
-        if (unknown.Count != 0)
-            throw new RoleWithInvalidPermissionException(unknown);
+        var normalizedPermissions = permissions
+            .DistinctBy(permission => permission.Code, StringComparer.Ordinal)
+            .ToList();
 
         _permissions.Clear();
-        _permissions.AddRange(codes.Select(Permission.Of));
+        _permissions.AddRange(normalizedPermissions);
 
         AddDomainEvent(new RoleUpdatedDomainEvent(TenantId, Id));
     }

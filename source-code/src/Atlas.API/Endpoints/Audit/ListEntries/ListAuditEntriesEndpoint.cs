@@ -2,13 +2,13 @@ using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Audit.Queries;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
-using Atlas.Identity.Domain.ModulePermissions;
+using Atlas.Identity.Contracts.Permissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.EntityTypes;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
-using Atlas.Staff.Domain.ModulePermissions;
+using Atlas.Staff.Contracts.Permissions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Atlas.API.Endpoints.Audit.ListEntries;

@@ -50,6 +50,7 @@
   </Folder>
   <Folder Name="/src/2-Modules/Identity/5-Contracts/">
     <Project Path="src/Atlas.Identity.Contracts/Atlas.Identity.Contracts.csproj" Id="7a119dd7-626b-445b-9c7b-63b4707fcc14" />
+    <Project Path="src/Atlas.Identity.Metadata/Atlas.Identity.Metadata.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Outbox/" />
   <Folder Name="/src/2-Modules/Outbox/2-Infrastructure/">

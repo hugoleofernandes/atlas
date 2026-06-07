@@ -1,8 +1,8 @@
 using System.Xml.Linq;
 using Atlas.BuildingBlocks.Permissions;
-using Atlas.Identity.Domain.ModulePermissions;
-using Atlas.Platform.Domain.ModulePermissions;
-using Atlas.Staff.Domain.ModulePermissions;
+using Atlas.Identity.Contracts.Permissions;
+using Atlas.Platform.Contracts.Permissions;
+using Atlas.Staff.Contracts.Permissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Permissions;

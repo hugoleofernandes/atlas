@@ -51,7 +51,7 @@ using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Configuration;
 using Atlas.Staff.Application;
 using Atlas.Staff.BffApi;
-using Atlas.Staff.Domain.ModulePermissions;
+using Atlas.Staff.Contracts.Permissions;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Atlas.Staff.InternalApi;
@@ -67,8 +67,8 @@ using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
-using IdentityPermissions = Atlas.Identity.Domain.ModulePermissions;
-using PlatformPermissions = Atlas.Platform.Domain.ModulePermissions;
+using IdentityPermissions = Atlas.Identity.Contracts.Permissions;
+using PlatformPermissions = Atlas.Platform.Contracts.Permissions;
 
 //
 // ==========================================

@@ -491,6 +491,16 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("code");
 
+                            b1.Property<string>("Group")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("group");
+
+                            b1.Property<bool>("IsManager")
+                                .HasColumnType("boolean")
+                                .HasColumnName("is_manager");
+
                             b1.HasKey("RoleId", "Code")
                                 .HasName("pk_role_permissions");
 

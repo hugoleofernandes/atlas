@@ -4,7 +4,7 @@ namespace Atlas.BuildingBlocks.Permissions;
 
 /// <summary>
 /// Derives Permissions and Groups from a module's constant declarations via reflection.
-/// Runs once at startup when the IPermissionPolicy singleton is constructed — zero runtime cost.
+/// Runs once at startup when the IPermissionPolicy singleton is constructed.
 /// </summary>
 public static class PermissionExtractor
 {
@@ -22,6 +22,15 @@ public static class PermissionExtractor
         var groups = new List<PermissionGroup>();
         BuildGroups(type, groups);
         return groups.AsReadOnly();
+    }
+
+    public static IReadOnlyList<PermissionDefinition> ExtractDefinitions(Type type, Guid moduleId, string moduleName)
+    {
+        return ExtractAll(type)
+            .OrderBy(code => code, StringComparer.Ordinal)
+            .Select(code => PermissionDefinition.Parse(moduleId, moduleName, code))
+            .ToList()
+            .AsReadOnly();
     }
 
     private static void Traverse(Type type, HashSet<string> codes)
@@ -43,7 +52,7 @@ public static class PermissionExtractor
         var manageField = constants.FirstOrDefault(f => f.Name == "Manage");
         if (manageField is not null)
         {
-            var manage   = (string)manageField.GetValue(null)!;
+            var manage = (string)manageField.GetValue(null)!;
             var granular = constants
                 .Where(f => f.Name != "Manage")
                 .Select(f => (string)f.GetValue(null)!)

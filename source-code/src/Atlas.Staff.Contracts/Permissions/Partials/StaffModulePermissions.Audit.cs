@@ -1,4 +1,4 @@
-namespace Atlas.Staff.Domain.ModulePermissions;
+namespace Atlas.Staff.Contracts.Permissions;
 
 public sealed partial class StaffModulePermissions
 {

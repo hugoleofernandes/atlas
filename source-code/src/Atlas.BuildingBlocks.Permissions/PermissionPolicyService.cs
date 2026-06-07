@@ -12,17 +12,18 @@ public sealed class PermissionPolicyService : IPermissionPolicy
         var moduleList = modules.ToList();
         EnsureUniqueModules(moduleList);
 
-        All = new HashSet<string>(moduleList.SelectMany(m => m.Permissions));
+        All = new HashSet<string>(moduleList.SelectMany(m => m.Permissions), StringComparer.Ordinal);
         EnsureUniquePermissions(moduleList);
 
-        AllIncludingSystem = new HashSet<string>(All) { SystemPermissions.Root };
+        AllIncludingSystem = new HashSet<string>(All, StringComparer.Ordinal) { SystemPermissions.Root };
 
         Modules = moduleList
             .Select(m => new ModulePermissionCatalog(
                 m.ModuleId,
                 m.ModuleName,
-                new HashSet<string>(m.Permissions),
-                m.Groups))
+                new HashSet<string>(m.Permissions, StringComparer.Ordinal),
+                m.Groups,
+                m.Definitions))
             .ToList()
             .AsReadOnly();
 
@@ -30,12 +31,17 @@ public sealed class PermissionPolicyService : IPermissionPolicy
             .SelectMany(m => m.Groups)
             .ToList()
             .AsReadOnly();
+
+        DefinitionsByCode = moduleList
+            .SelectMany(m => m.Definitions)
+            .ToDictionary(definition => definition.Code, StringComparer.Ordinal);
     }
 
     public IReadOnlySet<string> All { get; }
     public IReadOnlySet<string> AllIncludingSystem { get; }
     public IReadOnlyList<PermissionGroup> Groups { get; }
     public IReadOnlyList<ModulePermissionCatalog> Modules { get; }
+    public IReadOnlyDictionary<string, PermissionDefinition> DefinitionsByCode { get; }
 
     private static void EnsureUniqueModules(IReadOnlyList<IModulePermissions> modules)
     {
@@ -55,7 +61,8 @@ public sealed class PermissionPolicyService : IPermissionPolicy
             .ToList();
 
         if (duplicateNames.Count > 0)
-            throw new InvalidOperationException($"Duplicate permission module names: {string.Join(", ", duplicateNames)}");
+            throw new InvalidOperationException(
+                $"Duplicate permission module names: {string.Join(", ", duplicateNames)}");
     }
 
     private static void EnsureUniquePermissions(IReadOnlyList<IModulePermissions> modules)
@@ -68,6 +75,7 @@ public sealed class PermissionPolicyService : IPermissionPolicy
             .ToList();
 
         if (duplicateCodes.Count > 0)
-            throw new InvalidOperationException($"Duplicate permission codes across modules: {string.Join("; ", duplicateCodes)}");
+            throw new InvalidOperationException(
+                $"Duplicate permission codes across modules: {string.Join("; ", duplicateCodes)}");
     }
 }

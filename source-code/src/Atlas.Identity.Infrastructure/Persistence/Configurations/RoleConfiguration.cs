@@ -43,6 +43,15 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
                 .HasMaxLength(100)
                 .IsRequired();
 
+            p.Property(rp => rp.Group)
+                .HasColumnName("group")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            p.Property(rp => rp.IsManager)
+                .HasColumnName("is_manager")
+                .IsRequired();
+
             p.HasKey("RoleId", "Code");
         });
 

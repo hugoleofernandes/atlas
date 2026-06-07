@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    [Migration("20260606142922_Initial_Identity")]
+    [Migration("20260606210608_Initial_Identity")]
     partial class Initial_Identity
     {
         /// <inheritdoc />
@@ -493,6 +493,16 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                                 .HasMaxLength(100)
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("code");
+
+                            b1.Property<string>("Group")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("group");
+
+                            b1.Property<bool>("IsManager")
+                                .HasColumnType("boolean")
+                                .HasColumnName("is_manager");
 
                             b1.HasKey("RoleId", "Code")
                                 .HasName("pk_role_permissions");

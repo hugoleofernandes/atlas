@@ -8,4 +8,5 @@ public sealed record ModulePermissionCatalog(
     Guid ModuleId,
     string ModuleName,
     IReadOnlySet<string> Permissions,
-    IReadOnlyList<PermissionGroup> Groups);
+    IReadOnlyList<PermissionGroup> Groups,
+    IReadOnlyList<PermissionDefinition> Definitions);

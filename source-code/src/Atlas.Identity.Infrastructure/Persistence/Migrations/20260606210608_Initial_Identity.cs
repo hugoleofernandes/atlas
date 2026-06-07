@@ -184,7 +184,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    role_id = table.Column<Guid>(type: "uuid", nullable: false)
+                    role_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    group = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    is_manager = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

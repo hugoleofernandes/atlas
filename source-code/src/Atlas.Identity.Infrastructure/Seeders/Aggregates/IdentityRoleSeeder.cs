@@ -1,10 +1,11 @@
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Abstractions;
+using Atlas.Identity.Application.Permissions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.SharedKernel.Application;
-using Atlas.Staff.Domain.ModulePermissions;
+using Atlas.Staff.Contracts.Permissions;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,24 +68,21 @@ internal sealed class IdentityRoleSeeder
         var root = Role.Create(
             tenant.TenantId,
             "root",
-            policy.AllIncludingSystem,
-            policy.AllIncludingSystem,
+            PermissionResolution.Resolve(policy.AllIncludingSystem, policy, allowSystemRoot: true),
             isSystem: true,
             id: SystemRoleIds.Root
         );
         var admin = Role.Create(
             tenant.TenantId,
             "admin",
-            policy.All,
-            policy.All,
+            PermissionResolution.Resolve(policy.All, policy),
             isSystem: true,
             id: SystemRoleIds.Admin
         );
         var member = Role.Create(
             tenant.TenantId,
             "member",
-            memberPermissions,
-            policy.All,
+            PermissionResolution.Resolve(memberPermissions, policy),
             isSystem: true,
             id: SystemRoleIds.Member
         );

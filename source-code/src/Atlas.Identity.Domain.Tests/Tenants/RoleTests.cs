@@ -1,53 +1,21 @@
-using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.Identity.Domain.Tenants._Roles;
+using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Events;
-using Atlas.SharedKernel.Application;
-using Atlas.Staff.Domain.ModulePermissions;
+using Atlas.Identity.Contracts.Permissions;
+using Atlas.Staff.Contracts.Permissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
 public class RoleTests
 {
-    // ============================================================
-    // SHARED PERMISSION SETS (test fixtures)
-    // ============================================================
-
-    private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
-    {
-        IdentityModulePermissions.Roles.Read,
-        IdentityModulePermissions.Roles.Create,
-        IdentityModulePermissions.Roles.Update,
-        IdentityModulePermissions.Roles.Delete,
-        IdentityModulePermissions.Roles.Manage,
-        IdentityModulePermissions.Invitations.Read,
-        IdentityModulePermissions.Invitations.Create,
-        IdentityModulePermissions.Invitations.Update,
-        IdentityModulePermissions.Invitations.Delete,
-        IdentityModulePermissions.Invitations.Manage,
-        StaffModulePermissions.StaffMember.Read,
-        StaffModulePermissions.StaffMember.Create,
-        StaffModulePermissions.StaffMember.Update,
-        StaffModulePermissions.StaffMember.Deactivate,
-        StaffModulePermissions.StaffMember.Manage,
-    };
-
-    private static readonly IReadOnlySet<string> AllIncludingSystemCodes = new HashSet<string>(AllCodes)
-    {
-        SystemPermissions.Root,
-    };
-
     private static readonly Guid TenantId = Guid.NewGuid();
-
-    // ============================================================
-    // 1. CREATE
-    // ============================================================
 
     [Fact]
     public void Create_ShouldCreateRole_WithCorrectData()
     {
-        var role = Role.Create(TenantId, "support", [StaffModulePermissions.StaffMember.Read], AllCodes);
+        var role = Role.Create(TenantId, "support", PermissionFixtures.Resolve(StaffModulePermissions.StaffMember.Read));
 
         role.TenantId.Should().Be(TenantId);
         role.Name.Should().Be("support");
@@ -57,9 +25,20 @@ public class RoleTests
     }
 
     [Fact]
+    public void Create_ShouldStoreManagerMetadata_WhenPermissionIsManage()
+    {
+        var role = Role.Create(TenantId, "custom", PermissionFixtures.Resolve(IdentityModulePermissions.Roles.Manage));
+
+        var permission = role.Permissions.Single();
+        permission.Code.Should().Be(IdentityModulePermissions.Roles.Manage.Code);
+        permission.Group.Should().Be("roles");
+        permission.IsManager.Should().BeTrue();
+    }
+
+    [Fact]
     public void Create_ShouldEmitRoleCreatedEvent()
     {
-        var role = Role.Create(TenantId, "support", [], AllCodes);
+        var role = Role.Create(TenantId, "support", []);
 
         var evt = role.DomainEvents.OfType<RoleCreatedDomainEvent>().Single();
         evt.TenantId.Should().Be(TenantId);
@@ -69,7 +48,7 @@ public class RoleTests
     [Fact]
     public void Create_ShouldThrow_WhenNameIsTooShort()
     {
-        var act = () => Role.Create(TenantId, "ab", [], AllCodes);
+        var act = () => Role.Create(TenantId, "ab", []);
 
         act.Should().Throw<InvalidRoleNameException>();
     }
@@ -77,17 +56,9 @@ public class RoleTests
     [Fact]
     public void Create_ShouldThrow_WhenNameIsTooLong()
     {
-        var act = () => Role.Create(TenantId, "toolongname", [], AllCodes);
+        var act = () => Role.Create(TenantId, "toolongname", []);
 
         act.Should().Throw<InvalidRoleNameException>();
-    }
-
-    [Fact]
-    public void Create_ShouldThrow_WhenPermissionCodeIsInvalid()
-    {
-        var act = () => Role.Create(TenantId, "custom", ["unknown.permission"], AllCodes);
-
-        act.Should().Throw<RoleWithInvalidPermissionException>();
     }
 
     [Fact]
@@ -95,7 +66,7 @@ public class RoleTests
     {
         var fixedId = Guid.NewGuid();
 
-        var role = Role.Create(TenantId, "support", [], AllCodes, id: fixedId);
+        var role = Role.Create(TenantId, "support", [], id: fixedId);
 
         role.Id.Should().Be(fixedId);
     }
@@ -103,19 +74,29 @@ public class RoleTests
     [Fact]
     public void Create_ShouldMarkAsSystem_WhenIsSystemIsTrue()
     {
-        var role = Role.Create(TenantId, "admin", AllCodes, AllCodes, isSystem: true);
+        var role = Role.Create(TenantId, "admin", PermissionFixtures.Resolve(PermissionFixtures.AllCodes.ToArray()), isSystem: true);
 
         role.IsSystem.Should().BeTrue();
     }
 
-    // ============================================================
-    // 2. DEACTIVATE (soft delete)
-    // ============================================================
+    [Fact]
+    public void Create_ShouldNormalizeDuplicatePermissions_ByCode()
+    {
+        var duplicated = new[]
+        {
+            Permission.Of(IdentityModulePermissions.Roles.Read.Code, "roles", false),
+            Permission.Of(IdentityModulePermissions.Roles.Read.Code, "roles", false),
+        };
+
+        var role = Role.Create(TenantId, "custom", duplicated);
+
+        role.Permissions.Should().HaveCount(1);
+    }
 
     [Fact]
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
-        var role = Role.Create(TenantId, "support", [], AllCodes);
+        var role = Role.Create(TenantId, "support", []);
 
         role.Deactivate();
 
@@ -125,7 +106,7 @@ public class RoleTests
     [Fact]
     public void Deactivate_ShouldEmitRoleDeactivatedEvent()
     {
-        var role = Role.Create(TenantId, "support", [], AllCodes);
+        var role = Role.Create(TenantId, "support", []);
         role.ClearDomainEvents();
 
         role.Deactivate();
@@ -135,14 +116,10 @@ public class RoleTests
         evt.RoleId.Should().Be(role.Id);
     }
 
-    // ============================================================
-    // 3. DELETE (hard delete marker)
-    // ============================================================
-
     [Fact]
     public void Delete_ShouldEmitRoleDeletedEvent()
     {
-        var role = Role.Create(TenantId, "support", [], AllCodes);
+        var role = Role.Create(TenantId, "support", []);
         role.ClearDomainEvents();
 
         role.Delete();
@@ -152,14 +129,10 @@ public class RoleTests
         evt.RoleId.Should().Be(role.Id);
     }
 
-    // ============================================================
-    // 4. RENAME
-    // ============================================================
-
     [Fact]
     public void Rename_ShouldUpdateName_WhenNameIsValid()
     {
-        var role = Role.Create(TenantId, "custom", [], AllCodes);
+        var role = Role.Create(TenantId, "custom", []);
 
         role.Rename("renamed");
 
@@ -169,7 +142,7 @@ public class RoleTests
     [Fact]
     public void Rename_ShouldThrow_WhenNameIsTooShort()
     {
-        var role = Role.Create(TenantId, "custom", [], AllCodes);
+        var role = Role.Create(TenantId, "custom", []);
 
         var act = () => role.Rename("ab");
 
@@ -179,27 +152,22 @@ public class RoleTests
     [Fact]
     public void Rename_ShouldThrow_WhenNameIsTooLong()
     {
-        var role = Role.Create(TenantId, "custom", [], AllCodes);
+        var role = Role.Create(TenantId, "custom", []);
 
         var act = () => role.Rename("toolongname");
 
         act.Should().Throw<InvalidRoleNameException>();
     }
 
-    // ============================================================
-    // 5. UPDATE PERMISSIONS
-    // ============================================================
-
     [Fact]
     public void UpdatePermissions_ShouldReplacePermissions_WhenRoleIsCustom()
     {
-        var role = Role.Create(TenantId, "custom", [StaffModulePermissions.StaffMember.Read], AllCodes);
+        var role = Role.Create(TenantId, "custom", PermissionFixtures.Resolve(StaffModulePermissions.StaffMember.Read));
         role.ClearDomainEvents();
 
-        role.UpdatePermissions(
-            [StaffModulePermissions.StaffMember.Read, StaffModulePermissions.StaffMember.Update],
-            AllCodes
-        );
+        role.UpdatePermissions(PermissionFixtures.Resolve(
+            StaffModulePermissions.StaffMember.Read,
+            StaffModulePermissions.StaffMember.Update));
 
         role.Permissions.Select(p => p.Code)
             .Should()
@@ -209,10 +177,10 @@ public class RoleTests
     [Fact]
     public void UpdatePermissions_ShouldEmitRoleUpdatedEvent()
     {
-        var role = Role.Create(TenantId, "custom", [], AllCodes);
+        var role = Role.Create(TenantId, "custom", []);
         role.ClearDomainEvents();
 
-        role.UpdatePermissions([StaffModulePermissions.StaffMember.Read], AllCodes);
+        role.UpdatePermissions(PermissionFixtures.Resolve(StaffModulePermissions.StaffMember.Read));
 
         var evt = role.DomainEvents.OfType<RoleUpdatedDomainEvent>().Single();
         evt.TenantId.Should().Be(TenantId);
@@ -222,20 +190,14 @@ public class RoleTests
     [Fact]
     public void UpdatePermissions_ShouldThrow_WhenRoleIsSystem()
     {
-        var role = Role.Create(TenantId, "admin", AllCodes, AllCodes, isSystem: true);
+        var role = Role.Create(
+            TenantId,
+            "admin",
+            PermissionFixtures.Resolve(PermissionFixtures.AllCodes.ToArray()),
+            isSystem: true);
 
-        var act = () => role.UpdatePermissions([StaffModulePermissions.StaffMember.Read], AllCodes);
+        var act = () => role.UpdatePermissions(PermissionFixtures.Resolve(StaffModulePermissions.StaffMember.Read));
 
         act.Should().Throw<SystemRoleCannotBeModifiedException>();
-    }
-
-    [Fact]
-    public void UpdatePermissions_ShouldThrow_WhenPermissionCodeIsInvalid()
-    {
-        var role = Role.Create(TenantId, "custom", [], AllCodes);
-
-        var act = () => role.UpdatePermissions(["invalid.code"], AllCodes);
-
-        act.Should().Throw<RoleWithInvalidPermissionException>();
     }
 }

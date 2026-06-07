@@ -45,9 +45,11 @@
     <ProjectReference Include="..\Atlas.Identity.OutboxPublisher\Atlas.Identity.OutboxPublisher.csproj" />
     <ProjectReference Include="..\Atlas.Staff.BffApi\Atlas.Staff.BffApi.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
+    <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.Staff.InternalApi\Atlas.Staff.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.Platform.BffApi\Atlas.Platform.BffApi.csproj" />
+    <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.Platform.InternalApi\Atlas.Platform.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />

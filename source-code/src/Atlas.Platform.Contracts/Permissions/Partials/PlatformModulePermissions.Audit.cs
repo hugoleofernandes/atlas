@@ -1,4 +1,4 @@
-namespace Atlas.Platform.Domain.ModulePermissions;
+namespace Atlas.Platform.Contracts.Permissions;
 
 public sealed partial class PlatformModulePermissions
 {

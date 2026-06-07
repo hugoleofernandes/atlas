@@ -1,50 +1,15 @@
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
-using Atlas.Identity.Domain.ModulePermissions;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Platform.Domain.Tenants;
-using Atlas.SharedKernel.Application;
-using Atlas.Staff.Domain.ModulePermissions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;
 
 public class InvitationTests
 {
-    private static readonly IReadOnlySet<string> AllCodes = new HashSet<string>
-    {
-        IdentityModulePermissions.Roles.Read,
-        IdentityModulePermissions.Roles.Create,
-        IdentityModulePermissions.Roles.Update,
-        IdentityModulePermissions.Roles.Delete,
-        IdentityModulePermissions.Roles.Manage,
-        IdentityModulePermissions.Invitations.Read,
-        IdentityModulePermissions.Invitations.Create,
-        IdentityModulePermissions.Invitations.Update,
-        IdentityModulePermissions.Invitations.Delete,
-        IdentityModulePermissions.Invitations.Manage,
-        StaffModulePermissions.StaffMember.Read,
-        StaffModulePermissions.StaffMember.Create,
-        StaffModulePermissions.StaffMember.Update,
-        StaffModulePermissions.StaffMember.Deactivate,
-        StaffModulePermissions.StaffMember.Manage,
-    };
-
-    private static readonly IReadOnlySet<string> AllIncludingSystemCodes = new HashSet<string>(AllCodes)
-    {
-        SystemPermissions.Root,
-    };
-
-    private static readonly IEnumerable<string> DefaultMemberPermissions =
-    [
-        StaffModulePermissions.StaffMember.Read,
-        StaffModulePermissions.StaffMember.Create,
-        StaffModulePermissions.StaffMember.Update,
-        StaffModulePermissions.StaffMember.Deactivate,
-    ];
-
     private static void ForceExpire(Invitation invitation)
     {
         typeof(Invitation)
@@ -55,7 +20,12 @@ public class InvitationTests
     private static (Tenant tenant, Guid adminRoleId) CreateTenantWithRoles()
     {
         var tenant = new Tenant("test");
-        var adminRole = Role.Create(tenant.Id, "admin", AllCodes, AllCodes, isSystem: true, id: SystemRoleIds.Admin);
+        var adminRole = Role.Create(
+            tenant.Id,
+            "admin",
+            PermissionFixtures.Resolve(PermissionFixtures.AllCodes.ToArray()),
+            isSystem: true,
+            id: SystemRoleIds.Admin);
         return (tenant, adminRole.Id);
     }
 
