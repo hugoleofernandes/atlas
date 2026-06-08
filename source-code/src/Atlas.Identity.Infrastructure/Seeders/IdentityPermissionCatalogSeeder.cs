@@ -16,7 +16,6 @@ namespace Atlas.Identity.Infrastructure.Seeders;
 public sealed class IdentityPermissionCatalogSeeder(
     IdentityDbContext db,
     IIdentityUnitOfWork uow,
-    IRequestContextSetter setter,
     IPermissionCatalogCache cache,
     ILogger<IdentityPermissionCatalogSeeder> logger)
 {
@@ -83,7 +82,7 @@ public sealed class IdentityPermissionCatalogSeeder(
             }
         }
 
-        setter.Set(Guid.Empty, "system", SystemIdentity.UserId, SystemIdentity.Email);
+        // Request context is already set by AtlasBootstrapSeeder with tenant + root user
         await uow.SaveChangesAsync(ct);
 
         cache.Invalidate();

@@ -119,13 +119,13 @@ public class UserTests
     public void ResolveExistingAccess_ShouldThrow_WhenExternalIdDoesNotMatch()
     {
         // Security invariant: same email but different OID means a different identity
-        // provider account is trying to claim the same user slot â€” must be rejected.
+        // provider account is trying to claim the same user slot - must be rejected.
         var (tenant, adminRoleId) = CreateTenantWithRoles();
         var invitation = CreateUsedInvitation(tenant, adminRoleId);
         var user = User.CreateFromInvitation(invitation, ExternalId.Create("oid-legitimate"), "admin");
 
         var act = () => user.ResolveExistingAccess(ExternalId.Create("oid-attacker"));
 
-        act.Should().Throw<UserAlreadyExistsException>();
+        act.Should().Throw<UserIdentityMismatchException>();
     }
 }

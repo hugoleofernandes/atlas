@@ -4,8 +4,6 @@ using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
 using Atlas.Platform.Contracts.EntityTypes;
 using Atlas.Platform.Contracts.Permissions;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
-using Atlas.Platform.Infrastructure.Seeders.Discovery;
-using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Modules;
 using Microsoft.Extensions.Logging;
 
@@ -18,24 +16,25 @@ namespace Atlas.Platform.Infrastructure.Seeders;
 public sealed partial class PlatformModuleSeeder(
     ILogger<PlatformModuleSeeder> logger,
     PlatformDbContext db,
-    IPlatformUnitOfWork uow,
-    IRequestContextSetter setter,
-    IAtlasModuleDiscovery moduleDiscovery
+    IPlatformUnitOfWork uow
 )
 {
+    public AtlasModule GetModule() => AtlasModules.Platform;
+
     public IModulePermissions GetModulePermissions() => new PlatformModulePermissions();
 
     public IModuleEntityTypes GetModuleEntityTypes() => new PlatformModuleEntityTypes();
 
     public async Task SeedAsync(
+        IReadOnlyList<AtlasModule> allModules,
         IReadOnlyList<IModuleEntityTypes> allEntityTypes,
         IEntityTypeCatalogCache entityTypeCache,
         CancellationToken ct = default)
     {
-        await SeedTenantAsync(ct);
-        await SeedSystemAsync(ct);
+        logger.LogInformation("PlatformModuleSeeder started");
 
-        var modules = await SeedModulesAsync(ct);
-        await SeedEntityTypesAsync(modules, allEntityTypes, entityTypeCache, ct);
+        await SeedSystemAsync(ct);
+        await SeedModulesAsync(allModules, ct);
+        await SeedEntityTypesAsync(allEntityTypes, entityTypeCache, ct);
     }
 }

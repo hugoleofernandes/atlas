@@ -2,6 +2,7 @@ using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Users.Events;
 using Atlas.Identity.Domain.Users.Exceptions;
+using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain;
 using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.SharedKernel.Modules;
@@ -46,6 +47,20 @@ public sealed class User : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
         ExternalId = externalId;
         Email = email;
         RoleId = roleId;
+    }
+
+    /// <summary>
+    /// Bootstrap-only: creates the root user for a tenant during startup seeding.
+    /// Uses the deterministic ID from <see cref="BootstrapIdentity.RootUser"/>.
+    /// Starts with no role assigned (RoleId = Guid.Empty) — role assignment happens later
+    /// in IdentityRoleSeeder after roles are created.
+    /// Never call outside of bootstrap context.
+    /// </summary>
+    public static User CreateRootForBootstrap(Guid tenantId, Email email)
+    {
+        var user = new User(tenantId, ExternalId.Create("system-root-bootstrap"), email, Guid.Empty);
+        user.Id = BootstrapIdentity.RootUser.Id;
+        return user;
     }
 
     /// <summary>

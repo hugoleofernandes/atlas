@@ -1,5 +1,4 @@
 using Atlas.Platform.Domain.Systems;
-using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -17,9 +16,10 @@ public sealed partial class PlatformModuleSeeder
 
         logger.LogInformation("PlatformSystemSeeder started");
 
-        db.Systems.Add(AtlasSystem.Create("mlab"));
+        var system = AtlasSystem.Create("mlab");
+        db.Systems.Add(system);
+        logger.LogInformation("  Created {Name}", system.Name);
 
-        setter.Set(Guid.NewGuid(), "platform-seed", SystemIdentity.UserId, SystemIdentity.Email);
         await uow.SaveChangesAsync(ct);
 
         logger.LogInformation("PlatformSystemSeeder completed");

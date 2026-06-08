@@ -1,5 +1,6 @@
 using Atlas.Platform.Domain.Tenants.Events;
 using Atlas.Platform.Domain.Tenants.Exceptions;
+using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain;
 using Atlas.Platform.Contracts.EntityTypes;
 
@@ -43,6 +44,17 @@ public sealed class Tenant : AggregateRoot, INotMultiTenant, IAuditableAggregate
             throw new TenantNameRequiredException();
 
         Name = name.ToLowerInvariant();
+    }
+
+    /// <summary>
+    /// Bootstrap-only: creates the root tenant with the deterministic ID from <see cref="BootstrapIdentity.RootTenant"/>.
+    /// Never call outside of bootstrap context.
+    /// </summary>
+    public static Tenant CreateForBootstrap()
+    {
+        var tenant = new Tenant(BootstrapIdentity.RootTenant.Name);
+        tenant.Id = BootstrapIdentity.RootTenant.Id;
+        return tenant;
     }
 
     public void EnsureActive()
