@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using Atlas.API.Errors;
+using Atlas.API.Seeding;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
@@ -7,7 +7,6 @@ using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
 using Atlas.BuildingBlocks.Application.Idempotency;
 using Atlas.BuildingBlocks.Application.OutboxMessages;
-using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
 using Atlas.BuildingBlocks.AspNetCore.Localization;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
@@ -67,8 +66,6 @@ using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
-using IdentityPermissions = Atlas.Identity.Contracts.Permissions;
-using PlatformPermissions = Atlas.Platform.Contracts.Permissions;
 
 //
 // ==========================================
@@ -167,30 +164,8 @@ try
     services.AddScoped<AuditLabelLocalizer>();
     services.AddScoped<IHttpResultMapper, HttpResultMapper>();
 
-    // Module permissions â€” one per module
-    services.AddSingleton<IModulePermissions, IdentityPermissions.IdentityModulePermissions>();
-    services.AddSingleton<IModulePermissions, StaffModulePermissions>();
-    services.AddSingleton<IModulePermissions, PlatformPermissions.PlatformModulePermissions>();
-
-    // Module registrations â€” consumed by PlatformModuleSeeder via SeedOrchestrator
-    services.AddSingleton<IPermissionPolicy>(sp =>
-    {
-        var logger = sp.GetRequiredService<ILogger<PermissionPolicyService>>();
-        var sw = Stopwatch.StartNew();
-        var modules = sp.GetServices<IModulePermissions>().ToList();
-        var policy = new PermissionPolicyService(modules);
-        sw.Stop();
-
-        logger.LogInformation(
-            "Permission catalog built in {ElapsedMs} ms - {PermissionCount} codes, {GroupCount} groups, {ModuleCount} modules",
-            sw.ElapsedMilliseconds,
-            policy.All.Count,
-            policy.Groups.Count,
-            modules.Count
-        );
-
-        return policy;
-    });
+    // Permission catalog is persisted in the Identity database.
+    // IPermissionCatalogReader is registered in IdentityDependencyInjection.
 
     //
     // ==========================================
@@ -312,7 +287,7 @@ try
     // ==========================================
     //
 
-    services.AddScoped<SeedOrchestrator>();
+    services.AddScoped<AtlasBootstrapSeeder>();
 
     //
     // ==========================================
@@ -332,8 +307,8 @@ try
     {
         using var scope = app.Services.CreateScope();
 
-        var orchestrator = scope.ServiceProvider.GetRequiredService<SeedOrchestrator>();
-        await orchestrator.RunAsync(scope.ServiceProvider);
+        var bootstrapSeeder = scope.ServiceProvider.GetRequiredService<AtlasBootstrapSeeder>();
+        await bootstrapSeeder.RunAsync();
 
         app.MapOpenApi();
         app.MapScalarApiReference();

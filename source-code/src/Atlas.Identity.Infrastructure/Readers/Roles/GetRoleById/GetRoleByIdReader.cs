@@ -25,10 +25,11 @@ public sealed class GetRoleByIdReader(IdentityDbContext db) : IGetRoleByIdReader
           AND id = @RoleId
         """;
 
-    private const string PermissionsSql = """ 
-        SELECT code AS Code
-        FROM atlas_identity.role_permissions
-        WHERE role_id = @RoleId
+    private const string PermissionsSql = """
+        SELECT p.code AS Code
+        FROM atlas_identity.role_permissions rp
+        JOIN atlas_identity.permissions p ON p.id = rp.permission_id
+        WHERE rp.role_id = @RoleId
         """;
 
     public async Task<RoleDto?> GetByIdAsync(Guid tenantId, Guid roleId, CancellationToken ct)

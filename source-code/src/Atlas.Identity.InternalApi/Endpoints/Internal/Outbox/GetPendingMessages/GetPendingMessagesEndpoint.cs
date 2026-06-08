@@ -1,7 +1,6 @@
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.BuildingBlocks.Outbox.ListPendingMessages;
-using Atlas.Outbox.Application.Queries.ListPendingMessages;
 using Atlas.SharedKernel.Application.Handlers;
 using Microsoft.AspNetCore.Http;
 

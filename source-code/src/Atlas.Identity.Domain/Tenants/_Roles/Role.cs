@@ -2,16 +2,17 @@ using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Events;
 using Atlas.SharedKernel.Domain;
-using Atlas.SharedKernel.EntityTypes;
+using Atlas.Identity.Contracts.EntityTypes;
 
 namespace Atlas.Identity.Domain.Tenants._Roles;
 
 /// <summary>
 /// A named set of permissions scoped to a tenant.
+/// Permissions are referenced by PermissionId — metadata lives in the Identity permission catalog.
 /// </summary>
 public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
-    public Guid EntityTypeId => IdentityEntityTypes.Role.Id;
+    public Guid EntityTypeId => IdentityModuleEntityTypes.Roles.EntityType.Id;
 
     public Guid Id { get; private set; }
     public Guid TenantId { get; private set; }
@@ -19,14 +20,14 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
     public bool IsSystem { get; private set; }
     public bool IsActive { get; private set; } = true;
 
-    private readonly List<Permission> _permissions = [];
-    public IReadOnlyList<Permission> Permissions => _permissions.AsReadOnly();
+    private readonly List<RolePermission> _permissions = [];
+    public IReadOnlyList<RolePermission> Permissions => _permissions.AsReadOnly();
 
     void IMultiTenantEntity.SetTenantId(Guid tenantId) => TenantId = tenantId;
 
     private Role() { }
 
-    private Role(Guid id, Guid tenantId, string name, bool isSystem, List<Permission> permissions)
+    private Role(Guid id, Guid tenantId, string name, bool isSystem, List<RolePermission> permissions)
     {
         Id = id;
         TenantId = tenantId;
@@ -38,7 +39,7 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
     public static Role Create(
         Guid tenantId,
         string name,
-        IEnumerable<Permission> permissions,
+        IEnumerable<RolePermission> permissions,
         bool isSystem = false,
         Guid? id = null
     )
@@ -47,7 +48,7 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
             throw new InvalidRoleNameException();
 
         var normalizedPermissions = permissions
-            .DistinctBy(permission => permission.Code, StringComparer.Ordinal)
+            .DistinctBy(p => p.PermissionId)
             .ToList();
 
         var role = new Role(id ?? Guid.NewGuid(), tenantId, name, isSystem, normalizedPermissions);
@@ -88,13 +89,13 @@ public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregat
         Name = name;
     }
 
-    public void UpdatePermissions(IEnumerable<Permission> permissions)
+    public void UpdatePermissions(IEnumerable<RolePermission> permissions)
     {
         if (IsSystem)
             throw new SystemRoleCannotBeModifiedException(Name);
 
         var normalizedPermissions = permissions
-            .DistinctBy(permission => permission.Code, StringComparer.Ordinal)
+            .DistinctBy(p => p.PermissionId)
             .ToList();
 
         _permissions.Clear();

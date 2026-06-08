@@ -29,17 +29,4 @@ public sealed record PermissionDefinition
     public override string ToString() => Code;
 
     public static implicit operator string(PermissionDefinition definition) => definition.Code;
-
-    public static PermissionDefinition Parse(Guid moduleId, string moduleName, string code)
-    {
-        var parts = code.Split('.', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length != 3)
-            throw new InvalidOperationException($"Permission code '{code}' must follow '<module>.<group>.<action>' format.");
-
-        return new PermissionDefinition(
-            code,
-            string.Equals(parts[2], "manage", StringComparison.OrdinalIgnoreCase),
-            new AtlasModule(moduleId, moduleName, 0)
-        );
-    }
 }

@@ -2,7 +2,7 @@ using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;
 using Atlas.SharedKernel.Domain;
-using Atlas.SharedKernel.EntityTypes;
+using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.SharedKernel.Modules;
 
 namespace Atlas.Identity.Domain.Invitations;
@@ -17,7 +17,7 @@ namespace Atlas.Identity.Domain.Invitations;
 /// </summary>
 public sealed class Invitation : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
-    public Guid EntityTypeId => IdentityEntityTypes.Invitation.Id;
+    public Guid EntityTypeId => IdentityModuleEntityTypes.Invitations.EntityType.Id;
 
     public Guid Id { get; private set; } = Guid.NewGuid();
 

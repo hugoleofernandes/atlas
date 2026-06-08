@@ -3,7 +3,7 @@ using Atlas.SharedKernel.Modules;
 
 namespace Atlas.Platform.Infrastructure.Seeders.Discovery;
 
-internal sealed class AtlasModuleDiscovery : IAtlasModuleDiscovery
+public sealed class AtlasModuleDiscovery : IAtlasModuleDiscovery
 {
     public IReadOnlyList<AtlasModule> Discover()
     {

@@ -2,7 +2,6 @@ using Atlas.BuildingBlocks.Outbox.ListPendingMessages;
 using Atlas.Outbox.Application.Commands.ProcessOutbox;
 using Atlas.Outbox.Application.Commands.ProcessOutboxTargets;
 using Atlas.Outbox.Application.Commands.UpdateOutboxMessageStatus;
-using Atlas.Outbox.Application.Queries.ListPendingMessages;
 using Atlas.Outbox.Application.Queries.ResolveOutboxTargets;
 using Atlas.Outbox.Domain.Targets;
 using Atlas.SharedKernel.Application.Commands;

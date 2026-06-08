@@ -177,6 +177,83 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("invitations", "atlas_identity");
                 });
 
+            modelBuilder.Entity("Atlas.Identity.Domain.Permissions.Permission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by_email");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("group");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsManager")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_manager");
+
+                    b.Property<bool>("IsRoot")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_root");
+
+                    b.Property<Guid?>("ModuleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("module_id");
+
+                    b.Property<string>("ModuleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("module_name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by_email");
+
+                    b.HasKey("Id")
+                        .HasName("pk_permissions");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_permissions_code");
+
+                    b.ToTable("permissions", "atlas_identity");
+                });
+
             modelBuilder.Entity("Atlas.Identity.Domain.Tenants._Roles.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -480,28 +557,18 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Atlas.Identity.Domain.Tenants._Roles.Role", b =>
                 {
-                    b.OwnsMany("Atlas.Identity.Domain.Tenants._Roles._Permissions.Permission", "Permissions", b1 =>
+                    b.OwnsMany("Atlas.Identity.Domain.Tenants._Roles._Permissions.RolePermission", "Permissions", b1 =>
                         {
                             b1.Property<Guid>("RoleId")
                                 .HasColumnType("uuid")
                                 .HasColumnName("role_id");
 
-                            b1.Property<string>("Code")
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("code");
+                            b1.Property<Guid>("PermissionId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid")
+                                .HasColumnName("permission_id");
 
-                            b1.Property<string>("Group")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("group");
-
-                            b1.Property<bool>("IsManager")
-                                .HasColumnType("boolean")
-                                .HasColumnName("is_manager");
-
-                            b1.HasKey("RoleId", "Code")
+                            b1.HasKey("RoleId", "PermissionId")
                                 .HasName("pk_role_permissions");
 
                             b1.ToTable("role_permissions", "atlas_identity");

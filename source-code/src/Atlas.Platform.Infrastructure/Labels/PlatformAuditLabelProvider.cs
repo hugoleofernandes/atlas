@@ -1,5 +1,5 @@
 using Atlas.BuildingBlocks.Audit.Labels;
-using Atlas.SharedKernel.EntityTypes;
+using Atlas.Platform.Contracts.EntityTypes;
 
 namespace Atlas.Platform.Infrastructure.Labels;
 
@@ -13,7 +13,7 @@ public sealed class PlatformAuditLabelProvider : IAuditLabelProvider
 
     public string? LocalizeEntityType(Guid entityTypeId)
     {
-        if (entityTypeId == PlatformEntityTypes.Tenant.Id)
+        if (entityTypeId == PlatformModuleEntityTypes.Tenants.EntityType.Id)
             return "Tenant";
         return null;
     }

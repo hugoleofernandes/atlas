@@ -1,17 +1,16 @@
-﻿using Atlas.BuildingBlocks.Application.Seeding;
 using Atlas.BuildingBlocks.Audit.Labels;
 using Atlas.BuildingBlocks.Permissions;
-using Atlas.Platform.Infrastructure.Labels;
 using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
+using Atlas.Platform.Infrastructure.Labels;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using Atlas.Platform.Infrastructure.Readers.Audit.ListEntries;
 using Atlas.Platform.Infrastructure.Readers.EntityTypes.Lookup;
 using Atlas.Platform.Infrastructure.Readers.Tenants.GetTenantByName;
 using Atlas.Platform.Infrastructure.Seeders;
-using Atlas.Platform.Infrastructure.Seeders.Discovery;
+using Atlas.Platform.Infrastructure.Seeders.Discovery; // IAtlasModuleDiscovery still used
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,10 +21,10 @@ public static class PlatformDependencyInjection
     public static IServiceCollection AddPlatformModuleDependencies(this IServiceCollection services)
     {
         // GENERAL
+        services.AddSingleton<IEntityTypeCatalogCache, InMemoryEntityTypeCatalogCache>();
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
-        services.AddScoped<IModuleSeeder, PlatformModuleSeeder>();
+        services.AddScoped<PlatformModuleSeeder>();
         services.AddScoped<IAtlasModuleDiscovery, AtlasModuleDiscovery>();
-        services.AddScoped<IAtlasEntityTypeDiscovery, AtlasEntityTypeDiscovery>();
         services.AddScoped<IAuditLabelProvider, PlatformAuditLabelProvider>();
         services.AddScoped<IPermissionLabelProvider, PlatformPermissionLabelProvider>();
 

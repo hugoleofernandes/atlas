@@ -1,15 +1,23 @@
 using Atlas.BuildingBlocks.Permissions;
-using Atlas.SharedKernel.EntityTypes;
+using Atlas.SharedKernel.Modules;
 
 namespace Atlas.Staff.Contracts.Permissions;
 
-public sealed partial class StaffModulePermissions : ModulePermissionsBase
+public sealed partial class StaffModulePermissions : IModulePermissions
 {
-    protected override Atlas.SharedKernel.Modules.AtlasModule Module => StaffEntityTypes.StaffMember.Module;
+    public Guid ModuleId => AtlasModules.Staff.Id;
+    public string ModuleName => AtlasModules.Staff.Name;
 
-    protected override IReadOnlyList<PermissionDefinition> DefinitionsCore =>
-        PermissionExtractor.ExtractDefinitions(
-            typeof(StaffModulePermissions),
-            StaffEntityTypes.StaffMember.Module.Id,
-            StaffEntityTypes.StaffMember.Module.Name);
+    private static readonly IReadOnlyList<PermissionDefinition> AllDefinitions =
+    [
+        new(StaffMember.Read, false, AtlasModules.Staff),
+        new(StaffMember.Create, false, AtlasModules.Staff),
+        new(StaffMember.Update, false, AtlasModules.Staff),
+        new(StaffMember.Deactivate, false, AtlasModules.Staff),
+        new(StaffMember.Manage, true, AtlasModules.Staff),
+        new(Audit.Read, false, AtlasModules.Staff),
+        new(Audit.Manage, true, AtlasModules.Staff),
+    ];
+
+    public IReadOnlyList<PermissionDefinition> Definitions => AllDefinitions;
 }

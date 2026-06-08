@@ -1,7 +1,9 @@
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Invitations.Exceptions;
 using Atlas.Identity.Domain.Shared;
+using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
@@ -15,6 +17,7 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
     private readonly IInvitationRepository _invitationRepository;
     private readonly IIdentityUnitOfWork   _uow;
     private readonly IRequestContextSetter _contextSetter;
+    private readonly IPermissionCatalogCache _cache;
 
     public IUnitOfWork UnitOfWork => _uow;
 
@@ -23,13 +26,15 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
         IUserRepository       userRepository,
         IInvitationRepository invitationRepository,
         IIdentityUnitOfWork   uow,
-        IRequestContextSetter contextSetter)
+        IRequestContextSetter contextSetter,
+        IPermissionCatalogCache cache)
     {
         _roleRepository       = roleRepository;
         _userRepository       = userRepository;
         _invitationRepository = invitationRepository;
         _uow                  = uow;
         _contextSetter        = contextSetter;
+        _cache                = cache;
     }
 
     public async Task<ResolveTenantAccessOutput> ExecuteAsync(ResolveTenantAccessCommand cmd, CancellationToken ct)
@@ -39,8 +44,6 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
         var email      = Email.Create(cmd.Email);
         var externalId = ExternalId.Create(cmd.ExternalOid);
 
-        // Suspend the global tenant query filter for the bootstrap queries.
-        // At this point IRequestContext.TenantId is not yet populated.
         using (_contextSetter.SuspendTenantFilter())
         {
             // --- Existing user path ---
@@ -56,7 +59,7 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
                 if (!existingRole.IsActive)
                     throw new RoleInactiveException(existingRole.Name);
 
-                var existingPermissions = existingRole.Permissions.Select(p => p.Code).ToList().AsReadOnly();
+                var existingPermissions = await ResolveCodesAsync(existingRole, ct);
 
                 return new ResolveTenantAccessOutput(
                     tenantId,
@@ -84,7 +87,7 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
 
             await _userRepository.AddAsync(user, ct);
 
-            var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
+            var permissions = await ResolveCodesAsync(role, ct);
 
             return new ResolveTenantAccessOutput(
                 tenantId,
@@ -94,5 +97,19 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
                 role.Name,
                 permissions);
         }
+    }
+
+    private async Task<IReadOnlyList<string>> ResolveCodesAsync(Role role, CancellationToken ct)
+    {
+        if (role.Permissions.Count == 0)
+            return [];
+
+        var permissionIds = role.Permissions.Select(p => p.PermissionId).ToHashSet();
+        var all = await _cache.GetAllActiveAsync(ct);
+        return all
+            .Where(p => permissionIds.Contains(p.Id))
+            .Select(p => p.Code)
+            .ToList()
+            .AsReadOnly();
     }
 }

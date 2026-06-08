@@ -1,27 +1,20 @@
-﻿using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 using Atlas.BuildingBlocks.Permissions;
+using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 
 namespace Atlas.Identity.Infrastructure.Readers.Permissions.ListPermissions;
 
 /// <summary>
-/// In-memory reader â€” wraps IPermissionPolicy.Groups.
-/// No database call; the permission catalog is built at startup from registered modules.
+/// Serves the BFF list-permissions endpoint from the in-memory cache.
+/// No direct DB access — IPermissionCatalogCache handles loading and invalidation.
 /// </summary>
-public sealed class ListPermissionsReader : IListPermissionsReader
+public sealed class ListPermissionsReader(IPermissionCatalogCache cache) : IListPermissionsReader
 {
-    private readonly IPermissionPolicy _policy;
-
-    public ListPermissionsReader(IPermissionPolicy policy)
+    public async Task<IReadOnlyList<PermissionItemDto>> ListAsync(CancellationToken ct)
     {
-        _policy = policy;
-    }
-
-    public IReadOnlyList<PermissionItemDto> List()
-    {
-        return _policy
-            .Modules.SelectMany(module =>
-                module.Permissions.Select(code => new PermissionItemDto(module.ModuleId, module.ModuleName, code))
-            )
+        var all = await cache.GetAllActiveAsync(ct);
+        return all
+            .Where(p => !p.IsRoot)
+            .Select(p => new PermissionItemDto(p.ModuleId!.Value, p.ModuleName!, p.Code))
             .ToList();
     }
 }

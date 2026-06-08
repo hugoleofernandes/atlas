@@ -23,7 +23,7 @@ public class InvitationTests
         var adminRole = Role.Create(
             tenant.Id,
             "admin",
-            PermissionFixtures.Resolve(PermissionFixtures.AllCodes.ToArray()),
+            PermissionFixtures.Many(3),
             isSystem: true,
             id: SystemRoleIds.Admin);
         return (tenant, adminRole.Id);

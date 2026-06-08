@@ -1,15 +1,18 @@
 using Atlas.BuildingBlocks.Permissions;
-using Atlas.SharedKernel.EntityTypes;
+using Atlas.SharedKernel.Modules;
 
 namespace Atlas.Platform.Contracts.Permissions;
 
-public sealed partial class PlatformModulePermissions : ModulePermissionsBase
+public sealed partial class PlatformModulePermissions : IModulePermissions
 {
-    protected override Atlas.SharedKernel.Modules.AtlasModule Module => PlatformEntityTypes.Tenant.Module;
+    public Guid ModuleId => AtlasModules.Platform.Id;
+    public string ModuleName => AtlasModules.Platform.Name;
 
-    protected override IReadOnlyList<PermissionDefinition> DefinitionsCore =>
-        PermissionExtractor.ExtractDefinitions(
-            typeof(PlatformModulePermissions),
-            PlatformEntityTypes.Tenant.Module.Id,
-            PlatformEntityTypes.Tenant.Module.Name);
+    private static readonly IReadOnlyList<PermissionDefinition> AllDefinitions =
+    [
+        new(Audit.Read, false, AtlasModules.Platform),
+        new(Audit.Manage, true, AtlasModules.Platform),
+    ];
+
+    public IReadOnlyList<PermissionDefinition> Definitions => AllDefinitions;
 }

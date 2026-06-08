@@ -29,9 +29,10 @@ public sealed class ListRolesReader(IdentityDbContext db) : IListRolesReader
         """;
 
     private const string PermissionsSql = """
-        SELECT role_id AS RoleId, code AS Code
-        FROM atlas_identity.role_permissions
-        WHERE role_id = ANY(@RoleIds)
+        SELECT rp.role_id AS RoleId, p.code AS Code
+        FROM atlas_identity.role_permissions rp
+        JOIN atlas_identity.permissions p ON p.id = rp.permission_id
+        WHERE rp.role_id = ANY(@RoleIds)
         """;
 
     public async Task<IReadOnlyList<RoleDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)

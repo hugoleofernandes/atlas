@@ -1,9 +1,8 @@
 using System.Security.Claims;
 using Atlas.BuildingBlocks.AspNetCore.Security;
 using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
-using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Contracts.Permissions;
-using Atlas.Platform.Contracts.Permissions;
+using Atlas.SharedKernel.Application;
 using Atlas.Staff.Contracts.Permissions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
@@ -12,22 +11,15 @@ namespace Atlas.API.Tests.Security.Authorization;
 
 public class PermissionAuthorizationHandlerTests
 {
-    private static readonly IPermissionPolicy Policy = new PermissionPolicyService(
-    [
-        new IdentityModulePermissions(),
-        new StaffModulePermissions(),
-        new PlatformModulePermissions(),
-    ]);
+    private static readonly PermissionAuthorizationHandler Handler = new();
 
     [Fact]
     public async Task HandleRequirementAsync_ShouldAuthorize_WhenUserHasDirectPermission()
     {
-        var context = CreateContext(
-            IdentityModulePermissions.Roles.Read.Code,
-            IdentityModulePermissions.Roles.Read.Code);
+        var code    = IdentityModulePermissions.Roles.Read.Code;
+        var context = CreateContext(code, code);
 
-        var handler = new PermissionAuthorizationHandler(Policy);
-        await handler.HandleAsync(context);
+        await Handler.HandleAsync(context);
 
         context.HasSucceeded.Should().BeTrue();
     }
@@ -35,12 +27,11 @@ public class PermissionAuthorizationHandlerTests
     [Fact]
     public async Task HandleRequirementAsync_ShouldAuthorize_WhenUserHasManagerPermissionInSameGroup()
     {
-        var context = CreateContext(
-            IdentityModulePermissions.Roles.Read.Code,
-            IdentityModulePermissions.Roles.Manage.Code);
+        var required = IdentityModulePermissions.Roles.Read.Code;
+        var granted  = IdentityModulePermissions.Roles.Manage.Code;
+        var context  = CreateContext(required, granted);
 
-        var handler = new PermissionAuthorizationHandler(Policy);
-        await handler.HandleAsync(context);
+        await Handler.HandleAsync(context);
 
         context.HasSucceeded.Should().BeTrue();
     }
@@ -48,12 +39,31 @@ public class PermissionAuthorizationHandlerTests
     [Fact]
     public async Task HandleRequirementAsync_ShouldNotAuthorize_AcrossModulesWithSameShortGroup()
     {
-        var context = CreateContext(
-            StaffModulePermissions.Audit.Read,
-            IdentityModulePermissions.Audit.Manage.Code);
+        var required = StaffModulePermissions.Audit.Read;
+        var granted  = IdentityModulePermissions.Audit.Manage.Code;
+        var context  = CreateContext(required, granted);
 
-        var handler = new PermissionAuthorizationHandler(Policy);
-        await handler.HandleAsync(context);
+        await Handler.HandleAsync(context);
+
+        context.HasSucceeded.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HandleRequirementAsync_ShouldAuthorize_WhenUserHasRootPermission()
+    {
+        var context = CreateContext(IdentityModulePermissions.Roles.Read.Code, SystemPermissions.Root);
+
+        await Handler.HandleAsync(context);
+
+        context.HasSucceeded.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HandleRequirementAsync_ShouldNotAuthorize_WhenNoPermissions()
+    {
+        var context = CreateContext(IdentityModulePermissions.Roles.Read.Code);
+
+        await Handler.HandleAsync(context);
 
         context.HasSucceeded.Should().BeFalse();
     }
@@ -61,7 +71,7 @@ public class PermissionAuthorizationHandlerTests
     private static AuthorizationHandlerContext CreateContext(string requiredPermission, params string[] grantedPermissions)
     {
         var claims = grantedPermissions
-            .Select(permission => new Claim(AtlasClaims.Permission, permission))
+            .Select(p => new Claim(AtlasClaims.Permission, p))
             .ToList();
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "test"));

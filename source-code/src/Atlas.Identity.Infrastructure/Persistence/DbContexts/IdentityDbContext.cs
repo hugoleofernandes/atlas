@@ -3,6 +3,7 @@ using Atlas.BuildingBlocks.Persistence.DbContexts;
 using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.Identity.Domain.Invitations;
+using Atlas.Identity.Domain.Permissions;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
@@ -18,6 +19,7 @@ public sealed class IdentityDbContext
     protected override string Schema => "atlas_identity";
 
 
+    public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<User>       Users       => Set<User>();
     public DbSet<Invitation> Invitations => Set<Invitation>();
     public DbSet<Role>       Roles       => Set<Role>();

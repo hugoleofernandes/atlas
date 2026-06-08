@@ -1,41 +1,19 @@
-using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Contracts.Permissions;
-using Atlas.Platform.Contracts.Permissions;
-using Atlas.SharedKernel.Application;
-using Atlas.Staff.Contracts.Permissions;
 
 namespace Atlas.Identity.Tests;
 
+/// <summary>
+/// Test helpers for creating RolePermission objects in domain tests.
+/// Uses deterministic IDs so tests are repeatable.
+/// </summary>
 internal static class PermissionFixtures
 {
-    private static readonly IPermissionPolicy Policy = new PermissionPolicyService(
-    [
-        new IdentityModulePermissions(),
-        new StaffModulePermissions(),
-        new PlatformModulePermissions(),
-    ]);
+    /// <summary>Creates a RolePermission with a random PermissionId for use in domain tests.</summary>
+    public static RolePermission Any() => RolePermission.Of(Guid.NewGuid());
 
-    public static IReadOnlySet<string> AllCodes => Policy.All;
+    /// <summary>Creates multiple RolePermissions with distinct PermissionIds.</summary>
+    public static IReadOnlyList<RolePermission> Many(int count) =>
+        Enumerable.Range(0, count).Select(_ => Any()).ToList();
 
-    public static IReadOnlySet<string> AllIncludingSystemCodes => Policy.AllIncludingSystem;
-
-    public static IReadOnlyList<Permission> Resolve(params string[] codes)
-    {
-        var resolved = new List<Permission>();
-
-        foreach (var code in codes.Distinct(StringComparer.Ordinal))
-        {
-            if (string.Equals(code, SystemPermissions.Root, StringComparison.Ordinal))
-            {
-                resolved.Add(Permission.Of(SystemPermissions.Root, "system", false));
-                continue;
-            }
-
-            var definition = Policy.DefinitionsByCode[code];
-            resolved.Add(Permission.Of(definition.Code, definition.Group, definition.IsManager));
-        }
-
-        return resolved;
-    }
+    public static RolePermission WithId(Guid id) => RolePermission.Of(id);
 }

@@ -38,21 +38,11 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
 
             p.WithOwner().HasForeignKey("RoleId");
 
-            p.Property(rp => rp.Code)
-                .HasColumnName("code")
-                .HasMaxLength(100)
+            p.Property(rp => rp.PermissionId)
+                .HasColumnName("permission_id")
                 .IsRequired();
 
-            p.Property(rp => rp.Group)
-                .HasColumnName("group")
-                .HasMaxLength(100)
-                .IsRequired();
-
-            p.Property(rp => rp.IsManager)
-                .HasColumnName("is_manager")
-                .IsRequired();
-
-            p.HasKey("RoleId", "Code");
+            p.HasKey("RoleId", "PermissionId");
         });
 
         EntityChangeConfiguration.Configure(b);

@@ -6,9 +6,10 @@ namespace Atlas.Identity.Contracts.Permissions;
 /// <summary>
 /// Canonical permission catalog for Identity-owned product capabilities.
 /// </summary>
-public sealed partial class IdentityModulePermissions : ModulePermissionsBase
+public sealed partial class IdentityModulePermissions : IModulePermissions
 {
-    protected override AtlasModule Module => AtlasModules.Identity;
+    public Guid ModuleId => AtlasModules.Identity.Id;
+    public string ModuleName => AtlasModules.Identity.Name;
 
     private static readonly IReadOnlyList<PermissionDefinition> AllDefinitions =
     [
@@ -27,5 +28,5 @@ public sealed partial class IdentityModulePermissions : ModulePermissionsBase
         Audit.Manage,
     ];
 
-    protected override IReadOnlyList<PermissionDefinition> DefinitionsCore => AllDefinitions;
+    public IReadOnlyList<PermissionDefinition> Definitions => AllDefinitions;
 }

@@ -30,3 +30,11 @@ Avoid:
 ```sql
 AND (@Action IS NULL OR action = @Action)
 ```
+
+## Seeding Conventions
+
+- Prefer explicit startup seeding orchestration over implicit `IEnumerable<T>` module discovery when seed order matters.
+- Keep each module seeder's top-level `SeedAsync` linear and easy to read.
+- If one aggregate seed depends on data produced by another aggregate seed, return a small typed output from the first step and pass it explicitly into the next step.
+- Avoid hiding cross-step dependencies through generic mutable state bags when a narrow typed output is enough.
+- When splitting a module seeder into partial files, prefer one file per aggregate so the seeding structure mirrors the domain model.

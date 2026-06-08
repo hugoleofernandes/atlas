@@ -1,7 +1,7 @@
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Abstractions;
-using Atlas.Identity.Application.Permissions;
 using Atlas.Identity.Application.Repositories;
+using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Exceptions;
 using Atlas.SharedKernel.Application;
@@ -10,23 +10,23 @@ namespace Atlas.Identity.Application.Commands.UpdateRole;
 
 public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
 {
-    private readonly IRoleRepository _roleRepository;
-    private readonly IRequestContext _requestContext;
-    private readonly IPermissionPolicy _permissionPolicy;
-    private readonly IIdentityUnitOfWork _uow;
+    private readonly IRoleRepository         _roleRepository;
+    private readonly IRequestContext         _requestContext;
+    private readonly IPermissionCatalogCache _cache;
+    private readonly IIdentityUnitOfWork     _uow;
 
     public IUnitOfWork UnitOfWork => _uow;
 
     public UpdateRoleCommandHandler(
-        IRoleRepository roleRepository,
-        IRequestContext requestContext,
-        IPermissionPolicy permissionPolicy,
-        IIdentityUnitOfWork uow)
+        IRoleRepository         roleRepository,
+        IRequestContext         requestContext,
+        IPermissionCatalogCache cache,
+        IIdentityUnitOfWork     uow)
     {
         _roleRepository = roleRepository;
         _requestContext = requestContext;
-        _permissionPolicy = permissionPolicy;
-        _uow = uow;
+        _cache          = cache;
+        _uow            = uow;
     }
 
     public async Task<UpdateRoleOutput> ExecuteAsync(UpdateRoleCommand cmd, CancellationToken ct)
@@ -41,11 +41,34 @@ public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
             throw new RoleAlreadyExistsException(cmd.Name);
 
         role.Rename(cmd.Name);
-        var permissions = PermissionResolution.Resolve(cmd.PermissionCodes, _permissionPolicy);
-        role.UpdatePermissions(permissions);
 
-        var permissionCodes = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
+        var (rolePermissions, permissionCodes) = await ResolvePermissionsAsync(cmd.PermissionCodes, ct);
+        role.UpdatePermissions(rolePermissions);
 
         return new UpdateRoleOutput(role.Id, role.Name, role.IsActive, permissionCodes);
+    }
+
+    private async Task<(IReadOnlyList<RolePermission> RolePermissions, IReadOnlyList<string> Codes)> ResolvePermissionsAsync(
+        IEnumerable<string> codes,
+        CancellationToken ct)
+    {
+        var codeList = codes.Distinct(StringComparer.Ordinal).ToList();
+
+        if (codeList.Count == 0)
+            return ([], []);
+
+        var all = await _cache.GetAllActiveAsync(ct);
+        var found = all.Where(p => codeList.Contains(p.Code, StringComparer.Ordinal)).ToList();
+
+        var foundCodes = found.Select(p => p.Code).ToHashSet(StringComparer.Ordinal);
+        var unknown = codeList.Where(c => !foundCodes.Contains(c)).ToList();
+
+        if (unknown.Count > 0)
+            throw new RoleWithInvalidPermissionException(unknown);
+
+        var rolePermissions = found.Select(p => RolePermission.Of(p.Id)).ToList();
+        var resolvedCodes   = found.Select(p => p.Code).ToList();
+
+        return (rolePermissions, resolvedCodes);
     }
 }

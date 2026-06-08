@@ -461,3 +461,45 @@ Ao criar commits, use apenas a mensagem descritiva — sem nenhuma linha `Co-Aut
 A fonte única é `ErrorCategoryExtensions.ToHttpStatus()` em `Atlas.BuildingBlocks.AspNetCore.HttpErrors`.
 
 Todos os consumidores usam a mesma extensão: `GlobalExceptionMiddleware`, `HttpResultMapper`, e os endpoints via `AtlasEndpoint`. Nunca duplique o switch `ErrorCategory → int` em outro lugar.
+---
+
+## PadrÃ£o de Seeding
+
+Bootstrap e seed de mÃ³dulo devem privilegiar leitura linear e dependÃªncias explÃ­citas.
+
+### OrquestraÃ§Ã£o
+
+- O topo do bootstrap deve chamar os seeders de mÃ³dulo em ordem explÃ­cita.
+- Cada `ModuleSeeder` deve expor um `SeedAsync` claro e linear.
+- Evite esconder ordem global em `IEnumerable<T>` quando a leitura do startup ficar opaca.
+
+### DependÃªncia entre seeds
+
+Se um seed precisa de dados produzidos por outro aggregate seeded antes, **receba esse dado por parÃ¢metro**.
+
+```csharp
+await SeedTenantAsync(ct);
+await SeedSystemAsync(ct);
+var modules = await SeedModulesAsync(ct);
+await SeedEntityTypesAsync(modules, ct);
+```
+
+Prefira:
+- outputs tipados pequenos por step
+- parÃ¢metros explÃ­citos no prÃ³ximo step
+
+Evite:
+- requery desnecessÃ¡ria sÃ³ para redescobrir o que acabou de ser seeded
+- state bag genÃ©rico quando um output tipado resolve melhor
+
+### OrganizaÃ§Ã£o dos arquivos
+
+Quando um `ModuleSeeder` for dividido em partials:
+- preferir um arquivo por aggregate
+- manter o arquivo principal apenas com a sequÃªncia dos steps
+
+Exemplo:
+- `PlatformModuleSeeder.Tenants.cs`
+- `PlatformModuleSeeder.Systems.cs`
+- `PlatformModuleSeeder.Modules.cs`
+- `PlatformModuleSeeder.EntityTypes.cs`

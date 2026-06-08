@@ -1,3 +1,4 @@
+using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
@@ -21,20 +22,23 @@ namespace Atlas.Identity.Application.Commands.DevLogin;
 /// </summary>
 public sealed class DevLoginCommandHandler : IDevLoginCommandHandler
 {
-    private readonly IRoleRepository       _roleRepository;
-    private readonly IUserRepository       _userRepository;
-    private readonly IRequestContextSetter _contextSetter;
-    private readonly IHostEnvironment      _env;
+    private readonly IRoleRepository         _roleRepository;
+    private readonly IUserRepository         _userRepository;
+    private readonly IRequestContextSetter   _contextSetter;
+    private readonly IPermissionCatalogCache _cache;
+    private readonly IHostEnvironment        _env;
 
     public DevLoginCommandHandler(
-        IRoleRepository       roleRepository,
-        IUserRepository       userRepository,
-        IRequestContextSetter contextSetter,
-        IHostEnvironment      env)
+        IRoleRepository         roleRepository,
+        IUserRepository         userRepository,
+        IRequestContextSetter   contextSetter,
+        IPermissionCatalogCache cache,
+        IHostEnvironment        env)
     {
         _roleRepository = roleRepository;
         _userRepository = userRepository;
         _contextSetter  = contextSetter;
+        _cache          = cache;
         _env            = env;
     }
 
@@ -59,11 +63,17 @@ public sealed class DevLoginCommandHandler : IDevLoginCommandHandler
 
             user.ResolveExistingAccess(user.ExternalId);
 
-            var role        = roles.Single(r => r.Id == user.RoleId);
+            var role = roles.Single(r => r.Id == user.RoleId);
             if (!role.IsActive)
                 throw new RoleInactiveException(role.Name);
 
-            var permissions = role.Permissions.Select(p => p.Code).ToList().AsReadOnly();
+            var permissionIds = role.Permissions.Select(p => p.PermissionId).ToHashSet();
+            var all = await _cache.GetAllActiveAsync(ct);
+            var permissions = all
+                .Where(p => permissionIds.Contains(p.Id))
+                .Select(p => p.Code)
+                .ToList()
+                .AsReadOnly();
 
             return new DevLoginOutput(
                 TenantId:    cmd.TenantId,

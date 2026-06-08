@@ -8,31 +8,34 @@ using FluentAssertions;
 namespace Atlas.Identity.Tests.Permissions;
 
 /// <summary>
-/// Contract test: every permission code registered across all modules must have
+/// Contract test: every permission code declared across all modules must have
 /// a non-empty label in both the English and Portuguese PermissionLabels.resx files.
 ///
 /// Why: the compiler guarantees the code exists, but cannot guarantee the translation.
-/// This test closes that gap â€” a missing translation fails the build immediately.
+/// This test closes that gap — a missing translation fails the build immediately.
 /// </summary>
 public sealed class PermissionCatalogTranslationTests
 {
     private static readonly string SharedResxDirectory = FindResxDirectory();
 
-    /// <summary>
-    /// The full permission policy built from all registered modules â€” same as runtime.
-    /// </summary>
-    private static readonly PermissionPolicyService Policy = new([
+    private static readonly IReadOnlyList<IModulePermissions> AllModules =
+    [
         new IdentityModulePermissions(),
         new StaffModulePermissions(),
         new PlatformModulePermissions(),
-    ]);
+    ];
+
+    private static IReadOnlySet<string> AllCodes =>
+        AllModules
+            .SelectMany(m => m.Definitions.Select(d => d.Code))
+            .ToHashSet(StringComparer.Ordinal);
 
     [Fact]
     public void AllPermissions_ShouldHaveLabel_InEnglishResx()
     {
         var labels = LoadAllLabels("resx");
-        var missing = Policy
-            .All.Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
+        var codes = AllCodes;
+        var missing = codes.Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
             .ToList();
 
         missing
@@ -44,8 +47,8 @@ public sealed class PermissionCatalogTranslationTests
     public void AllPermissions_ShouldHaveLabel_InPortugueseResx()
     {
         var labels = LoadAllLabels("pt.resx");
-        var missing = Policy
-            .All.Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
+        var codes = AllCodes;
+        var missing = codes.Where(code => !labels.ContainsKey(code) || string.IsNullOrWhiteSpace(labels[code]))
             .ToList();
 
         missing
@@ -57,7 +60,8 @@ public sealed class PermissionCatalogTranslationTests
     public void EnglishResx_ShouldNotHaveOrphanedKeys_NotInCatalog()
     {
         var labels = LoadAllLabels("resx");
-        var orphaned = labels.Keys.Where(key => !Policy.All.Contains(key)).ToList();
+        var codes = AllCodes;
+        var orphaned = labels.Keys.Where(key => !codes.Contains(key)).ToList();
 
         orphaned
             .Should()
@@ -70,7 +74,8 @@ public sealed class PermissionCatalogTranslationTests
     public void PortugueseResx_ShouldNotHaveOrphanedKeys_NotInCatalog()
     {
         var labels = LoadAllLabels("pt.resx");
-        var orphaned = labels.Keys.Where(key => !Policy.All.Contains(key)).ToList();
+        var codes = AllCodes;
+        var orphaned = labels.Keys.Where(key => !codes.Contains(key)).ToList();
 
         orphaned
             .Should()
@@ -81,7 +86,6 @@ public sealed class PermissionCatalogTranslationTests
 
     // -------------------------------------------------------
 
-    /// <summary>Loads labels from the shared domain resource project for the given file extension.</summary>
     private static Dictionary<string, string> LoadAllLabels(string extension)
     {
         var path = Path.Combine(SharedResxDirectory, $"PermissionLabels.{extension}");
@@ -95,10 +99,6 @@ public sealed class PermissionCatalogTranslationTests
             .ToDictionary(x => x.Key, x => x.Value);
     }
 
-    /// <summary>
-    /// Walks up from the test output directory until it finds the solution root
-    /// (identified by the presence of Atlas.slnx), then navigates to the shared resource project.
-    /// </summary>
     private static string FindResxDirectory()
     {
         var dir = AppContext.BaseDirectory;

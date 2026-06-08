@@ -3,7 +3,7 @@ using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Users.Events;
 using Atlas.Identity.Domain.Users.Exceptions;
 using Atlas.SharedKernel.Domain;
-using Atlas.SharedKernel.EntityTypes;
+using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.SharedKernel.Modules;
 
 namespace Atlas.Identity.Domain.Users;
@@ -22,7 +22,7 @@ namespace Atlas.Identity.Domain.Users;
 /// </summary>
 public sealed class User : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
-    public Guid EntityTypeId => IdentityEntityTypes.User.Id;
+    public Guid EntityTypeId => IdentityModuleEntityTypes.Users.EntityType.Id;
 
     public Guid Id { get; private set; } = Guid.NewGuid();
 
