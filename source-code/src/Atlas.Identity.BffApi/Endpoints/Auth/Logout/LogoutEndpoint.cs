@@ -19,7 +19,7 @@ public sealed class LogoutEndpoint(
 {
     public override void Configure()
     {
-        Post("bff/identity/auth/logout-spa");
+        Post("bff/v1/identity/auth/logout-spa");
         Options(x => x.RequireAuthorization());
         Description(d => d.Produces<LogoutResponse>());
     }

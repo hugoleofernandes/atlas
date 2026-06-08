@@ -15,7 +15,7 @@ public sealed class CreateStaffMemberEndpoint(
 {
     public override void Configure()
     {
-        Post("internal/staff/events/user-created-from-invitation/create-staff-member");
+        Post("internal/v1/staff/events/user-created-from-invitation/create-staff-member");
         Policies(InternalApiKeyDefaults.PolicyName);
         Description(d => d.Produces(204));
     }

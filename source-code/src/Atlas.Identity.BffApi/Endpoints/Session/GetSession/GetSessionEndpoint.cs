@@ -15,7 +15,7 @@ public sealed class GetSessionEndpoint : AtlasEndpoint<EmptyRequest, GetSessionR
 {
     public override void Configure()
     {
-        Get("bff/identity/session/me");
+        Get("bff/v1/identity/session/me");
         Options(x => x.RequireAuthorization());
         Description(d => d.Produces<GetSessionResponse>());
     }

@@ -30,7 +30,7 @@ public sealed class ListAuditEntriesEndpoint(
 {
     public override void Configure()
     {
-        Get("bff/audit/entries");
+        Get("bff/v1/audit/entries");
         Description(d => d.Produces<IReadOnlyList<AuditEntryResponse>>());
     }
 

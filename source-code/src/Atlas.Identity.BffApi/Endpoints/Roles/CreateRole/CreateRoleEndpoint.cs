@@ -15,7 +15,7 @@ public sealed class CreateRoleEndpoint(ICreateRoleCommandHandler handler, IHandl
 {
     public override void Configure()
     {
-        Post("bff/identity/roles");
+        Post("bff/v1/identity/roles");
         Policies($"permission:{IdentityModulePermissions.Roles.Create}");
         Description(d => d.Produces<CreateRoleResponse>(201));
     }

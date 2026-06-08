@@ -20,7 +20,7 @@ public sealed class ListPermissionsEndpoint(
 {
     public override void Configure()
     {
-        Get("bff/identity/permissions");
+        Get("bff/v1/identity/permissions");
         Policies($"permission:{IdentityModulePermissions.Roles.Read}");
         Description(d => d.Produces<IReadOnlyList<PermissionItemResponse>>());
     }

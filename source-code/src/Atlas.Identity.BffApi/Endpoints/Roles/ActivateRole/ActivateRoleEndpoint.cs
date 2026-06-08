@@ -16,7 +16,7 @@ public sealed class ActivateRoleEndpoint(IActivateRoleCommandHandler handler, IH
 {
     public override void Configure()
     {
-        Patch("bff/identity/roles/{id}/activate");
+        Patch("bff/v1/identity/roles/{id}/activate");
         Policies($"permission:{IdentityModulePermissions.Roles.Update}");
         Description(d => d.Produces(204));
     }

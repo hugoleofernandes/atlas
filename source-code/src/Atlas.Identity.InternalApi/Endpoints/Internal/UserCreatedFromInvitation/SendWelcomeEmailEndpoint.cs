@@ -13,7 +13,7 @@ public sealed class SendWelcomeEmailEndpoint(ISendWelcomeEmailCommandHandler han
 {
     public override void Configure()
     {
-        Post("internal/identity/events/user-created-from-invitation/send-welcome-email");
+        Post("internal/v1/identity/events/user-created-from-invitation/send-welcome-email");
         Policies(InternalApiKeyDefaults.PolicyName);
         Description(d => d.Produces(204));
     }

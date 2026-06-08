@@ -17,7 +17,7 @@ public sealed class DeactivateRoleEndpoint(IDeactivateRoleCommandHandler handler
 {
     public override void Configure()
     {
-        Patch("bff/identity/roles/{id}/deactivate");
+        Patch("bff/v1/identity/roles/{id}/deactivate");
         Policies($"permission:{IdentityModulePermissions.Roles.Update}");
         Description(d => d.Produces(204));
     }

@@ -15,7 +15,7 @@ public sealed class GetRoleByIdEndpoint(IGetRoleByIdQueryHandler handler, IHandl
 {
     public override void Configure()
     {
-        Get("bff/identity/roles/{id}");
+        Get("bff/v1/identity/roles/{id}");
         Policies($"permission:{IdentityModulePermissions.Roles.Read}");
         Description(d => d.Produces<RoleDto>());
     }

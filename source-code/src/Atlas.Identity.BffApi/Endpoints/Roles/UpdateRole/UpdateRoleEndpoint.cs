@@ -16,7 +16,7 @@ public sealed class UpdateRoleEndpoint(IUpdateRoleCommandHandler handler, IHandl
 {
     public override void Configure()
     {
-        Put("bff/identity/roles/{id}");
+        Put("bff/v1/identity/roles/{id}");
         Policies($"permission:{IdentityModulePermissions.Roles.Update}");
         Description(d => d.Produces<UpdateRoleResponse>());
     }

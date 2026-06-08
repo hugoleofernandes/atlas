@@ -15,7 +15,7 @@ public sealed class LookupRolesEndpoint(ILookupRolesQueryHandler handler, IHandl
 {
     public override void Configure()
     {
-        Get("bff/identity/roles/lookup");
+        Get("bff/v1/identity/roles/lookup");
         Policies($"permission:{IdentityModulePermissions.Roles.Read}");
         Description(d => d.Produces<IReadOnlyList<RoleLookupDto>>());
     }

@@ -20,7 +20,7 @@ public sealed class LoginEndpoint(
 {
     public override void Configure()
     {
-        Get("bff/identity/auth/login");
+        Get("bff/v1/identity/auth/login");
         AllowAnonymous();
         Description(d => d.Produces(302));
     }

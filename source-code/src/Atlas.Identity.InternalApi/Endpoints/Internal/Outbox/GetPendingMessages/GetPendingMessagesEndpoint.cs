@@ -15,7 +15,7 @@ public sealed class GetPendingMessagesEndpoint(IListPendingMessagesQueryHandler 
 {
     public override void Configure()
     {
-        Get("internal/identity/outbox/pending-messages");
+        Get("internal/v1/identity/outbox/pending-messages");
         Policies(InternalApiKeyDefaults.PolicyName);
         Description(d => d.Produces<IReadOnlyList<ListPendingMessagesDto>>(200));
     }

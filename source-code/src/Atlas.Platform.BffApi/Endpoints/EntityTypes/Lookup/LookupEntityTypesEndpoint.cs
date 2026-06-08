@@ -12,7 +12,7 @@ public sealed class LookupEntityTypesEndpoint(ILookupEntityTypesQueryHandler han
 {
     public override void Configure()
     {
-        Get("bff/platform/entity-types/lookup");
+        Get("bff/v1/platform/entity-types/lookup");
         Policies($"permission:{PlatformModulePermissions.Audit.Read}");
         Description(d => d.Produces<IReadOnlyList<EntityTypeLookupDto>>());
     }

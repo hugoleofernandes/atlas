@@ -12,7 +12,7 @@ public sealed class GetXsrfTokenEndpoint(IAntiforgery antiforgery)
 {
     public override void Configure()
     {
-        Get("bff/identity/auth/xsrf");
+        Get("bff/v1/identity/auth/xsrf");
         AllowAnonymous();
     }
 

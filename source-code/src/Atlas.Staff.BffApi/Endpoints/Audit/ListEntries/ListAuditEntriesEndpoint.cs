@@ -21,7 +21,7 @@ public sealed class ListAuditEntriesEndpoint(
 {
     public override void Configure()
     {
-        Get("bff/staff/audit/entries");
+        Get("bff/v1/staff/audit/entries");
         Policies($"permission:{StaffModulePermissions.Audit.Read}");
         Description(d => d.Produces<IReadOnlyList<AuditEntryResponse>>());
     }

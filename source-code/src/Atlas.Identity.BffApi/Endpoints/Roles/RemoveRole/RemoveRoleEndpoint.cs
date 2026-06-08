@@ -17,7 +17,7 @@ public sealed class RemoveRoleEndpoint(IRemoveRoleCommandHandler handler, IHandl
 {
     public override void Configure()
     {
-        Delete("bff/identity/roles/{id}");
+        Delete("bff/v1/identity/roles/{id}");
         Policies($"permission:{IdentityModulePermissions.Roles.Delete}");
         Description(d => d.Produces(204));
     }

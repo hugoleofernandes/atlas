@@ -14,7 +14,7 @@ public sealed class ListUsersEndpoint(IListUsersQueryHandler handler, IHandlerIn
 {
     public override void Configure()
     {
-        Get("bff/identity/users");
+        Get("bff/v1/identity/users");
         Policies($"permission:{IdentityModulePermissions.Users.Read}");
         Description(d => d.Produces<IReadOnlyList<UserDto>>());
     }

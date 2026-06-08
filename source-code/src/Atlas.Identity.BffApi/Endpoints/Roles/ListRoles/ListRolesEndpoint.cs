@@ -11,7 +11,7 @@ public sealed class ListRolesEndpoint(IListRolesQueryHandler handler, IHandlerIn
 {
     public override void Configure()
     {
-        Get("bff/identity/roles");
+        Get("bff/v1/identity/roles");
         Policies($"permission:{IdentityModulePermissions.Roles.Read}");
         Description(d => d.Produces<IReadOnlyList<RoleDto>>());
     }

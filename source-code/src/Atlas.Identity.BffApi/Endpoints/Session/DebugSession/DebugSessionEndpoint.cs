@@ -17,7 +17,7 @@ public sealed class DebugSessionEndpoint(
 {
     public override void Configure()
     {
-        Get("bff/identity/session/debug");
+        Get("bff/v1/identity/session/debug");
         Options(x => x.RequireAuthorization());
         Description(d => d.Produces<DebugSessionResponse>());
     }

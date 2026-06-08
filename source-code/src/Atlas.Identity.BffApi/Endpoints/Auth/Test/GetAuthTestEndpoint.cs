@@ -18,7 +18,7 @@ public sealed class GetAuthTestEndpoint(
 {
     public override void Configure()
     {
-        Get("bff/identity/auth/test");
+        Get("bff/v1/identity/auth/test");
         AllowAnonymous();
         Description(d => d.Produces<GetAuthTestResponse>());
     }

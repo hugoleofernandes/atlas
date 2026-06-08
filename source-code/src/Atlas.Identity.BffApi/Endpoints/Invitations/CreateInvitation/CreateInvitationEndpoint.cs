@@ -15,7 +15,7 @@ public sealed class CreateInvitationEndpoint(IInviteUserCommandHandler handler, 
 {
     public override void Configure()
     {
-        Post("bff/identity/invitations");
+        Post("bff/v1/identity/invitations");
         Policies($"permission:{IdentityModulePermissions.Invitations.Create}");
         Description(d => d.Produces<CreateInvitationResponse>(201));
     }

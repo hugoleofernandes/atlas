@@ -14,7 +14,7 @@ public sealed class ListInvitationsEndpoint(IListInvitationsQueryHandler handler
 {
     public override void Configure()
     {
-        Get("bff/identity/invitations");
+        Get("bff/v1/identity/invitations");
         Policies($"permission:{IdentityModulePermissions.Invitations.Read}");
         Description(d => d.Produces<IReadOnlyList<InvitationDto>>());
     }

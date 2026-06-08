@@ -20,7 +20,7 @@ public sealed class ListAuditEntriesEndpoint(
 {
     public override void Configure()
     {
-        Get("bff/platform/audit/entries");
+        Get("bff/v1/platform/audit/entries");
         Policies($"permission:{PlatformModulePermissions.Audit.Read}");
         Description(d => d.Produces<IReadOnlyList<AuditEntryResponse>>());
     }
