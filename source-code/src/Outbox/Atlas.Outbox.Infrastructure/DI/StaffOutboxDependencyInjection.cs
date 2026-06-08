@@ -19,21 +19,12 @@ using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Infrastructure.Entities.StaffMembers.Repositories;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Atlas.Staff.Infrastructure.Readers.Outbox.ListPendingMessages;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Atlas.Outbox.Infrastructure.DI;
 
 public static class StaffOutboxDependencyInjection
 {
-    /// <summary>
-    /// Registra o suporte ao OutboxWorker para o mÃ³dulo Staff:
-    /// - repositÃ³rio de outbox (leitura via StaffDbContext)
-    /// - ProcessOutboxCommandHandler configurado com deps da Staff
-    /// - SavePipeline completo (audit, stampers, metrics) para que handlers
-    ///   de integration events passem pelo pipeline correto ao persistir
-    /// - dependÃªncias de domÃ­nio necessÃ¡rias pelos handlers do Staff
-    ///
-    /// Os integration event handlers do Staff sÃ£o registrados em Atlas.Outbox.Integration.
-    /// </summary>
     public static IServiceCollection AddStaffOutboxModuleDependencies(this IServiceCollection services)
     {
         services.AddModuleOutboxProcessingWorkflow<IStaffOutboxProcessingWorkflow, StaffDbContext>(

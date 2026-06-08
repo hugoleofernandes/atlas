@@ -2,6 +2,7 @@ namespace Atlas.Outbox.Infrastructure.Configuration;
 
 public sealed class OutboxWorkerOptions
 {
+    public bool LegacyHostedServiceEnabled { get; set; } = true;
     public string DispatchMode { get; set; } = "InProcess";
     public string PendingMessagesMode { get; set; } = "Database";
     public string InternalApiKey { get; set; } = string.Empty;

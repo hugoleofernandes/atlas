@@ -29,6 +29,7 @@
   <Folder Name="/src/" />
   <Folder Name="/src/1-Executables/">
     <Project Path="src/Atlas.API/Atlas.API.csproj" />
+    <Project Path="src/Outbox/Atlas.Outbox.Hangfire/Atlas.Outbox.Hangfire.csproj" />
     <Project Path="src/Outbox/Atlas.Outbox.Worker/Atlas.Outbox.Worker.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/" />

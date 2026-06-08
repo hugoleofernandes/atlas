@@ -84,7 +84,8 @@ try
 
                 // ── Entry point — loop de polling ─────────────────────────────────
                 // services.AddHostedService<OutboxWorkerHostedService>();  // V1 — mantido como referência
-                services.AddHostedService<OutboxWorkerHostedServiceV2>(); // V2 — workflow explícito
+                if (outboxWorkerOptions.LegacyHostedServiceEnabled)
+                    services.AddHostedService<OutboxWorkerHostedServiceV2>(); // V2 — workflow explícito
             }
         )
         .Build();

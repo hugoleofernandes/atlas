@@ -6,6 +6,7 @@ using Atlas.Outbox.Application.Workflows.OutboxProcessing;
 using Atlas.Outbox.Infrastructure.Configuration;
 using Atlas.Outbox.Infrastructure.Readers.ListPendingMessages;
 using Atlas.SharedKernel.Application.Idempotency;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Atlas.Outbox.Infrastructure.DI;
