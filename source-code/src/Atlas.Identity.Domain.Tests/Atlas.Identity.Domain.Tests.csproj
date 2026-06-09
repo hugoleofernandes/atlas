@@ -29,8 +29,8 @@
     <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.Domain\Atlas.Platform.Domain.csproj" />
+    <ProjectReference Include="..\Platform\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
+    <ProjectReference Include="..\Platform\Atlas.Platform.Domain\Atlas.Platform.Domain.csproj" />
     <ProjectReference Include="..\Staff\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
   </ItemGroup>
 

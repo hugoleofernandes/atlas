@@ -72,17 +72,20 @@
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/" />
   <Folder Name="/src/2-Modules/Plataform/1-Api/">
-    <Project Path="src/Atlas.Platform.BffApi/Atlas.Platform.BffApi.csproj" />
-    <Project Path="src/Atlas.Platform.InternalApi/Atlas.Platform.InternalApi.csproj" />
+    <Project Path="src/Platform/Atlas.Platform.BffApi/Atlas.Platform.BffApi.csproj" />
+    <Project Path="src/Platform/Atlas.Platform.InternalApi/Atlas.Platform.InternalApi.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/2-Infrastructure/">
-    <Project Path="src/Atlas.Platform.Infrastructure/Atlas.Platform.Infrastructure.csproj" />
+    <Project Path="src/Platform/Atlas.Platform.Infrastructure/Atlas.Platform.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/3-AppServices/">
-    <Project Path="src/Atlas.Platform.Application/Atlas.Platform.Application.csproj" />
+    <Project Path="src/Platform/Atlas.Platform.Application/Atlas.Platform.Application.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/4-Domain/">
-    <Project Path="src/Atlas.Platform.Domain/Atlas.Platform.Domain.csproj" />
+    <Project Path="src/Platform/Atlas.Platform.Domain/Atlas.Platform.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/2-Modules/Plataform/5-Contracts/">
+    <Project Path="src/Platform/Atlas.Platform.Contracts/Atlas.Platform.Contracts.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/" />
   <Folder Name="/src/2-Modules/Staff/1-Api/">

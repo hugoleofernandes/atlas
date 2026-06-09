@@ -43,13 +43,13 @@
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.Identity.InternalApi\Atlas.Identity.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.Identity.OutboxPublisher\Atlas.Identity.OutboxPublisher.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.BffApi\Atlas.Platform.BffApi.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.Platform.InternalApi\Atlas.Platform.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail.Resources\Atlas.BuildingBlocks.Audit.Resources.csproj" />
     <ProjectReference Include="..\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
+    <ProjectReference Include="..\Platform\Atlas.Platform.BffApi\Atlas.Platform.BffApi.csproj" />
+    <ProjectReference Include="..\Platform\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
+    <ProjectReference Include="..\Platform\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
+    <ProjectReference Include="..\Platform\Atlas.Platform.InternalApi\Atlas.Platform.InternalApi.csproj" />
     <ProjectReference Include="..\Staff\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Staff\Atlas.Staff.BffApi\Atlas.Staff.BffApi.csproj" />
     <ProjectReference Include="..\Staff\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
