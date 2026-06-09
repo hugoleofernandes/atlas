@@ -14,11 +14,12 @@ namespace Atlas.API.Tests.Infrastructure;
 public sealed class AtlasApiFactory : WebApplicationFactory<Program>
 {
     public static readonly Guid TestTenantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-    public static readonly Guid TestUserId   = Guid.Parse("22222222-2222-2222-2222-222222222222");
+    public static readonly Guid TestUserId = Guid.Parse("22222222-2222-2222-2222-222222222222");
     public const string TestTenantName = "acme";
 
     public IInviteUserCommandHandler InviteUserHandler { get; } = Substitute.For<IInviteUserCommandHandler>();
-    public IListInvitationsQueryHandler ListInvitationsQueryHandler { get; } = Substitute.For<IListInvitationsQueryHandler>();
+    public IListInvitationsQueryHandler ListInvitationsQueryHandler { get; } =
+        Substitute.For<IListInvitationsQueryHandler>();
 
     public AtlasApiFactory()
     {
@@ -38,14 +39,14 @@ public sealed class AtlasApiFactory : WebApplicationFactory<Program>
             services.PostConfigure<AuthenticationOptions>(opts =>
             {
                 opts.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
-                opts.DefaultChallengeScheme    = TestAuthHandler.SchemeName;
-                opts.DefaultForbidScheme       = TestAuthHandler.SchemeName;
-                opts.DefaultSignInScheme       = TestAuthHandler.SchemeName;
+                opts.DefaultChallengeScheme = TestAuthHandler.SchemeName;
+                opts.DefaultForbidScheme = TestAuthHandler.SchemeName;
+                opts.DefaultSignInScheme = TestAuthHandler.SchemeName;
             });
 
-            services.AddAuthentication()
-                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                    TestAuthHandler.SchemeName, _ => { });
+            services
+                .AddAuthentication()
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
 
             // Replace the real command handler with a controllable mock
             services.RemoveAll<IInviteUserCommandHandler>();
@@ -62,10 +63,7 @@ public sealed class AtlasApiFactory : WebApplicationFactory<Program>
     /// </summary>
     public HttpClient CreateAuthenticatedClient(params string[] permissions)
     {
-        var client = CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false
-        });
+        var client = CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
         var header = BuildIdentityHeader(permissions);
         client.DefaultRequestHeaders.Add(TestAuthHandler.IdentityHeader, header);

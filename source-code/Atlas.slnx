@@ -35,22 +35,22 @@
   <Folder Name="/src/2-Modules/" />
   <Folder Name="/src/2-Modules/Identity/" />
   <Folder Name="/src/2-Modules/Identity/1-Api/">
-    <Project Path="src/Atlas.Identity.BffApi/Atlas.Identity.BffApi.csproj" />
-    <Project Path="src/Atlas.Identity.InternalApi/Atlas.Identity.InternalApi.csproj" />
+    <Project Path="src/Identity/Atlas.Identity.BffApi/Atlas.Identity.BffApi.csproj" />
+    <Project Path="src/Identity/Atlas.Identity.InternalApi/Atlas.Identity.InternalApi.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Identity/2-Infrastructure/">
-    <Project Path="src/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
+    <Project Path="src/Identity/Atlas.Identity.Infrastructure/Atlas.Identity.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Identity/3-AppServices/">
-    <Project Path="src/Atlas.Identity.Application/Atlas.Identity.Application.csproj" />
-    <Project Path="src/Atlas.Identity.OutboxPublisher/Atlas.Identity.OutboxPublisher.csproj" Id="0df38064-00e8-49b2-9883-91066c2d8d69" />
+    <Project Path="src/Identity/Atlas.Identity.Application/Atlas.Identity.Application.csproj" />
+    <Project Path="src/Identity/Atlas.Identity.OutboxPublisher/Atlas.Identity.OutboxPublisher.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Identity/4-Domain/">
-    <Project Path="src/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
-    <Project Path="src/Atlas.Identity.Resources/Atlas.Identity.Resources.csproj" Id="85200bc2-f5ad-46de-8410-db7976e623ae" />
+    <Project Path="src/Identity/Atlas.Identity.Domain/Atlas.Identity.Domain.csproj" />
+    <Project Path="src/Identity/Atlas.Identity.Resources/Atlas.Identity.Resources.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Identity/5-Contracts/">
-    <Project Path="src/Atlas.Identity.Contracts/Atlas.Identity.Contracts.csproj" Id="7a119dd7-626b-445b-9c7b-63b4707fcc14" />
+    <Project Path="src/Identity/Atlas.Identity.Contracts/Atlas.Identity.Contracts.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Outbox/" />
   <Folder Name="/src/2-Modules/Outbox/2-Infrastructure/">
