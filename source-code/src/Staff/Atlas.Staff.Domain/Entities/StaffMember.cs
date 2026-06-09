@@ -1,12 +1,9 @@
 using Atlas.SharedKernel.Domain;
-using Atlas.Staff.Contracts.EntityTypes;
 
 namespace Atlas.Staff.Domain.Entities;
 
 public sealed class StaffMember : IAuditableAggregate
 {
-    public Guid EntityTypeId => StaffModuleEntityTypes.StaffMembers.EntityType.Id;
-
     public Guid Id { get; private set; }
 
     public Guid TenantId { get; private set; }

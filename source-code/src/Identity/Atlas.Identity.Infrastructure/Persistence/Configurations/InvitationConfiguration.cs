@@ -1,4 +1,6 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
+using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +8,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Configurations;
 
-public sealed class InvitationConfiguration : IEntityTypeConfiguration<Invitation>
+public sealed class InvitationConfiguration : AuditableAggregateConfiguration<Invitation>
 {
-    public void Configure(EntityTypeBuilder<Invitation> b)
+    protected override Guid EntityTypeId => IdentityModuleEntityTypes.Invitations.EntityType.Id;
+
+    protected override void ConfigureAuditable(EntityTypeBuilder<Invitation> b)
     {
         b.ToTable("invitations");
 

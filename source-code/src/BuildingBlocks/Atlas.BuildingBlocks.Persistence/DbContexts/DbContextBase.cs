@@ -1,6 +1,7 @@
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain;
 using Atlas.SharedKernel.Domain.Events;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.BuildingBlocks.Persistence.DbContexts;
@@ -49,6 +50,7 @@ public abstract class DbContextBase : DbContext
         modelBuilder.Ignore<IDomainEvent>();
 
         ApplyMultiTenantFilters(modelBuilder);
+        modelBuilder.ValidateAuditableAggregates();
 
         base.OnModelCreating(modelBuilder);
     }

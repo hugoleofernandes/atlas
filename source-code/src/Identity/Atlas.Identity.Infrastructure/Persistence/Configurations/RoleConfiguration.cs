@@ -1,16 +1,19 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
+using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Configurations;
 
-public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
+public sealed class RoleConfiguration : AuditableAggregateConfiguration<Role>
 {
-    public void Configure(EntityTypeBuilder<Role> b)
+    protected override Guid EntityTypeId => IdentityModuleEntityTypes.Roles.EntityType.Id;
+
+    protected override void ConfigureAuditable(EntityTypeBuilder<Role> b)
     {
         b.ToTable("roles");
-
         b.HasKey(x => x.Id);
 
         b.Property(x => x.Id)

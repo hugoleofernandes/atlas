@@ -2,7 +2,6 @@ using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Tenants.Events;
 using Atlas.SharedKernel.Domain;
-using Atlas.Identity.Contracts.EntityTypes;
 
 namespace Atlas.Identity.Domain.Tenants._Roles;
 
@@ -12,8 +11,6 @@ namespace Atlas.Identity.Domain.Tenants._Roles;
 /// </summary>
 public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
 {
-    public Guid EntityTypeId => IdentityModuleEntityTypes.Roles.EntityType.Id;
-
     public Guid Id { get; private set; }
     public Guid TenantId { get; private set; }
     public string Name { get; private set; } = default!;

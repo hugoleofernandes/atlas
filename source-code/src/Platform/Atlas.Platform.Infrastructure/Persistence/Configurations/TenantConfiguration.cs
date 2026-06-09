@@ -1,13 +1,17 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
+using Atlas.Platform.Contracts.EntityTypes;
 using Atlas.Platform.Domain.Tenants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Platform.Infrastructure.Persistence.Configurations;
 
-public sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
+public sealed class TenantConfiguration : AuditableAggregateConfiguration<Tenant>
 {
-    public void Configure(EntityTypeBuilder<Tenant> b)
+    protected override Guid EntityTypeId => PlatformModuleEntityTypes.Tenants.EntityType.Id;
+
+    protected override void ConfigureAuditable(EntityTypeBuilder<Tenant> b)
     {
         b.ToTable("tenants");
 

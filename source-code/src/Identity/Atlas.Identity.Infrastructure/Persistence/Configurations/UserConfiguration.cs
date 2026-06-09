@@ -1,4 +1,6 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
 using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Configurations;
+using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +8,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Configurations;
 
-public sealed class UserConfiguration : IEntityTypeConfiguration<User>
+public sealed class UserConfiguration : AuditableAggregateConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<User> b)
+    protected override Guid EntityTypeId => IdentityModuleEntityTypes.Users.EntityType.Id;
+
+    protected override void ConfigureAuditable(EntityTypeBuilder<User> b)
     {
         b.ToTable("users");
 

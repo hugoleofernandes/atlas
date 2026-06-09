@@ -40,8 +40,12 @@ public sealed class AuditTrailService : IAuditTrailService
 
         foreach (var entry in entries)
         {
-            // Only entities that explicitly opt in to auditing are tracked.
-            var auditableAggregate = (IAuditableAggregate)entry.Entity;
+            var entityTypeIdValue = entry.Metadata.FindAnnotation(AuditMetadataAnnotations.EntityTypeId)?.Value;
+            if (entityTypeIdValue is not Guid entityTypeId)
+            {
+                throw new InvalidOperationException(
+                    $"Auditable aggregate '{entry.Metadata.ClrType.Name}' is missing EF annotation '{AuditMetadataAnnotations.EntityTypeId}'.");
+            }
 
             var changes = new Dictionary<string, object?>();
 
@@ -69,7 +73,7 @@ public sealed class AuditTrailService : IAuditTrailService
 
             var audit = new Audit();
             audit.Initialize(
-                auditableAggregate.EntityTypeId,
+                entityTypeId,
                 entry.State.ToString(),
                 GetPrimaryKey(entry),
                 _ctx.UserId?.ToString(),

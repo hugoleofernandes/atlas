@@ -1,12 +1,16 @@
-﻿using Atlas.Staff.Domain.Entities;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.Staff.Contracts.EntityTypes;
+using Atlas.Staff.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Staff.Infrastructure.Entities.StaffMembers.Configurations;
 
-public sealed class StaffMemberConfiguration : IEntityTypeConfiguration<StaffMember>
+public sealed class StaffMemberConfiguration : AuditableAggregateConfiguration<StaffMember>
 {
-    public void Configure(EntityTypeBuilder<StaffMember> b)
+    protected override Guid EntityTypeId => StaffModuleEntityTypes.StaffMembers.EntityType.Id;
+
+    protected override void ConfigureAuditable(EntityTypeBuilder<StaffMember> b)
     {
         b.ToTable("staff_members");
 
