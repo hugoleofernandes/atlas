@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Staff\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
+  </ItemGroup>
+
 </Project>

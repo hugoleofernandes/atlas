@@ -31,7 +31,7 @@
     <ProjectReference Include="..\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Domain\Atlas.Platform.Domain.csproj" />
-    <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
+    <ProjectReference Include="..\Staff\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
