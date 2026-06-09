@@ -9,8 +9,8 @@
 
     <ItemGroup>
         <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.8" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
         <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
@@ -31,7 +31,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Atlas.BuildingBlocks.Observability\Atlas.BuildingBlocks.Observability.csproj" />
         <ProjectReference Include="..\..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
-        <ProjectReference Include="..\..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
         <ProjectReference Include="..\Atlas.Outbox.Catalog\Atlas.Outbox.Catalog.csproj" />
         <ProjectReference Include="..\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
     </ItemGroup>

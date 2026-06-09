@@ -86,18 +86,21 @@
   </Folder>
   <Folder Name="/src/2-Modules/Staff/" />
   <Folder Name="/src/2-Modules/Staff/1-Api/">
-    <Project Path="src/Atlas.Staff.BffApi/Atlas.Staff.BffApi.csproj" />
-    <Project Path="src/Atlas.Staff.InternalApi/Atlas.Staff.InternalApi.csproj" />
+    <Project Path="src/Staff/Atlas.Staff.BffApi/Atlas.Staff.BffApi.csproj" />
+    <Project Path="src/Staff/Atlas.Staff.InternalApi/Atlas.Staff.InternalApi.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/2-Infrastructure/">
-    <Project Path="src/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
+    <Project Path="src/Staff/Atlas.Staff.Infrastructure/Atlas.Staff.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/3-AppServices/">
-    <Project Path="src/Atlas.Staff.Application/Atlas.Staff.Application.csproj" />
+    <Project Path="src/Staff/Atlas.Staff.Application/Atlas.Staff.Application.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Staff/4-Domain/">
-    <Project Path="src/Atlas.Staff.Domain/Atlas.Staff.Domain.csproj" />
-    <Project Path="src/Atlas.Staff.Resources/Atlas.Staff.Resources.csproj" Id="dd314a04-85ad-4791-a9cd-ad172fa4738a" />
+    <Project Path="src/Staff/Atlas.Staff.Domain/Atlas.Staff.Domain.csproj" />
+    <Project Path="src/Staff/Atlas.Staff.Resources/Atlas.Staff.Resources.csproj" />
+  </Folder>
+  <Folder Name="/src/2-Modules/Staff/5-Contracts/">
+    <Project Path="src/Staff/Atlas.Staff.Contracts/Atlas.Staff.Contracts.csproj" />
   </Folder>
   <Folder Name="/src/3-BuildingBlocks/">
     <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />

@@ -15,16 +15,16 @@
     <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
     <PackageReference Include="FastEndpoints" Version="8.1.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <!-- Apenas instrumentaï¿½ï¿½o AspNetCore ï¿½ o resto vem via Atlas.BuildingBlocks.Observability -->
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.12.54" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.14.14" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <!-- Enrichers, Console e File ficam na API ï¿½ OTLP sink vem via Atlas.BuildingBlocks.Observability -->
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
@@ -43,11 +43,7 @@
     <ProjectReference Include="..\Atlas.Identity.Infrastructure\Atlas.Identity.Infrastructure.csproj" />
     <ProjectReference Include="..\Atlas.Identity.InternalApi\Atlas.Identity.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.Identity.OutboxPublisher\Atlas.Identity.OutboxPublisher.csproj" />
-    <ProjectReference Include="..\Atlas.Staff.BffApi\Atlas.Staff.BffApi.csproj" />
-    <ProjectReference Include="..\Atlas.Staff.Application\Atlas.Staff.Application.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
-    <ProjectReference Include="..\Atlas.Staff.Infrastructure\Atlas.Staff.Infrastructure.csproj" />
-    <ProjectReference Include="..\Atlas.Staff.InternalApi\Atlas.Staff.InternalApi.csproj" />
     <ProjectReference Include="..\Atlas.Platform.BffApi\Atlas.Platform.BffApi.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />
