@@ -14,12 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
-    <ProjectReference Include="..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.Audit.csproj" />
+    <Folder Include="Entities\OutboxMessages\Readers\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\OutboxMessages\Readers\" />
+    <ProjectReference Include="..\..\Shared\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+    <ProjectReference Include="..\Atlas.BuildingBlocks.Audit\Atlas.BuildingBlocks.Audit.csproj" />
   </ItemGroup>
 
 </Project>

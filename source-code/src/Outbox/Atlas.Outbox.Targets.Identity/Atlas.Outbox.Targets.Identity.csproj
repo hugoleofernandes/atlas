@@ -11,11 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
-    <ProjectReference Include="..\..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Outbox\Atlas.BuildingBlocks.Outbox.csproj" />
     <ProjectReference Include="..\..\Identity\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\..\Identity\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />
+    <ProjectReference Include="..\..\Shared\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Domain\Atlas.Outbox.Domain.csproj" />
   </ItemGroup>

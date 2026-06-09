@@ -106,19 +106,19 @@
     <Project Path="src/Staff/Atlas.Staff.Contracts/Atlas.Staff.Contracts.csproj" />
   </Folder>
   <Folder Name="/src/3-BuildingBlocks/">
-    <Project Path="src/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.AuditTrail.Resources/Atlas.BuildingBlocks.Audit.Resources.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.AuditTrail/Atlas.BuildingBlocks.Audit.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Email/Atlas.BuildingBlocks.Email.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.FastEndpoints/Atlas.BuildingBlocks.FastEndpoints.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Infrastructure/Atlas.BuildingBlocks.Application.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Observability/Atlas.BuildingBlocks.Observability.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Permissions/Atlas.BuildingBlocks.Permissions.csproj" />
-    <Project Path="src/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Application/Atlas.BuildingBlocks.Application.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.AspNetCore/Atlas.BuildingBlocks.AspNetCore.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Audit.Resources/Atlas.BuildingBlocks.Audit.Resources.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Audit/Atlas.BuildingBlocks.Audit.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Email/Atlas.BuildingBlocks.Email.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.FastEndpoints/Atlas.BuildingBlocks.FastEndpoints.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Observability/Atlas.BuildingBlocks.Observability.csproj" />
     <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Outbox/Atlas.BuildingBlocks.Outbox.csproj" Id="0eee942d-81df-447a-a60b-4913e96df8cb" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Permissions/Atlas.BuildingBlocks.Permissions.csproj" />
+    <Project Path="src/BuildingBlocks/Atlas.BuildingBlocks.Persistence/Atlas.BuildingBlocks.Persistence.csproj" />
   </Folder>
   <Folder Name="/src/4-Shared/">
-    <Project Path="src/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
+    <Project Path="src/Shared/Atlas.SharedKernel/Atlas.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />

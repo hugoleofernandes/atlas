@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Atlas.BuildingBlocks.AuditTrail\Atlas.BuildingBlocks.Audit.csproj" />
-    <ProjectReference Include="..\..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Audit\Atlas.BuildingBlocks.Audit.csproj" />
+    <ProjectReference Include="..\..\Shared\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Domain\Atlas.Staff.Domain.csproj" />
   </ItemGroup>
 

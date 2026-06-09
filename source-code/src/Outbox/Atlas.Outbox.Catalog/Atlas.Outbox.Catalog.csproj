@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Atlas.BuildingBlocks.Email\Atlas.BuildingBlocks.Email.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Email\Atlas.BuildingBlocks.Email.csproj" />
     <ProjectReference Include="..\..\Identity\Atlas.Identity.Contracts\Atlas.Identity.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
     <ProjectReference Include="..\Atlas.Outbox.Targets.Identity\Atlas.Outbox.Targets.Identity.csproj" />

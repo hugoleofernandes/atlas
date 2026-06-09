@@ -28,9 +28,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Atlas.API\Atlas.API.csproj" />
-        <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
-        <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
-        <ProjectReference Include="..\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
         <ProjectReference Include="..\Identity\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     </ItemGroup>
 </Project>
