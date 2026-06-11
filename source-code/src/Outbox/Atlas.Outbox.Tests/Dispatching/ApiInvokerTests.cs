@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Atlas.OutboxWorker.Tests.Dispatching;
+namespace Atlas.Outbox.Tests.Dispatching;
 
 public sealed class ApiInvokerTests
 {

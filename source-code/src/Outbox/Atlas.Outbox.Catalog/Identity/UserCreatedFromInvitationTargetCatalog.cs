@@ -15,7 +15,9 @@ public sealed class UserCreatedFromInvitationTargetCatalog : ITargetCatalog
 {
     private static readonly IReadOnlyList<TargetMapping> Targets =
     [
-        new TargetMapping(StaffTargetNames.StaffCreateMemberFromInvitation, TargetMode.Direct, Order: 10),
+        // Reativar junto com o CreateStaffMemberFromInvitationTargetHandler — sem o handler
+        // registrado, o DirectTargetExecutor falha com "No direct target handler registered".
+        // new TargetMapping(StaffTargetNames.StaffCreateMemberFromInvitation, TargetMode.Direct, Order: 10),
         new TargetMapping(IdentityTargetNames.IdentitySendWelcomeEmail, TargetMode.Direct, Order: 20),
     ];
 

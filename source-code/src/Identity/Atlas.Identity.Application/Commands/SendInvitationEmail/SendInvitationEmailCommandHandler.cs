@@ -1,47 +1,37 @@
 using Atlas.BuildingBlocks.Email;
+using Atlas.Identity.Application.Emails;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Idempotency;
+using Microsoft.Extensions.Options;
 
 namespace Atlas.Identity.Application.Commands.SendInvitationEmail;
 
-/// <summary>
-/// Sends the tenant invitation e-mail.
-/// Delivery is delegated to <see cref="IEmailService"/> and the provider-level
-/// idempotency key is derived from the stable outbox idempotency key.
-/// </summary>
-public sealed class SendInvitationEmailCommandHandler : ISendInvitationEmailCommandHandler
+public sealed class SendInvitationEmailCommandHandler(
+    IEmailService emailService,
+    IIdempotencyContext idempotencyContext,
+    IOptions<IdentityEmailOptions> emailOptions) : ISendInvitationEmailCommandHandler
 {
-    private readonly IEmailService _emailService;
-    private readonly IIdempotencyContext _idempotencyContext;
-
     public IUnitOfWork UnitOfWork => NullUnitOfWork.Instance;
 
-    public SendInvitationEmailCommandHandler(IEmailService emailService, IIdempotencyContext idempotencyContext)
+    public async Task<Unit> ExecuteAsync(SendInvitationEmailCommand command, CancellationToken ct)
     {
-        _emailService = emailService;
-        _idempotencyContext = idempotencyContext;
+        await emailService.SendAsync(BuildMessage(command), ct);
+        return Unit.Value;
     }
-
-    public Task<Unit> ExecuteAsync(SendInvitationEmailCommand command, CancellationToken ct) =>
-        _emailService
-            .SendAsync(BuildMessage(command), ct)
-            .ContinueWith(_ => Unit.Value, ct, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
 
     private EmailMessage BuildMessage(SendInvitationEmailCommand command)
     {
         string? idempotencyKey =
-            _idempotencyContext.IdempotencyKey != Guid.Empty
-                ? $"send-invitation-email/{_idempotencyContext.IdempotencyKey}"
+            idempotencyContext.IdempotencyKey != Guid.Empty
+                ? $"send-invitation-email/{idempotencyContext.IdempotencyKey}"
                 : null;
+
+        var (subject, htmlBody) = IdentityEmailTemplates.Invitation(emailOptions.Value.LoginUrl);
 
         return new EmailMessage(
             To: command.Email,
-            Subject: "You were invited to Atlas",
-            HtmlBody: """
-            <h2>You were invited to Atlas</h2>
-            <p>An invitation was created for this email address.</p>
-            <p>Use your sign-in flow to access the tenant and complete onboarding.</p>
-            """,
+            Subject: subject,
+            HtmlBody: htmlBody,
             IdempotencyKey: idempotencyKey
         );
     }

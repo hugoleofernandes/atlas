@@ -5,11 +5,11 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="staff.read" xml:space="preserve"><value>View staff members</value></data>
-  <data name="staff.create" xml:space="preserve"><value>Create staff members</value></data>
-  <data name="staff.update" xml:space="preserve"><value>Update staff members</value></data>
-  <data name="staff.deactivate" xml:space="preserve"><value>Deactivate staff members</value></data>
-  <data name="staff.manage" xml:space="preserve"><value>Manage staff members</value></data>
+  <data name="staff.staff-member.read" xml:space="preserve"><value>View staff members</value></data>
+  <data name="staff.staff-member.create" xml:space="preserve"><value>Create staff members</value></data>
+  <data name="staff.staff-member.update" xml:space="preserve"><value>Update staff members</value></data>
+  <data name="staff.staff-member.deactivate" xml:space="preserve"><value>Deactivate staff members</value></data>
+  <data name="staff.staff-member.manage" xml:space="preserve"><value>Manage staff members</value></data>
 
   <data name="staff.audit.read" xml:space="preserve"><value>View staff audit log</value></data>
   <data name="staff.audit.manage" xml:space="preserve"><value>Manage staff audit log</value></data>

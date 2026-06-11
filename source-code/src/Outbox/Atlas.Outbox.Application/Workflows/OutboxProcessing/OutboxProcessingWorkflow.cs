@@ -41,7 +41,13 @@ public sealed class OutboxProcessingWorkflow(
 
         var messages = getPendingMessagesResult.Value;
 
-        logger.LogInformation("OutboxWorkflow: {Count} message(s) locked for processing", messages.Count);
+        if (messages.Count == 0)
+        {
+            logger.LogDebug("OutboxWorkflow [{Module}]: 0 message(s) pending", command.Module);
+            return;
+        }
+
+        logger.LogInformation("OutboxWorkflow [{Module}]: {Count} message(s) locked for processing", command.Module, messages.Count);
 
         foreach (var message in messages)
         {

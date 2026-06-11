@@ -30,7 +30,6 @@
   <Folder Name="/src/1-Executables/">
     <Project Path="src/Atlas.API/Atlas.API.csproj" />
     <Project Path="src/Outbox/Atlas.Outbox.Hangfire/Atlas.Outbox.Hangfire.csproj" />
-    <Project Path="src/Outbox/Atlas.Outbox.Worker/Atlas.Outbox.Worker.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/" />
   <Folder Name="/src/2-Modules/Identity/" />
@@ -68,7 +67,7 @@
     <Project Path="src/Outbox/Atlas.Outbox.Domain/Atlas.Outbox.Domain.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Outbox/_tests/">
-    <Project Path="src/Outbox/Atlas.Outbox.Worker.Tests/Atlas.Outbox.Worker.Tests.csproj" />
+    <Project Path="src/Outbox/Atlas.Outbox.Tests/Atlas.Outbox.Tests.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/" />
   <Folder Name="/src/2-Modules/Plataform/1-Api/">
@@ -122,6 +121,6 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="src/Atlas.API.Tests/Atlas.API.Tests.csproj" />
-    <Project Path="src/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
+    <Project Path="src/Identity/Atlas.Identity.Domain.Tests/Atlas.Identity.Domain.Tests.csproj" />
   </Folder>
 </Solution>

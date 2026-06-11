@@ -6,7 +6,7 @@ using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
-namespace Atlas.OutboxWorker.Tests.Processing;
+namespace Atlas.Outbox.Tests.Processing;
 
 /// <summary>
 /// Unit tests for <see cref="ProcessOutboxCommandHandler"/>.
@@ -34,7 +34,8 @@ public sealed class ProcessOutboxCommandHandlerTests
     private static readonly ProcessOutboxCommand DefaultCommand = new(
         BatchSize: 10,
         MaxRetries: 3,
-        LockDuration: TimeSpan.FromSeconds(30)
+        LockDuration: TimeSpan.FromSeconds(30),
+        Module: "test"
     );
 
     public ProcessOutboxCommandHandlerTests()

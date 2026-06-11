@@ -9,7 +9,7 @@
 //using NSubstitute;
 //using NSubstitute.ExceptionExtensions;
 
-//namespace Atlas.OutboxWorker.Tests.Processing;
+//namespace Atlas.Outbox.Tests.Processing;
 
 //public class OutboxProcessorTests
 //{

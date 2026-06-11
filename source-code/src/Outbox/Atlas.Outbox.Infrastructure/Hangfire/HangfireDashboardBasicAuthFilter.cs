@@ -21,7 +21,10 @@ public sealed class HangfireDashboardBasicAuthFilter(
             return false;
 
         if (!httpContext.Request.Headers.TryGetValue("Authorization", out var headerValues))
+        {
+            httpContext.Response.Headers["WWW-Authenticate"] = "Basic realm=\"Hangfire Dashboard\"";
             return false;
+        }
 
         var header = headerValues.ToString();
         if (!header.StartsWith("Basic ", StringComparison.OrdinalIgnoreCase))

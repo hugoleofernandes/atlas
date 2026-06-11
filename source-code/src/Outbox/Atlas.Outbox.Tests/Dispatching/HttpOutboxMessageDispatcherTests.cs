@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 
-namespace Atlas.OutboxWorker.Tests.Dispatching;
+namespace Atlas.Outbox.Tests.Dispatching;
 
 public sealed class HttpOutboxMessageDispatcherTests
 {

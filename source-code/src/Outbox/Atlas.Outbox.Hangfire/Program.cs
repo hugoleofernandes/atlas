@@ -1,4 +1,6 @@
+using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.Observability;
+using Atlas.Identity.Application.Emails;
 using Atlas.Identity.Contracts.IntegrationEvents.Users;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Outbox.Infrastructure.Configuration;
@@ -33,7 +35,10 @@ try
                 .MinimumLevel.Override("Hangfire", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .Enrich.WithThreadId()
-                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .Enrich.WithProperty("Module", "")
+                .WriteTo.Console(
+                    outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{Module:l}] {Message:lj}{NewLine}{Exception}"
+                )
                 .WriteToAtlasObservability(otel, ctx.HostingEnvironment);
 
             if (!otel.IsEnabled)
@@ -64,6 +69,8 @@ try
 
     services.Configure<OutboxWorkerOptions>(configuration.GetSection("OutboxWorker"));
     services.Configure<HangfireOutboxOptions>(configuration.GetSection("HangfireOutbox"));
+    services.Configure<IdentityEmailOptions>(configuration.GetSection("IdentityEmail"));
+    services.AddResendEmailService(configuration);
 
     services.AddDbContext<IdentityDbContext>(o =>
         o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
@@ -90,20 +97,29 @@ try
 
     services.AddHangfireServer(serverOptions =>
     {
-        serverOptions.ServerName = hangfireOptions.ServerName;
-        serverOptions.WorkerCount = hangfireOptions.WorkerCount;
-        serverOptions.Queues =
-        [
-            HangfireOutboxQueues.Identity,
-            HangfireOutboxQueues.Staff,
-        ];
+        serverOptions.ServerName = $"{hangfireOptions.ServerName}-identity";
+        serverOptions.WorkerCount = 1;
+        serverOptions.Queues = [HangfireOutboxQueues.Identity];
+    });
+
+    services.AddHangfireServer(serverOptions =>
+    {
+        serverOptions.ServerName = $"{hangfireOptions.ServerName}-staff";
+        serverOptions.WorkerCount = 1;
+        serverOptions.Queues = [HangfireOutboxQueues.Staff];
     });
 
     var app = builder.Build();
 
     await EnsureHangfireSchemaAsync(hangfireConnectionString, hangfireOptions.StorageSchema);
 
-    app.UseSerilogRequestLogging();
+    app.UseSerilogRequestLogging(opts =>
+    {
+        opts.GetLevel = (ctx, _, _) =>
+            ctx.Request.Path.StartsWithSegments(hangfireOptions.DashboardPath)
+                ? Serilog.Events.LogEventLevel.Verbose
+                : Serilog.Events.LogEventLevel.Information;
+    });
 
     var dashboardOptions = new DashboardOptions
     {
@@ -120,6 +136,18 @@ try
                 hangfireOptions.DashboardAuth.AllowInsecureHttp)
         ];
     }
+
+    app.Use(async (ctx, next) =>
+    {
+        if (ctx.Request.Path.StartsWithSegments(hangfireOptions.DashboardPath))
+        {
+            var en = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+            System.Globalization.CultureInfo.CurrentCulture = en;
+            System.Globalization.CultureInfo.CurrentUICulture = en;
+        }
+
+        await next();
+    });
 
     app.UseHangfireDashboard(hangfireOptions.DashboardPath, dashboardOptions);
 

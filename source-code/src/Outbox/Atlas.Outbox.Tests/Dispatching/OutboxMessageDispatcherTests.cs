@@ -3,7 +3,6 @@ using Atlas.Outbox.Application.Queries.ResolveOutboxTargets;
 using Atlas.Outbox.Infrastructure;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
-using Atlas.SharedKernel.Application.Handlers;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.IntegrationEvents;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -11,14 +10,14 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
-namespace Atlas.OutboxWorker.Tests.Dispatching;
+namespace Atlas.Outbox.Tests.Dispatching;
 
 /// <summary>
 /// Unit tests for <see cref="OutboxMessageDispatcher"/>.
 ///
 /// Strategy:
 ///   - <see cref="OutboxMessageDispatcher"/> is <c>internal</c>; access is granted via
-///     <c>[assembly: InternalsVisibleTo("Atlas.OutboxWorker.Tests")]</c> in Atlas.Outbox.Infrastructure.
+///     <c>[assembly: InternalsVisibleTo("Atlas.Outbox.Tests")]</c> in Atlas.Outbox.Infrastructure.
 ///   - <see cref="IIntegrationEventTypeResolver"/> is also <c>internal</c> — mocked with
 ///     NSubstitute using the same InternalsVisibleTo grant.
 ///   - <see cref="IHandlerInvoker"/> is replaced by the concrete <see cref="FakeHandlerInvoker"/>

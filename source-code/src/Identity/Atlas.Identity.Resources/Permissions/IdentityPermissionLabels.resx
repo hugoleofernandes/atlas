@@ -6,9 +6,6 @@
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
   <data name="identity.users.read" xml:space="preserve"><value>View users</value></data>
-  <data name="identity.users.update" xml:space="preserve"><value>Update users</value></data>
-  <data name="identity.users.deactivate" xml:space="preserve"><value>Deactivate users</value></data>
-  <data name="identity.users.manage" xml:space="preserve"><value>Manage users</value></data>
 
   <data name="identity.roles.read" xml:space="preserve"><value>View roles</value></data>
   <data name="identity.roles.create" xml:space="preserve"><value>Create roles</value></data>

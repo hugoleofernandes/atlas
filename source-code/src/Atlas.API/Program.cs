@@ -31,6 +31,7 @@ using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
 using Atlas.Identity.Application;
+using Atlas.Identity.Application.Emails;
 using Atlas.Identity.BffApi;
 using Atlas.Identity.BffApi.Configs;
 using Atlas.Identity.Domain;
@@ -256,6 +257,7 @@ try
     services.AddEndpointsApiExplorer();
 
     services.Configure<FrontendConfig>(configuration.GetSection("Frontend"));
+    services.Configure<IdentityEmailOptions>(configuration.GetSection("IdentityEmail"));
 
     //
     // ==========================================

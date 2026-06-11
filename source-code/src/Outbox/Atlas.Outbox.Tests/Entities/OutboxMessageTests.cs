@@ -1,7 +1,7 @@
 using Atlas.SharedKernel.Application.OutboxMessages;
 using FluentAssertions;
 
-namespace Atlas.OutboxWorker.Tests.Entities;
+namespace Atlas.Outbox.Tests.Entities;
 
 /// <summary>
 /// Pure unit tests for <see cref="OutboxMessage"/> — no mocks, no I/O, no async.

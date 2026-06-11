@@ -14,32 +14,38 @@ public sealed class ProcessStaffOutboxHangfireJob(
     IOptions<HangfireOutboxOptions> hangfireOptions,
     ILogger<ProcessStaffOutboxHangfireJob> logger)
 {
-    [DisableConcurrentExecution(timeoutInSeconds: 120)]
+    [DisableConcurrentExecution(timeoutInSeconds: 0)]
+    [AutomaticRetry(Attempts = 0, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
     public async Task ExecuteAsync(IJobCancellationToken cancellationToken)
     {
         var worker = workerOptions.Value;
         var hangfire = hangfireOptions.Value;
         var ct = cancellationToken.ShutdownToken;
-        var command = new ProcessOutboxCommand(worker.BatchSize, worker.MaxRetries, worker.LockDuration);
+        var command = new ProcessOutboxCommand(worker.BatchSize, worker.MaxRetries, worker.LockDuration, "staff");
         var startedAt = DateTime.UtcNow;
 
-        logger.LogInformation(
-            "HangfireOutbox: staff job started (window={Window}s, poll={Poll}s)",
-            hangfire.ProcessingWindow.TotalSeconds,
-            worker.PollInterval.TotalSeconds);
-
-        do
+        using (logger.BeginScope(new Dictionary<string, object> { ["Module"] = "staff" }))
         {
-            ct.ThrowIfCancellationRequested();
-            await workflow.RunAsync(command, ct);
+            logger.LogInformation(
+                "HangfireOutbox: staff job started (window={Window}s, poll={Poll}s)",
+                hangfire.ProcessingWindow.TotalSeconds,
+                worker.PollInterval.TotalSeconds);
 
-            if (DateTime.UtcNow - startedAt >= hangfire.ProcessingWindow)
-                break;
+            do
+            {
+                ct.ThrowIfCancellationRequested();
+                await workflow.RunAsync(command, ct);
 
-            await Task.Delay(worker.PollInterval, ct);
+                if (DateTime.UtcNow - startedAt >= hangfire.ProcessingWindow)
+                    break;
+
+                await Task.Delay(worker.PollInterval, ct);
+            }
+            while (!ct.IsCancellationRequested);
+
+            logger.LogInformation(
+                "HangfireOutbox: staff job completed in {Elapsed:F1}s",
+                (DateTime.UtcNow - startedAt).TotalSeconds);
         }
-        while (!ct.IsCancellationRequested);
-
-        logger.LogInformation("HangfireOutbox: staff job completed");
     }
 }

@@ -1,63 +1,37 @@
 using Atlas.BuildingBlocks.Email;
+using Atlas.Identity.Application.Emails;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Idempotency;
+using Microsoft.Extensions.Options;
 
 namespace Atlas.Identity.Application.Commands.SendWelcomeEmail;
 
-/// <summary>
-/// Sends a welcome email to a user who completed registration via an invitation link.
-///
-/// Delegates delivery to <see cref="IEmailService"/> — the handler has no knowledge
-/// of the underlying provider (Resend, SendGrid, etc.) or any fallback strategy.
-///
-/// Idempotency: when invoked from the outbox worker, <see cref="IIdempotencyContext"/>
-/// carries a stable GUID (same across retries). That GUID is forwarded to the email
-/// provider so it deduplicates on its end — even if the outbox retries the message,
-/// the user receives exactly one welcome email.
-///
-/// No database writes — PersistDbDecorator calls SaveChangesAsync safely as a no-op.
-/// </summary>
-public sealed class SendWelcomeEmailCommandHandler : ISendWelcomeEmailCommandHandler
+public sealed class SendWelcomeEmailCommandHandler(
+    IEmailService emailService,
+    IIdempotencyContext idempotencyContext,
+    IOptions<IdentityEmailOptions> emailOptions) : ISendWelcomeEmailCommandHandler
 {
-    private readonly IEmailService _emailService;
-    private readonly IIdempotencyContext _idempotencyContext;
-
-    /// <inheritdoc/>
     public IUnitOfWork UnitOfWork => NullUnitOfWork.Instance;
 
-    public SendWelcomeEmailCommandHandler(IEmailService emailService, IIdempotencyContext idempotencyContext)
+    public async Task<Unit> ExecuteAsync(SendWelcomeEmailCommand command, CancellationToken ct)
     {
-        _emailService = emailService;
-        _idempotencyContext = idempotencyContext;
+        await emailService.SendAsync(BuildMessage(command), ct);
+        return Unit.Value;
     }
-
-    public Task<Unit> ExecuteAsync(SendWelcomeEmailCommand command, CancellationToken ct) =>
-        _emailService
-            .SendAsync(BuildMessage(command), ct)
-            .ContinueWith(_ => Unit.Value, ct, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
-
-    // ── Private ──────────────────────────────────────────────────────────────
 
     private EmailMessage BuildMessage(SendWelcomeEmailCommand command)
     {
-        // Build a stable idempotency key using the outbox message's IdempotencyKey (a GUID
-        // that never changes across retry attempts). Follows Resend's recommended format:
-        // <event-type>/<entity-id>.
-        // Guard against Guid.Empty — which means the handler is running outside an outbox
-        // context (tests, direct invocation) where no idempotency context is available.
         string? idempotencyKey =
-            _idempotencyContext.IdempotencyKey != Guid.Empty
-                ? $"send-welcome-email/{_idempotencyContext.IdempotencyKey}"
+            idempotencyContext.IdempotencyKey != Guid.Empty
+                ? $"send-welcome-email/{idempotencyContext.IdempotencyKey}"
                 : null;
+
+        var (subject, htmlBody) = IdentityEmailTemplates.Welcome(emailOptions.Value.LoginUrl);
 
         return new EmailMessage(
             To: command.Email,
-            Subject: "Welcome to Atlas",
-            HtmlBody: $"""
-            <h2>Welcome to Atlas!</h2>
-            <p>Your account is ready. You can now sign in and start using the platform.</p>
-            <p>If you have any questions, just reply to this email.</p>
-            """,
+            Subject: subject,
+            HtmlBody: htmlBody,
             IdempotencyKey: idempotencyKey
         );
     }
