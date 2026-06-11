@@ -16,10 +16,17 @@ namespace Atlas.SharedKernel.Application.OutboxMessages;
 /// history is stored in outbox_handler_executions (one row per handler per attempt).
 ///
 /// Attempt flow:
-///   Pending  →  MarkAsProcessed()        (all handlers OK)
-///   Pending  →  CreateRetryAttempt()     (some handlers failed, maxAttempts not reached)
+///   Pending  →  MarkAsProcessed()            (all handlers OK)
+///   Pending  →  CreateRetryAttempt()         (some handlers failed, maxAttempts not reached)
 ///               └─ closes this row (FailedAt set) and returns the next attempt row
-///   Pending  →  MarkAsDeadLettered()     (some handlers failed, maxAttempts reached)
+///   Pending  →  MarkAsDeadLettered()         (some handlers failed, maxAttempts reached)
+///
+/// Manual replay flow:
+///   DeadLettered  →  CreateResubmissionAttempt()   (operator triggers replay)
+///                    └─ dead-lettered row is NOT mutated (stays terminal and immutable)
+///                    └─ returns NEW row: AttemptNumber=1, Origin=ManualResubmit,
+///                       ParentOutboxMessageId=this.Id, IdempotencyKey propagated
+///                    └─ new row enters the pending batch automatically on next worker cycle
 ///
 /// Pending batch query: ProcessedOn IS NULL AND DeadLetteredOn IS NULL AND FailedAt IS NULL
 ///
@@ -89,6 +96,24 @@ public sealed class OutboxMessage : INotAuditable
     public string Module { get; private set; } = default!;
 
     /// <summary>
+    /// Indicates how this attempt row was created.
+    /// <see cref="OutboxMessageOrigin.Automatic"/> for normal processing and automatic retries.
+    /// <see cref="OutboxMessageOrigin.ManualResubmit"/> for operator-triggered replays and their
+    /// subsequent automatic retries.
+    /// </summary>
+    public OutboxMessageOrigin Origin { get; private set; }
+
+    /// <summary>
+    /// Id of the operator who triggered a manual resubmission. Null for automatic attempts.
+    /// </summary>
+    public Guid? ResubmittedByUserId { get; private set; }
+
+    /// <summary>
+    /// Email snapshot of the operator who triggered a manual resubmission. Null for automatic attempts.
+    /// </summary>
+    public string? ResubmittedByEmail { get; private set; }
+
+    /// <summary>
     /// Brief human-readable summary of the failure. Null on success.
     /// Full per-handler detail is in the outbox_handler_executions table.
     /// </summary>
@@ -138,6 +163,7 @@ public sealed class OutboxMessage : INotAuditable
         UserEmail      = userEmail;
         CorrelationId  = correlationId;
         Module         = module;
+        Origin         = OutboxMessageOrigin.Automatic;
         OccurredOn     = DateTime.UtcNow;
         // Capture the W3C traceparent of the active span so the OutboxWorker can
         // restore it as parent context and link its spans to this API trace in Tempo.
@@ -146,22 +172,25 @@ public sealed class OutboxMessage : INotAuditable
     }
 
     /// <summary>
-    /// Private — called only by <see cref="CreateRetryAttempt"/>.
+    /// Private — called by <see cref="CreateRetryAttempt"/> and <see cref="CreateResubmissionAttempt"/>.
     /// Creates the next attempt row copying all event data from the parent.
     /// </summary>
     private OutboxMessage(
-        Guid    parentId,
-        Guid    idempotencyKey,
-        int     attemptNumber,
-        string  name,
-        string  type,
-        string  payload,
-        Guid    tenantId,
-        Guid    userId,
-        string? userEmail,
-        string  correlationId,
-        string  module,
-        string? traceParent)
+        Guid                  parentId,
+        Guid                  idempotencyKey,
+        int                   attemptNumber,
+        string                name,
+        string                type,
+        string                payload,
+        Guid                  tenantId,
+        Guid                  userId,
+        string?               userEmail,
+        string                correlationId,
+        string                module,
+        string?               traceParent,
+        OutboxMessageOrigin   origin,
+        Guid?                 resubmittedByUserId,
+        string?               resubmittedByEmail)
     {
         Id                    = Guid.NewGuid();
         IdempotencyKey        = idempotencyKey;
@@ -176,6 +205,9 @@ public sealed class OutboxMessage : INotAuditable
         CorrelationId         = correlationId;
         Module                = module;
         TraceParent           = traceParent;
+        Origin                = origin;
+        ResubmittedByUserId   = resubmittedByUserId;
+        ResubmittedByEmail    = resubmittedByEmail;
         OccurredOn            = DateTime.UtcNow;
     }
 
@@ -208,18 +240,53 @@ public sealed class OutboxMessage : INotAuditable
         ClearLock();
 
         return new OutboxMessage(
-            parentId:       Id,
-            idempotencyKey: IdempotencyKey,
-            attemptNumber:  AttemptNumber + 1,
-            name:           Name,
-            type:           Type,
-            payload:        Payload,
-            tenantId:       TenantId,
-            userId:         UserId,
-            userEmail:      UserEmail,      // preserve actor email snapshot across retries
-            correlationId:  CorrelationId,
-            module:         Module,
-            traceParent:    TraceParent);   // preserve original API trace across retries
+            parentId:             Id,
+            idempotencyKey:       IdempotencyKey,
+            attemptNumber:        AttemptNumber + 1,
+            name:                 Name,
+            type:                 Type,
+            payload:              Payload,
+            tenantId:             TenantId,
+            userId:               UserId,
+            userEmail:            UserEmail,            // preserve actor email snapshot
+            correlationId:        CorrelationId,
+            module:               Module,
+            traceParent:          TraceParent,          // preserve original API trace
+            origin:               Origin,               // propagate origin through retry chain
+            resubmittedByUserId:  ResubmittedByUserId,  // propagate resubmit authorship
+            resubmittedByEmail:   ResubmittedByEmail);
+    }
+
+    /// <summary>
+    /// Creates a manual replay attempt from a dead-lettered row.
+    /// The dead-lettered row is NOT mutated — it stays terminal and immutable.
+    /// The new row starts a fresh sub-chain: AttemptNumber resets to 1 so the
+    /// replay gets a full retry budget; ParentOutboxMessageId preserves lineage.
+    /// Subsequent automatic retries of the replay inherit Origin=ManualResubmit
+    /// so the entire sub-chain is traceable back to the operator action.
+    /// </summary>
+    public OutboxMessage CreateResubmissionAttempt(Guid resubmittedByUserId, string resubmittedByEmail)
+    {
+        if (!IsDeadLettered)
+            throw new InvalidOperationException(
+                $"Only dead-lettered messages can be resubmitted. Message '{Id}' is not dead-lettered.");
+
+        return new OutboxMessage(
+            parentId:             Id,
+            idempotencyKey:       IdempotencyKey,
+            attemptNumber:        1,
+            name:                 Name,
+            type:                 Type,
+            payload:              Payload,
+            tenantId:             TenantId,
+            userId:               UserId,
+            userEmail:            UserEmail,
+            correlationId:        CorrelationId,
+            module:               Module,
+            traceParent:          TraceParent,
+            origin:               OutboxMessageOrigin.ManualResubmit,
+            resubmittedByUserId:  resubmittedByUserId,
+            resubmittedByEmail:   resubmittedByEmail);
     }
 
     /// <summary>

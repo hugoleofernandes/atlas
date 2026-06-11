@@ -106,4 +106,10 @@ public sealed class OutboxMessageRepository<TDbContext> : IOutboxMessageReposito
     {
         await _db.Set<OutboxHandlerExecution>().AddRangeAsync(executions, ct);
     }
+
+    public Task<bool> HasChildAsync(Guid parentId, CancellationToken ct)
+    {
+        return _db.Set<OutboxMessage>()
+            .AnyAsync(m => m.ParentOutboxMessageId == parentId, ct);
+    }
 }

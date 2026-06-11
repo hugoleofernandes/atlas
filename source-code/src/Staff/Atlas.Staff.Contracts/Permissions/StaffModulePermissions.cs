@@ -17,6 +17,9 @@ public sealed partial class StaffModulePermissions : IModulePermissions
         new(StaffMember.Manage, true, AtlasModules.Staff),
         new(Audit.Read, false, AtlasModules.Staff),
         new(Audit.Manage, true, AtlasModules.Staff),
+        new(Outbox.Read, false, AtlasModules.Staff),
+        new(Outbox.Resubmit, false, AtlasModules.Staff),
+        new(Outbox.Manage, true, AtlasModules.Staff),
     ];
 
     public IReadOnlyList<PermissionDefinition> Definitions => AllDefinitions;

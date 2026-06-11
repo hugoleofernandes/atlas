@@ -21,4 +21,8 @@
 
   <data name="identity.audit.read" xml:space="preserve"><value>View identity audit log</value></data>
   <data name="identity.audit.manage" xml:space="preserve"><value>Manage identity audit log</value></data>
+
+  <data name="identity.outbox.read" xml:space="preserve"><value>View identity outbox dead-letters</value></data>
+  <data name="identity.outbox.resubmit" xml:space="preserve"><value>Resubmit identity outbox dead-letters</value></data>
+  <data name="identity.outbox.manage" xml:space="preserve"><value>Manage identity outbox</value></data>
 </root>

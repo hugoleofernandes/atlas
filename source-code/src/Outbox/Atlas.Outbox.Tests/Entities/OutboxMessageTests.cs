@@ -201,4 +201,115 @@ public sealed class OutboxMessageTests
 
         msg.IsLocked().Should().BeFalse();
     }
+
+    // ── 13. CreateResubmissionAttempt — new row fields ───────────────────────
+
+    private static OutboxMessage CreateDeadLettered()
+    {
+        var msg = Create();
+        msg.MarkAsDeadLettered();
+        return msg;
+    }
+
+    [Fact]
+    public void CreateResubmissionAttempt_ResetsAttemptNumberTo1()
+    {
+        var dead = CreateDeadLettered();
+        var userId = Guid.NewGuid();
+
+        var replay = dead.CreateResubmissionAttempt(userId, "op@example.com");
+
+        replay.AttemptNumber.Should().Be(1);
+    }
+
+    [Fact]
+    public void CreateResubmissionAttempt_PreservesIdempotencyKeyAndLinksParent()
+    {
+        var dead = CreateDeadLettered();
+        var userId = Guid.NewGuid();
+
+        var replay = dead.CreateResubmissionAttempt(userId, "op@example.com");
+
+        replay.IdempotencyKey.Should().Be(dead.IdempotencyKey);
+        replay.ParentOutboxMessageId.Should().Be(dead.Id);
+        replay.Id.Should().NotBe(dead.Id);
+    }
+
+    [Fact]
+    public void CreateResubmissionAttempt_SetsOriginAndAuthorship()
+    {
+        var dead = CreateDeadLettered();
+        var userId = Guid.NewGuid();
+        const string email = "op@example.com";
+
+        var replay = dead.CreateResubmissionAttempt(userId, email);
+
+        replay.Origin.Should().Be(OutboxMessageOrigin.ManualResubmit);
+        replay.ResubmittedByUserId.Should().Be(userId);
+        replay.ResubmittedByEmail.Should().Be(email);
+    }
+
+    [Fact]
+    public void CreateResubmissionAttempt_DoesNotMutateDeadLetteredRow()
+    {
+        var dead = CreateDeadLettered();
+        var deadLetteredOn = dead.DeadLetteredOn;
+
+        dead.CreateResubmissionAttempt(Guid.NewGuid(), "op@example.com");
+
+        dead.IsDeadLettered.Should().BeTrue();
+        dead.DeadLetteredOn.Should().Be(deadLetteredOn);
+        dead.IsFailed.Should().BeFalse();
+        dead.IsProcessed.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CreateResubmissionAttempt_Throws_WhenNotDeadLettered()
+    {
+        var msg = Create();
+
+        var act = () => msg.CreateResubmissionAttempt(Guid.NewGuid(), "op@example.com");
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void CreateResubmissionAttempt_Throws_WhenAlreadyProcessed()
+    {
+        var msg = Create();
+        msg.MarkAsProcessed();
+
+        var act = () => msg.CreateResubmissionAttempt(Guid.NewGuid(), "op@example.com");
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    // ── 14. CreateRetryAttempt propagates Origin and authorship ──────────────
+
+    [Fact]
+    public void CreateRetryAttempt_PropagatesOriginAndAuthorship()
+    {
+        var dead = CreateDeadLettered();
+        var userId = Guid.NewGuid();
+        const string email = "op@example.com";
+
+        var replay = dead.CreateResubmissionAttempt(userId, email);
+        var retry  = replay.CreateRetryAttempt("handler failed");
+
+        retry.Origin.Should().Be(OutboxMessageOrigin.ManualResubmit);
+        retry.ResubmittedByUserId.Should().Be(userId);
+        retry.ResubmittedByEmail.Should().Be(email);
+    }
+
+    // ── 15. Automatic attempt defaults ───────────────────────────────────────
+
+    [Fact]
+    public void FirstAttempt_HasAutomaticOrigin()
+    {
+        var msg = Create();
+
+        msg.Origin.Should().Be(OutboxMessageOrigin.Automatic);
+        msg.ResubmittedByUserId.Should().BeNull();
+        msg.ResubmittedByEmail.Should().BeNull();
+    }
 }

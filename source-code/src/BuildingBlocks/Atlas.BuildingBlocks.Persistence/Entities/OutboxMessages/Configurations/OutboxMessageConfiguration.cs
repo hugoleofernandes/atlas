@@ -48,6 +48,14 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
 
         b.Property(x => x.Module).HasMaxLength(50).IsRequired();
 
+        b.Property(x => x.Origin)
+            .HasConversion<string>()
+            .IsRequired()
+            .HasDefaultValue(OutboxMessageOrigin.Automatic);
+
+        b.Property(x => x.ResubmittedByUserId).IsRequired(false);
+        b.Property(x => x.ResubmittedByEmail).HasMaxLength(320).IsRequired(false);
+
         b.Property(x => x.CorrelationId).HasMaxLength(100);
 
         // W3C traceparent — "00-{32-hex traceId}-{16-hex spanId}-{2-hex flags}" = 55 chars max.

@@ -21,4 +21,7 @@ public interface IOutboxWorkerRepository
     /// Must be called within the same Unit of Work as the parent message update.
     /// </summary>
     Task AddExecutionsAsync(IReadOnlyList<OutboxHandlerExecution> executions, CancellationToken ct);
+
+    /// <summary>True when the message already has at least one child attempt (retry or resubmission).</summary>
+    Task<bool> HasChildAsync(Guid parentId, CancellationToken ct);
 }

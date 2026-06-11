@@ -24,6 +24,8 @@
     <ProjectReference Include="..\Atlas.Identity.Application\Atlas.Identity.Application.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Domain\Atlas.Identity.Domain.csproj" />
     <ProjectReference Include="..\Atlas.Identity.Resources\Atlas.Identity.Resources.csproj" />
+    <ProjectReference Include="..\..\Outbox\Atlas.Outbox.Application\Atlas.Outbox.Application.csproj" />
+    <ProjectReference Include="..\..\Staff\Atlas.Staff.Contracts\Atlas.Staff.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

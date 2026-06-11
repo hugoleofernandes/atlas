@@ -2,8 +2,11 @@ using Atlas.BuildingBlocks.Persistence.Entities.Idempotency;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Readers.Outbox.GetPendingMessages;
 using Atlas.Outbox.Application.Commands.ProcessOutbox;
+using Atlas.Outbox.Application.Commands.ResubmitDeadLetter;
+using Atlas.Outbox.Application.Queries.ListDeadLetters;
 using Atlas.Outbox.Application.Workflows.OutboxProcessing;
 using Atlas.Outbox.Infrastructure.Configuration;
+using Atlas.Outbox.Infrastructure.Readers.ListDeadLetters;
 using Atlas.Outbox.Infrastructure.Readers.ListPendingMessages;
 using Atlas.SharedKernel.Application.Idempotency;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +32,12 @@ public static class IdentityOutboxDependencyInjection
         });
 
         services.AddModuleOutboxCommandHandler<IIdentityOutboxCommandHandler, IdentityDbContext>();
+
+        services.AddModuleResubmitCommandHandler<IIdentityResubmitDeadLetterCommandHandler, IdentityDbContext>();
+
+        services.AddModuleListDeadLettersQueryHandler<IIdentityListDeadLettersQueryHandler>(
+            sp => new IdentityListDeadLettersReader(sp.GetRequiredService<IdentityDbContext>())
+        );
 
         services.AddScoped<IIdempotencyService, IdempotencyService<IdentityDbContext>>();
 

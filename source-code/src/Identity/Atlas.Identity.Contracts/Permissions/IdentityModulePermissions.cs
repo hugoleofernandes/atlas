@@ -26,6 +26,9 @@ public sealed partial class IdentityModulePermissions : IModulePermissions
         Invitations.Manage,
         Audit.Read,
         Audit.Manage,
+        Outbox.Read,
+        Outbox.Resubmit,
+        Outbox.Manage,
     ];
 
     public IReadOnlyList<PermissionDefinition> Definitions => AllDefinitions;
