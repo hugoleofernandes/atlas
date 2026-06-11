@@ -30,6 +30,7 @@
   <Folder Name="/src/1-Executables/">
     <Project Path="src/Atlas.API/Atlas.API.csproj" />
     <Project Path="src/Outbox/Atlas.Outbox.Hangfire/Atlas.Outbox.Hangfire.csproj" />
+    <Project Path="src/Outbox/Atlas.Outbox.Service/Atlas.Outbox.Service.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/" />
   <Folder Name="/src/2-Modules/Identity/" />
