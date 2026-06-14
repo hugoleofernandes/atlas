@@ -4,11 +4,13 @@ using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
+using Atlas.Platform.Application.Queries.Tenants.GetTenantsByIds;
 using Atlas.Platform.Infrastructure.Labels;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using Atlas.Platform.Infrastructure.Readers.Audit.ListEntries;
 using Atlas.Platform.Infrastructure.Readers.EntityTypes.Lookup;
 using Atlas.Platform.Infrastructure.Readers.Tenants.GetTenantByName;
+using Atlas.Platform.Infrastructure.Readers.Tenants.GetTenantsByIds;
 using Atlas.Platform.Infrastructure.Seeders;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +31,7 @@ public static class PlatformDependencyInjection
         // READERS
         services.AddScoped<ILookupEntityTypesReader, LookupEntityTypesReader>();
         services.AddScoped<IGetTenantByNameReader, GetTenantByNameReader>();
+        services.AddScoped<IGetTenantsByIdsReader, GetTenantsByIdsReader>();
 
         // Audit reader registered as concrete type to avoid DI conflict with
         // other modules that also register IListAuditEntriesReader.
@@ -37,6 +40,7 @@ public static class PlatformDependencyInjection
         // QUERY HANDLERS
         services.AddScoped<ILookupEntityTypesQueryHandler, LookupEntityTypesQueryHandler>();
         services.AddScoped<IGetTenantByNameQueryHandler, GetTenantByNameQueryHandler>();
+        services.AddScoped<IGetTenantsByIdsQueryHandler, GetTenantsByIdsQueryHandler>();
 
         // Factory lambda wires the Platform-specific reader into the shared audit handler
         // without exposing IListAuditEntriesReader in the root DI container.

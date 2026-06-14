@@ -13,13 +13,13 @@ API=$(SRC)/Atlas.API
 # CONTEXTS (GENERIC)
 # =========================================
 
-identity_PROJECT=$(SRC)/Atlas.Identity.Infrastructure
+identity_PROJECT=$(SRC)/Identity/Atlas.Identity.Infrastructure
 identity_CONTEXT=IdentityDbContext
 
-staff_PROJECT=$(SRC)/Atlas.Staff.Infrastructure
+staff_PROJECT=$(SRC)/Staff/Atlas.Staff.Infrastructure
 staff_CONTEXT=StaffDbContext
 
-platform_PROJECT=$(SRC)/Atlas.Platform.Infrastructure
+platform_PROJECT=$(SRC)/Platform/Atlas.Platform.Infrastructure
 platform_CONTEXT=PlatformDbContext
 
 TARGET_PROJECT=$($(context)_PROJECT)

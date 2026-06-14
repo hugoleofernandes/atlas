@@ -18,7 +18,7 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("atlas_staff")
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -217,6 +217,13 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("occurred_on");
 
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Automatic")
+                        .HasColumnName("origin");
+
                     b.Property<Guid?>("ParentOutboxMessageId")
                         .HasColumnType("uuid")
                         .HasColumnName("parent_outbox_message_id");
@@ -229,6 +236,15 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("ProcessedOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("processed_on");
+
+                    b.Property<string>("ResubmittedByEmail")
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)")
+                        .HasColumnName("resubmitted_by_email");
+
+                    b.Property<Guid?>("ResubmittedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("resubmitted_by_user_id");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid")
@@ -329,6 +345,8 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_staff_members_tenant_id_user_id");
 
                     b.ToTable("staff_members", "atlas_staff");
+
+                    b.HasAnnotation("Audit:EntityTypeId", new Guid("00000000-0000-0000-0003-000000000001"));
                 });
 
             modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxHandlerExecution", b =>

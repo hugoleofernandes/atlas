@@ -39,6 +39,7 @@ using Atlas.Identity.Infrastructure.DI;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.InternalApi;
 using Atlas.Identity.OutboxPublisher.DI;
+using Atlas.Outbox.Infrastructure.DI;
 using Atlas.Platform.BffApi;
 using Atlas.Platform.Domain;
 using Atlas.Platform.Infrastructure.DI;
@@ -203,6 +204,9 @@ try
     // PLATFORM
     services.AddPlatformModuleDependencies();
     //
+
+    // OUTBOX — management surface (triage/replay endpoints; processing lives in the worker hosts)
+    services.AddOutboxManagementDependencies();
 
     services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
     services.AddScoped<IOutboxMessageBuilder, OutboxMessageBuilder>();

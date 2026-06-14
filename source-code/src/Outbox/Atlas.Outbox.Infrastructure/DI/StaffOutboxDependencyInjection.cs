@@ -10,10 +10,7 @@ using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
 using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
 using Atlas.Outbox.Application.Commands.ProcessOutbox;
-using Atlas.Outbox.Application.Commands.ResubmitDeadLetter;
-using Atlas.Outbox.Application.Queries.ListDeadLetters;
 using Atlas.Outbox.Application.Workflows.OutboxProcessing;
-using Atlas.Outbox.Infrastructure.Readers.ListDeadLetters;
 using Atlas.SharedKernel.Application.Idempotency;
 using Atlas.SharedKernel.Application.Metrics;
 using Atlas.SharedKernel.Application.OutboxMessages;
@@ -35,12 +32,6 @@ public static class StaffOutboxDependencyInjection
         );
 
         services.AddModuleOutboxCommandHandler<IStaffOutboxCommandHandler, StaffDbContext>();
-
-        services.AddModuleResubmitCommandHandler<IStaffResubmitDeadLetterCommandHandler, StaffDbContext>();
-
-        services.AddModuleListDeadLettersQueryHandler<IStaffListDeadLettersQueryHandler>(
-            sp => new StaffListDeadLettersReader(sp.GetRequiredService<StaffDbContext>())
-        );
 
         services.AddScoped<IAuditTrailService, AuditTrailService>();
         services.AddScoped<IEntityChangeStamper, EntityChangeStamper>();

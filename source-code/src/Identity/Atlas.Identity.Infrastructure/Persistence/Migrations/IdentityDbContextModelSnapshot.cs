@@ -18,7 +18,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("atlas_identity")
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -175,6 +175,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_invitations_tenant_id_email");
 
                     b.ToTable("invitations", "atlas_identity");
+
+                    b.HasAnnotation("Audit:EntityTypeId", new Guid("00000000-0000-0000-0001-000000000003"));
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Permissions.Permission", b =>
@@ -316,6 +318,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_roles_tenant_id_name");
 
                     b.ToTable("roles", "atlas_identity");
+
+                    b.HasAnnotation("Audit:EntityTypeId", new Guid("00000000-0000-0000-0001-000000000002"));
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Users.User", b =>
@@ -387,6 +391,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_users_tenant_id_email");
 
                     b.ToTable("users", "atlas_identity");
+
+                    b.HasAnnotation("Audit:EntityTypeId", new Guid("00000000-0000-0000-0001-000000000001"));
                 });
 
             modelBuilder.Entity("Atlas.SharedKernel.Application.OutboxMessages.OutboxHandlerExecution", b =>
@@ -494,6 +500,13 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("occurred_on");
 
+                    b.Property<string>("Origin")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Automatic")
+                        .HasColumnName("origin");
+
                     b.Property<Guid?>("ParentOutboxMessageId")
                         .HasColumnType("uuid")
                         .HasColumnName("parent_outbox_message_id");
@@ -506,6 +519,15 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("ProcessedOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("processed_on");
+
+                    b.Property<string>("ResubmittedByEmail")
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)")
+                        .HasColumnName("resubmitted_by_email");
+
+                    b.Property<Guid?>("ResubmittedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("resubmitted_by_user_id");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid")

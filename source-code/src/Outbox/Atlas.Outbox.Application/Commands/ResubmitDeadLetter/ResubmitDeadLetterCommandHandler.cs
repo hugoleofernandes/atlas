@@ -8,7 +8,8 @@ public sealed class ResubmitDeadLetterCommandHandler(
     IOutboxWorkerRepository repository,
     IRequestContext requestContext,
     IUnitOfWork unitOfWork)
-    : IResubmitDeadLetterCommandHandler
+    : IIdentityResubmitDeadLetterCommandHandler,
+      IStaffResubmitDeadLetterCommandHandler
 {
     public IUnitOfWork UnitOfWork => unitOfWork;
 

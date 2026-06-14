@@ -7,4 +7,7 @@ public sealed record DeadLetterSummary(
     int      AttemptNumber,
     DateTime DeadLetteredOn,
     string?  Error,
-    bool     WasResubmitted);
+    bool     WasResubmitted)
+{
+    public bool HasReplayChild => WasResubmitted;
+}

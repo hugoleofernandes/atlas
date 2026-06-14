@@ -1,7 +1,8 @@
 namespace Atlas.Outbox.Application.Queries.ListDeadLetters;
 
 public sealed class ListDeadLettersQueryHandler(IListDeadLettersReader reader)
-    : IListDeadLettersQueryHandler
+    : IIdentityListDeadLettersQueryHandler,
+      IStaffListDeadLettersQueryHandler
 {
     public Task<IReadOnlyList<DeadLetterSummary>> ExecuteAsync(
         ListDeadLettersQuery query,

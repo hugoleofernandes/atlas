@@ -1,6 +1,7 @@
 using Atlas.BuildingBlocks.Persistence.Entities.OutboxMessages.Repositories;
 using Atlas.Outbox.Application.Commands.ResubmitDeadLetter;
 using Atlas.Outbox.Application.Queries.ListDeadLetters;
+using Atlas.Outbox.Application.Queries.ListOutboxMessages;
 using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,21 @@ public static partial class OutboxDependencyInjection
             (TQueryHandler)
                 (object)
                     new ListDeadLettersQueryHandler(readerFactory(sp))
+        );
+
+        return services;
+    }
+
+    public static IServiceCollection AddModuleListOutboxMessagesQueryHandler<TQueryHandler>(
+        this IServiceCollection services,
+        Func<IServiceProvider, IListOutboxMessagesReader> readerFactory
+    )
+        where TQueryHandler : class, IListOutboxMessagesQueryHandler
+    {
+        services.AddScoped<TQueryHandler>(sp =>
+            (TQueryHandler)
+                (object)
+                    new ListOutboxMessagesQueryHandler(readerFactory(sp))
         );
 
         return services;
