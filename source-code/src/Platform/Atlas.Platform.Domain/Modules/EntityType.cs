@@ -37,4 +37,7 @@ public sealed class EntityType : AggregateRoot, INotMultiTenant
             Name     = name,
             IsActive = true,
         };
+
+    public void Activate()   => IsActive = true;
+    public void Deactivate() => IsActive = false;
 }
