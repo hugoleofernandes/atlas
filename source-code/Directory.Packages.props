@@ -27,12 +27,6 @@
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
 
-    <!-- Hangfire -->
-    <PackageVersion Include="Hangfire.AspNetCore" Version="1.8.23" />
-    <PackageVersion Include="Hangfire.Core" Version="1.8.23" />
-    <PackageVersion Include="Hangfire.PostgreSql" Version="1.21.1" />
-    <!-- Force safe version — Hangfire.Core pulls Newtonsoft.Json 11.0.1 (GHSA-5crp-9r3c-p9vr) -->
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
 
     <!-- Microsoft.AspNetCore -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.9" />
