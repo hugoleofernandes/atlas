@@ -12,11 +12,13 @@
 ✅ For 1:N with pagination: two separate queries, group in C#
 ✅ Optional filters: build the WHERE clause dynamically — add only predicates for values that were provided
 ✅ Keep tenant filter explicit in SQL even when automatic safeguards exist
+✅ Reader may project derived fields, but should call a pure domain rule when that field represents a real business decision
 ❌ Never return domain objects from a QueryHandler — always DTOs
 ❌ Never call a Reader from a CommandHandler
 ❌ Never JOIN a paginated query when the N side can multiply rows
 ❌ Never use `@Param IS NULL OR column = @Param` — breaks index usage and Npgsql type inference
 ❌ Never read another module's schema from a module-owned query — schemas are module boundaries
+❌ Never recreate domain business rules inline in SQL, readers, or response mappers when the same rule already exists as a pure domain method
 
 ## Folder Structure
 
@@ -103,3 +105,26 @@ private const string Sql = $"""
     WHERE (@IncludeActive AND ({IsActivePredicate}))
     """;
 ```
+
+## Derived Fields
+
+Readers may return DTO fields derived from the query result, but there is an important split of responsibility:
+
+- data shaping belongs to the reader
+- business rule ownership belongs to the domain
+
+Preferred pattern:
+
+```csharp
+CanResubmit: OutboxMessage.CanBeResubmitted(
+    isDeadLettered: row.Status == "DeadLettered",
+    hasReplayChild: row.HasReplayChild)
+```
+
+Avoid re-encoding business decisions directly in the reader:
+
+```csharp
+CanResubmit: row.Status == "DeadLettered" && !row.HasReplayChild
+```
+
+That keeps the rule centralized while still allowing lightweight DTO projection without loading aggregates.

@@ -4,6 +4,8 @@
 
 After every feature implementation or behavior change, verify whether any `.claude/docs/` file needs updating before considering the task complete.
 
+When updating an existing doc, preserve the file's current visual style unless the user explicitly asks for a documentation reformat.
+
 ## When to Check
 
 ✅ New pattern introduced → update the relevant doc or create a new one
@@ -11,6 +13,8 @@ After every feature implementation or behavior change, verify whether any `.clau
 ✅ New architectural concept added (new layer, new module, new cross-cutting mechanism) → create a new doc + add to `CLAUDE.md`
 ✅ A rule documented with ❌ no longer applies → remove or correct it
 ❌ Never leave a doc that contradicts the current code — stale rules are worse than no rules
+❌ Never change icons, bullets, arrows, tables, or other editorial conventions in an existing doc unless explicitly asked
+❌ Never mix content changes with unnecessary reformatting
 
 ## Checklist — Run After Every Implementation
 
@@ -18,6 +22,7 @@ After every feature implementation or behavior change, verify whether any `.clau
 2. Do any `.claude/docs/` files reference those areas?
 3. Does the implementation introduce a pattern not yet documented?
 4. Does the implementation remove or replace something currently documented?
+5. Did I preserve the existing style of every doc I touched?
 
 If any answer is yes → update the doc before finishing.
 

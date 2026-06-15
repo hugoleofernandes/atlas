@@ -8,6 +8,7 @@
 ✅ Response is a `sealed record` with a static `From(Output)` factory method (commands) or `From(Dto)` (queries)
 ✅ Authorization: use string literal `"permission:"` prefix — not `HasPermissionAttribute.PolicyPrefix`
 ✅ OpenAPI: declare only the success response — error codes are added automatically by the transformer
+✅ `Atlas.API` endpoints may orchestrate multiple module handlers when the frontend needs a unified contract
 ❌ Never use MVC controllers for new endpoints
 ❌ Never handle the error path manually — `AtlasEndpoint` base handles it via `result.IsSuccess`
 ❌ Never add `ProducesProblem(404/409/422...)` — `ProblemDetailsOperationTransformer` adds them globally
@@ -17,10 +18,10 @@
 
 ```
 ✅ CreateInvitationEndpoint   ← HTTP resource name
-❌ InviteUserEndpoint         ← domain intent — wrong layer
+❌ InviteUserEndpoint        ← domain intent — wrong layer
 
 ✅ ListInvitationsEndpoint
-✅ RevokeInvitationEndpoint   ← exceptional business verb is acceptable
+✅ RevokeInvitationEndpoint  ← exceptional business verb is acceptable
 ```
 
 ## Folder Structure
@@ -73,6 +74,46 @@ public sealed class CreateInvitationEndpoint : AtlasEndpoint<CreateInvitationReq
     }
 }
 ```
+
+## Cross-Module Orchestration
+
+`Atlas.API` is allowed to expose endpoints that unify multiple module-owned handlers behind one HTTP contract.
+
+Preferred pattern:
+
+```csharp
+var target = ResolveTarget(req.ModuleId);
+if (target is null)
+{
+    await Send.NotFoundAsync(ct);
+    return;
+}
+
+var authorization = await authorizationService.AuthorizeAsync(
+    User,
+    policyName: $"permission:{target.Permission}");
+
+if (!authorization.Succeeded)
+{
+    await Send.ForbiddenAsync(ct);
+    return;
+}
+
+var result = await target.ExecuteAsync(command, ct);
+await UpdatedFromResultAsync(
+    result,
+    output => Response.From(output, target.ModuleId, target.ModuleName),
+    ct);
+```
+
+Use this pattern when:
+- the frontend needs one endpoint for multiple modules
+- the selected permission depends on request data such as `ModuleId`
+- each module already owns its own handler
+
+Keep the boundary clear:
+- `Atlas.API` chooses the target
+- module handler owns the business logic
 
 ## Result Helpers (AtlasEndpoint)
 

@@ -1,4 +1,5 @@
 using Atlas.Outbox.Application.Queries.ListOutboxMessages;
+using Atlas.SharedKernel.Application.OutboxMessages;
 
 namespace Atlas.API.Endpoints.Outbox.ListMessages;
 
@@ -12,6 +13,7 @@ public sealed record ListOutboxMessagesResponse(
     string Name,
     string NormalizedName,
     DateTime OccurredOn,
+    DateTime? OutcomeOn,
     string Status,
     string Origin,
     string? Error,
@@ -24,6 +26,7 @@ public sealed record ListOutboxMessagesResponse(
     string CorrelationId,
     string? ResubmittedByEmail,
     bool HasReplayChild,
+    bool CanResubmit,
     int ExecutionCount,
     IReadOnlyList<OutboxHandlerExecutionDetail> Executions
 )
@@ -39,6 +42,11 @@ public sealed record ListOutboxMessagesResponse(
             Name: row.Name,
             NormalizedName: row.NormalizedName,
             OccurredOn: row.OccurredOn,
+            OutcomeOn: OutboxMessage.ResolveOutcomeOn(
+                processedOn: row.ProcessedOn,
+                failedAt: row.FailedAt,
+                deadLetteredOn: row.DeadLetteredOn
+            ),
             Status: row.Status,
             Origin: row.Origin,
             Error: row.Error,
@@ -51,6 +59,10 @@ public sealed record ListOutboxMessagesResponse(
             CorrelationId: row.CorrelationId,
             ResubmittedByEmail: row.ResubmittedByEmail,
             HasReplayChild: row.HasReplayChild,
+            CanResubmit: OutboxMessage.CanBeResubmitted(
+                isDeadLettered: row.Status == "DeadLettered",
+                hasReplayChild: row.HasReplayChild
+            ),
             ExecutionCount: row.ExecutionCount,
             Executions: row.Executions
         );

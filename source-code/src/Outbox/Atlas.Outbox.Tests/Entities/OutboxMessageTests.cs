@@ -312,4 +312,37 @@ public sealed class OutboxMessageTests
         msg.ResubmittedByUserId.Should().BeNull();
         msg.ResubmittedByEmail.Should().BeNull();
     }
+
+    [Fact]
+    public void ResolveOutcomeOn_PrefersProcessedOn()
+    {
+        var processedOn = DateTime.UtcNow;
+        var failedAt = processedOn.AddMinutes(1);
+        var deadLetteredOn = processedOn.AddMinutes(2);
+
+        var outcomeOn = OutboxMessage.ResolveOutcomeOn(processedOn, failedAt, deadLetteredOn);
+
+        outcomeOn.Should().Be(processedOn);
+    }
+
+    [Fact]
+    public void ResolveOutcomeOn_UsesFailedAt_WhenProcessedOnIsNull()
+    {
+        var failedAt = DateTime.UtcNow;
+        var deadLetteredOn = failedAt.AddMinutes(1);
+
+        var outcomeOn = OutboxMessage.ResolveOutcomeOn(null, failedAt, deadLetteredOn);
+
+        outcomeOn.Should().Be(failedAt);
+    }
+
+    [Fact]
+    public void ResolveOutcomeOn_UsesDeadLetteredOn_WhenOtherOutcomesAreNull()
+    {
+        var deadLetteredOn = DateTime.UtcNow;
+
+        var outcomeOn = OutboxMessage.ResolveOutcomeOn(null, null, deadLetteredOn);
+
+        outcomeOn.Should().Be(deadLetteredOn);
+    }
 }

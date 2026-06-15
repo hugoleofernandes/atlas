@@ -6,6 +6,7 @@
 ✅ Modules are peers — they cannot reference each other
 ✅ The only permitted cross-module reference is `Outbox` referencing module Contracts
 ✅ `Contracts` has zero dependencies — it is the public interface consumed by other modules
+✅ `Atlas.API` may orchestrate handlers from multiple modules when exposing a unified HTTP contract
 ❌ Never add a project reference from a module to another module
 ❌ Never add a project reference from a BuildingBlock to another BuildingBlock
 ❌ Never call a QueryHandler from a CommandHandler or vice versa — orchestrate via Workflow or endpoint
@@ -14,13 +15,13 @@
 
 ```
 src/
-├── Atlas.API              ← 1. Executables   — references all modules
-├── Identity/              ← 2. Modules       — peers, cannot reference each other
+├── Atlas.API              ← 1. Executables    — references all modules
+├── Identity/              ← 2. Modules        — peers, cannot reference each other
 ├── Staff/
 ├── Platform/
 ├── Outbox/                ←    (exception: may reference module Contracts)
 ├── BuildingBlocks/        ← 3. BuildingBlocks — reference SharedKernel only
-└── Shared/Atlas.SharedKernel  ← 4. Shared   — zero dependencies
+└── Shared/Atlas.SharedKernel  ← 4. Shared     — zero dependencies
 ```
 
 | Layer | Can reference |
@@ -57,6 +58,13 @@ Single executable. No business logic. Assembles all modules into one HTTP host:
 - References every `{Module}.InternalApi` → registers service-to-service routes
 - Owns: `Program.cs`, global middleware, health checks, seeding, OIDC config
 
+`Atlas.API` may also expose convenience endpoints that orchestrate handlers from multiple modules.
+That orchestration belongs in the API layer only:
+- route by `ModuleId`, `EntityTypeId`, or another neutral routing key
+- authorize per target module
+- invoke the selected module handler via `IHandlerInvoker`
+- never move module business rules into `Atlas.API`
+
 ## Outbox — Background Service
 
 `Atlas.Outbox.Service` runs alongside `Atlas.API` and processes integration events asynchronously.
@@ -86,11 +94,13 @@ public sealed class SendInvitationEmailTargetHandler(...)
 QueryHandler  → reads only, Dapper, returns IReadOnlyList<Dto> or Dto
 CommandHandler → writes only, EF Core via repositories, returns Output
 
-QueryHandler  ──✗──► CommandHandler   forbidden
-CommandHandler ──✗──► QueryHandler    forbidden
+QueryHandler  ──✕──▶ CommandHandler   forbidden
+CommandHandler ──✕──▶ QueryHandler    forbidden
 ```
 
 To orchestrate multiple handlers: use a **Workflow** (plain class in Application) or the **endpoint**.
+
+When the orchestration spans multiple modules, prefer an endpoint in `Atlas.API`.
 
 ## Naming
 

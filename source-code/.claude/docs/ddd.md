@@ -5,8 +5,11 @@
 ✅ Need `GetByIdAsync` without loading the parent → Aggregate Root
 ✅ Need a repository for this entity → Aggregate Root (always)
 ✅ Other aggregates reference it by ID only → Aggregate Root
+✅ Pure business rules belong in the domain, even when the result is exposed only by a read model
+✅ When a business rule can be evaluated from primitive values already loaded by a query, prefer a pure domain method instead of re-implementing the rule in the reader or endpoint
 ❌ Never make an entity a child just because it has a uniqueness invariant with the parent — use pre-check + unique index instead
 ❌ Never embed an Aggregate Root as a child entity — reference by ID
+❌ Never materialize an aggregate only to compute a response flag when a pure domain rule can evaluate the same decision from primitive values
 
 ## Decision Checklist
 
@@ -32,3 +35,27 @@
 `Role.Name` must be unique per `Tenant` — that does **not** make `Role` a child of `Tenant`. Solve it with:
 - Pre-check in CommandHandler: `ExistsWithNameAsync(tenantId, name)`
 - Unique index in the database as race condition guard
+
+## Domain Rules Used by Read Models
+
+Read models often need derived flags such as `CanResubmit`, `IsExpired`, or `CanBeRevoked`.
+If that flag represents a business decision, the rule must still live in the domain.
+
+Preferred pattern:
+
+```csharp
+public static bool CanBeResubmitted(bool isDeadLettered, bool hasReplayChild)
+    => isDeadLettered && !hasReplayChild;
+```
+
+Then the reader or response mapper may call that pure domain rule using values it already has.
+
+Avoid duplicating the same boolean logic directly inside:
+- Reader
+- Endpoint
+- Response mapper
+
+The goal is:
+- domain owns the rule
+- read side projects the data
+- HTTP response only exposes the result

@@ -6,6 +6,7 @@
 ✅ Comments explain **intent, invariants, and boundaries** — not implementation
 ✅ Use the **ubiquitous language** — terms must match the domain model exactly
 ✅ Keep documentation close to the code — domain rules in XML comments, not in markdown
+✅ When editing an existing markdown doc, preserve its current editorial style unless the user explicitly asks for reformatting
 ❌ Never write comments that restate what the code already says
 ❌ Never document implementation details — document the WHY, not the HOW
 ❌ Never introduce new terminology without it existing in the domain model

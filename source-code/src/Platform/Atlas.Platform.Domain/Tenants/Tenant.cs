@@ -31,7 +31,7 @@ public sealed class Tenant : AggregateRoot, INotMultiTenant, IAuditableAggregate
 
     public bool IsActive { get; private set; } = true;
 
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
+    public new DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     private Tenant() { }
 

@@ -332,4 +332,13 @@ public sealed class OutboxMessage : INotAuditable
     /// </summary>
     public bool IsMaxAttemptReached(int maxRetries)
         => AttemptNumber >= maxRetries;
+
+    public static DateTime? ResolveOutcomeOn(
+        DateTime? processedOn,
+        DateTime? failedAt,
+        DateTime? deadLetteredOn)
+        => processedOn ?? failedAt ?? deadLetteredOn;
+
+    public static bool CanBeResubmitted(bool isDeadLettered, bool hasReplayChild)
+        => isDeadLettered && !hasReplayChild;
 }

@@ -54,7 +54,7 @@ public abstract class ListOutboxMessagesReader : IListOutboxMessagesReader
             EXISTS (
                 SELECT 1
                 FROM   {_schema}.outbox_messages c
-                WHERE  c.parent_outbox_message_id = id
+                WHERE  c.parent_outbox_message_id = {_schema}.outbox_messages.id
             )                        AS HasReplayChild
         FROM   {_schema}.outbox_messages
         WHERE  occurred_on >= @From AND occurred_on <= @To

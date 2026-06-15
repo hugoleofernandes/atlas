@@ -20,11 +20,15 @@ public sealed class ResubmitDeadLetterCommandHandler(
         var message = await repository.GetByIdAsync(command.MessageId, ct)
             ?? throw new OutboxMessageNotFoundException(command.MessageId);
 
-        if (!message.IsDeadLettered)
-            throw new OutboxMessageNotDeadLetteredException(command.MessageId);
+        var hasReplayChild = await repository.HasChildAsync(command.MessageId, ct);
 
-        if (await repository.HasChildAsync(command.MessageId, ct))
+        if (!OutboxMessage.CanBeResubmitted(message.IsDeadLettered, hasReplayChild))
+        {
+            if (!message.IsDeadLettered)
+                throw new OutboxMessageNotDeadLetteredException(command.MessageId);
+
             throw new OutboxMessageAlreadyResubmittedException(command.MessageId);
+        }
 
         var userId = requestContext.UserId
             ?? throw new InvalidOperationException("User context is not available for resubmission authorship.");

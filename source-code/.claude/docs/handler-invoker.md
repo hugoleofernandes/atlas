@@ -58,3 +58,21 @@ public sealed class MyWorkflow(IMyQueryHandler query, IMyCommandHandler command,
     }
 }
 ```
+
+## Atlas.API Orchestration
+
+When `Atlas.API` routes a single request to one of several module handlers, it must still invoke the chosen handler through `IHandlerInvoker`.
+
+Preferred pattern:
+
+```csharp
+var result = await target.ExecuteAsync(command, ct);
+```
+
+Where `target.ExecuteAsync(...)` internally calls:
+
+```csharp
+invoker.InvokeAsync(moduleHandler, command, ct)
+```
+
+This keeps cross-module orchestration compatible with the same telemetry, logging, validation, and persistence pipeline used everywhere else.
