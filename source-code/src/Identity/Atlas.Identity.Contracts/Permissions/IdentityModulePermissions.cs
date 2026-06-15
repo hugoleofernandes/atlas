@@ -28,6 +28,7 @@ public sealed partial class IdentityModulePermissions : IModulePermissions
         Audit.Manage,
         Outbox.Read,
         Outbox.Resubmit,
+        Outbox.Process,
         Outbox.Manage,
     ];
 

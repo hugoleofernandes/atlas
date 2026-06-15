@@ -169,8 +169,9 @@ try
     services.AddPlatformModuleDependencies();
     //
 
-    // OUTBOX — management surface (triage/replay endpoints; processing lives in the worker hosts)
+    // OUTBOX — management surface (triage/replay endpoints) + on-demand processing workflows
     services.AddOutboxManagementDependencies();
+    services.AddOutboxOnDemandProcessingDependencies(configuration);
 
     //
     // ==========================================

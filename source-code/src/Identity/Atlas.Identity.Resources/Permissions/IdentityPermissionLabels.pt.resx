@@ -22,7 +22,8 @@
   <data name="identity.audit.read" xml:space="preserve"><value>Visualizar auditoria de identidade</value></data>
   <data name="identity.audit.manage" xml:space="preserve"><value>Gerenciar auditoria de identidade</value></data>
 
-  <data name="identity.outbox.read" xml:space="preserve"><value>Visualizar dead-letters do outbox de identidade</value></data>
+  <data name="identity.outbox.read"     xml:space="preserve"><value>Visualizar dead-letters do outbox de identidade</value></data>
   <data name="identity.outbox.resubmit" xml:space="preserve"><value>Reenviar dead-letters do outbox de identidade</value></data>
-  <data name="identity.outbox.manage" xml:space="preserve"><value>Gerenciar outbox de identidade</value></data>
+  <data name="identity.outbox.process"  xml:space="preserve"><value>Disparar processamento do outbox de identidade</value></data>
+  <data name="identity.outbox.manage"   xml:space="preserve"><value>Gerenciar outbox de identidade</value></data>
 </root>

@@ -19,6 +19,7 @@ public sealed partial class StaffModulePermissions : IModulePermissions
         new(Audit.Manage, true, AtlasModules.Staff),
         new(Outbox.Read, false, AtlasModules.Staff),
         new(Outbox.Resubmit, false, AtlasModules.Staff),
+        new(Outbox.Process, false, AtlasModules.Staff),
         new(Outbox.Manage, true, AtlasModules.Staff),
     ];
 

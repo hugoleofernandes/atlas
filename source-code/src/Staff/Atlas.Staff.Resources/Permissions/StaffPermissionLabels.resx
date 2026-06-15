@@ -14,7 +14,8 @@
   <data name="staff.audit.read" xml:space="preserve"><value>View staff audit log</value></data>
   <data name="staff.audit.manage" xml:space="preserve"><value>Manage staff audit log</value></data>
 
-  <data name="staff.outbox.read" xml:space="preserve"><value>View staff outbox dead-letters</value></data>
+  <data name="staff.outbox.read"     xml:space="preserve"><value>View staff outbox dead-letters</value></data>
   <data name="staff.outbox.resubmit" xml:space="preserve"><value>Resubmit staff outbox dead-letters</value></data>
-  <data name="staff.outbox.manage" xml:space="preserve"><value>Manage staff outbox</value></data>
+  <data name="staff.outbox.process"  xml:space="preserve"><value>Trigger staff outbox processing</value></data>
+  <data name="staff.outbox.manage"   xml:space="preserve"><value>Manage staff outbox</value></data>
 </root>
