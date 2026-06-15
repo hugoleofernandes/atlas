@@ -21,3 +21,4 @@
 @.claude/docs/documentation.md
 @.claude/docs/conventions.md
 @.claude/docs/coding-style.md
+@.claude/docs/dependency-injection.md

@@ -1,14 +1,11 @@
-using Atlas.API.Errors;
+using Atlas.API.DI;
 using Atlas.API.Seeding;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
 using Atlas.API.Security.Headers;
 using Atlas.API.Security.OIDC;
 using Atlas.API.Security.RateLimit;
-using Atlas.BuildingBlocks.Application.Idempotency;
-using Atlas.BuildingBlocks.Application.OutboxMessages;
 using Atlas.BuildingBlocks.AspNetCore.HttpErrors;
-using Atlas.BuildingBlocks.AspNetCore.Localization;
 using Atlas.BuildingBlocks.AspNetCore.Observability;
 using Atlas.BuildingBlocks.AspNetCore.Oidc;
 using Atlas.BuildingBlocks.AspNetCore.Oidc.Providers.EntraId;
@@ -17,20 +14,9 @@ using Atlas.BuildingBlocks.AspNetCore.Security.Authorization;
 using Atlas.BuildingBlocks.AspNetCore.Security.InternalApi;
 using Atlas.BuildingBlocks.AspNetCore.Security.Tenancy;
 using Atlas.BuildingBlocks.AspNetCore.Security.Xsrf;
-using Atlas.BuildingBlocks.Audit.Labels;
-using Atlas.BuildingBlocks.Audit.Resources;
 using Atlas.BuildingBlocks.Email.DI;
 using Atlas.BuildingBlocks.Observability;
 using Atlas.BuildingBlocks.Permissions;
-using Atlas.BuildingBlocks.Persistence.Entities.Audits;
-using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
-using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges;
-using Atlas.BuildingBlocks.Persistence.Entities.EntityChanges.Interfaces;
-using Atlas.BuildingBlocks.Persistence.Entities.Tenants;
-using Atlas.BuildingBlocks.Persistence.Entities.Tenants.Interfaces;
-using Atlas.BuildingBlocks.Persistence.Pipelines.Saves;
-using Atlas.BuildingBlocks.Persistence.Pipelines.Saves.Interfaces;
-using Atlas.Identity.Application;
 using Atlas.Identity.Application.Emails;
 using Atlas.Identity.BffApi;
 using Atlas.Identity.BffApi.Configs;
@@ -45,19 +31,13 @@ using Atlas.Platform.Domain;
 using Atlas.Platform.Infrastructure.DI;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using Atlas.Platform.InternalApi;
-using Atlas.SharedKernel.Application;
-using Atlas.SharedKernel.Application.Errors;
-using Atlas.SharedKernel.Application.Idempotency;
-using Atlas.SharedKernel.Application.OutboxMessages;
 using Atlas.SharedKernel.Configuration;
-using Atlas.Staff.Application;
 using Atlas.Staff.BffApi;
 using Atlas.Staff.Contracts.Permissions;
 using Atlas.Staff.Infrastructure.DI;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Atlas.Staff.InternalApi;
 using FastEndpoints;
-using FluentValidation;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -148,23 +128,7 @@ try
     // ==========================================
     //
 
-    services.AddScoped<RequestContext>();
-    services.AddScoped<IRequestContextSetter>(sp => sp.GetRequiredService<RequestContext>());
-    services.AddScoped<IRequestContext>(sp => sp.GetRequiredService<RequestContext>());
-    services.AddScoped<MutableIdempotencyContext>();
-    services.AddScoped<IIdempotencyContext>(sp => sp.GetRequiredService<MutableIdempotencyContext>());
-    services.AddScoped<IIdempotencyContextSetter>(sp => sp.GetRequiredService<MutableIdempotencyContext>());
-
-    services.AddHttpContextAccessor();
-    services.AddProblemDetails();
-    services.AddAtlasLocalization();
-    services.AddScoped<ErrorMessageLocalizer>();
-    services.AddScoped<IErrorMessageLocalizer>(sp => sp.GetRequiredService<ErrorMessageLocalizer>());
-
-    services.AddScoped<PermissionLabelLocalizer>();
-    services.AddScoped<IAuditLabelProvider, AuditActionLabelProvider>();
-    services.AddScoped<AuditLabelLocalizer>();
-    services.AddScoped<IHttpResultMapper, HttpResultMapper>();
+    services.AddAtlasCoreServices();
 
     // Permission catalog is persisted in the Identity database.
     // IPermissionCatalogReader is registered in IdentityDependencyInjection.
@@ -207,17 +171,6 @@ try
 
     // OUTBOX — management surface (triage/replay endpoints; processing lives in the worker hosts)
     services.AddOutboxManagementDependencies();
-
-    services.AddScoped<IOutboxMessageFactory, OutboxMessageFactory>();
-    services.AddScoped<IOutboxMessageBuilder, OutboxMessageBuilder>();
-
-    services.AddValidatorsFromAssemblyContaining<IdentityApplicationAssemblyMarker>();
-    services.AddValidatorsFromAssemblyContaining<StaffApplicationAssemblyMarker>();
-
-    services.AddScoped<IAuditTrailService, AuditTrailService>();
-    services.AddScoped<IEntityChangeStamper, EntityChangeStamper>();
-    services.AddScoped<IEntityTenantStamper, EntityTenantStamper>();
-    services.AddScoped<ISavePipeline, SavePipeline>();
 
     //
     // ==========================================

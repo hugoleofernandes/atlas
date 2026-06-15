@@ -10,9 +10,13 @@
 ✅ Parameters always via anonymous object: `new { TenantId = tenantId }`
 ✅ Use named arguments when constructing DTOs from query results
 ✅ For 1:N with pagination: two separate queries, group in C#
+✅ Optional filters: build the WHERE clause dynamically — add only predicates for values that were provided
+✅ Keep tenant filter explicit in SQL even when automatic safeguards exist
 ❌ Never return domain objects from a QueryHandler — always DTOs
 ❌ Never call a Reader from a CommandHandler
 ❌ Never JOIN a paginated query when the N side can multiply rows
+❌ Never use `@Param IS NULL OR column = @Param` — breaks index usage and Npgsql type inference
+❌ Never read another module's schema from a module-owned query — schemas are module boundaries
 
 ## Folder Structure
 
@@ -65,6 +69,27 @@ return new RoleDto(
 // ❌ positional — breaks silently when DTO shape changes
 return new RoleDto(role.Id, role.Name, role.IsSystem, permissions);
 ```
+
+## Dynamic SQL Filters
+
+Optional filters must be appended conditionally — never with an `IS NULL OR` guard:
+
+```csharp
+// ✅ dynamic WHERE — index-friendly, Npgsql-safe
+var sql = new StringBuilder("SELECT ... FROM atlas_platform.audit_log WHERE tenant_id = @TenantId");
+var parameters = new DynamicParameters(new { TenantId = tenantId });
+
+if (query.Action is not null)
+{
+    sql.AppendLine("  AND action = @Action");
+    parameters.Add("Action", query.Action);
+}
+
+// ❌ OR-guard — disables the index, fails Npgsql type inference for nullable params
+// AND (@Action IS NULL OR action = @Action)
+```
+
+This matters most for high-growth tables (audit log, outbox) where index usage is critical.
 
 ## Repeated SQL Predicates
 

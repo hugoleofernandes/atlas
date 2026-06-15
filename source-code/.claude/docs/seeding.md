@@ -8,8 +8,10 @@
 ✅ Always use `IUnitOfWork.SaveChangesAsync()` — never `db.SaveChangesAsync()` directly
 ✅ Cross-tenant reads must use `IgnoreQueryFilters()` — the global filter is active in seeders
 ✅ Log: `started` → work → `completed — {summary}` (or `skipped - data already exists`)
+✅ When one seed step depends on data from a prior step, return a typed output and pass it explicitly
 ❌ Never call `db.SaveChangesAsync()` directly — bypasses the audit pipeline
 ❌ Never guard row-by-row — if data exists at the aggregate level, skip the entire step
+❌ Never pass cross-step data through mutable fields or generic state bags — use typed return values
 
 ## Two Layers
 
@@ -78,6 +80,27 @@ public sealed partial class IdentityModuleSeeder
 var exists = await db.Users
     .IgnoreQueryFilters()
     .AnyAsync(u => u.Id == BootstrapIdentity.RootUser.Id, ct);
+```
+
+## Cross-Step Dependencies
+
+When a later seed step needs data produced by an earlier one, return a narrow typed output — do not use mutable fields:
+
+```csharp
+// ✅ typed output passed explicitly — dependencies are visible
+public async Task SeedAsync(CancellationToken ct = default)
+{
+    var tenants = await SeedTenantsAsync(ct);
+    await SeedRolesAsync(tenants, ct);
+}
+
+private async Task<IReadOnlyList<SeedTenantOutput>> SeedTenantsAsync(CancellationToken ct) { ... }
+private async Task SeedRolesAsync(IReadOnlyList<SeedTenantOutput> tenants, CancellationToken ct) { ... }
+
+// ❌ hidden dependency via field — order matters but nothing makes it obvious
+private Tenant? _seededTenant;
+private async Task SeedTenantsAsync(CancellationToken ct) { _seededTenant = ...; }
+private async Task SeedRolesAsync(CancellationToken ct) { /* silently depends on _seededTenant */ }
 ```
 
 ## Naming

@@ -5,7 +5,7 @@ using Resend;
 
 namespace Atlas.BuildingBlocks.Email.DI;
 
-public static class EmailServiceCollectionExtensions
+public static class EmailDependencyInjection
 {
     /// <summary>
     /// Registers <see cref="IEmailService"/> backed by the Resend provider.
@@ -17,7 +17,7 @@ public static class EmailServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddResendEmailService(
         this IServiceCollection services,
-        IConfiguration          configuration)
+        IConfiguration configuration)
     {
         services.Configure<ResendEmailOptions>(
             configuration.GetSection(ResendEmailOptions.SectionName));
