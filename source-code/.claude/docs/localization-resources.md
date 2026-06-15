@@ -4,11 +4,11 @@
 
 ✅ Two resource types: error messages (`{Aggregate}Errors.resx`) and permission labels (`{Module}PermissionLabels.resx`)
 ✅ Every `.resx` file has a paired empty marker class in the **same namespace and folder**
-✅ Namespace must exactly match the folder path — mismatch breaks resolution silently
 ✅ Both `.resx` (EN) and `.pt.resx` (PT) must contain the same set of keys
 ✅ Register every new `{Aggregate}Errors` localizer in `ErrorMessageLocalizer` in `Atlas.API`
 ✅ Error key format: `{aggregate}.{error_slug}` — must match the `ErrorCode` constant in the `DomainException`
 ✅ Permission label key = exact permission code string (e.g. `"identity.roles.read"`)
+❌ Never mismatch namespace and folder path — resource resolution breaks silently with no error
 ❌ Never add a new resource file without registering its `IStringLocalizer<T>` in `ErrorMessageLocalizer`
 ❌ Never have keys in EN that are missing from PT (or vice versa) — `PermissionCatalogTranslationTests` fails on CI
 

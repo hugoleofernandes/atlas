@@ -11,7 +11,7 @@
 ✅ `manage` = `isManager: true` — assignment shortcut only (covers all verbs for the resource)
 ❌ Never use `manage` in `Policies()` on an endpoint — always use the specific verb
 ❌ Never add a permission to an endpoint without declaring it in `{Module}ModulePermissions` first
-❌ `IPermissionPolicy` was removed — do not reference it
+❌ Never reference `IPermissionPolicy` — it was deleted
 
 ## Available Verbs
 

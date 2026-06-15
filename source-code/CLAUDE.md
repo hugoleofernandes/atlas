@@ -1,6 +1,7 @@
 # Atlas — Claude Guidelines
 
 @.claude/docs/hard-rules.md
+@.claude/docs/doc-maintenance.md
 @.claude/docs/architecture.md
 @.claude/docs/request-context.md
 @.claude/docs/handler-invoker.md
