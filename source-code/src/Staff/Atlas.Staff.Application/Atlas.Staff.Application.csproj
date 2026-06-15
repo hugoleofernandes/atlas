@@ -1,20 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Audit\Atlas.BuildingBlocks.Audit.csproj" />
     <ProjectReference Include="..\..\Shared\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\Atlas.Staff.Domain\Atlas.Staff.Domain.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="12.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
-  </ItemGroup>
-
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
 
 </Project>
