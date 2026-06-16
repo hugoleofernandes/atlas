@@ -36,6 +36,27 @@
 - Pre-check in CommandHandler: `ExistsWithNameAsync(tenantId, name)`
 - Unique index in the database as race condition guard
 
+## TPH Aggregate Hierarchy (Same-Table Subtypes)
+
+A stable identity core can have mutually-exclusive subtypes that share the same table via EF Core's table-per-hierarchy mapping. Example: `Party` (abstract aggregate root) with `Individual` and `Organization` as sealed subtypes.
+
+```csharp
+public abstract class Party : AggregateRoot, IMultiTenantEntity { ... }
+public sealed class Individual : Party { ... }
+public sealed class Organization : Party { ... }
+```
+
+✅ Use when the subtypes are genuinely the same aggregate with a discriminator-driven shape difference — not two unrelated aggregates that happen to share some fields
+✅ Repositories and queries are written against the concrete subtype (`IIndividualRepository`, `IOrganizationRepository`) — never against the abstract base
+✅ The base type carries only the fields and invariants common to every subtype
+❌ Never query or repository the abstract base type directly — callers always know which subtype they need
+
+### Multi-Tenant Query Filter — Root Only
+
+EF Core only allows `HasQueryFilter` on the **root** entity type of a TPH hierarchy — never on a derived subtype. The base's filter automatically applies to queries against every subtype, since they share the same table.
+
+`DbContextBase.ApplyMultiTenantFilters` (`Atlas.BuildingBlocks.Persistence`) already skips entity types with a non-null `BaseType` for this reason. If you introduce a new TPH hierarchy, you don't need to do anything extra — just don't apply a second, manual `HasQueryFilter` on the subtype's own `IEntityTypeConfiguration`, or EF Core throws at model-build time (`'GetEntityTypes' ... A filter may only be applied to the root entity type`).
+
 ## Domain Rules Used by Read Models
 
 Read models often need derived flags such as `CanResubmit`, `IsExpired`, or `CanBeRevoked`.
@@ -59,3 +80,29 @@ The goal is:
 - domain owns the rule
 - read side projects the data
 - HTTP response only exposes the result
+
+## Whole-Collection Replace for Client-Managed Child Entities
+
+Some child-entity collections are best edited entirely client-side — the UI lets the user add/remove items freely (e.g. a Party's addresses) without a round-trip per item, then submits the final list once together with the rest of the aggregate.
+
+✅ Expose a single aggregate method that replaces the entire collection: `Party.ReplaceAddresses(IReadOnlyList<AddressInput> addresses)`
+✅ Validate cross-item invariants (e.g. "only one primary per type") inside that method, before mutating state
+✅ Call the same replace method from both the Register and Update command handlers — one codepath, not two
+✅ Owned-entity collections (`OwnsMany`) detect a full clear+repopulate automatically via EF Core's change tracker — no manual diffing needed
+❌ Never add per-item endpoints (`AddAddress`, `RemoveAddress`) for a collection designed to be managed client-side — that reintroduces the round-trips the design is avoiding
+❌ Never replicate the cross-item invariant check in the command handler or endpoint — it belongs in the aggregate method
+
+```csharp
+public void ReplaceAddresses(IReadOnlyList<AddressInput> addresses)
+{
+    foreach (var group in addresses.GroupBy(a => a.Type))
+        if (group.Count(a => a.IsPrimary) > 1)
+            throw new MultiplePrimaryAddressesException(group.Key);
+
+    _addresses.Clear();
+    foreach (var a in addresses)
+        _addresses.Add(new Address(Id, a.Type, a.PostalAddress, a.IsPrimary));
+}
+```
+
+This is still atomic with the parent: the handler calls `ReplaceAddresses` before `SaveChangesAsync`, so the entire Party (including its addresses) is persisted in a single transaction.

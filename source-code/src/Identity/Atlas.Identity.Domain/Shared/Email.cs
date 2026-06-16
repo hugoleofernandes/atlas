@@ -1,6 +1,6 @@
-﻿using Atlas.Identity.Domain.Tenants.Exceptions;
-using Atlas.SharedKernel.Domain;
 using System.Text.RegularExpressions;
+using Atlas.Identity.Domain.Roles.Exceptions;
+using Atlas.SharedKernel.Domain;
 
 namespace Atlas.Identity.Domain.Shared;
 
@@ -40,11 +40,7 @@ public sealed class Email : ValueObject
 
     private static bool IsValid(string email)
     {
-        return Regex.IsMatch(
-            email,
-            @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-            RegexOptions.IgnoreCase | RegexOptions.Compiled
-        );
+        return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

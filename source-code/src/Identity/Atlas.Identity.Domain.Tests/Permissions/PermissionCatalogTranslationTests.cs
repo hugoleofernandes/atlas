@@ -1,6 +1,7 @@
 using System.Xml.Linq;
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Contracts.Permissions;
+using Atlas.Party.Contracts.Permissions;
 using Atlas.Staff.Contracts.Permissions;
 using FluentAssertions;
 
@@ -29,6 +30,10 @@ public sealed class PermissionCatalogTranslationTests
         (
             new StaffModulePermissions(),
             Path.Combine("Staff", "Atlas.Staff.Resources", "Permissions", "StaffPermissionLabels")
+        ),
+        (
+            new PartyModulePermissions(),
+            Path.Combine("Party", "Atlas.Party.Resources", "Permissions", "PartyPermissionLabels")
         ),
     ];
 

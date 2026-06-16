@@ -1,7 +1,7 @@
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Repositories;
+using Atlas.Identity.Domain.Roles.Exceptions;
 using Atlas.Identity.Domain.Shared;
-using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
 using Microsoft.Extensions.Hosting;
@@ -22,31 +22,33 @@ namespace Atlas.Identity.Application.Commands.DevLogin;
 /// </summary>
 public sealed class DevLoginCommandHandler : IDevLoginCommandHandler
 {
-    private readonly IRoleRepository         _roleRepository;
-    private readonly IUserRepository         _userRepository;
-    private readonly IRequestContextSetter   _contextSetter;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IRequestContextSetter _contextSetter;
     private readonly IPermissionCatalogCache _cache;
-    private readonly IHostEnvironment        _env;
+    private readonly IHostEnvironment _env;
 
     public DevLoginCommandHandler(
-        IRoleRepository         roleRepository,
-        IUserRepository         userRepository,
-        IRequestContextSetter   contextSetter,
+        IRoleRepository roleRepository,
+        IUserRepository userRepository,
+        IRequestContextSetter contextSetter,
         IPermissionCatalogCache cache,
-        IHostEnvironment        env)
+        IHostEnvironment env
+    )
     {
         _roleRepository = roleRepository;
         _userRepository = userRepository;
-        _contextSetter  = contextSetter;
-        _cache          = cache;
-        _env            = env;
+        _contextSetter = contextSetter;
+        _cache = cache;
+        _env = env;
     }
 
     public async Task<DevLoginOutput> ExecuteAsync(DevLoginCommand cmd, CancellationToken ct)
     {
         if (!_env.IsDevelopment())
             throw new InvalidOperationException(
-                "DevLoginCommandHandler must not be called outside of the Development environment.");
+                "DevLoginCommandHandler must not be called outside of the Development environment."
+            );
 
         var email = Email.Create(cmd.Email);
 
@@ -69,19 +71,16 @@ public sealed class DevLoginCommandHandler : IDevLoginCommandHandler
 
             var permissionIds = role.Permissions.Select(p => p.PermissionId).ToHashSet();
             var all = await _cache.GetAllActiveAsync(ct);
-            var permissions = all
-                .Where(p => permissionIds.Contains(p.Id))
-                .Select(p => p.Code)
-                .ToList()
-                .AsReadOnly();
+            var permissions = all.Where(p => permissionIds.Contains(p.Id)).Select(p => p.Code).ToList().AsReadOnly();
 
             return new DevLoginOutput(
-                TenantId:    cmd.TenantId,
-                TenantName:  cmd.TenantName,
-                UserId:      user.Id,
-                RoleId:      role.Id,
-                RoleName:    role.Name,
-                Permissions: permissions);
+                TenantId: cmd.TenantId,
+                TenantName: cmd.TenantName,
+                UserId: user.Id,
+                RoleId: role.Id,
+                RoleName: role.Name,
+                Permissions: permissions
+            );
         }
     }
 }

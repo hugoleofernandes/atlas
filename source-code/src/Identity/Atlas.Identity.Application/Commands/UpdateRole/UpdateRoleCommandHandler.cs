@@ -1,40 +1,40 @@
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
-using Atlas.Identity.Domain.Tenants.Exceptions;
+using Atlas.Identity.Domain.Roles;
+using Atlas.Identity.Domain.Roles.Exceptions;
 using Atlas.SharedKernel.Application;
 
 namespace Atlas.Identity.Application.Commands.UpdateRole;
 
 public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
 {
-    private readonly IRoleRepository         _roleRepository;
-    private readonly IRequestContext         _requestContext;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IRequestContext _requestContext;
     private readonly IPermissionCatalogCache _cache;
-    private readonly IIdentityUnitOfWork     _uow;
+    private readonly IIdentityUnitOfWork _uow;
 
     public IUnitOfWork UnitOfWork => _uow;
 
     public UpdateRoleCommandHandler(
-        IRoleRepository         roleRepository,
-        IRequestContext         requestContext,
+        IRoleRepository roleRepository,
+        IRequestContext requestContext,
         IPermissionCatalogCache cache,
-        IIdentityUnitOfWork     uow)
+        IIdentityUnitOfWork uow
+    )
     {
         _roleRepository = roleRepository;
         _requestContext = requestContext;
-        _cache          = cache;
-        _uow            = uow;
+        _cache = cache;
+        _uow = uow;
     }
 
     public async Task<UpdateRoleOutput> ExecuteAsync(UpdateRoleCommand cmd, CancellationToken ct)
     {
-        var tenantId = _requestContext.TenantId
-            ?? throw new TenantContextNotResolvedException();
+        var tenantId = _requestContext.TenantId ?? throw new TenantContextNotResolvedException();
 
-        var role = await _roleRepository.GetByIdWithPermissionsAsync(cmd.RoleId, ct)
+        var role =
+            await _roleRepository.GetByIdWithPermissionsAsync(cmd.RoleId, ct)
             ?? throw new RoleNotFoundException(cmd.RoleId);
 
         if (await _roleRepository.ExistsWithNameExcludingAsync(tenantId, cmd.Name, cmd.RoleId, ct))
@@ -48,9 +48,10 @@ public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
         return new UpdateRoleOutput(role.Id, role.Name, role.IsActive, permissionCodes);
     }
 
-    private async Task<(IReadOnlyList<RolePermission> RolePermissions, IReadOnlyList<string> Codes)> ResolvePermissionsAsync(
-        IEnumerable<string> codes,
-        CancellationToken ct)
+    private async Task<(
+        IReadOnlyList<RolePermission> RolePermissions,
+        IReadOnlyList<string> Codes
+    )> ResolvePermissionsAsync(IEnumerable<string> codes, CancellationToken ct)
     {
         var codeList = codes.Distinct(StringComparer.Ordinal).ToList();
 
@@ -67,7 +68,7 @@ public sealed class UpdateRoleCommandHandler : IUpdateRoleCommandHandler
             throw new RoleWithInvalidPermissionException(unknown);
 
         var rolePermissions = found.Select(p => RolePermission.Of(p.Id)).ToList();
-        var resolvedCodes   = found.Select(p => p.Code).ToList();
+        var resolvedCodes = found.Select(p => p.Code).ToList();
 
         return (rolePermissions, resolvedCodes);
     }

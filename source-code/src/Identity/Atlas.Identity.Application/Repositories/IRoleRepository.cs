@@ -1,4 +1,4 @@
-using Atlas.Identity.Domain.Tenants._Roles;
+using Atlas.Identity.Domain.Roles;
 
 namespace Atlas.Identity.Application.Repositories;
 

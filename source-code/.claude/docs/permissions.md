@@ -63,6 +63,43 @@ Policies($"permission:{StaffModulePermissions.StaffMember.Read}");
 Policies($"permission:{StaffModulePermissions.StaffMember.Manage}");
 ```
 
+## Alternate Style — PermissionDefinition Declared Directly
+
+Some modules (e.g. `Party`) skip the separate string-constant step and declare the `PermissionDefinition` itself as the static field, reusing the same instance in `AllDefinitions`:
+
+```csharp
+// Atlas.Party.Contracts/Permissions/Partials/Permissions.Individual.cs
+public sealed partial class PartyModulePermissions
+{
+    public static class Individual
+    {
+        public static readonly PermissionDefinition Read   = new("party.individual.read",   false, AtlasModules.Party);
+        public static readonly PermissionDefinition Manage = new("party.individual.manage", true,  AtlasModules.Party);
+    }
+}
+```
+
+```csharp
+// AllDefinitions references the same instances directly — no duplicate string constants
+private static readonly IReadOnlyList<PermissionDefinition> AllDefinitions =
+[
+    Individual.Read,
+    Individual.Manage,
+];
+```
+
+Endpoints reference `.Code` instead of the bare constant:
+
+```csharp
+// ✅ PermissionDefinition style
+Policies($"permission:{PartyModulePermissions.Individual.Read.Code}");
+
+// ✅ string-constant style (Identity/Staff)
+Policies($"permission:{StaffModulePermissions.StaffMember.Read}");
+```
+
+Both styles are valid — pick whichever the module already uses; never mix them within the same module.
+
 ## How Permissions Reach the Database
 
 Each module declares its permissions in code (`IModulePermissions.Definitions`).

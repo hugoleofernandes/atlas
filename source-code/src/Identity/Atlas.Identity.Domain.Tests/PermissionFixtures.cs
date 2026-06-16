@@ -1,4 +1,4 @@
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
+using Atlas.Identity.Domain.Roles;
 
 namespace Atlas.Identity.Tests;
 

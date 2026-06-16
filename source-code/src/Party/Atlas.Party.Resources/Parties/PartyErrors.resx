@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="party.duplicate-tax-number"    xml:space="preserve"><value>A party with this tax number already exists in this tenant.</value></data>
+  <data name="party.individual-not-found"    xml:space="preserve"><value>Individual not found.</value></data>
+  <data name="party.organization-not-found"  xml:space="preserve"><value>Organization not found.</value></data>
+  <data name="party.already-deactivated"     xml:space="preserve"><value>This party is already deactivated.</value></data>
+  <data name="party.multiple-primary-addresses" xml:space="preserve"><value>Only one primary address per type is allowed.</value></data>
+</root>

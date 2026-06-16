@@ -1,39 +1,37 @@
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
-using Atlas.Identity.Domain.Tenants._Roles;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
-using Atlas.Identity.Domain.Tenants.Exceptions;
+using Atlas.Identity.Domain.Roles;
+using Atlas.Identity.Domain.Roles.Exceptions;
 using Atlas.SharedKernel.Application;
 
 namespace Atlas.Identity.Application.Commands.CreateRole;
 
 public sealed class CreateRoleCommandHandler : ICreateRoleCommandHandler
 {
-    private readonly IRoleRepository         _roleRepository;
-    private readonly IRequestContext         _requestContext;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IRequestContext _requestContext;
     private readonly IPermissionCatalogCache _cache;
-    private readonly IIdentityUnitOfWork     _uow;
+    private readonly IIdentityUnitOfWork _uow;
 
     public IUnitOfWork UnitOfWork => _uow;
 
     public CreateRoleCommandHandler(
-        IRoleRepository         roleRepository,
-        IRequestContext         requestContext,
+        IRoleRepository roleRepository,
+        IRequestContext requestContext,
         IPermissionCatalogCache cache,
-        IIdentityUnitOfWork     uow)
+        IIdentityUnitOfWork uow
+    )
     {
         _roleRepository = roleRepository;
         _requestContext = requestContext;
-        _cache          = cache;
-        _uow            = uow;
+        _cache = cache;
+        _uow = uow;
     }
 
     public async Task<CreateRoleOutput> ExecuteAsync(CreateRoleCommand cmd, CancellationToken ct)
     {
-        var tenantId = _requestContext.TenantId
-            ?? throw new TenantContextNotResolvedException();
+        var tenantId = _requestContext.TenantId ?? throw new TenantContextNotResolvedException();
 
         if (await _roleRepository.ExistsWithNameAsync(tenantId, cmd.Name, ct))
             throw new RoleAlreadyExistsException(cmd.Name);
@@ -46,9 +44,10 @@ public sealed class CreateRoleCommandHandler : ICreateRoleCommandHandler
         return new CreateRoleOutput(role.Id, role.Name, role.IsActive, permissionCodes);
     }
 
-    private async Task<(IReadOnlyList<RolePermission> RolePermissions, IReadOnlyList<string> Codes)> ResolvePermissionsAsync(
-        IEnumerable<string> codes,
-        CancellationToken ct)
+    private async Task<(
+        IReadOnlyList<RolePermission> RolePermissions,
+        IReadOnlyList<string> Codes
+    )> ResolvePermissionsAsync(IEnumerable<string> codes, CancellationToken ct)
     {
         var codeList = codes.Distinct(StringComparer.Ordinal).ToList();
 
@@ -65,7 +64,7 @@ public sealed class CreateRoleCommandHandler : ICreateRoleCommandHandler
             throw new RoleWithInvalidPermissionException(unknown);
 
         var rolePermissions = found.Select(p => RolePermission.Of(p.Id)).ToList();
-        var resolvedCodes   = found.Select(p => p.Code).ToList();
+        var resolvedCodes = found.Select(p => p.Code).ToList();
 
         return (rolePermissions, resolvedCodes);
     }

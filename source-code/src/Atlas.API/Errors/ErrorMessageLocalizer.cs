@@ -4,6 +4,8 @@ using Atlas.Identity.Resources.Invitations;
 using Atlas.Identity.Resources.Tenants;
 using Atlas.Identity.Resources.Tenants._Roles;
 using Atlas.Identity.Resources.Users;
+using Atlas.Party.Resources.Parties;
+using Atlas.Party.Resources.Shared;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.Staff.Resources.StaffMember;
 using Microsoft.Extensions.Localization;
@@ -28,7 +30,9 @@ public sealed class ErrorMessageLocalizer : IErrorMessageLocalizer
         IStringLocalizer<UserErrors>       user,
         IStringLocalizer<InvitationErrors> invitation,
         IStringLocalizer<ClaimErrors>      claim,
-        IStringLocalizer<StaffMemberErrors>      staff)
+        IStringLocalizer<StaffMemberErrors>      staff,
+        IStringLocalizer<PartyErrors>       party,
+        IStringLocalizer<PartySharedErrors> partyShared)
     {
         _localizers =
         [
@@ -39,6 +43,8 @@ public sealed class ErrorMessageLocalizer : IErrorMessageLocalizer
             invitation,
             claim,
             staff,
+            party,
+            partyShared,
         ];
     }
 

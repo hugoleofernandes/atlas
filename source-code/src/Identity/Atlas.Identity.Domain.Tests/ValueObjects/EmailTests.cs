@@ -1,5 +1,5 @@
+using Atlas.Identity.Domain.Roles.Exceptions;
 using Atlas.Identity.Domain.Shared;
-using Atlas.Identity.Domain.Tenants.Exceptions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.ValueObjects;

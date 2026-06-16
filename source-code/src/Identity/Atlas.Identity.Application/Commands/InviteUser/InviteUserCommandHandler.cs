@@ -2,9 +2,8 @@ using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Invitations.Exceptions;
+using Atlas.Identity.Domain.Roles.Exceptions;
 using Atlas.Identity.Domain.Shared;
-using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
-using Atlas.Identity.Domain.Tenants.Exceptions;
 using Atlas.Identity.Domain.Users.Exceptions;
 using Atlas.SharedKernel.Application;
 
@@ -12,32 +11,32 @@ namespace Atlas.Identity.Application.Commands.InviteUser;
 
 public sealed class InviteUserCommandHandler : IInviteUserCommandHandler
 {
-    private readonly IRoleRepository       _roleRepository;
-    private readonly IUserRepository       _userRepository;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IInvitationRepository _invitationRepository;
-    private readonly IRequestContext       _requestContext;
-    private readonly IIdentityUnitOfWork   _uow;
+    private readonly IRequestContext _requestContext;
+    private readonly IIdentityUnitOfWork _uow;
 
     public IUnitOfWork UnitOfWork => _uow;
 
     public InviteUserCommandHandler(
-        IRoleRepository       roleRepository,
-        IUserRepository       userRepository,
+        IRoleRepository roleRepository,
+        IUserRepository userRepository,
         IInvitationRepository invitationRepository,
-        IRequestContext       requestContext,
-        IIdentityUnitOfWork   uow)
+        IRequestContext requestContext,
+        IIdentityUnitOfWork uow
+    )
     {
-        _roleRepository       = roleRepository;
-        _userRepository       = userRepository;
+        _roleRepository = roleRepository;
+        _userRepository = userRepository;
         _invitationRepository = invitationRepository;
-        _requestContext       = requestContext;
-        _uow                  = uow;
+        _requestContext = requestContext;
+        _uow = uow;
     }
 
     public async Task<InviteUserOutput> ExecuteAsync(InviteUserCommand cmd, CancellationToken ct)
     {
-        var tenantId = _requestContext.TenantId
-            ?? throw new TenantContextNotResolvedException();
+        var tenantId = _requestContext.TenantId ?? throw new TenantContextNotResolvedException();
 
         var email = Email.Create(cmd.Email);
 
@@ -58,11 +57,6 @@ public sealed class InviteUserCommandHandler : IInviteUserCommandHandler
 
         await _invitationRepository.AddAsync(invitation, ct);
 
-        return new InviteUserOutput(
-            invitation.Id,
-            invitation.Email.Value,
-            role.Id,
-            role.Name,
-            invitation.ExpiresAt);
+        return new InviteUserOutput(invitation.Id, invitation.Email.Value, role.Id, role.Name, invitation.ExpiresAt);
     }
 }

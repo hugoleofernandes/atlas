@@ -1,5 +1,5 @@
+using Atlas.Identity.Domain.Roles;
 using Atlas.Identity.Domain.Tenants._Roles;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
 using Atlas.SharedKernel.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,25 +18,26 @@ public sealed partial class IdentityModuleSeeder
 
         logger.LogInformation("IdentityRoleSeeder started");
 
-        var tenantId = requestContext.TenantId
-            ?? throw new InvalidOperationException("TenantId must be set in request context");
+        var tenantId =
+            requestContext.TenantId ?? throw new InvalidOperationException("TenantId must be set in request context");
 
         var allPermissions = await catalogCache.GetAllActiveAsync(ct);
 
         // root   → system.root only (IsRoot=true) — the auth handler grants everything from this single permission
         // admin  → all manage permissions (IsManager=true) — covers every verb within each resource group
         // member → read-only across all resources
-        var rootPerms   = allPermissions.Where(p => p.IsRoot).Select(p => RolePermission.Of(p.Id));
-        var adminPerms  = allPermissions.Where(p => p.IsManager).Select(p => RolePermission.Of(p.Id));
-        var memberPerms = allPermissions.Where(p => p.Code.EndsWith(".read", StringComparison.Ordinal))
-                                        .Select(p => RolePermission.Of(p.Id));
+        var rootPerms = allPermissions.Where(p => p.IsRoot).Select(p => RolePermission.Of(p.Id));
+        var adminPerms = allPermissions.Where(p => p.IsManager).Select(p => RolePermission.Of(p.Id));
+        var memberPerms = allPermissions
+            .Where(p => p.Code.EndsWith(".read", StringComparison.Ordinal))
+            .Select(p => RolePermission.Of(p.Id));
 
-        var root   = Role.Create(tenantId, "root",   rootPerms,   isSystem: true, id: SystemRoleIds.Root);
-        var admin  = Role.Create(tenantId, "admin",  adminPerms,  isSystem: true, id: SystemRoleIds.Admin);
+        var root = Role.Create(tenantId, "root", rootPerms, isSystem: true, id: SystemRoleIds.Root);
+        var admin = Role.Create(tenantId, "admin", adminPerms, isSystem: true, id: SystemRoleIds.Admin);
         var member = Role.Create(tenantId, "member", memberPerms, isSystem: true, id: SystemRoleIds.Member);
 
-        await roleRepository.AddAsync(root,   ct);
-        await roleRepository.AddAsync(admin,  ct);
+        await roleRepository.AddAsync(root, ct);
+        await roleRepository.AddAsync(admin, ct);
         await roleRepository.AddAsync(member, ct);
 
         logger.LogInformation("  Created root   ({Count} permissions)", root.Permissions.Count);
@@ -46,8 +47,7 @@ public sealed partial class IdentityModuleSeeder
         await uow.SaveChangesAsync(ct);
 
         // Assign root role to the root user (created during bootstrap) — lookup by deterministic ID
-        var rootUser = await db.Users
-            .FirstOrDefaultAsync(u => u.Id == BootstrapIdentity.RootUser.Id, ct);
+        var rootUser = await db.Users.FirstOrDefaultAsync(u => u.Id == BootstrapIdentity.RootUser.Id, ct);
 
         if (rootUser is not null && rootUser.RoleId == Guid.Empty)
         {

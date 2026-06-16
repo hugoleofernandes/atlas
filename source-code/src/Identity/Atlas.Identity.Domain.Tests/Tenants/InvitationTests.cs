@@ -1,6 +1,7 @@
 using Atlas.Identity.Domain.Invitations;
 using Atlas.Identity.Domain.Invitations.Events;
 using Atlas.Identity.Domain.Invitations.Exceptions;
+using Atlas.Identity.Domain.Roles;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Platform.Domain.Tenants;
@@ -25,7 +26,8 @@ public class InvitationTests
             "admin",
             PermissionFixtures.Many(3),
             isSystem: true,
-            id: SystemRoleIds.Admin);
+            id: SystemRoleIds.Admin
+        );
         return (tenant, adminRole.Id);
     }
 

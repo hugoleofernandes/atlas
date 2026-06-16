@@ -22,6 +22,9 @@ staff_CONTEXT=StaffDbContext
 platform_PROJECT=$(SRC)/Platform/Atlas.Platform.Infrastructure
 platform_CONTEXT=PlatformDbContext
 
+party_PROJECT=$(SRC)/Party/Atlas.Party.Infrastructure
+party_CONTEXT=PartyDbContext
+
 TARGET_PROJECT=$($(context)_PROJECT)
 TARGET_CONTEXT=$($(context)_CONTEXT)
 
@@ -81,16 +84,19 @@ ef-migrate-all:
 	make migrate context=identity name=$(name)_Identity
 	make migrate context=staff name=$(name)_Staff
 	make migrate context=platform name=$(name)_Platform
+	make migrate context=party name=$(name)_Party
 
 ef-update-all:
 	make update context=identity
 	make update context=staff
 	make update context=platform
+	make update context=party
 
 ef-reset-db-all:
 	make reset-db context=identity
 	make reset-db context=staff
 	make reset-db context=platform
+	make reset-db context=party
 
 # SAMPLE
 # make ef-migrate-all name=Initial
@@ -149,6 +155,7 @@ ef-clean-all-m:
 	make clean-migrations context=identity
 	make clean-migrations context=staff
 	make clean-migrations context=platform
+	make clean-migrations context=party
 
 # SAMPLE
 # make ef-clean-all-m

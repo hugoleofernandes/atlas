@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="party.invalid-contact-info"   xml:space="preserve"><value>Estas informações de contato são inválidas.</value></data>
+  <data name="party.invalid-date-range"     xml:space="preserve"><value>A data final não pode ser anterior à data inicial.</value></data>
+  <data name="party.invalid-person-name"    xml:space="preserve"><value>Este campo do nome da pessoa é obrigatório e não pode estar vazio.</value></data>
+  <data name="party.invalid-postal-address" xml:space="preserve"><value>Este campo do endereço postal é inválido ou está faltando.</value></data>
+  <data name="party.invalid-tax-number"     xml:space="preserve"><value>Este não é um CPF ou CNPJ válido.</value></data>
+  <data name="tenant.context_not_resolved" xml:space="preserve"><value>Não foi possível resolver o contexto do tenant para esta requisição.</value></data>
+</root>

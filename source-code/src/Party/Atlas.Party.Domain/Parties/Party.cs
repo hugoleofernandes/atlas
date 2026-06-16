@@ -15,7 +15,7 @@ namespace Atlas.Party.Domain.Parties;
 /// - A deactivated party cannot be deactivated again.
 /// - Address and ContactInfo collections are managed through Party's methods only.
 /// </summary>
-public abstract class Party : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
+public abstract class Party : AggregateRoot, IMultiTenantEntity
 {
     private readonly List<Address> _addresses = new();
     private readonly List<ContactInfo> _contacts = new();
@@ -56,6 +56,22 @@ public abstract class Party : AggregateRoot, IMultiTenantEntity, IAuditableAggre
     {
         foreach (var a in _addresses.Where(a => a.Type == type && a.IsPrimary))
             a.SetPrimary(false);
+    }
+
+    /// <summary>
+    /// Replaces the entire address collection. Intended for flows where the caller manages
+    /// the full address list client-side (add/remove without round-tripping) and submits it
+    /// atomically together with the rest of the Party on save.
+    /// </summary>
+    public void ReplaceAddresses(IReadOnlyList<AddressInput> addresses)
+    {
+        foreach (var group in addresses.GroupBy(a => a.Type))
+            if (group.Count(a => a.IsPrimary) > 1)
+                throw new MultiplePrimaryAddressesException(group.Key);
+
+        _addresses.Clear();
+        foreach (var a in addresses)
+            _addresses.Add(new Address(Id, a.Type, a.PostalAddress, a.IsPrimary));
     }
 
     // =========================

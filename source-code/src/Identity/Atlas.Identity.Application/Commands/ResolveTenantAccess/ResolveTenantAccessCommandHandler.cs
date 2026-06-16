@@ -2,9 +2,9 @@ using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Abstractions;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Domain.Invitations.Exceptions;
+using Atlas.Identity.Domain.Roles;
+using Atlas.Identity.Domain.Roles.Exceptions;
 using Atlas.Identity.Domain.Shared;
-using Atlas.Identity.Domain.Tenants._Roles;
-using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
 using Atlas.Identity.Domain.Users;
 using Atlas.SharedKernel.Application;
 
@@ -12,36 +12,37 @@ namespace Atlas.Identity.Application.Commands.ResolveTenantAccess;
 
 public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessCommandHandler
 {
-    private readonly IRoleRepository       _roleRepository;
-    private readonly IUserRepository       _userRepository;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IInvitationRepository _invitationRepository;
-    private readonly IIdentityUnitOfWork   _uow;
+    private readonly IIdentityUnitOfWork _uow;
     private readonly IRequestContextSetter _contextSetter;
     private readonly IPermissionCatalogCache _cache;
 
     public IUnitOfWork UnitOfWork => _uow;
 
     public ResolveTenantAccessCommandHandler(
-        IRoleRepository       roleRepository,
-        IUserRepository       userRepository,
+        IRoleRepository roleRepository,
+        IUserRepository userRepository,
         IInvitationRepository invitationRepository,
-        IIdentityUnitOfWork   uow,
+        IIdentityUnitOfWork uow,
         IRequestContextSetter contextSetter,
-        IPermissionCatalogCache cache)
+        IPermissionCatalogCache cache
+    )
     {
-        _roleRepository       = roleRepository;
-        _userRepository       = userRepository;
+        _roleRepository = roleRepository;
+        _userRepository = userRepository;
         _invitationRepository = invitationRepository;
-        _uow                  = uow;
-        _contextSetter        = contextSetter;
-        _cache                = cache;
+        _uow = uow;
+        _contextSetter = contextSetter;
+        _cache = cache;
     }
 
     public async Task<ResolveTenantAccessOutput> ExecuteAsync(ResolveTenantAccessCommand cmd, CancellationToken ct)
     {
-        var tenantId   = cmd.TenantId;
+        var tenantId = cmd.TenantId;
         var tenantName = cmd.TenantName;
-        var email      = Email.Create(cmd.Email);
+        var email = Email.Create(cmd.Email);
         var externalId = ExternalId.Create(cmd.ExternalOid);
 
         using (_contextSetter.SuspendTenantFilter())
@@ -53,7 +54,8 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
                 existingUser.ResolveExistingAccess(externalId);
                 _contextSetter.Set(tenantId, tenantName, existingUser.Id, email.Value);
 
-                var existingRole = await _roleRepository.GetByIdWithPermissionsAsync(existingUser.RoleId, ct)
+                var existingRole =
+                    await _roleRepository.GetByIdWithPermissionsAsync(existingUser.RoleId, ct)
                     ?? throw new RoleNotFoundException(existingUser.RoleId);
 
                 if (!existingRole.IsActive)
@@ -67,16 +69,19 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
                     existingUser.Id,
                     existingRole.Id,
                     existingRole.Name,
-                    existingPermissions);
+                    existingPermissions
+                );
             }
 
             // --- New user from invitation path ---
-            var invitation = await _invitationRepository.FindByEmailAsync(tenantId, email, ct)
+            var invitation =
+                await _invitationRepository.FindByEmailAsync(tenantId, email, ct)
                 ?? throw new InvitationNotFoundException(cmd.Email);
 
             invitation.Use();
 
-            var role = await _roleRepository.GetByIdWithPermissionsAsync(invitation.RoleId, ct)
+            var role =
+                await _roleRepository.GetByIdWithPermissionsAsync(invitation.RoleId, ct)
                 ?? throw new RoleNotFoundException(invitation.RoleId);
 
             if (!role.IsActive)
@@ -89,13 +94,7 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
 
             var permissions = await ResolveCodesAsync(role, ct);
 
-            return new ResolveTenantAccessOutput(
-                tenantId,
-                tenantName,
-                user.Id,
-                role.Id,
-                role.Name,
-                permissions);
+            return new ResolveTenantAccessOutput(tenantId, tenantName, user.Id, role.Id, role.Name, permissions);
         }
     }
 
@@ -106,10 +105,6 @@ public sealed class ResolveTenantAccessCommandHandler : IResolveTenantAccessComm
 
         var permissionIds = role.Permissions.Select(p => p.PermissionId).ToHashSet();
         var all = await _cache.GetAllActiveAsync(ct);
-        return all
-            .Where(p => permissionIds.Contains(p.Id))
-            .Select(p => p.Code)
-            .ToList()
-            .AsReadOnly();
+        return all.Where(p => permissionIds.Contains(p.Id)).Select(p => p.Code).ToList().AsReadOnly();
     }
 }

@@ -1,4 +1,5 @@
 using Atlas.Identity.Domain.Invitations;
+using Atlas.Identity.Domain.Roles;
 using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Tenants._Roles;
 using Atlas.Identity.Domain.Users;
@@ -19,7 +20,8 @@ public class UserTests
             "admin",
             PermissionFixtures.Many(3),
             isSystem: true,
-            id: SystemRoleIds.Admin);
+            id: SystemRoleIds.Admin
+        );
         return (tenant, adminRole.Id);
     }
 

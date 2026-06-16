@@ -69,14 +69,23 @@
   <Folder Name="/src/2-Modules/Outbox/_tests/">
     <Project Path="src/Outbox/Atlas.Outbox.Tests/Atlas.Outbox.Tests.csproj" />
   </Folder>
-  <Folder Name="/src/2-Modules/Party/">
-    <File Path="src/Party/Atlas.Party.Contracts/Atlas.Party.Contracts.csproj" />
+  <Folder Name="/src/2-Modules/Party/" />
+  <Folder Name="/src/2-Modules/Party/1-Api/">
+    <Project Path="src/Party/Atlas.Party.BffApi/Atlas.Party.BffApi.csproj" Id="ef0f51c5-3211-404b-8706-5059ac0693dc" />
+  </Folder>
+  <Folder Name="/src/2-Modules/Party/2-Infrastructure/">
+    <Project Path="src/Party/Atlas.Party.Infrastructure/Atlas.Party.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/2-Modules/Party/3-AppServices/">
+    <Project Path="src/Party/Atlas.Party.Application/Atlas.Party.Application.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Party/4-Domain/">
     <Project Path="src/Party/Atlas.Party.Domain/Atlas.Party.Domain.csproj" />
+    <Project Path="src/Party/Atlas.Party.Resources/Atlas.Party.Resources.csproj" Id="742aef15-9b95-4e36-a3a6-afe425f68c89" />
   </Folder>
   <Folder Name="/src/2-Modules/Party/5-Contracts/">
     <File Path="src/Party/Atlas.Party.Contracts/Atlas.Party.Contracts.csproj" />
+    <Project Path="src/Party/Atlas.Party.Contracts/Atlas.Party.Contracts.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/" />
   <Folder Name="/src/2-Modules/Plataform/1-Api/">

@@ -43,6 +43,9 @@
     <ProjectReference Include="..\Identity\Atlas.Identity.InternalApi\Atlas.Identity.InternalApi.csproj" />
     <ProjectReference Include="..\Identity\Atlas.Identity.OutboxPublisher\Atlas.Identity.OutboxPublisher.csproj" />
     <ProjectReference Include="..\Outbox\Atlas.Outbox.Infrastructure\Atlas.Outbox.Infrastructure.csproj" />
+    <ProjectReference Include="..\Party\Atlas.Party.BffApi\Atlas.Party.BffApi.csproj" />
+    <ProjectReference Include="..\Party\Atlas.Party.Contracts\Atlas.Party.Contracts.csproj" />
+    <ProjectReference Include="..\Party\Atlas.Party.Infrastructure\Atlas.Party.Infrastructure.csproj" />
     <ProjectReference Include="..\Platform\Atlas.Platform.BffApi\Atlas.Platform.BffApi.csproj" />
     <ProjectReference Include="..\Platform\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
     <ProjectReference Include="..\Platform\Atlas.Platform.Infrastructure\Atlas.Platform.Infrastructure.csproj" />

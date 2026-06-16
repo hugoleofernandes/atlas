@@ -1,4 +1,5 @@
 using Atlas.API.DI;
+using Atlas.API.Errors;
 using Atlas.API.Seeding;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
@@ -26,6 +27,9 @@ using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.InternalApi;
 using Atlas.Identity.OutboxPublisher.DI;
 using Atlas.Outbox.Infrastructure.DI;
+using Atlas.Party.BffApi;
+using Atlas.Party.Infrastructure.DI;
+using Atlas.Party.Infrastructure.Persistence.DbContexts;
 using Atlas.Platform.BffApi;
 using Atlas.Platform.Domain;
 using Atlas.Platform.Infrastructure.DI;
@@ -48,6 +52,7 @@ using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
+using System.Text.Json.Serialization;
 
 //
 // ==========================================
@@ -151,6 +156,10 @@ try
         o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
     );
 
+    services.AddDbContext<PartyDbContext>(o =>
+        o.UseNpgsql(configuration.GetConnectionString("Default")).UseSnakeCaseNamingConvention()
+    );
+
     //
     // ==========================================
     // MODULE REGISTRATION
@@ -169,6 +178,9 @@ try
     services.AddPlatformModuleDependencies();
     //
 
+    // PARTY
+    services.AddPartyModuleDependencies();
+
     // OUTBOX — management surface (triage/replay endpoints) + on-demand processing workflows
     services.AddOutboxManagementDependencies();
     services.AddOutboxOnDemandProcessingDependencies(configuration);
@@ -186,6 +198,7 @@ try
             typeof(IdentityBffApiAssemblyMarker).Assembly,
             typeof(StaffBffApiAssemblyMarker).Assembly,
             typeof(PlatformBffApiAssemblyMarker).Assembly,
+            typeof(PartyBffApiAssemblyMarker).Assembly,
             typeof(IdentityInternalApiAssemblyMarker).Assembly,
             typeof(StaffInternalApiAssemblyMarker).Assembly,
             typeof(PlatformInternalApiAssemblyMarker).Assembly,
@@ -311,7 +324,11 @@ try
     app.UseAuthorization();
     app.UseBffXsrf();
 
-    app.UseFastEndpoints();
+    app.UseFastEndpoints(c =>
+    {
+        c.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
+        c.Errors.ResponseBuilder = FastEndpointsValidationErrorResponseBuilder.Build;
+    });
     app.MapControllers();
 
     app.MapHealthChecks(

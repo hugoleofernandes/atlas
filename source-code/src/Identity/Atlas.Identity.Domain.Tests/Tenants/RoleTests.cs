@@ -1,7 +1,6 @@
-using Atlas.Identity.Domain.Tenants._Roles;
-using Atlas.Identity.Domain.Tenants._Roles._Permissions;
-using Atlas.Identity.Domain.Tenants._Roles.Exceptions;
-using Atlas.Identity.Domain.Tenants.Events;
+using Atlas.Identity.Domain.Roles;
+using Atlas.Identity.Domain.Roles.Events;
+using Atlas.Identity.Domain.Roles.Exceptions;
 using FluentAssertions;
 
 namespace Atlas.Identity.Tests.Tenants;
@@ -71,11 +70,7 @@ public class RoleTests
     public void Create_ShouldNormalizeDuplicatePermissions_ByPermissionId()
     {
         var id = Guid.NewGuid();
-        var duplicated = new[]
-        {
-            RolePermission.Of(id),
-            RolePermission.Of(id),
-        };
+        var duplicated = new[] { RolePermission.Of(id), RolePermission.Of(id) };
 
         var role = Role.Create(TenantId, "custom", duplicated);
 

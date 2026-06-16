@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="party.invalid-contact-info"   xml:space="preserve"><value>This contact information is invalid.</value></data>
+  <data name="party.invalid-date-range"     xml:space="preserve"><value>The end date cannot be before the start date.</value></data>
+  <data name="party.invalid-person-name"    xml:space="preserve"><value>This person name field is required and cannot be empty.</value></data>
+  <data name="party.invalid-postal-address" xml:space="preserve"><value>This postal address field is invalid or missing.</value></data>
+  <data name="party.invalid-tax-number"     xml:space="preserve"><value>This is not a valid CPF or CNPJ.</value></data>
+  <data name="tenant.context_not_resolved" xml:space="preserve"><value>Tenant context could not be resolved for this request.</value></data>
+</root>
