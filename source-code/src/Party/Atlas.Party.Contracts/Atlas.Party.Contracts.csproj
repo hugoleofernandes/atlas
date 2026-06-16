@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
+    <ProjectReference Include="..\..\Shared\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>

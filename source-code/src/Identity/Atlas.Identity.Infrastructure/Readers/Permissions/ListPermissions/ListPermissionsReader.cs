@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 
@@ -12,9 +13,11 @@ public sealed class ListPermissionsReader(IPermissionCatalogCache cache) : IList
     public async Task<IReadOnlyList<PermissionItemDto>> ListAsync(CancellationToken ct)
     {
         var all = await cache.GetAllActiveAsync(ct);
-        return all
-            .Where(p => !p.IsRoot)
-            .Select(p => new PermissionItemDto(p.ModuleId!.Value, p.ModuleName!, p.Code))
+        return all.Where(p => !p.IsRoot)
+            .Select(p => new PermissionItemDto(p.ModuleId!.Value, p.ModuleName!, p.Code, p.Group))
+            .OrderBy(x => x.ModuleName)
+            .ThenBy(x => x.Group)
+            .ThenBy(x => x.Code)
             .ToList();
     }
 }

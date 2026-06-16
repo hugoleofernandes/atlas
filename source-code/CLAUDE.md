@@ -15,6 +15,7 @@
 @.claude/docs/entity-types.md
 @.claude/docs/endpoints.md
 @.claude/docs/queries-and-readers.md
+@.claude/docs/cross-module.md
 @.claude/docs/multi-tenancy.md
 @.claude/docs/seeding.md
 @.claude/docs/localization-resources.md

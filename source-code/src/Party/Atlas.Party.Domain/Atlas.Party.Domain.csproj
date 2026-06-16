@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
+    <ProjectReference Include="..\Atlas.Party.Contracts\Atlas.Party.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
