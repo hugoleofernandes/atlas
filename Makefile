@@ -143,19 +143,19 @@ docs-v: docs-clean
 # CLEAN MIGRATIONS
 # =========================================
 
-clean-migrations:
+ef-clean-migrations:
 	powershell -Command "if (Test-Path '$(TARGET_PROJECT)/Persistence/Migrations') { Remove-Item -Recurse -Force '$(TARGET_PROJECT)/Persistence/Migrations' }"
 
 # SAMPLE
-# make clean-migrations context=identity
-# make clean-migrations context=staff
+# make ef-clean-migrations context=identity
+# make ef-clean-migrations context=staff
 
 # CLEAN ALL MIGRATIONS
 ef-clean-all-m:
-	make clean-migrations context=identity
-	make clean-migrations context=staff
-	make clean-migrations context=platform
-	make clean-migrations context=party
+	make ef-clean-migrations context=identity
+	make ef-clean-migrations context=staff
+	make ef-clean-migrations context=platform
+	make ef-clean-migrations context=party
 
 # SAMPLE
 # make ef-clean-all-m

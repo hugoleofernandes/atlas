@@ -4,7 +4,7 @@ using Atlas.SharedKernel.Domain;
 namespace Atlas.Party.Domain.Shared;
 
 /// <summary>
-/// Brazilian tax identifier — either CPF (individuals, 11 digits) or CNPJ (organizations, 14 digits).
+/// Brazilian tax identifier — either CPF (persons, 11 digits) or CNPJ (organizations, 14 digits).
 /// Stores only digits; validates the check-digit algorithm on construction.
 /// </summary>
 public sealed class TaxNumber : ValueObject
@@ -83,3 +83,4 @@ public sealed class TaxNumber : ValueObject
 }
 
 public enum TaxNumberType { Cpf, Cnpj }
+

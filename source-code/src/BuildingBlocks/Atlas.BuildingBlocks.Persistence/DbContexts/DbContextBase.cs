@@ -65,7 +65,7 @@ public abstract class DbContextBase : DbContext
             if (typeof(INotMultiTenant).IsAssignableFrom(entityType.ClrType))
                 continue;
 
-            // In a TPH hierarchy, derived types (e.g. Individual, Organization) are separate
+            // In a TPH hierarchy, derived types (e.g. Person, Organization) are separate
             // IEntityType entries sharing the root's table. EF Core only allows a query filter
             // on the hierarchy root — derived types inherit it automatically.
             if (entityType.BaseType is not null)

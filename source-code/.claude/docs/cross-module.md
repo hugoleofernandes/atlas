@@ -43,7 +43,7 @@ WHERE id = ANY(@Ids)
 
 ## Write — Integration Event via Outbox
 
-A cross-module write (e.g. registering an `Individual` and its `StaffMember`) spans two `DbContext`s — two transactions. Direct orchestration would leave the second write unguaranteed if it fails after the first commits. The Outbox closes this: the integration event is written in the same transaction as the source aggregate, so if the source committed, the downstream handler *will* run (eventually, with retry). See `domain-events.md`.
+A cross-module write (e.g. registering a `Person` and its `StaffMember`) spans two `DbContext`s — two transactions. Direct orchestration would leave the second write unguaranteed if it fails after the first commits. The Outbox closes this: the integration event is written in the same transaction as the source aggregate, so if the source committed, the downstream handler *will* run (eventually, with retry). See `domain-events.md`.
 
 This is the **only** place a cross-module event is justified. Reads never use events.
 
@@ -63,4 +63,4 @@ If profiling later shows a specific hot query (e.g. a dashboard joining thousand
 
 ## Party as Stable Core
 
-The `Partners` module's `Party` (Individual / Organization) is the **stable identity core** and holds **zero outbound references**. Role-bearing aggregates own the link: `StaffMember.PartyId`, `Customer.PartyId`, `Supplier.PartyId`, `User.PartyId`. Adding a new role type never touches `Party` (open/closed), and the same person can be staff, customer and user at once — three rows pointing at one `PartyId`.
+The `Partners` module's `Party` (Person / Organization) is the **stable identity core** and holds **zero outbound references**. Role-bearing aggregates own the link: `StaffMember.PartyId`, `Customer.PartyId`, `Supplier.PartyId`, `User.PartyId`. Adding a new role type never touches `Party` (open/closed), and the same person can be staff, customer and user at once — three rows pointing at one `PartyId`.

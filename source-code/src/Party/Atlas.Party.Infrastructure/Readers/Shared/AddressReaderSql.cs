@@ -6,7 +6,7 @@ using System.Data;
 namespace Atlas.Party.Infrastructure.Readers.Shared;
 
 /// <summary>
-/// Loads a Party's addresses for the GetById readers. Reused by Individual and Organization
+/// Loads a Party's addresses for the GetById readers. Reused by Person and Organization
 /// since both project the same atlas_party.party_addresses shape.
 /// </summary>
 internal static class AddressReaderSql
@@ -64,3 +64,4 @@ internal static class AddressReaderSql
         bool IsPrimary
     );
 }
+

@@ -28,7 +28,7 @@ public sealed class PartyConfiguration : IEntityTypeConfiguration<Domain.Parties
 
         b.HasIndex(x => new { x.TenantId, x.TaxNumber }).IsUnique();
 
-        b.HasDiscriminator<string>("party_type").HasValue<Individual>("Individual").HasValue<Organization>("Organization");
+        b.HasDiscriminator<string>("party_type").HasValue<Person>("Person").HasValue<Organization>("Organization");
 
         b.OwnsMany(
             x => x.Addresses,
@@ -108,3 +108,4 @@ public sealed class PartyConfiguration : IEntityTypeConfiguration<Domain.Parties
         EntityChangeConfiguration.Configure(b);
     }
 }
+

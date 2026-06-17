@@ -20,3 +20,14 @@ CSharpier formats on save — code may look unformatted before saving, that's no
 
 Single source of truth: `ErrorCategoryExtensions.ToHttpStatus()` in `Atlas.BuildingBlocks.AspNetCore.HttpErrors`.
 Used by `GlobalExceptionMiddleware`, `HttpResultMapper`, and `AtlasEndpoint`. Never duplicated.
+
+## Enum Serialization in JSON Requests
+
+✅ Enums serialize/deserialize as strings — `DescriptiveEnumJsonConverter` is registered globally in `UseFastEndpoints` (`Atlas.API/Program.cs`)
+✅ When an unknown string value is received, the response is a 400 with a human-readable message listing the valid values
+❌ Never add `[JsonConverter(typeof(JsonStringEnumConverter))]` on individual enum types — the global converter already covers all enums
+❌ Never replace `DescriptiveEnumJsonConverter` with the default `JsonStringEnumConverter` — it produces a cryptic error that exposes internal type names instead of valid values
+
+Valid values for any enum are always the exact member names (PascalCase). When an invalid value is received the response lists them: `"Invalid value 'X' for EnumName. Valid values: A, B, C."`.
+
+When adding a new enum used in a request, no extra registration is needed — `DescriptiveEnumJsonConverter` handles all enums automatically.

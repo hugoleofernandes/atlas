@@ -38,16 +38,16 @@
 
 ## TPH Aggregate Hierarchy (Same-Table Subtypes)
 
-A stable identity core can have mutually-exclusive subtypes that share the same table via EF Core's table-per-hierarchy mapping. Example: `Party` (abstract aggregate root) with `Individual` and `Organization` as sealed subtypes.
+A stable identity core can have mutually-exclusive subtypes that share the same table via EF Core's table-per-hierarchy mapping. Example: `Party` (abstract aggregate root) with `Person` and `Organization` as sealed subtypes.
 
 ```csharp
 public abstract class Party : AggregateRoot, IMultiTenantEntity { ... }
-public sealed class Individual : Party { ... }
+public sealed class Person : Party { ... }
 public sealed class Organization : Party { ... }
 ```
 
 ✅ Use when the subtypes are genuinely the same aggregate with a discriminator-driven shape difference — not two unrelated aggregates that happen to share some fields
-✅ Repositories and queries are written against the concrete subtype (`IIndividualRepository`, `IOrganizationRepository`) — never against the abstract base
+✅ Repositories and queries are written against the concrete subtype (`IPersonRepository`, `IOrganizationRepository`) — never against the abstract base
 ✅ The base type carries only the fields and invariants common to every subtype
 ❌ Never query or repository the abstract base type directly — callers always know which subtype they need
 

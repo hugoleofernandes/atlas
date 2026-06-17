@@ -5,11 +5,11 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="party.individual.read"       xml:space="preserve"><value>View individuals</value></data>
-  <data name="party.individual.create"     xml:space="preserve"><value>Create individuals</value></data>
-  <data name="party.individual.update"     xml:space="preserve"><value>Update individuals</value></data>
-  <data name="party.individual.deactivate" xml:space="preserve"><value>Deactivate individuals</value></data>
-  <data name="party.individual.manage"     xml:space="preserve"><value>Manage individuals</value></data>
+  <data name="party.person.read"       xml:space="preserve"><value>View persons</value></data>
+  <data name="party.person.create"     xml:space="preserve"><value>Create persons</value></data>
+  <data name="party.person.update"     xml:space="preserve"><value>Update persons</value></data>
+  <data name="party.person.deactivate" xml:space="preserve"><value>Deactivate persons</value></data>
+  <data name="party.person.manage"     xml:space="preserve"><value>Manage persons</value></data>
 
   <data name="party.organization.read"       xml:space="preserve"><value>View organizations</value></data>
   <data name="party.organization.create"     xml:space="preserve"><value>Create organizations</value></data>
@@ -17,3 +17,4 @@
   <data name="party.organization.deactivate" xml:space="preserve"><value>Deactivate organizations</value></data>
   <data name="party.organization.manage"     xml:space="preserve"><value>Manage organizations</value></data>
 </root>
+

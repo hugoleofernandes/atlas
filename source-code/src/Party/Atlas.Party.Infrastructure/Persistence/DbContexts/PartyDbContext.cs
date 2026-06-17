@@ -14,7 +14,7 @@ public sealed class PartyDbContext : DbContextBase
     protected override string Schema => "atlas_party";
 
     public DbSet<Domain.Parties.Party> Parties => Set<Domain.Parties.Party>();
-    public DbSet<Individual> Individuals => Set<Individual>();
+    public DbSet<Person> Persons => Set<Person>();
     public DbSet<Organization> Organizations => Set<Organization>();
 
     public DbSet<Audit> Audits => Set<Audit>();
@@ -33,3 +33,4 @@ public sealed class PartyDbContext : DbContextBase
         base.OnModelCreating(modelBuilder);
     }
 }
+

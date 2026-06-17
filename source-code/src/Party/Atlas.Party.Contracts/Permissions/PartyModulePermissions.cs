@@ -13,11 +13,11 @@ public sealed partial class PartyModulePermissions : IModulePermissions
 
     private static readonly IReadOnlyList<PermissionDefinition> AllDefinitions =
     [
-        Individual.Read,
-        Individual.Create,
-        Individual.Update,
-        Individual.Deactivate,
-        Individual.Manage,
+        Person.Read,
+        Person.Create,
+        Person.Update,
+        Person.Deactivate,
+        Person.Manage,
         Organization.Read,
         Organization.Create,
         Organization.Update,
@@ -27,3 +27,4 @@ public sealed partial class PartyModulePermissions : IModulePermissions
 
     public IReadOnlyList<PermissionDefinition> Definitions => AllDefinitions;
 }
+

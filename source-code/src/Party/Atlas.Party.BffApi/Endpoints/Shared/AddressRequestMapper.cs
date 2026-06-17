@@ -5,7 +5,7 @@ namespace Atlas.Party.BffApi.Endpoints.Shared;
 
 /// <summary>
 /// Maps the HTTP AddressRequest shape to the domain AddressInput, building the PostalAddress
-/// value object. Reused by Register/Update endpoints for both Individual and Organization.
+/// value object. Reused by Register/Update endpoints for both Person and Organization.
 /// </summary>
 internal static class AddressRequestMapper
 {
@@ -23,3 +23,4 @@ internal static class AddressRequestMapper
             .ToList();
     }
 }
+

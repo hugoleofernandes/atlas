@@ -1,5 +1,6 @@
 using Atlas.API.DI;
 using Atlas.API.Errors;
+using Atlas.API.Json;
 using Atlas.API.Seeding;
 using Atlas.API.Security.Bootstrap;
 using Atlas.API.Security.Cors;
@@ -326,7 +327,7 @@ try
 
     app.UseFastEndpoints(c =>
     {
-        c.Serializer.Options.Converters.Add(new JsonStringEnumConverter());
+        c.Serializer.Options.Converters.Add(new DescriptiveEnumJsonConverter());
         c.Errors.ResponseBuilder = FastEndpointsValidationErrorResponseBuilder.Build;
     });
     app.MapControllers();

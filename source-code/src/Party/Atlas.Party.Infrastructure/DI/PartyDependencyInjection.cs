@@ -17,9 +17,10 @@ public static class PartyDependencyInjection
         services.AddScoped<IHandlerInvoker, HandlerInvoker>(); //todo: move to BuildingBlocks.DI when it exists
         services.AddScoped<IPermissionLabelProvider, PartyPermissionLabelProvider>();
 
-        services.AddIndividualAggregateServices();
+        services.AddPersonAggregateServices();
         services.AddOrganizationAggregateServices();
 
         return services;
     }
 }
+

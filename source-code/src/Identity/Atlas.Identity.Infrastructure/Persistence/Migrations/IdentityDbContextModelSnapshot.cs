@@ -18,7 +18,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("atlas_identity")
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -256,7 +256,7 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("permissions", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Tenants._Roles.Role", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Roles.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -577,9 +577,9 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                     b.ToTable("outbox_messages", "atlas_identity");
                 });
 
-            modelBuilder.Entity("Atlas.Identity.Domain.Tenants._Roles.Role", b =>
+            modelBuilder.Entity("Atlas.Identity.Domain.Roles.Role", b =>
                 {
-                    b.OwnsMany("Atlas.Identity.Domain.Tenants._Roles._Permissions.RolePermission", "Permissions", b1 =>
+                    b.OwnsMany("Atlas.Identity.Domain.Roles.RolePermission", "Permissions", b1 =>
                         {
                             b1.Property<Guid>("RoleId")
                                 .HasColumnType("uuid")

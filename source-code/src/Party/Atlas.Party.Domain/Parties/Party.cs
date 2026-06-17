@@ -8,7 +8,7 @@ namespace Atlas.Party.Domain.Parties;
 /// <summary>
 /// Abstract root of the Party hierarchy.
 /// Represents any entity (person or organization) that can participate in business relationships.
-/// Concrete types: Individual (CPF) and Organization (CNPJ).
+/// Concrete types: Person (CPF) and Organization (CNPJ).
 ///
 /// Invariants:
 /// - TaxNumber is unique per tenant.

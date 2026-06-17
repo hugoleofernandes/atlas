@@ -362,22 +362,6 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                     b.ToTable("outbox_messages", "atlas_party");
                 });
 
-            modelBuilder.Entity("Atlas.Party.Domain.Parties.Individual", b =>
-                {
-                    b.HasBaseType("Atlas.Party.Domain.Parties.Party");
-
-                    b.Property<DateOnly?>("BirthDate")
-                        .HasColumnType("date")
-                        .HasColumnName("birth_date");
-
-                    b.Property<string>("Gender")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("gender");
-
-                    b.HasDiscriminator().HasValue("Individual");
-                });
-
             modelBuilder.Entity("Atlas.Party.Domain.Parties.Organization", b =>
                 {
                     b.HasBaseType("Atlas.Party.Domain.Parties.Party");
@@ -400,6 +384,22 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                         .HasColumnName("trade_name");
 
                     b.HasDiscriminator().HasValue("Organization");
+                });
+
+            modelBuilder.Entity("Atlas.Party.Domain.Parties.Person", b =>
+                {
+                    b.HasBaseType("Atlas.Party.Domain.Parties.Party");
+
+                    b.Property<DateOnly?>("BirthDate")
+                        .HasColumnType("date")
+                        .HasColumnName("birth_date");
+
+                    b.Property<string>("Gender")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("gender");
+
+                    b.HasDiscriminator().HasValue("Person");
                 });
 
             modelBuilder.Entity("Atlas.Party.Domain.Parties.Party", b =>
@@ -625,11 +625,11 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                         .HasConstraintName("fk_outbox_messages_outbox_messages_parent_outbox_message_id");
                 });
 
-            modelBuilder.Entity("Atlas.Party.Domain.Parties.Individual", b =>
+            modelBuilder.Entity("Atlas.Party.Domain.Parties.Person", b =>
                 {
                     b.OwnsOne("Atlas.Party.Domain.Shared.PersonName", "Name", b1 =>
                         {
-                            b1.Property<Guid>("IndividualId")
+                            b1.Property<Guid>("PersonId")
                                 .HasColumnType("uuid")
                                 .HasColumnName("id");
 
@@ -650,13 +650,13 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("middle_name");
 
-                            b1.HasKey("IndividualId");
+                            b1.HasKey("PersonId");
 
                             b1.ToTable("parties", "atlas_party");
 
                             b1.WithOwner()
-                                .HasForeignKey("IndividualId")
-                                .HasConstraintName("fk_individuals_individuals_id");
+                                .HasForeignKey("PersonId")
+                                .HasConstraintName("fk_persons_persons_id");
                         });
 
                     b.Navigation("Name")
