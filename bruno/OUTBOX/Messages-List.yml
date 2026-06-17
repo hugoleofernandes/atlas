@@ -1,0 +1,18 @@
+info:
+  name: Messages-List
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{bff_api_prefix}}/bff/v1/outbox/messages"
+  headers:
+    - name: Accept-Language
+      value: pt
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

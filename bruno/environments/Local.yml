@@ -1,0 +1,4 @@
+name: Local
+variables:
+  - name: bff_api_prefix
+    value: https://localhost:9191

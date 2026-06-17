@@ -6,6 +6,13 @@
 !.env.example
 
 # =========================
+# Bruno API collections
+# =========================
+# Ignore environment files that may contain tokens, cookies, or passwords.
+# Commit only Local.yml when it has no secrets (e.g. localhost URL only).
+bruno/environments/*.secret.yml
+
+# =========================
 # Docker
 # =========================
 docker-data/

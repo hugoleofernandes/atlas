@@ -1,0 +1,27 @@
+info:
+  name: Organizations-Create
+  type: http
+  seq: 1
+
+http:
+  method: post
+  url: "{{bff_api_prefix}}/bff/v1/party/organizations"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "taxNumber": "12345678000199",
+        "legalName": "Acme Comércio Ltda",
+        "tradeName": "Acme",
+        "legalType": "Ltda"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -10,8 +10,9 @@ public sealed partial class PlatformModulePermissions : IModulePermissions
 
     private static readonly IReadOnlyList<PermissionDefinition> AllDefinitions =
     [
-        new(Audit.Read, false, AtlasModules.Platform),
-        new(Audit.Manage, true, AtlasModules.Platform),
+        new(Audit.Read,     false, AtlasModules.Platform),
+        new(Audit.Manage,   true,  AtlasModules.Platform),
+        new(Geography.Read, false, AtlasModules.Platform),
     ];
 
     public IReadOnlyList<PermissionDefinition> Definitions => AllDefinitions;

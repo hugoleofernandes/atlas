@@ -1,0 +1,46 @@
+info:
+  name: Entries-List
+  type: http
+  seq: 1
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/platform/audit/entries?entityTypeId=GUID-AQUI&action=Modified&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z&entityId=ID-DO-REGISTRO"
+  params:
+    - name: entityTypeId
+      value: GUID-AQUI
+      type: query
+    - name: action
+      value: Modified
+      type: query
+    - name: from
+      value: 2026-01-01T00:00:00Z
+      type: query
+    - name: to
+      value: 2026-12-31T23:59:59Z
+      type: query
+    - name: entityId
+      value: ID-DO-REGISTRO
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # List Audit Entries — All Filters
+  Returns all audit entries for a given entity type within the current tenant.
+  All parameters except `entityTypeId` are optional and can be combined freely.
+  ---
+
+  ## Parameters
+  | Parameter    | Type     | Required | Description                                                        |
+  |--------------|----------|----------|--------------------------------------------------------------------|
+  | entityTypeId | UUID     | yes      | Entity type ID — get it from `GET /bff/v1/platform/entity-types/lookup` |
+  | action       | string   | no       | Filter by action: `Added`, `Modified`, `Deleted`                   |
+  | from         | ISO 8601 | no       | Lower bound for `occurredAtUtc`                                    |
+  | to           | ISO 8601 | no       | Upper bound for `occurredAtUtc`                                    |
+  | entityId     | string   | no       | Filter by the ID of the audited record                             |

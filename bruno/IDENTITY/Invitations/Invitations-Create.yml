@@ -1,0 +1,30 @@
+info:
+  name: Invitations-Create
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{bff_api_prefix}}/bff/v1/identity/invitations"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "hugoleofernandes@gmail.com",
+        "roleId": "00000000-0000-0000-0000-000000000001"
+      }
+      // member: cae716fc-4073-4371-9be9-dc79db8aaacc
+      // viewer: 3ca3229c-378d-4127-bd03-fc3da175153e
+      // admin: caf7aedd-31e3-45eb-9492-ae3c2c290493
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

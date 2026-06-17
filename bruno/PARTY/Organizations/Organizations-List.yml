@@ -1,0 +1,21 @@
+info:
+  name: Organizations-List
+  type: http
+  seq: 5
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/party/organizations?isActive=true"
+  params:
+    - name: isActive
+      value: "true"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: isActive param is optional.

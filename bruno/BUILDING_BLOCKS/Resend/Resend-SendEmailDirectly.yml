@@ -1,0 +1,29 @@
+info:
+  name: Resend-SendEmailDirectly
+  type: http
+  seq: 1
+
+http:
+  method: post
+  url: https://api.resend.com/emails
+  headers:
+    - name: Authorization
+      value: Bearer <resend_api_key>
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "from": "onboarding@resend.dev",
+        "to": "hugoleofernandes@gmail.com",
+        "subject": "Hello World - BRUNO!!!",
+        "html": "<p>Congrats on sending your <strong>first email</strong>!</p>"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,29 @@
+info:
+  name: Auth-GetXsrf
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{bff_api_prefix}}/bff/v1/identity/auth/xsrf"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: console.log("Variable saved. xsrf_token:", bru.getVar("xsrf_token"));
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.token;
+        method: jsonq
+      variable:
+        name: xsrf_token
+        scope: runtime
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

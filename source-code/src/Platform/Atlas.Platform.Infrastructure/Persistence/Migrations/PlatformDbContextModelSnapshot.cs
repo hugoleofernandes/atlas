@@ -112,6 +112,122 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                     b.ToTable("idempotency_entries", "atlas_platform");
                 });
 
+            modelBuilder.Entity("Atlas.Platform.Domain.Geography.City", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by_email");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("StateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("state_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by_email");
+
+                    b.HasKey("Id")
+                        .HasName("pk_cities");
+
+                    b.HasIndex("StateId", "Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_cities_state_id_name");
+
+                    b.ToTable("cities", "atlas_platform");
+                });
+
+            modelBuilder.Entity("Atlas.Platform.Domain.Geography.State", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("country_code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by_email");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by_email");
+
+                    b.HasKey("Id")
+                        .HasName("pk_states");
+
+                    b.HasIndex("CountryCode", "Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_states_country_code_code");
+
+                    b.ToTable("states", "atlas_platform");
+                });
+
             modelBuilder.Entity("Atlas.Platform.Domain.Modules.EntityType", b =>
                 {
                     b.Property<Guid>("Id")
@@ -508,6 +624,16 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_outbox_messages_processed_on_dead_lettered_on_failed_at_loc");
 
                     b.ToTable("outbox_messages", "atlas_platform");
+                });
+
+            modelBuilder.Entity("Atlas.Platform.Domain.Geography.City", b =>
+                {
+                    b.HasOne("Atlas.Platform.Domain.Geography.State", null)
+                        .WithMany()
+                        .HasForeignKey("StateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_cities_states_state_id");
                 });
 
             modelBuilder.Entity("Atlas.Platform.Domain.Modules.EntityType", b =>

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Atlas.Platform.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial_Platform : Migration
+    public partial class initial_Platform : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -110,6 +110,28 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "states",
+                schema: "atlas_platform",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    country_code = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
+                    code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    created_by_email = table.Column<string>(type: "text", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    updated_by_email = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_states", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "systems",
                 schema: "atlas_platform",
                 columns: table => new
@@ -201,6 +223,34 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "cities",
+                schema: "atlas_platform",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    state_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    created_by_email = table.Column<string>(type: "text", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by = table.Column<Guid>(type: "uuid", nullable: true),
+                    updated_by_email = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_cities", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_cities_states_state_id",
+                        column: x => x.state_id,
+                        principalSchema: "atlas_platform",
+                        principalTable: "states",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_audits_entity_type_id",
                 schema: "atlas_platform",
@@ -236,6 +286,13 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 schema: "atlas_platform",
                 table: "audits",
                 columns: new[] { "tenant_id", "entity_type_id", "occurred_at_utc" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_cities_state_id_name",
+                schema: "atlas_platform",
+                table: "cities",
+                columns: new[] { "state_id", "name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_entity_types_module_id_name",
@@ -306,6 +363,13 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 column: "type");
 
             migrationBuilder.CreateIndex(
+                name: "ix_states_country_code_code",
+                schema: "atlas_platform",
+                table: "states",
+                columns: new[] { "country_code", "code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_systems_name",
                 schema: "atlas_platform",
                 table: "systems",
@@ -328,6 +392,10 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
                 schema: "atlas_platform");
 
             migrationBuilder.DropTable(
+                name: "cities",
+                schema: "atlas_platform");
+
+            migrationBuilder.DropTable(
                 name: "entity_types",
                 schema: "atlas_platform");
 
@@ -345,6 +413,10 @@ namespace Atlas.Platform.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "tenants",
+                schema: "atlas_platform");
+
+            migrationBuilder.DropTable(
+                name: "states",
                 schema: "atlas_platform");
 
             migrationBuilder.DropTable(

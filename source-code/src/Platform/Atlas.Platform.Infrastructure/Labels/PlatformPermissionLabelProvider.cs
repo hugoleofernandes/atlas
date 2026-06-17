@@ -10,8 +10,9 @@ public sealed class PlatformPermissionLabelProvider : IPermissionLabelProvider
 {
     public string? Localize(string permissionCode) => permissionCode switch
     {
-        "platform.audit.read"   => "View platform audit log",
-        "platform.audit.manage" => "Manage platform audit log",
+        "platform.audit.read"     => "View platform audit log",
+        "platform.audit.manage"   => "Manage platform audit log",
+        "platform.geography.read" => "View states and cities",
         _ => null,
     };
 }

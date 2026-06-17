@@ -1,0 +1,25 @@
+info:
+  name: Entries-ListByEntityTypeAndDateRange
+  type: http
+  seq: 4
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/platform/audit/entries?entityTypeId=GUID-AQUI&from=2026-01-01T00:00:00Z&to=2026-12-31T23:59:59Z"
+  params:
+    - name: entityTypeId
+      value: GUID-AQUI
+      type: query
+    - name: from
+      value: 2026-01-01T00:00:00Z
+      type: query
+    - name: to
+      value: 2026-12-31T23:59:59Z
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,15 @@
+info:
+  name: Persons-Deactivate
+  type: http
+  seq: 4
+
+http:
+  method: patch
+  url: https://localhost:5001/bff/v1/party/persons/%7Bid%7D/deactivate
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

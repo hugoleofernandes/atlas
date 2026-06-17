@@ -1,0 +1,45 @@
+info:
+  name: Persons-CreateWithAddress
+  type: http
+  seq: 3
+
+http:
+  method: post
+  url: "{{bff_api_prefix}}/bff/v1/party/persons"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
+  body:
+    type: json
+    data: |-
+      {
+        "taxNumber": "35358340823",
+        "firstName": "Maria",
+        "lastName": "Silva",
+        "middleName": "Souza",
+        "birthDate": "1990-05-12",
+        "gender": "Female",
+        "addresses": [
+          {
+            "type": "Main",
+            "street": "Rua das Flores",
+            "number": "123",
+            "complement": "Apto 45",
+            "district": "Centro",
+            "city": "São Paulo",
+            "state": "SP",
+            "zipCode": "01310-100",
+            "country": "BR",
+            "isPrimary": true
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

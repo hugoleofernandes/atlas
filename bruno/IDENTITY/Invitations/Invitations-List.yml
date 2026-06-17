@@ -1,0 +1,19 @@
+info:
+  name: Invitations-List
+  type: http
+  seq: 1
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/identity/invitations?isActive=false"
+  params:
+    - name: isActive
+      value: "false"
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

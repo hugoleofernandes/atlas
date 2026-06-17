@@ -4,6 +4,7 @@ using Atlas.Identity.Domain.Users;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Seeders;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
+using Atlas.Platform.Application.Queries.Geography;
 using Atlas.Platform.Domain.Tenants;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using Atlas.Platform.Infrastructure.Seeders;
@@ -35,6 +36,7 @@ public sealed class AtlasBootstrapSeeder(
     IdentityPermissionCatalogSeeder catalogSeeder,
     StaffModuleSeeder staffModuleSeeder,
     IEntityTypeCatalogCache entityTypeCache,
+    IGeographyCache geographyCache,
     PlatformDbContext platformDb,
     IdentityDbContext identityDb,
     IIdentityUnitOfWork identityUow,
@@ -76,7 +78,7 @@ public sealed class AtlasBootstrapSeeder(
             staffModuleSeeder.GetModuleEntityTypes(),
         };
 
-        await platformModuleSeeder.SeedAsync(allModules, allEntityTypes, entityTypeCache, ct);
+        await platformModuleSeeder.SeedAsync(allModules, allEntityTypes, entityTypeCache, geographyCache, ct);
 
         var allPermissions = new[]
         {

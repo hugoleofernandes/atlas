@@ -1,0 +1,15 @@
+info:
+  name: Persons-GetById
+  type: http
+  seq: 5
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/party/persons/5453e3b8-57ef-4e47-892c-7ca4e2993e6c"
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

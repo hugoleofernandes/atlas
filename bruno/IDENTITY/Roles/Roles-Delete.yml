@@ -1,0 +1,18 @@
+info:
+  name: Roles-Delete
+  type: http
+  seq: 5
+
+http:
+  method: delete
+  url: "{{bff_api_prefix}}/bff/identity/roles/977594a4-9d34-4206-b6a7-939038b880d1"
+  headers:
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,6 +1,7 @@
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Platform.Application.Abstractions;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
+using Atlas.Platform.Application.Queries.Geography;
 using Atlas.Platform.Contracts.EntityTypes;
 using Atlas.Platform.Contracts.Permissions;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
@@ -29,6 +30,7 @@ public sealed partial class PlatformModuleSeeder(
         IReadOnlyList<AtlasModule> allModules,
         IReadOnlyList<IModuleEntityTypes> allEntityTypes,
         IEntityTypeCatalogCache entityTypeCache,
+        IGeographyCache geographyCache,
         CancellationToken ct = default)
     {
         logger.LogInformation("PlatformModuleSeeder started");
@@ -36,5 +38,6 @@ public sealed partial class PlatformModuleSeeder(
         await SeedSystemAsync(ct);
         await SeedModulesAsync(allModules, ct);
         await SeedEntityTypesAsync(allEntityTypes, entityTypeCache, ct);
+        await SeedGeographyAsync(geographyCache, ct);
     }
 }

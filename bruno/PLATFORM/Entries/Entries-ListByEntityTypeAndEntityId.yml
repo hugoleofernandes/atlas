@@ -1,0 +1,22 @@
+info:
+  name: Entries-ListByEntityTypeAndEntityId
+  type: http
+  seq: 5
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/platform/audit/entries?entityTypeId=GUID-AQUI&entityId=ID-DO-REGISTRO"
+  params:
+    - name: entityTypeId
+      value: GUID-AQUI
+      type: query
+    - name: entityId
+      value: ID-DO-REGISTRO
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,31 @@
+info:
+  name: Persons-Create
+  type: http
+  seq: 1
+
+http:
+  method: post
+  url: "{{bff_api_prefix}}/bff/v1/party/persons"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
+  body:
+    type: json
+    data: |-
+      {
+        "taxNumber": "12345678900",
+        "firstName": "Maria",
+        "lastName": "Silva",
+        "middleName": "Souza",
+        "birthDate": "1990-05-12",
+        "gender": "Female"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

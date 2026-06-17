@@ -1,0 +1,22 @@
+info:
+  name: Auth-FakeLogin
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{bff_api_prefix}}/auth/fake-login"
+  body:
+    type: json
+    data: |-
+      {
+        "tenantName": "tenant01",
+        "email": "hattycoral@wshu.net"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

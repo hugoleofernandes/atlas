@@ -1,0 +1,27 @@
+info:
+  name: Roles-Update
+  type: http
+  seq: 4
+
+http:
+  method: put
+  url: "{{bff_api_prefix}}/bff/identity/roles/977594a4-9d34-4206-b6a7-939038b880d1"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "teste111",
+        "permissionCodes": []
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

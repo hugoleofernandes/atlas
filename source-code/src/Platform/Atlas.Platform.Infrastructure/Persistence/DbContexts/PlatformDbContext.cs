@@ -1,5 +1,6 @@
 using Atlas.BuildingBlocks.Persistence;
 using Atlas.BuildingBlocks.Persistence.DbContexts;
+using Atlas.Platform.Domain.Geography;
 using Atlas.Platform.Domain.Modules;
 using Atlas.Platform.Domain.Tenants;
 using Atlas.SharedKernel.Application;
@@ -16,6 +17,8 @@ public sealed class PlatformDbContext : DbContextBase
     public DbSet<Module>      Modules     => Set<Module>();
     public DbSet<EntityType>  EntityTypes => Set<EntityType>();
     public DbSet<Tenant>      Tenants     => Set<Tenant>();
+    public DbSet<State>       States      => Set<State>();
+    public DbSet<City>        Cities      => Set<City>();
 
     public PlatformDbContext(
         DbContextOptions<PlatformDbContext> options,

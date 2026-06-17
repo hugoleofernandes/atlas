@@ -1,0 +1,27 @@
+info:
+  name: Organizations-Update
+  type: http
+  seq: 2
+
+http:
+  method: put
+  url: https://localhost:5001/bff/v1/party/organizations/%7Bid%7D
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "id": "{id}",
+        "legalName": "Acme Comércio Ltda",
+        "tradeName": "Acme",
+        "legalType": "Ltda"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

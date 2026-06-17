@@ -1,0 +1,29 @@
+info:
+  name: Roles-Create
+  type: http
+  seq: 3
+
+http:
+  method: post
+  url: "{{bff_api_prefix}}/bff/identity/roles"
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "teste1",
+        "permissionCodes": [
+          "tenant.roles.manage"
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
