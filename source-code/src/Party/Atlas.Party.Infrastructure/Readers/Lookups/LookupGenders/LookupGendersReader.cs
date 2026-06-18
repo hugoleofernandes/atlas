@@ -8,9 +8,9 @@ namespace Atlas.Party.Infrastructure.Readers.Lookups.LookupGenders;
 public sealed class LookupGendersReader(PartyDbContext db) : ILookupGendersReader
 {
     private const string Sql = """
-        SELECT 'Male'             AS Code, 'Male'             AS Name
-        UNION ALL SELECT 'Female',           'Female'
-        UNION ALL SELECT 'PreferNotToSay',   'PreferNotToSay'
+        SELECT 'Male' AS Code
+        UNION ALL SELECT 'Female'
+        UNION ALL SELECT 'PreferNotToSay'
         """;
 
     public async Task<IReadOnlyList<GenderLookupDto>> LookupAsync(CancellationToken ct)

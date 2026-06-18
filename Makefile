@@ -69,12 +69,15 @@ reset-db:
 # make migrate context=identity name=Initial
 # make migrate context=staff name=Initial
 # make migrate context=platform name=Initial
+# make migrate context=party name=Initial
 # make update context=identity
 # make update context=staff
 # make update context=platform
+# make update context=party
 # make reset-db context=identity
 # make reset-db context=staff
 # make reset-db context=platform
+# make reset-db context=party
 
 # =========================================
 # GLOBAL

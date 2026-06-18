@@ -12,6 +12,7 @@ public sealed partial class PlatformModulePermissions : IModulePermissions
     [
         new(Audit.Read,     false, AtlasModules.Platform),
         new(Audit.Manage,   true,  AtlasModules.Platform),
+        new(Lookups.Read,   false, AtlasModules.Platform),
         new(Geography.Read, false, AtlasModules.Platform),
     ];
 

@@ -8,6 +8,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
@@ -19,6 +20,7 @@
     <ProjectReference Include="..\Atlas.Platform.Application\Atlas.Platform.Application.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Contracts\Atlas.Platform.Contracts.csproj" />
     <ProjectReference Include="..\Atlas.Platform.Domain\Atlas.Platform.Domain.csproj" />
+    <ProjectReference Include="..\Atlas.Platform.Resources\Atlas.Platform.Resources.csproj" />
   </ItemGroup>
 
 </Project>

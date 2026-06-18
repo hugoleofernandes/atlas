@@ -1,11 +1,14 @@
 info:
-  name: Lookups-GetGenders
+  name: Lookups-GetGenders-PtBr
   type: http
-  seq: 3
+  seq: 6
 
 http:
   method: get
   url: "{{bff_api_prefix}}/bff/v1/party/lookups/genders"
+  headers:
+    - name: Accept-Language
+      value: pt-BR
   auth: inherit
 
 settings:

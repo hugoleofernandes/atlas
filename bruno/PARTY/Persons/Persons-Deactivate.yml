@@ -5,7 +5,10 @@ info:
 
 http:
   method: patch
-  url: https://localhost:5001/bff/v1/party/persons/%7Bid%7D/deactivate
+  url: "{{bff_api_prefix}}/bff/v1/party/persons/%7Bid%7D/deactivate"
+  headers:
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
   auth: inherit
 
 settings:

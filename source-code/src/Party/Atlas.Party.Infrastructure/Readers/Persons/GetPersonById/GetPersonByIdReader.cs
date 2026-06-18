@@ -18,6 +18,7 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
             p.birth_date       AS BirthDate,
             p.gender           AS Gender,
             p.is_active        AS IsActive,
+            p.notes            AS Notes,
             p.created_at       AS CreatedAt,
             p.created_by       AS CreatedBy,
             p.created_by_email AS CreatedByEmail,
@@ -44,6 +45,7 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
 
         var addresses = (await conn.QueryAsync<GetPersonByIdAddressDto>(AddressesSql, new { PartyId = partyId })).ToList();
         var contacts = (await conn.QueryAsync<GetPersonByIdContactDto>(ContactsSql, new { PartyId = partyId })).ToList();
+        var classifications = (await conn.QueryAsync<GetPersonByIdClassificationDto>(ClassificationsSql, new { PartyId = partyId })).ToList();
 
         var gender = row.Gender is null ? (Gender?)null : Enum.Parse<Gender>(row.Gender);
 
@@ -57,8 +59,10 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
             BirthDate: row.BirthDate,
             Gender: gender,
             IsActive: row.IsActive,
+            Notes: row.Notes,
             Addresses: addresses,
             Contacts: contacts,
+            Classifications: classifications,
             CreatedAt: row.CreatedAt,
             CreatedBy: row.CreatedBy,
             CreatedByEmail: row.CreatedByEmail,
@@ -77,6 +81,7 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
         DateOnly? BirthDate,
         string? Gender,
         bool IsActive,
+        string? Notes,
         DateTime CreatedAt,
         Guid? CreatedBy,
         string? CreatedByEmail,
@@ -113,5 +118,14 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
         WHERE party_id = @PartyId
         ORDER BY is_primary DESC, type ASC, created_at ASC
         """;
-}
 
+    private const string ClassificationsSql = """
+        SELECT
+            type  AS Type,
+            since AS Since,
+            until AS Until
+        FROM atlas_party.party_classifications
+        WHERE party_id = @PartyId
+        ORDER BY type ASC
+        """;
+}

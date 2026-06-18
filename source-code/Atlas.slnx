@@ -100,6 +100,7 @@
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/4-Domain/">
     <Project Path="src/Platform/Atlas.Platform.Domain/Atlas.Platform.Domain.csproj" />
+    <Project Path="src/Platform/Atlas.Platform.Resources/Atlas.Platform.Resources.csproj" />
   </Folder>
   <Folder Name="/src/2-Modules/Plataform/5-Contracts/">
     <Project Path="src/Platform/Atlas.Platform.Contracts/Atlas.Platform.Contracts.csproj" />

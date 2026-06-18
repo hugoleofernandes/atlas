@@ -9,10 +9,12 @@
 ✅ Authorization: use string literal `"permission:"` prefix — not `HasPermissionAttribute.PolicyPrefix`
 ✅ OpenAPI: declare only the success response — error codes are added automatically by the transformer
 ✅ `Atlas.API` endpoints may orchestrate multiple module handlers when the frontend needs a unified contract
+✅ Every new endpoint must add or update the corresponding Bruno request in `bruno/`
 ❌ Never use MVC controllers for new endpoints
 ❌ Never handle the error path manually — `AtlasEndpoint` base handles it via `result.IsSuccess`
 ❌ Never add `ProducesProblem(404/409/422...)` — `ProblemDetailsOperationTransformer` adds them globally
 ❌ Never reuse a Request or Response type across two endpoints — projections will diverge
+❌ Never finish an endpoint change without updating the matching Bruno collection entry
 
 ## Naming
 

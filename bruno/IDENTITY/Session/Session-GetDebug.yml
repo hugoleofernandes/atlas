@@ -5,7 +5,7 @@ info:
 
 http:
   method: get
-  url: "{{bff_api_prefix}}/bff/identity/session/debug"
+  url: "{{bff_api_prefix}}/bff/v1/identity/session/debug"
   auth: inherit
 
 settings:

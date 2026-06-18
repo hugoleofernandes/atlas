@@ -27,7 +27,15 @@ http:
             "value": "maria.silva@example.com",
             "isPrimary": true
           }
-        ]
+        ],
+        "classifications": [
+          {
+            "type": "Staff",
+            "since": "2024-01-01",
+            "until": null
+          }
+        ],
+        "notes": null
       }
   auth: inherit
 

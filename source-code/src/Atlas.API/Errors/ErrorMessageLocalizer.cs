@@ -5,6 +5,7 @@ using Atlas.Identity.Resources.Tenants;
 using Atlas.Identity.Resources.Tenants._Roles;
 using Atlas.Identity.Resources.Users;
 using Atlas.Party.Resources.Parties;
+using Atlas.Party.Resources.PartyClassification;
 using Atlas.Party.Resources.Shared;
 using Atlas.SharedKernel.Application.Errors;
 using Atlas.Staff.Resources.StaffMember;
@@ -24,15 +25,16 @@ public sealed class ErrorMessageLocalizer : IErrorMessageLocalizer
     private readonly IStringLocalizer[] _localizers;
 
     public ErrorMessageLocalizer(
-        IStringLocalizer<SystemErrors>     system,
-        IStringLocalizer<TenantErrors>     tenant,
-        IStringLocalizer<RoleErrors>       role,
-        IStringLocalizer<UserErrors>       user,
-        IStringLocalizer<InvitationErrors> invitation,
-        IStringLocalizer<ClaimErrors>      claim,
-        IStringLocalizer<StaffMemberErrors>      staff,
-        IStringLocalizer<PartyErrors>       party,
-        IStringLocalizer<PartySharedErrors> partyShared)
+        IStringLocalizer<SystemErrors>               system,
+        IStringLocalizer<TenantErrors>               tenant,
+        IStringLocalizer<RoleErrors>                 role,
+        IStringLocalizer<UserErrors>                 user,
+        IStringLocalizer<InvitationErrors>           invitation,
+        IStringLocalizer<ClaimErrors>                claim,
+        IStringLocalizer<StaffMemberErrors>          staff,
+        IStringLocalizer<PartyErrors>                party,
+        IStringLocalizer<PartySharedErrors>          partyShared,
+        IStringLocalizer<PartyClassificationErrors>  partyClassification)
     {
         _localizers =
         [
@@ -45,6 +47,7 @@ public sealed class ErrorMessageLocalizer : IErrorMessageLocalizer
             staff,
             party,
             partyShared,
+            partyClassification,
         ];
     }
 

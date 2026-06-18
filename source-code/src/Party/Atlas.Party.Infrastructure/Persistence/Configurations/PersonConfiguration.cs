@@ -21,6 +21,8 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
         b.Property(x => x.BirthDate).HasColumnName("birth_date");
 
         b.Property(x => x.Gender).HasConversion<string>().HasColumnName("gender").HasMaxLength(20);
+
+        b.Property(x => x.Notes).HasColumnName("notes").HasMaxLength(2000);
     }
 }
 

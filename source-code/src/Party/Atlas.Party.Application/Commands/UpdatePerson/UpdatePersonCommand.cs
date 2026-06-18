@@ -11,6 +11,8 @@ public sealed record UpdatePersonCommand(
     DateOnly? BirthDate,
     Gender? Gender,
     IReadOnlyList<AddressInput> Addresses,
-    IReadOnlyList<ContactInput> Contacts
+    IReadOnlyList<ContactInput> Contacts,
+    IReadOnlyList<ClassificationInput> Classifications,
+    string? Notes
 );
 

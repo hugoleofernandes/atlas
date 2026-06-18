@@ -12,6 +12,7 @@
 ❌ Never use `manage` in `Policies()` on an endpoint — always use the specific verb
 ❌ Never add a permission to an endpoint without declaring it in `{Module}ModulePermissions` first
 ❌ Never reference `IPermissionPolicy` — it was deleted
+❌ Never hardcode permission labels in a provider for a module that has a resources project — use `{Module}PermissionLabels` resources
 
 ## Available Verbs
 

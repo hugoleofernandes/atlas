@@ -11,6 +11,8 @@ public sealed record RegisterPersonRequest(
     DateOnly? BirthDate,
     Gender? Gender,
     IReadOnlyList<AddressRequest>? Addresses,
-    IReadOnlyList<ContactRequest>? Contacts
+    IReadOnlyList<ContactRequest>? Contacts,
+    IReadOnlyList<ClassificationRequest>? Classifications,
+    string? Notes
 );
 

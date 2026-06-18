@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="party.lookup.address-type.Main" xml:space="preserve"><value>Principal</value></data>
+  <data name="party.lookup.address-type.Billing" xml:space="preserve"><value>Cobrança</value></data>
+  <data name="party.lookup.address-type.Delivery" xml:space="preserve"><value>Entrega</value></data>
+  <data name="party.lookup.address-type.Other" xml:space="preserve"><value>Outro</value></data>
+
+  <data name="party.lookup.classification-type.Customer" xml:space="preserve"><value>Cliente</value></data>
+  <data name="party.lookup.classification-type.Staff" xml:space="preserve"><value>Colaborador</value></data>
+
+  <data name="party.lookup.contact-type.Email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="party.lookup.contact-type.Phone" xml:space="preserve"><value>Telefone</value></data>
+  <data name="party.lookup.contact-type.Mobile" xml:space="preserve"><value>Celular</value></data>
+  <data name="party.lookup.contact-type.WhatsApp" xml:space="preserve"><value>WhatsApp</value></data>
+  <data name="party.lookup.contact-type.Other" xml:space="preserve"><value>Outro</value></data>
+
+  <data name="party.lookup.gender.Female" xml:space="preserve"><value>Feminino</value></data>
+  <data name="party.lookup.gender.Male" xml:space="preserve"><value>Masculino</value></data>
+  <data name="party.lookup.gender.PreferNotToSay" xml:space="preserve"><value>Prefiro não informar</value></data>
+</root>

@@ -32,7 +32,16 @@ public sealed class ListPersonsReader(PartyDbContext db) : IListPersonsReader
 
     private const string OrderBySql = "ORDER BY p.first_name ASC, p.last_name ASC";
 
-    public async Task<IReadOnlyList<ListPersonsDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)
+    private const string ClassificationsSql = """
+        SELECT
+            party_id AS PartyId,
+            type     AS Code
+        FROM atlas_party.party_classifications
+        WHERE party_id = ANY(@PartyIds)
+        ORDER BY type ASC
+        """;
+
+    public async Task<IReadOnlyList<ListPersonsDto>> ListAsync(Guid tenantId, bool? isActive, ClassificationType? classification, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
 
@@ -47,11 +56,30 @@ public sealed class ListPersonsReader(PartyDbContext db) : IListPersonsReader
             parameters.Add("IsActive", isActive.Value);
         }
 
+        if (classification is not null)
+        {
+            sql.AppendLine("  AND EXISTS (SELECT 1 FROM atlas_party.party_classifications pc WHERE pc.party_id = p.id AND pc.type = @Classification)");
+            parameters.Add("Classification", classification.Value.ToString());
+        }
+
         sql.AppendLine(OrderBySql);
 
         var rows = await conn.QueryAsync<PersonRow>(sql.ToString(), parameters);
+        var rowList = rows.ToList();
 
-        return rows
+        var partyIds = rowList
+            .Select(row => row.PartyId)
+            .Distinct()
+            .ToArray();
+
+        var classifications = partyIds.Length == 0
+            ? []
+            : (await conn.QueryAsync<ClassificationRow>(ClassificationsSql, new { PartyIds = partyIds })).ToList();
+
+        var classificationsByPartyId = classifications
+            .ToLookup(row => row.PartyId, row => new ListPersonsClassificationDto(row.Code));
+
+        return rowList
             .Select(r => new ListPersonsDto(
                 PartyId: r.PartyId,
                 TaxNumber: r.TaxNumber,
@@ -62,6 +90,7 @@ public sealed class ListPersonsReader(PartyDbContext db) : IListPersonsReader
                 BirthDate: r.BirthDate,
                 Gender: r.Gender is null ? (Gender?)null : Enum.Parse<Gender>(r.Gender),
                 IsActive: r.IsActive,
+                Classifications: classificationsByPartyId[r.PartyId].ToList(),
                 CreatedAt: r.CreatedAt,
                 CreatedBy: r.CreatedBy,
                 CreatedByEmail: r.CreatedByEmail,
@@ -88,5 +117,6 @@ public sealed class ListPersonsReader(PartyDbContext db) : IListPersonsReader
         Guid? UpdatedBy,
         string? UpdatedByEmail
     );
-}
 
+    private sealed record ClassificationRow(Guid PartyId, string Code);
+}

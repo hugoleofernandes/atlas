@@ -301,15 +301,29 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("ContractType")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("contract_type");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<string>("EmployeeNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("employee_number");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("first_name");
+
+                    b.Property<DateOnly?>("HireDate")
+                        .HasColumnType("date")
+                        .HasColumnName("hire_date");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -323,15 +337,31 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("last_name");
 
+                    b.Property<Guid?>("PartyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("party_id");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("role");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Active")
+                        .HasColumnName("status");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid")
                         .HasColumnName("tenant_id");
+
+                    b.Property<DateOnly?>("TerminationDate")
+                        .HasColumnType("date")
+                        .HasColumnName("termination_date");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
@@ -340,9 +370,10 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_staff_members");
 
-                    b.HasIndex("TenantId", "UserId")
+                    b.HasIndex("TenantId", "PartyId")
                         .IsUnique()
-                        .HasDatabaseName("ix_staff_members_tenant_id_user_id");
+                        .HasDatabaseName("ix_staff_members_tenant_id_party_id")
+                        .HasFilter("party_id IS NOT NULL");
 
                     b.ToTable("staff_members", "atlas_staff");
 

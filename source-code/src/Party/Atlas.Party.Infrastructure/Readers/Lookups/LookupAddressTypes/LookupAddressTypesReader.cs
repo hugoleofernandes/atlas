@@ -8,10 +8,10 @@ namespace Atlas.Party.Infrastructure.Readers.Lookups.LookupAddressTypes;
 public sealed class LookupAddressTypesReader(PartyDbContext db) : ILookupAddressTypesReader
 {
     private const string Sql = """
-        SELECT 'Main'     AS Code, 'Main'     AS Name
-        UNION ALL SELECT 'Billing',  'Billing'
-        UNION ALL SELECT 'Delivery', 'Delivery'
-        UNION ALL SELECT 'Other',    'Other'
+        SELECT 'Main' AS Code
+        UNION ALL SELECT 'Billing'
+        UNION ALL SELECT 'Delivery'
+        UNION ALL SELECT 'Other'
         """;
 
     public async Task<IReadOnlyList<AddressTypeLookupDto>> LookupAsync(CancellationToken ct)

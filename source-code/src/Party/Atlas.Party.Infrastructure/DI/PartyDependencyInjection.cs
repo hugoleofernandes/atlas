@@ -1,13 +1,16 @@
 using Atlas.BuildingBlocks.Application.HandlerInvokers;
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Party.Application.Abstractions;
+using Atlas.Party.Application.Queries.Lookups;
 using Atlas.Party.Application.Queries.Lookups.LookupAddressTypes;
+using Atlas.Party.Application.Queries.Lookups.LookupClassificationTypes;
 using Atlas.Party.Application.Queries.Lookups.LookupContactTypes;
 using Atlas.Party.Application.Queries.Lookups.LookupGenders;
 using Atlas.Party.Infrastructure.DI.Aggregates;
 using Atlas.Party.Infrastructure.Labels;
 using Atlas.Party.Infrastructure.Persistence.DbContexts;
 using Atlas.Party.Infrastructure.Readers.Lookups.LookupAddressTypes;
+using Atlas.Party.Infrastructure.Readers.Lookups.LookupClassificationTypes;
 using Atlas.Party.Infrastructure.Readers.Lookups.LookupContactTypes;
 using Atlas.Party.Infrastructure.Readers.Lookups.LookupGenders;
 using Atlas.SharedKernel.Application.Handlers;
@@ -22,12 +25,15 @@ public static class PartyDependencyInjection
         services.AddScoped<IPartyUnitOfWork, PartyUnitOfWork>();
         services.AddScoped<IHandlerInvoker, HandlerInvoker>(); //todo: move to BuildingBlocks.DI when it exists
         services.AddScoped<IPermissionLabelProvider, PartyPermissionLabelProvider>();
+        services.AddScoped<IPartyLookupLabelLocalizer, PartyLookupLabelLocalizer>();
 
         services.AddScoped<ILookupAddressTypesReader, LookupAddressTypesReader>();
+        services.AddScoped<ILookupClassificationTypesReader, LookupClassificationTypesReader>();
         services.AddScoped<ILookupContactTypesReader, LookupContactTypesReader>();
         services.AddScoped<ILookupGendersReader, LookupGendersReader>();
 
         services.AddScoped<ILookupAddressTypesQueryHandler, LookupAddressTypesQueryHandler>();
+        services.AddScoped<ILookupClassificationTypesQueryHandler, LookupClassificationTypesQueryHandler>();
         services.AddScoped<ILookupContactTypesQueryHandler, LookupContactTypesQueryHandler>();
         services.AddScoped<ILookupGendersQueryHandler, LookupGendersQueryHandler>();
 
@@ -37,4 +43,3 @@ public static class PartyDependencyInjection
         return services;
     }
 }
-

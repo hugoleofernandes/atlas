@@ -12,6 +12,7 @@ public sealed record ListPersonsDto(
     DateOnly? BirthDate,
     Gender? Gender,
     bool IsActive,
+    IReadOnlyList<ListPersonsClassificationDto> Classifications,
     DateTime CreatedAt,
     Guid? CreatedBy,
     string? CreatedByEmail,

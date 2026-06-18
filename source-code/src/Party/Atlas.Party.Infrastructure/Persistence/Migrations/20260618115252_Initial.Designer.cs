@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Party.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(PartyDbContext))]
-    [Migration("20260617170748_Initial2")]
-    partial class Initial2
+    [Migration("20260618115252_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -600,7 +600,73 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                                 .HasConstraintName("fk_party_contacts_parties_party_id");
                         });
 
+                    b.OwnsMany("Atlas.Party.Domain.Parties.PartyClassification", "Classifications", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<DateTime>("CreatedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("created_at");
+
+                            b1.Property<Guid?>("CreatedBy")
+                                .HasColumnType("uuid")
+                                .HasColumnName("created_by");
+
+                            b1.Property<string>("CreatedByEmail")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("created_by_email");
+
+                            b1.Property<Guid>("PartyId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("party_id");
+
+                            b1.Property<DateOnly>("Since")
+                                .HasColumnType("date")
+                                .HasColumnName("since");
+
+                            b1.Property<string>("Type")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("type");
+
+                            b1.Property<DateOnly?>("Until")
+                                .HasColumnType("date")
+                                .HasColumnName("until");
+
+                            b1.Property<DateTime?>("UpdatedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("updated_at");
+
+                            b1.Property<Guid?>("UpdatedBy")
+                                .HasColumnType("uuid")
+                                .HasColumnName("updated_by");
+
+                            b1.Property<string>("UpdatedByEmail")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("updated_by_email");
+
+                            b1.HasKey("Id")
+                                .HasName("pk_party_classifications");
+
+                            b1.HasIndex("PartyId", "Type")
+                                .IsUnique()
+                                .HasDatabaseName("ix_party_classifications_party_id_type");
+
+                            b1.ToTable("party_classifications", "atlas_party");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PartyId")
+                                .HasConstraintName("fk_party_classifications_parties_party_id");
+                        });
+
                     b.Navigation("Addresses");
+
+                    b.Navigation("Classifications");
 
                     b.Navigation("Contacts");
                 });

@@ -5,10 +5,13 @@ info:
 
 http:
   method: get
-  url: "{{bff_api_prefix}}/bff/v1/party/persons?isActive=true"
+  url: "{{bff_api_prefix}}/bff/v1/party/persons?isActive=true&classification=Customer"
   params:
     - name: isActive
       value: "true"
+      type: query
+    - name: classification
+      value: Customer
       type: query
   auth: inherit
 
@@ -17,3 +20,5 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: Filtros opcionais. classification aceita Staff ou Customer.

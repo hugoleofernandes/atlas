@@ -34,6 +34,7 @@ If any answer is yes → update the doc before finishing.
 | New entity type | `entity-types.md` |
 | Seeder pattern change | `seeding.md` |
 | New endpoint convention | `endpoints.md` |
+| New or changed endpoint test request in Bruno | `endpoints.md` |
 | Repository interface location changed | `repositories.md` |
 | New domain event / integration event | `domain-events.md` |
 | New handler pipeline decorator | `handler-invoker.md` |

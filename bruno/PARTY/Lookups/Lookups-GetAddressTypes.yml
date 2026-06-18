@@ -1,11 +1,14 @@
 info:
-  name: Lookups-GetAddressTypes
+  name: Lookups-GetAddressTypes-PtBr
   type: http
   seq: 1
 
 http:
   method: get
   url: "{{bff_api_prefix}}/bff/v1/party/lookups/address-types"
+  headers:
+    - name: Accept-Language
+      value: pt-BR
   auth: inherit
 
 settings:

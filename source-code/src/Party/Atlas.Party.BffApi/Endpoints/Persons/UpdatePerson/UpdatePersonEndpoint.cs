@@ -30,10 +30,11 @@ public sealed class UpdatePersonEndpoint(IUpdatePersonCommandHandler handler, IH
             req.BirthDate,
             req.Gender,
             AddressRequestMapper.ToAddressInputs(req.Addresses),
-            ContactRequestMapper.ToContactInputs(req.Contacts)
+            ContactRequestMapper.ToContactInputs(req.Contacts),
+            ClassificationRequestMapper.ToClassificationInputs(req.Classifications),
+            req.Notes
         );
         var result = await invoker.InvokeAsync(handler, cmd, ct);
         await UpdatedFromResultAsync(result, UpdatePersonResponse.From, ct);
     }
 }
-

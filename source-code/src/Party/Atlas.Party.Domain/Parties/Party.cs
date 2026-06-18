@@ -13,12 +13,14 @@ namespace Atlas.Party.Domain.Parties;
 /// Invariants:
 /// - TaxNumber is unique per tenant.
 /// - A deactivated party cannot be deactivated again.
-/// - Address and ContactInfo collections are managed through Party's methods only.
+/// - Address, ContactInfo, and PartyClassification collections are managed through Party's methods only.
+/// - At most one classification per ClassificationType.
 /// </summary>
 public abstract class Party : AggregateRoot, IMultiTenantEntity
 {
     private readonly List<Address> _addresses = new();
     private readonly List<ContactInfo> _contacts = new();
+    private readonly List<PartyClassification> _classifications = new();
 
     public Guid Id { get; private set; } = Guid.NewGuid();
 
@@ -30,6 +32,7 @@ public abstract class Party : AggregateRoot, IMultiTenantEntity
 
     public IReadOnlyList<Address> Addresses => _addresses;
     public IReadOnlyList<ContactInfo> Contacts => _contacts;
+    public IReadOnlyList<PartyClassification> Classifications => _classifications;
 
     void IMultiTenantEntity.SetTenantId(Guid tenantId) => TenantId = tenantId;
 
@@ -110,6 +113,25 @@ public abstract class Party : AggregateRoot, IMultiTenantEntity
     {
         foreach (var c in _contacts.Where(c => c.Type == type && c.IsPrimary))
             c.SetPrimary(false);
+    }
+
+    // =========================
+    // CLASSIFICATIONS
+    // =========================
+
+    /// <summary>
+    /// Replaces the entire classification collection. At most one entry per ClassificationType.
+    /// Submits atomically together with the rest of the Party on save.
+    /// </summary>
+    public void ReplaceClassifications(IReadOnlyList<ClassificationInput> classifications)
+    {
+        var duplicates = classifications.GroupBy(c => c.Type).Where(g => g.Count() > 1);
+        if (duplicates.Any())
+            throw new DuplicatePartyClassificationTypeException(duplicates.First().Key.ToString());
+
+        _classifications.Clear();
+        foreach (var c in classifications)
+            _classifications.Add(PartyClassification.Create(Id, c.Type, c.Since, c.Until));
     }
 
     // =========================

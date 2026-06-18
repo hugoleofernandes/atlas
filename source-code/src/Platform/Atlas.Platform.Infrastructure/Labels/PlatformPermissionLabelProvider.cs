@@ -1,18 +1,15 @@
-﻿using Atlas.BuildingBlocks.Permissions;
+using Atlas.BuildingBlocks.Permissions;
+using Atlas.Platform.Resources.Permissions;
+using Microsoft.Extensions.Localization;
 
 namespace Atlas.Platform.Infrastructure.Labels;
 
-/// <summary>
-/// Platform has only 2 audit permission codes.
-/// Hardcoded EN labels â€” add Atlas.Platform.Resources when PT support is needed.
-/// </summary>
-public sealed class PlatformPermissionLabelProvider : IPermissionLabelProvider
+public sealed class PlatformPermissionLabelProvider(IStringLocalizer<PlatformPermissionLabels> localizer)
+    : IPermissionLabelProvider
 {
-    public string? Localize(string permissionCode) => permissionCode switch
+    public string? Localize(string permissionCode)
     {
-        "platform.audit.read"     => "View platform audit log",
-        "platform.audit.manage"   => "Manage platform audit log",
-        "platform.geography.read" => "View states and cities",
-        _ => null,
-    };
+        var result = localizer[permissionCode];
+        return result.ResourceNotFound ? null : result.Value;
+    }
 }

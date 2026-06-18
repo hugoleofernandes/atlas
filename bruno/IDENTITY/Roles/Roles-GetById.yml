@@ -1,0 +1,15 @@
+info:
+  name: Roles-GetById
+  type: http
+  seq: 6
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/identity/roles/977594a4-9d34-4206-b6a7-939038b880d1"
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

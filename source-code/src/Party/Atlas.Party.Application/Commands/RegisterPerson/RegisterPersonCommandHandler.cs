@@ -37,9 +37,10 @@ public sealed class RegisterPersonCommandHandler : IRegisterPersonCommandHandler
             throw new DuplicateTaxNumberException(taxNumber.Value);
 
         var name = PersonName.Create(cmd.FirstName, cmd.LastName, cmd.MiddleName);
-        var person = Person.Register(tenantId, taxNumber, name, cmd.BirthDate, cmd.Gender);
+        var person = Person.Register(tenantId, taxNumber, name, cmd.BirthDate, cmd.Gender, cmd.Notes);
         person.ReplaceAddresses(cmd.Addresses);
         person.ReplaceContacts(cmd.Contacts);
+        person.ReplaceClassifications(cmd.Classifications);
 
         await _personRepository.AddAsync(person, ct);
 

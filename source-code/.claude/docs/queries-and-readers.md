@@ -16,12 +16,14 @@
 ✅ Optional filters: build the WHERE clause dynamically — add only predicates for values that were provided
 ✅ Keep tenant filter explicit in SQL even when automatic safeguards exist
 ✅ Reader may project derived fields, but should call a pure domain rule when that field represents a real business decision
+✅ Localizable lookups read canonical `Code` values in the Reader and keep Application outputs culture-agnostic
 ❌ Never return domain objects from a QueryHandler — always DTOs
 ❌ Never call a Reader from a CommandHandler
 ❌ Never JOIN a paginated query when the N side can multiply rows
 ❌ Never use `@Param IS NULL OR column = @Param` — breaks index usage and Npgsql type inference
 ❌ Never read another module's schema from a module-owned query — schemas are module boundaries
 ❌ Never recreate domain business rules inline in SQL, readers, or response mappers when the same rule already exists as a pure domain method
+❌ Never hardcode localized lookup display names in SQL or in the Reader
 
 ## Folder Structure
 
@@ -114,6 +116,24 @@ return new RoleDto(
 // ❌ positional — breaks silently when DTO shape changes
 return new RoleDto(role.Id, role.Name, role.IsSystem, permissions);
 ```
+
+## Localized Lookups
+
+For lookups that must respect the current culture:
+
+- Reader returns canonical codes only
+- QueryHandler returns canonical Application DTOs only
+- Endpoint Response maps `Code -> Name` through a localizer abstraction
+- HTTP response still returns both `Code` and localized `Name`
+
+Preferred pattern:
+
+```csharp
+var result = await invoker.InvokeAsync(handler, new LookupClassificationTypesQuery(), ct);
+var response = result.Map(x => LookupClassificationTypesResponse.FromList(x, lookupLabelLocalizer));
+```
+
+This keeps SQL and Application outputs culture-agnostic while ensuring the frontend receives a display-ready label.
 
 ## Dynamic SQL Filters
 

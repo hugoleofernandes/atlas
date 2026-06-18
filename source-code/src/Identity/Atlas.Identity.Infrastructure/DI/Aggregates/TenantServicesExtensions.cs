@@ -13,12 +13,16 @@ using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 using Atlas.Identity.Application.Queries.Roles.GetRoleById;
 using Atlas.Identity.Application.Queries.Roles.ListRoles;
 using Atlas.Identity.Application.Queries.Roles.LookupRoles;
+using Atlas.Identity.Application.Queries.Users.GetUserById;
+using Atlas.Identity.Application.Queries.Users.ListUsers;
 using Atlas.Identity.Application.Repositories;
 using Atlas.Identity.Infrastructure.Readers.Audit.ListEntries;
 using Atlas.Identity.Infrastructure.Readers.Permissions.ListPermissions;
 using Atlas.Identity.Infrastructure.Readers.Roles.GetRoleById;
 using Atlas.Identity.Infrastructure.Readers.Roles.ListRoles;
 using Atlas.Identity.Infrastructure.Readers.Roles.LookupRoles;
+using Atlas.Identity.Infrastructure.Readers.Users.GetUserById;
+using Atlas.Identity.Infrastructure.Readers.Users.ListUsers;
 using Atlas.Identity.Infrastructure.Repositories;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Application.Metrics;
@@ -38,6 +42,8 @@ internal static class TenantServicesExtensions
         services.AddScoped<IGetRoleByIdReader, GetRoleByIdReader>();
         services.AddScoped<ILookupRolesReader, LookupRolesReader>();
         services.AddScoped<IListPermissionsReader, ListPermissionsReader>();
+        services.AddScoped<IListUsersReader, ListUsersReader>();
+        services.AddScoped<IGetUserByIdReader, GetUserByIdReader>();
 
         // Audit reader registered as concrete type to avoid DI conflict with
         // other modules that also register IListAuditEntriesReader.
@@ -48,6 +54,8 @@ internal static class TenantServicesExtensions
         services.AddScoped<IGetRoleByIdQueryHandler, GetRoleByIdQueryHandler>();
         services.AddScoped<ILookupRolesQueryHandler, LookupRolesQueryHandler>();
         services.AddScoped<IListPermissionsQueryHandler, ListPermissionsQueryHandler>();
+        services.AddScoped<IListUsersQueryHandler, ListUsersQueryHandler>();
+        services.AddScoped<IGetUserByIdQueryHandler, GetUserByIdQueryHandler>();
 
         // Factory lambda wires the Identity-specific reader into the shared audit handler
         // without exposing IListAuditEntriesReader in the root DI container.

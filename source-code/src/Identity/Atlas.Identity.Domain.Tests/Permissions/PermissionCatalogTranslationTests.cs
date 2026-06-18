@@ -2,6 +2,7 @@ using System.Xml.Linq;
 using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Contracts.Permissions;
 using Atlas.Party.Contracts.Permissions;
+using Atlas.Platform.Contracts.Permissions;
 using Atlas.Staff.Contracts.Permissions;
 using FluentAssertions;
 
@@ -14,8 +15,6 @@ namespace Atlas.Identity.Tests.Permissions;
 /// Why: the compiler guarantees the code exists, but cannot guarantee the translation.
 /// This test closes that gap — a missing translation fails the build immediately.
 ///
-/// Platform is intentionally excluded: its 2 audit codes have hardcoded EN labels in
-/// PlatformPermissionLabelProvider (see that class for the rationale).
 /// </summary>
 public sealed class PermissionCatalogTranslationTests
 {
@@ -34,6 +33,10 @@ public sealed class PermissionCatalogTranslationTests
         (
             new PartyModulePermissions(),
             Path.Combine("Party", "Atlas.Party.Resources", "Permissions", "PartyPermissionLabels")
+        ),
+        (
+            new PlatformModulePermissions(),
+            Path.Combine("Platform", "Atlas.Platform.Resources", "Permissions", "PlatformPermissionLabels")
         ),
     ];
 

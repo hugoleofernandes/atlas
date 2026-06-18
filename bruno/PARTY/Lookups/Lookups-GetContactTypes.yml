@@ -1,11 +1,14 @@
 info:
-  name: Lookups-GetContactTypes
+  name: Lookups-GetContactTypes-PtBr
   type: http
-  seq: 2
+  seq: 4
 
 http:
   method: get
   url: "{{bff_api_prefix}}/bff/v1/party/lookups/contact-types"
+  headers:
+    - name: Accept-Language
+      value: pt-BR
   auth: inherit
 
 settings:

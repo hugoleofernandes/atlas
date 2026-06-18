@@ -14,15 +14,18 @@ public sealed class Person : Party
 
     public Gender? Gender { get; private set; }
 
+    public string? Notes { get; private set; }
+
     private Person() { }
 
-    private Person(Guid tenantId, TaxNumber taxNumber, PersonName name, DateOnly? birthDate, Gender? gender)
+    private Person(Guid tenantId, TaxNumber taxNumber, PersonName name, DateOnly? birthDate, Gender? gender, string? notes)
     {
         TenantId = tenantId;
         TaxNumber = taxNumber;
         Name = name;
         BirthDate = birthDate;
         Gender = gender;
+        Notes = notes;
     }
 
     // =========================
@@ -42,9 +45,10 @@ public sealed class Person : Party
         TaxNumber taxNumber,
         PersonName name,
         DateOnly? birthDate = null,
-        Gender? gender = null)
+        Gender? gender = null,
+        string? notes = null)
     {
-        var person = new Person(tenantId, taxNumber, name, birthDate, gender);
+        var person = new Person(tenantId, taxNumber, name, birthDate, gender, notes);
         person.AddDomainEvent(new PersonRegisteredDomainEvent(tenantId, person.Id, taxNumber.Value, name.FullName));
         return person;
     }
@@ -54,11 +58,12 @@ public sealed class Person : Party
     // =========================
 
     /// <summary>Updates mutable personal details. Does not change TaxNumber or TenantId.</summary>
-    public void Update(PersonName name, DateOnly? birthDate, Gender? gender)
+    public void Update(PersonName name, DateOnly? birthDate, Gender? gender, string? notes)
     {
         Name = name;
         BirthDate = birthDate;
         Gender = gender;
+        Notes = notes;
     }
 }
 

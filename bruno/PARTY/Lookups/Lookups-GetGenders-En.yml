@@ -1,0 +1,18 @@
+info:
+  name: Lookups-GetGenders-En
+  type: http
+  seq: 7
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/party/lookups/genders"
+  headers:
+    - name: Accept-Language
+      value: en
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -5,10 +5,12 @@ info:
 
 http:
   method: put
-  url: https://localhost:5001/bff/v1/party/organizations/%7Bid%7D
+  url: "{{bff_api_prefix}}/bff/v1/party/organizations/%7Bid%7D"
   headers:
     - name: Content-Type
       value: application/json
+    - name: X-XSRF-TOKEN
+      value: "{{xsrf_token}}"
   body:
     type: json
     data: |-

@@ -8,11 +8,11 @@ namespace Atlas.Party.Infrastructure.Readers.Lookups.LookupContactTypes;
 public sealed class LookupContactTypesReader(PartyDbContext db) : ILookupContactTypesReader
 {
     private const string Sql = """
-        SELECT 'Email'    AS Code, 'Email'    AS Name
-        UNION ALL SELECT 'Phone',    'Phone'
-        UNION ALL SELECT 'Mobile',   'Mobile'
-        UNION ALL SELECT 'WhatsApp', 'WhatsApp'
-        UNION ALL SELECT 'Other',    'Other'
+        SELECT 'Email' AS Code
+        UNION ALL SELECT 'Phone'
+        UNION ALL SELECT 'Mobile'
+        UNION ALL SELECT 'WhatsApp'
+        UNION ALL SELECT 'Other'
         """;
 
     public async Task<IReadOnlyList<ContactTypeLookupDto>> LookupAsync(CancellationToken ct)

@@ -46,7 +46,15 @@ http:
             "value": "+5511999999999",
             "isPrimary": true
           }
-        ]
+        ],
+        "classifications": [
+          {
+            "type": "Customer",
+            "since": "2024-01-01",
+            "until": null
+          }
+        ],
+        "notes": null
       }
   auth: inherit
 

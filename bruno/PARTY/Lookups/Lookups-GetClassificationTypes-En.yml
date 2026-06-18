@@ -1,0 +1,18 @@
+info:
+  name: Lookups-GetClassificationTypes-En
+  type: http
+  seq: 9
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/party/lookups/classification-types"
+  headers:
+    - name: Accept-Language
+      value: en
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

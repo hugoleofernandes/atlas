@@ -5,6 +5,8 @@ using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
 using Atlas.Platform.Application.Queries.Geography.GetCitiesByState;
 using Atlas.Platform.Application.Queries.Geography.GetStatesByCountry;
+using Atlas.Platform.Application.Queries.Lookups;
+using Atlas.Platform.Application.Queries.Lookups.LookupStatuses;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantByName;
 using Atlas.Platform.Application.Queries.Tenants.GetTenantsByIds;
 using Atlas.Platform.Infrastructure.Labels;
@@ -13,6 +15,7 @@ using Atlas.Platform.Infrastructure.Readers.Audit.ListEntries;
 using Atlas.Platform.Infrastructure.Readers.EntityTypes.Lookup;
 using Atlas.Platform.Infrastructure.Readers.Geography.GetCitiesByState;
 using Atlas.Platform.Infrastructure.Readers.Geography.GetStatesByCountry;
+using Atlas.Platform.Infrastructure.Readers.Lookups.LookupStatuses;
 using Atlas.Platform.Infrastructure.Readers.Tenants.GetTenantByName;
 using Atlas.Platform.Infrastructure.Readers.Tenants.GetTenantsByIds;
 using Atlas.Platform.Infrastructure.Seeders;
@@ -33,11 +36,13 @@ public static class PlatformDependencyInjection
         services.AddScoped<PlatformModuleSeeder>();
         services.AddScoped<IAuditLabelProvider, PlatformAuditLabelProvider>();
         services.AddScoped<IPermissionLabelProvider, PlatformPermissionLabelProvider>();
+        services.AddScoped<IPlatformLookupLabelLocalizer, PlatformLookupLabelLocalizer>();
 
         // READERS
         services.AddScoped<ILookupEntityTypesReader, LookupEntityTypesReader>();
         services.AddScoped<IGetStatesByCountryReader, GetStatesByCountryReader>();
         services.AddScoped<IGetCitiesByStateReader, GetCitiesByStateReader>();
+        services.AddScoped<ILookupStatusesReader, LookupStatusesReader>();
         services.AddScoped<IGetTenantByNameReader, GetTenantByNameReader>();
         services.AddScoped<IGetTenantsByIdsReader, GetTenantsByIdsReader>();
 
@@ -49,6 +54,7 @@ public static class PlatformDependencyInjection
         services.AddScoped<ILookupEntityTypesQueryHandler, LookupEntityTypesQueryHandler>();
         services.AddScoped<IGetStatesByCountryQueryHandler, GetStatesByCountryQueryHandler>();
         services.AddScoped<IGetCitiesByStateQueryHandler, GetCitiesByStateQueryHandler>();
+        services.AddScoped<ILookupStatusesQueryHandler, LookupStatusesQueryHandler>();
         services.AddScoped<IGetTenantByNameQueryHandler, GetTenantByNameQueryHandler>();
         services.AddScoped<IGetTenantsByIdsQueryHandler, GetTenantsByIdsQueryHandler>();
 

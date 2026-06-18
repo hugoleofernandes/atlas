@@ -97,6 +97,35 @@ public sealed class PartyConfiguration : IEntityTypeConfiguration<Domain.Parties
             }
         );
 
+        b.OwnsMany(
+            x => x.Classifications,
+            c =>
+            {
+                c.ToTable("party_classifications");
+
+                c.WithOwner().HasForeignKey("PartyId");
+
+                c.HasKey(x => x.Id);
+
+                c.Property(x => x.Id).ValueGeneratedNever();
+
+                c.Property(x => x.Type).HasConversion<string>().HasColumnName("type").HasMaxLength(20).IsRequired();
+
+                c.Property(x => x.Since).HasColumnName("since").IsRequired();
+
+                c.Property(x => x.Until).HasColumnName("until");
+
+                c.HasIndex(x => new { x.PartyId, x.Type }).IsUnique();
+
+                c.Property(x => x.CreatedAt).IsRequired();
+                c.Property(x => x.CreatedBy);
+                c.Property(x => x.CreatedByEmail).HasMaxLength(256);
+                c.Property(x => x.UpdatedAt);
+                c.Property(x => x.UpdatedBy);
+                c.Property(x => x.UpdatedByEmail).HasMaxLength(256);
+            }
+        );
+
         EntityChangeConfiguration.Configure(b);
     }
 }

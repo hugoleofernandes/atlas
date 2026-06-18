@@ -2,7 +2,7 @@
 
 ## Rules
 
-✅ Two resource types: error messages (`{Aggregate}Errors.resx`) and permission labels (`{Module}PermissionLabels.resx`)
+✅ Three resource types: error messages (`{Aggregate}Errors.resx`), permission labels (`{Module}PermissionLabels.resx`), and lookup labels (`{Module}LookupLabels.resx`)
 ✅ Every `.resx` file has a paired empty marker class in the **same namespace and folder**
 ✅ Both `.resx` (EN) and `.pt.resx` (PT) must contain the same set of keys
 ✅ Register every new `{Aggregate}Errors` localizer in `ErrorMessageLocalizer` in `Atlas.API`
@@ -11,6 +11,7 @@
 ❌ Never mismatch namespace and folder path — resource resolution breaks silently with no error
 ❌ Never add a new resource file without registering its `IStringLocalizer<T>` in `ErrorMessageLocalizer`
 ❌ Never have keys in EN that are missing from PT (or vice versa) — `PermissionCatalogTranslationTests` fails on CI
+❌ Never leave a module with hardcoded permission labels once that module has a resources project
 
 ## Folder Structure
 
@@ -20,10 +21,14 @@ Atlas.{Module}.Resources/
 │   ├── {Aggregate}Errors.cs          ← empty marker class
 │   ├── {Aggregate}Errors.resx        ← EN error messages
 │   └── {Aggregate}Errors.pt.resx    ← PT error messages
-└── Permissions/
-    ├── {Module}PermissionLabels.cs
-    ├── {Module}PermissionLabels.resx
-    └── {Module}PermissionLabels.pt.resx
+├── Permissions/
+│   ├── {Module}PermissionLabels.cs
+│   ├── {Module}PermissionLabels.resx
+│   └── {Module}PermissionLabels.pt.resx
+└── Lookups/
+    ├── {Module}LookupLabels.cs
+    ├── {Module}LookupLabels.resx
+    └── {Module}LookupLabels.pt.resx
 ```
 
 ## Marker Class Pattern
@@ -63,6 +68,30 @@ public ErrorMessageLocalizer(
 ```
 
 If omitted, errors from that aggregate always fall back to the English `FallbackMessage` regardless of culture.
+
+## Lookup Label Pattern
+
+Lookup labels are not error messages and do not go through `ErrorMessageLocalizer`.
+
+Use them when a lookup endpoint must return:
+- canonical `Code` for writes and filters
+- localized `Name` for display
+
+Pattern:
+- Reader returns `Code` only
+- QueryHandler returns canonical DTOs only
+- Endpoint Response maps `Code` to `Name` through a lookup localizer backed by `IStringLocalizer<{Module}LookupLabels>`
+- Resource key format: `module.lookup.{lookup_family}.{code}`
+
+Example keys:
+
+```xml
+<!-- PartyLookupLabels.resx -->
+<data name="party.lookup.classification-type.Customer"><value>Customer</value></data>
+
+<!-- PartyLookupLabels.pt.resx -->
+<data name="party.lookup.classification-type.Customer"><value>Cliente</value></data>
+```
 
 ## How to Add a New Error Resource File
 

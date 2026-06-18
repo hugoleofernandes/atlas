@@ -16,7 +16,6 @@ public sealed class ListPersonsQueryHandler : IListPersonsQueryHandler
     public Task<IReadOnlyList<ListPersonsDto>> ExecuteAsync(ListPersonsQuery query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
-        return _reader.ListAsync(tenantId, query.IsActive, ct);
+        return _reader.ListAsync(tenantId, query.IsActive, query.Classification, ct);
     }
 }
-

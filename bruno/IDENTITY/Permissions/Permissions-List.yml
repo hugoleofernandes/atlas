@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{bff_api_prefix}}/bff/identity/permissions"
+  url: "{{bff_api_prefix}}/bff/v1/identity/permissions"
   auth: inherit
 
 settings:
