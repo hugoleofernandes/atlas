@@ -1,4 +1,3 @@
-using Atlas.Party.Application.Queries.Organizations;
 using Atlas.Party.Application.Queries.Organizations.ListOrganizations;
 using Atlas.Party.Domain.Shared;
 using Atlas.Party.Infrastructure.Persistence.DbContexts;
@@ -31,7 +30,7 @@ public sealed class ListOrganizationsReader(PartyDbContext db) : IListOrganizati
 
     private const string OrderBySql = "ORDER BY p.legal_name ASC";
 
-    public async Task<IReadOnlyList<OrganizationDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)
+    public async Task<IReadOnlyList<ListOrganizationsDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
 
@@ -51,14 +50,14 @@ public sealed class ListOrganizationsReader(PartyDbContext db) : IListOrganizati
         var rows = await conn.QueryAsync<OrganizationRow>(sql.ToString(), parameters);
 
         return rows
-            .Select(r => new OrganizationDto(
+            .Select(r => new ListOrganizationsDto(
                 PartyId: r.PartyId,
                 TaxNumber: r.TaxNumber,
                 LegalName: r.LegalName,
                 TradeName: r.TradeName,
                 LegalType: Enum.Parse<LegalType>(r.LegalType),
                 IsActive: r.IsActive,
-                Addresses: [],
+                Addresses: Array.Empty<ListOrganizationsAddressDto>(),
                 CreatedAt: r.CreatedAt,
                 CreatedBy: r.CreatedBy,
                 CreatedByEmail: r.CreatedByEmail,

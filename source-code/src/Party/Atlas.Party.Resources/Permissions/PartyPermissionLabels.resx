@@ -10,6 +10,7 @@
   <data name="party.person.update"     xml:space="preserve"><value>Update persons</value></data>
   <data name="party.person.deactivate" xml:space="preserve"><value>Deactivate persons</value></data>
   <data name="party.person.manage"     xml:space="preserve"><value>Manage persons</value></data>
+  <data name="party.lookups.read"      xml:space="preserve"><value>View party lookups</value></data>
 
   <data name="party.organization.read"       xml:space="preserve"><value>View organizations</value></data>
   <data name="party.organization.create"     xml:space="preserve"><value>Create organizations</value></data>

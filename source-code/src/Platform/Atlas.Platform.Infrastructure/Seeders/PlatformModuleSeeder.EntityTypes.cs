@@ -11,7 +11,7 @@ public sealed partial class PlatformModuleSeeder
 {
     private async Task SeedEntityTypesAsync(
         IReadOnlyList<IModuleEntityTypes> allEntityTypes,
-        IEntityTypeCatalogCache entityTypeCache,
+        ILookupEntityTypesCache entityTypeCache,
         CancellationToken ct)
     {
         logger.LogInformation("PlatformEntityTypeSeeder started");

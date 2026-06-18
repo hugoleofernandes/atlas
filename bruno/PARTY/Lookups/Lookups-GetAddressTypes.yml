@@ -1,0 +1,15 @@
+info:
+  name: Lookups-GetAddressTypes
+  type: http
+  seq: 1
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/party/lookups/address-types"
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

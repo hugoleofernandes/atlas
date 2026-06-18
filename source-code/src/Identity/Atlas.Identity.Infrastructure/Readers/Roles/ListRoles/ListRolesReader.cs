@@ -35,7 +35,7 @@ public sealed class ListRolesReader(IdentityDbContext db) : IListRolesReader
         WHERE rp.role_id = ANY(@RoleIds)
         """;
 
-    public async Task<IReadOnlyList<RoleDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)
+    public async Task<IReadOnlyList<ListRolesDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
 
@@ -57,7 +57,7 @@ public sealed class ListRolesReader(IdentityDbContext db) : IListRolesReader
         ).ToList();
 
         if (roles.Count == 0)
-            return Array.Empty<RoleDto>();
+            return Array.Empty<ListRolesDto>();
 
         var roleIds = roles.Select(r => r.Id).ToArray();
 
@@ -66,7 +66,7 @@ public sealed class ListRolesReader(IdentityDbContext db) : IListRolesReader
         );
 
         return roles
-            .Select(r => new RoleDto(
+            .Select(r => new ListRolesDto(
                 RoleId: r.Id,
                 Name: r.Name,
                 IsSystem: r.IsSystem,

@@ -549,11 +549,6 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                                 .HasColumnType("character varying(256)")
                                 .HasColumnName("created_by_email");
 
-                            b1.Property<string>("Email")
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)")
-                                .HasColumnName("email");
-
                             b1.Property<bool>("IsPrimary")
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("boolean")
@@ -563,11 +558,6 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                             b1.Property<Guid>("PartyId")
                                 .HasColumnType("uuid")
                                 .HasColumnName("party_id");
-
-                            b1.Property<string>("Phone")
-                                .HasMaxLength(20)
-                                .HasColumnType("character varying(20)")
-                                .HasColumnName("phone");
 
                             b1.Property<string>("Type")
                                 .IsRequired()
@@ -587,6 +577,12 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)")
                                 .HasColumnName("updated_by_email");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)")
+                                .HasColumnName("value");
 
                             b1.HasKey("Id")
                                 .HasName("pk_party_contacts");

@@ -10,5 +10,6 @@
   <data name="party.organization-not-found"  xml:space="preserve"><value>Organization not found.</value></data>
   <data name="party.already-deactivated"     xml:space="preserve"><value>This party is already deactivated.</value></data>
   <data name="party.multiple-primary-addresses" xml:space="preserve"><value>Only one primary address per type is allowed.</value></data>
+  <data name="party.multiple-primary-contacts" xml:space="preserve"><value>Only one primary contact per channel is allowed.</value></data>
 </root>
 

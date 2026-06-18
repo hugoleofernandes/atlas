@@ -1,5 +1,4 @@
 using Atlas.BuildingBlocks.FastEndpoints;
-using Atlas.Party.Application.Queries.Persons;
 using Atlas.Party.Application.Queries.Persons.GetPersonById;
 using Atlas.Party.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
@@ -11,13 +10,13 @@ namespace Atlas.Party.BffApi.Endpoints.Persons.GetPersonById;
 /// Returns a single person by id. Returns both active and inactive persons.
 /// </summary>
 public sealed class GetPersonByIdEndpoint(IGetPersonByIdQueryHandler handler, IHandlerInvoker invoker)
-    : AtlasEndpoint<GetPersonByIdRequest, PersonDto>
+    : AtlasEndpoint<GetPersonByIdRequest, GetPersonByIdDto?>
 {
     public override void Configure()
     {
         Get("bff/v1/party/persons/{id}");
         Policies($"permission:{PartyModulePermissions.Person.Read.Code}");
-        Description(d => d.Produces<PersonDto>());
+        Description(d => d.Produces<GetPersonByIdDto>());
     }
 
     public override async Task HandleAsync(GetPersonByIdRequest req, CancellationToken ct)

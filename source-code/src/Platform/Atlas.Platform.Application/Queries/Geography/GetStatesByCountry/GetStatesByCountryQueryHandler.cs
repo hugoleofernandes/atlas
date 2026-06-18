@@ -1,10 +1,8 @@
-using Atlas.Platform.Application.Queries.Geography;
-
 namespace Atlas.Platform.Application.Queries.Geography.GetStatesByCountry;
 
-public sealed class GetStatesByCountryQueryHandler(IGeographyCache cache)
+public sealed class GetStatesByCountryQueryHandler(IGetStatesByCountryCache cache)
     : IGetStatesByCountryQueryHandler
 {
     public Task<IReadOnlyList<StateDto>> ExecuteAsync(GetStatesByCountryQuery query, CancellationToken ct)
-        => cache.GetStatesByCountryCodeAsync(query.CountryCode, ct);
+        => cache.GetAsync(query.CountryCode, ct);
 }

@@ -13,7 +13,7 @@ public sealed class ListRolesQueryHandler : IListRolesQueryHandler
         _context = context;
     }
 
-    public Task<IReadOnlyList<RoleDto>> ExecuteAsync(ListRolesQuery query, CancellationToken ct)
+    public Task<IReadOnlyList<ListRolesDto>> ExecuteAsync(ListRolesQuery query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
         return _reader.ListAsync(tenantId, query.IsActive, ct);

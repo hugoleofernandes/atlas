@@ -1,9 +1,10 @@
-﻿namespace Atlas.Staff.Application.StaffMembers.Queries.List;
+namespace Atlas.Staff.Application.StaffMembers.Queries.List;
 
-public sealed record Dto(
-    Guid Id,
-    string FirstName,
-    string LastName,
-    string Role,
-    bool IsActive
+public sealed record ListStaffMembersDto(
+    Guid StaffMemberId,
+    Guid? PartyId,
+    string? EmployeeNumber,
+    string? ContractType,
+    string Status,
+    string? HireDate
 );

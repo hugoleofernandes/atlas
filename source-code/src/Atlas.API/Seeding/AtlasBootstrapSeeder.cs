@@ -4,7 +4,8 @@ using Atlas.Identity.Domain.Users;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Seeders;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
-using Atlas.Platform.Application.Queries.Geography;
+using Atlas.Platform.Application.Queries.Geography.GetCitiesByState;
+using Atlas.Platform.Application.Queries.Geography.GetStatesByCountry;
 using Atlas.Platform.Domain.Tenants;
 using Atlas.Platform.Infrastructure.Persistence.DbContexts;
 using Atlas.Platform.Infrastructure.Seeders;
@@ -35,8 +36,9 @@ public sealed class AtlasBootstrapSeeder(
     IdentityModuleSeeder identityModuleSeeder,
     IdentityPermissionCatalogSeeder catalogSeeder,
     StaffModuleSeeder staffModuleSeeder,
-    IEntityTypeCatalogCache entityTypeCache,
-    IGeographyCache geographyCache,
+    ILookupEntityTypesCache entityTypeCache,
+    IGetStatesByCountryCache statesCache,
+    IGetCitiesByStateCache citiesCache,
     PlatformDbContext platformDb,
     IdentityDbContext identityDb,
     IIdentityUnitOfWork identityUow,
@@ -78,7 +80,7 @@ public sealed class AtlasBootstrapSeeder(
             staffModuleSeeder.GetModuleEntityTypes(),
         };
 
-        await platformModuleSeeder.SeedAsync(allModules, allEntityTypes, entityTypeCache, geographyCache, ct);
+        await platformModuleSeeder.SeedAsync(allModules, allEntityTypes, entityTypeCache, statesCache, citiesCache, ct);
 
         var allPermissions = new[]
         {
@@ -99,15 +101,15 @@ public sealed class AtlasBootstrapSeeder(
     {
         // Tenant is INotMultiTenant — no query filter is registered for it.
         // Neither SuspendTenantFilter nor IgnoreQueryFilters is needed.
-        var existing = await platformDb.Tenants
-            .FirstOrDefaultAsync(t => t.Id == BootstrapIdentity.RootTenant.Id, ct);
+        var existing = await platformDb.Tenants.FirstOrDefaultAsync(t => t.Id == BootstrapIdentity.RootTenant.Id, ct);
 
         if (existing is not null)
         {
             logger.LogInformation(
                 "Bootstrap tenant: {TenantName} ({TenantId}) — already exists",
                 existing.Name,
-                existing.Id);
+                existing.Id
+            );
             return;
         }
 
@@ -115,18 +117,15 @@ public sealed class AtlasBootstrapSeeder(
         platformDb.Tenants.Add(tenant);
         await platformDb.SaveChangesAsync(ct);
 
-        logger.LogInformation(
-            "Bootstrap tenant: {TenantName} ({TenantId}) — created",
-            tenant.Name,
-            tenant.Id);
+        logger.LogInformation("Bootstrap tenant: {TenantName} ({TenantId}) — created", tenant.Name, tenant.Id);
     }
 
     private async Task EnsureRootUserAsync(CancellationToken ct)
     {
         // IgnoreQueryFilters() bypasses the EF HasQueryFilter lambda entirely —
         // CurrentTenantIdOrThrow is never called, so SuspendTenantFilter is redundant here.
-        var exists = await identityDb.Users
-            .IgnoreQueryFilters()
+        var exists = await identityDb
+            .Users.IgnoreQueryFilters()
             .AnyAsync(u => u.Id == BootstrapIdentity.RootUser.Id, ct);
 
         if (exists)
@@ -134,7 +133,8 @@ public sealed class AtlasBootstrapSeeder(
             logger.LogInformation(
                 "Bootstrap root user: {Email} ({UserId}) — already exists",
                 BootstrapIdentity.RootUser.Email,
-                BootstrapIdentity.RootUser.Id);
+                BootstrapIdentity.RootUser.Id
+            );
             return;
         }
 
@@ -142,14 +142,12 @@ public sealed class AtlasBootstrapSeeder(
         // The audit stamper will use BootstrapIdentity.RootUser.Id as CreatedBy.
         var rootUser = User.CreateRootForBootstrap(
             BootstrapIdentity.RootTenant.Id,
-            Email.Create(BootstrapIdentity.RootUser.Email));
+            Email.Create(BootstrapIdentity.RootUser.Email)
+        );
 
         identityDb.Users.Add(rootUser);
         await identityUow.SaveChangesAsync(ct);
 
-        logger.LogInformation(
-            "Bootstrap root user: {Email} ({UserId}) — created",
-            rootUser.Email.Value,
-            rootUser.Id);
+        logger.LogInformation("Bootstrap root user: {Email} ({UserId}) — created", rootUser.Email.Value, rootUser.Id);
     }
 }

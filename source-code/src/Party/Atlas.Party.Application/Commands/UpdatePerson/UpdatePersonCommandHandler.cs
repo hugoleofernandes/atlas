@@ -28,6 +28,7 @@ public sealed class UpdatePersonCommandHandler : IUpdatePersonCommandHandler
         var name = PersonName.Create(cmd.FirstName, cmd.LastName, cmd.MiddleName);
         person.Update(name, cmd.BirthDate, cmd.Gender);
         person.ReplaceAddresses(cmd.Addresses);
+        person.ReplaceContacts(cmd.Contacts);
 
         return new UpdatePersonOutput(person.Id, person.Name.FullName);
     }

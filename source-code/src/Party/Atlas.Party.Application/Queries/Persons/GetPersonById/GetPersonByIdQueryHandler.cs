@@ -13,7 +13,7 @@ public sealed class GetPersonByIdQueryHandler : IGetPersonByIdQueryHandler
         _context = context;
     }
 
-    public Task<PersonDto?> ExecuteAsync(GetPersonByIdQuery query, CancellationToken ct)
+    public Task<GetPersonByIdDto?> ExecuteAsync(GetPersonByIdQuery query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
         return _reader.GetByIdAsync(tenantId, query.PartyId, ct);

@@ -1,9 +1,6 @@
-using Atlas.Party.Application.Queries.Persons;
 using Atlas.Party.Application.Queries.Persons.GetPersonById;
-using Atlas.Party.Application.Queries.Shared;
 using Atlas.Party.Domain.Shared;
 using Atlas.Party.Infrastructure.Persistence.DbContexts;
-using Atlas.Party.Infrastructure.Readers.Shared;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +30,7 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
           AND p.party_type = 'Person'
         """;
 
-    public async Task<PersonDto?> GetByIdAsync(Guid tenantId, Guid partyId, CancellationToken ct)
+    public async Task<GetPersonByIdDto?> GetByIdAsync(Guid tenantId, Guid partyId, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
 
@@ -45,11 +42,12 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
         if (row is null)
             return null;
 
-        var addresses = await AddressReaderSql.ListByPartyIdAsync(conn, partyId);
+        var addresses = (await conn.QueryAsync<GetPersonByIdAddressDto>(AddressesSql, new { PartyId = partyId })).ToList();
+        var contacts = (await conn.QueryAsync<GetPersonByIdContactDto>(ContactsSql, new { PartyId = partyId })).ToList();
 
         var gender = row.Gender is null ? (Gender?)null : Enum.Parse<Gender>(row.Gender);
 
-        return new PersonDto(
+        return new GetPersonByIdDto(
             PartyId: row.PartyId,
             TaxNumber: row.TaxNumber,
             FirstName: row.FirstName,
@@ -60,6 +58,7 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
             Gender: gender,
             IsActive: row.IsActive,
             Addresses: addresses,
+            Contacts: contacts,
             CreatedAt: row.CreatedAt,
             CreatedBy: row.CreatedBy,
             CreatedByEmail: row.CreatedByEmail,
@@ -85,5 +84,34 @@ public sealed class GetPersonByIdReader(PartyDbContext db) : IGetPersonByIdReade
         Guid? UpdatedBy,
         string? UpdatedByEmail
     );
+
+    private const string AddressesSql = """
+        SELECT
+            id          AS AddressId,
+            type        AS Type,
+            street      AS Street,
+            number      AS Number,
+            complement  AS Complement,
+            district    AS District,
+            city        AS City,
+            state       AS State,
+            zip_code    AS ZipCode,
+            country     AS Country,
+            is_primary  AS IsPrimary
+        FROM atlas_party.party_addresses
+        WHERE party_id = @PartyId
+        ORDER BY is_primary DESC, type ASC, created_at ASC
+        """;
+
+    private const string ContactsSql = """
+        SELECT
+            id          AS ContactId,
+            type        AS Type,
+            value       AS Value,
+            is_primary  AS IsPrimary
+        FROM atlas_party.party_contacts
+        WHERE party_id = @PartyId
+        ORDER BY is_primary DESC, type ASC, created_at ASC
+        """;
 }
 

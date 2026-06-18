@@ -4,8 +4,9 @@ using Atlas.SharedKernel.Domain;
 namespace Atlas.Party.Domain.Parties;
 
 /// <summary>
-/// A contact entry (email or phone) belonging to a Party.
-/// Exactly one email and one phone can be flagged as primary at any time.
+/// A contact entry belonging to a Party.
+/// The ContactType determines how Value is interpreted (email, phone, free-text for Other).
+/// At most one contact per ContactType can be flagged as primary.
 /// </summary>
 public sealed class ContactInfo : AuditableEntity
 {
@@ -15,21 +16,14 @@ public sealed class ContactInfo : AuditableEntity
 
     public ContactType Type { get; private set; }
 
-    /// <summary>Email address — populated when Type is Email.</summary>
-    public EmailAddress? Email { get; private set; }
-
-    /// <summary>Phone number — populated when Type is Phone, Mobile, or WhatsApp.</summary>
-    public PhoneNumber? Phone { get; private set; }
+    public string Value { get; private set; } = default!;
 
     public bool IsPrimary { get; private set; }
 
     private ContactInfo() { }
 
-    internal static ContactInfo ForEmail(Guid partyId, EmailAddress email, ContactType type, bool isPrimary)
-        => new() { PartyId = partyId, Type = type, Email = email, IsPrimary = isPrimary };
-
-    internal static ContactInfo ForPhone(Guid partyId, PhoneNumber phone, ContactType type, bool isPrimary)
-        => new() { PartyId = partyId, Type = type, Phone = phone, IsPrimary = isPrimary };
+    internal static ContactInfo Create(Guid partyId, ContactType type, string value, bool isPrimary)
+        => new() { PartyId = partyId, Type = type, Value = value, IsPrimary = isPrimary };
 
     internal void SetPrimary(bool isPrimary) => IsPrimary = isPrimary;
 }

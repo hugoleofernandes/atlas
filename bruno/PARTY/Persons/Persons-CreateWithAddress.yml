@@ -15,7 +15,7 @@ http:
     type: json
     data: |-
       {
-        "taxNumber": "35358340823",
+        "taxNumber": "41970785870",
         "firstName": "Maria",
         "lastName": "Silva",
         "middleName": "Souza",
@@ -32,6 +32,18 @@ http:
             "state": "SP",
             "zipCode": "01310-100",
             "country": "BR",
+            "isPrimary": true
+          }
+        ],
+        "contacts": [
+          {
+            "type": "Email",
+            "value": "maria.silva@example.com",
+            "isPrimary": true
+          },
+          {
+            "type": "Mobile",
+            "value": "+5511999999999",
             "isPrimary": true
           }
         ]

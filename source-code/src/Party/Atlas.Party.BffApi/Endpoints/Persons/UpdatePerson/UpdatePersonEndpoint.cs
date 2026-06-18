@@ -29,7 +29,8 @@ public sealed class UpdatePersonEndpoint(IUpdatePersonCommandHandler handler, IH
             req.MiddleName,
             req.BirthDate,
             req.Gender,
-            AddressRequestMapper.ToAddressInputs(req.Addresses)
+            AddressRequestMapper.ToAddressInputs(req.Addresses),
+            ContactRequestMapper.ToContactInputs(req.Contacts)
         );
         var result = await invoker.InvokeAsync(handler, cmd, ct);
         await UpdatedFromResultAsync(result, UpdatePersonResponse.From, ct);

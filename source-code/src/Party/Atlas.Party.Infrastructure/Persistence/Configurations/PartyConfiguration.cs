@@ -86,15 +86,7 @@ public sealed class PartyConfiguration : IEntityTypeConfiguration<Domain.Parties
 
                 c.Property(x => x.IsPrimary).HasColumnName("is_primary").HasDefaultValue(false);
 
-                c.Property(x => x.Email)
-                    .HasConversion(email => email == null ? null : email.Value, value => value == null ? null : EmailAddress.Create(value))
-                    .HasColumnName("email")
-                    .HasMaxLength(256);
-
-                c.Property(x => x.Phone)
-                    .HasConversion(phone => phone == null ? null : phone.Value, value => value == null ? null : PhoneNumber.Create(value))
-                    .HasColumnName("phone")
-                    .HasMaxLength(20);
+                c.Property(x => x.Value).HasColumnName("value").HasMaxLength(256).IsRequired();
 
                 c.Property(x => x.CreatedAt).IsRequired();
                 c.Property(x => x.CreatedBy);

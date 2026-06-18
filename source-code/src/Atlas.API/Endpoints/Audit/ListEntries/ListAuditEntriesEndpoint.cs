@@ -6,6 +6,7 @@ using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.Identity.Contracts.Permissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Contracts.EntityTypes;
+using Atlas.Platform.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Commands;
 using Atlas.SharedKernel.Application.Handlers;
 using Atlas.Staff.Application.StaffMembers.Queries.Audit.ListEntries;
@@ -92,7 +93,7 @@ public sealed class ListAuditEntriesEndpoint(
         if (entityTypeId == PlatformModuleEntityTypes.Tenants.EntityType.Id)
         {
             return new AuditTarget(
-                StaffModulePermissions.Audit.Read,
+                PlatformModulePermissions.Audit.Read,
                 (query, ct) => invoker.InvokeAsync(platformHandler, query, ct)
             );
         }

@@ -7,7 +7,9 @@ namespace Atlas.Platform.Infrastructure.Seeders;
 
 public sealed partial class PlatformModuleSeeder
 {
-    private async Task SeedBrazilCitiesAsync(IGeographyCache geographyCache, CancellationToken ct)
+    private async Task SeedBrazilCitiesAsync(
+        Atlas.Platform.Application.Queries.Geography.GetCitiesByState.IGetCitiesByStateCache citiesCache,
+        CancellationToken ct)
     {
         if (await db.Cities.AnyAsync(ct))
         {
@@ -5647,7 +5649,7 @@ public sealed partial class PlatformModuleSeeder
         await db.Cities.AddRangeAsync(cities, ct);
         await uow.SaveChangesAsync(ct);
 
-        geographyCache.Invalidate();
+        citiesCache.Invalidate();
 
         logger.LogInformation("PlatformGeographySeeder (BR cities) completed — {Count} cities seeded", cities.Count);
     }

@@ -13,7 +13,7 @@ public sealed class GetOrganizationByIdQueryHandler : IGetOrganizationByIdQueryH
         _context = context;
     }
 
-    public Task<OrganizationDto?> ExecuteAsync(GetOrganizationByIdQuery query, CancellationToken ct)
+    public Task<GetOrganizationByIdDto?> ExecuteAsync(GetOrganizationByIdQuery query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
         return _reader.GetByIdAsync(tenantId, query.PartyId, ct);

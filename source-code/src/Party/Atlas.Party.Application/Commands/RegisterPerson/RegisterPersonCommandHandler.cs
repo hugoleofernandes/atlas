@@ -39,6 +39,7 @@ public sealed class RegisterPersonCommandHandler : IRegisterPersonCommandHandler
         var name = PersonName.Create(cmd.FirstName, cmd.LastName, cmd.MiddleName);
         var person = Person.Register(tenantId, taxNumber, name, cmd.BirthDate, cmd.Gender);
         person.ReplaceAddresses(cmd.Addresses);
+        person.ReplaceContacts(cmd.Contacts);
 
         await _personRepository.AddAsync(person, ct);
 

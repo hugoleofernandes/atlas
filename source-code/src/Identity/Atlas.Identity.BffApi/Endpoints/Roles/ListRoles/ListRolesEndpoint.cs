@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Http;
 namespace Atlas.Identity.BffApi.Endpoints.Roles.ListRoles;
 
 public sealed class ListRolesEndpoint(IListRolesQueryHandler handler, IHandlerInvoker invoker)
-    : AtlasEndpoint<ListRolesRequest, IReadOnlyList<RoleDto>>
+    : AtlasEndpoint<ListRolesRequest, IReadOnlyList<ListRolesDto>>
 {
     public override void Configure()
     {
         Get("bff/v1/identity/roles");
         Policies($"permission:{IdentityModulePermissions.Roles.Read}");
-        Description(d => d.Produces<IReadOnlyList<RoleDto>>());
+        Description(d => d.Produces<IReadOnlyList<ListRolesDto>>());
     }
 
     public override async Task HandleAsync(ListRolesRequest req, CancellationToken ct)

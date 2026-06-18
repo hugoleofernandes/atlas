@@ -1,5 +1,4 @@
 using Atlas.Identity.Application.Queries.Roles.GetRoleById;
-using Atlas.Identity.Application.Queries.Roles.ListRoles;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +31,7 @@ public sealed class GetRoleByIdReader(IdentityDbContext db) : IGetRoleByIdReader
         WHERE rp.role_id = @RoleId
         """;
 
-    public async Task<RoleDto?> GetByIdAsync(Guid tenantId, Guid roleId, CancellationToken ct)
+    public async Task<GetRoleByIdDto?> GetByIdAsync(Guid tenantId, Guid roleId, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
 
@@ -43,7 +42,7 @@ public sealed class GetRoleByIdReader(IdentityDbContext db) : IGetRoleByIdReader
 
         var permissions = (await conn.QueryAsync<string>(PermissionsSql, new { RoleId = roleId })).ToList();
 
-        return new RoleDto(
+        return new GetRoleByIdDto(
             RoleId: role.Id,
             Name: role.Name,
             IsSystem: role.IsSystem,

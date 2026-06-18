@@ -1,35 +1,21 @@
-﻿using Atlas.Staff.Application.StaffMemberApp.Persistence;
+using Atlas.Staff.Application.StaffMemberApp.Persistence;
 using Atlas.Staff.Domain.Entities;
 using Atlas.Staff.Infrastructure.Persistence.DbContexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.Staff.Infrastructure.Entities.StaffMembers.Repositories;
 
-public sealed class StaffMemberRepository : IStaffMemberRepository
+public sealed class StaffMemberRepository(StaffDbContext db) : IStaffMemberRepository
 {
-    private readonly StaffDbContext _db;
+    public Task<StaffMember?> GetByIdAsync(Guid staffMemberId, CancellationToken ct)
+        => db.Set<StaffMember>().FirstOrDefaultAsync(x => x.Id == staffMemberId, ct);
 
-    public StaffMemberRepository(StaffDbContext db)
-    {
-        _db = db;
-    }
+    public Task<bool> ExistsAsync(Guid tenantId, Guid userId, CancellationToken ct)
+        => db.Set<StaffMember>().AnyAsync(x => x.TenantId == tenantId && x.UserId == userId, ct);
 
-    public Task<bool> ExistsAsync(
-        Guid tenantId,
-        Guid UserId,
-        CancellationToken ct)
-    {
-        return _db.Set<StaffMember>()
-            .AnyAsync(x =>
-                x.TenantId == tenantId &&
-                x.UserId == UserId,
-                ct);
-    }
+    public Task<bool> ExistsForPartyAsync(Guid tenantId, Guid partyId, CancellationToken ct)
+        => db.Set<StaffMember>().AnyAsync(x => x.TenantId == tenantId && x.PartyId == partyId, ct);
 
-    public async Task AddAsync(
-        StaffMember staff,
-        CancellationToken ct)
-    {
-        await _db.Set<StaffMember>().AddAsync(staff, ct);
-    }
+    public async Task AddAsync(StaffMember staffMember, CancellationToken ct)
+        => await db.Set<StaffMember>().AddAsync(staffMember, ct);
 }

@@ -10,6 +10,7 @@
   <data name="party.person.update"     xml:space="preserve"><value>Atualizar pessoas físicas</value></data>
   <data name="party.person.deactivate" xml:space="preserve"><value>Desativar pessoas físicas</value></data>
   <data name="party.person.manage"     xml:space="preserve"><value>Gerenciar pessoas físicas</value></data>
+  <data name="party.lookups.read"      xml:space="preserve"><value>Visualizar catálogos do módulo party</value></data>
 
   <data name="party.organization.read"       xml:space="preserve"><value>Visualizar pessoas jurídicas</value></data>
   <data name="party.organization.create"     xml:space="preserve"><value>Criar pessoas jurídicas</value></data>
@@ -17,4 +18,3 @@
   <data name="party.organization.deactivate" xml:space="preserve"><value>Desativar pessoas jurídicas</value></data>
   <data name="party.organization.manage"     xml:space="preserve"><value>Gerenciar pessoas jurídicas</value></data>
 </root>
-

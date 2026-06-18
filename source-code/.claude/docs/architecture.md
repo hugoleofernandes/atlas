@@ -7,6 +7,7 @@
 ✅ The only permitted cross-module reference is `Outbox` referencing module Contracts
 ✅ `Contracts` has zero dependencies — it is the public interface consumed by other modules
 ✅ `Atlas.API` may orchestrate handlers from multiple modules when exposing a unified HTTP contract
+✅ Every class and interface has one reason to change — never mix unrelated use cases in the same type
 ❌ Never add a project reference from a module to another module
 ❌ Never add a project reference from a BuildingBlock to another BuildingBlock
 ❌ Never call a QueryHandler from a CommandHandler or vice versa — orchestrate via Workflow or endpoint

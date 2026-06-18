@@ -10,6 +10,7 @@ public sealed record UpdatePersonRequest(
     string? MiddleName,
     DateOnly? BirthDate,
     Gender? Gender,
-    IReadOnlyList<AddressRequest>? Addresses
+    IReadOnlyList<AddressRequest>? Addresses,
+    IReadOnlyList<ContactRequest>? Contacts
 );
 

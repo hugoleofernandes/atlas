@@ -3,6 +3,7 @@
 ❌ Never generate or apply migrations — always the developer's responsibility
 ❌ Never add `Co-Authored-By` to commits — the sole author is Hugo
 ✅ When answering after analysis or implementation, explicitly list which instruction docs were read for that task
+❌ Never reuse a query DTO across different QueryHandlers or Readers — each query owns its own DTO
 ❌ Never omit the instruction docs read when the task depended on repo rules or `.claude/docs/`
 
 ## Migrations

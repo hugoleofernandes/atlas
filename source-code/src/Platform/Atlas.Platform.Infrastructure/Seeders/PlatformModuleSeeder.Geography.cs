@@ -1,4 +1,5 @@
-using Atlas.Platform.Application.Queries.Geography;
+using Atlas.Platform.Application.Queries.Geography.GetCitiesByState;
+using Atlas.Platform.Application.Queries.Geography.GetStatesByCountry;
 using Atlas.Platform.Domain.Geography;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -37,13 +38,16 @@ public sealed partial class PlatformModuleSeeder
     internal static readonly Guid StateIdSP = new("00000000-0000-0000-9999-000000000026");
     internal static readonly Guid StateIdTO = new("00000000-0000-0000-9999-000000000027");
 
-    private async Task SeedGeographyAsync(IGeographyCache geographyCache, CancellationToken ct)
+    private async Task SeedGeographyAsync(
+        IGetStatesByCountryCache statesCache,
+        IGetCitiesByStateCache citiesCache,
+        CancellationToken ct)
     {
-        await SeedBrazilStatesAsync(geographyCache, ct);
-        await SeedBrazilCitiesAsync(geographyCache, ct);
+        await SeedBrazilStatesAsync(statesCache, ct);
+        await SeedBrazilCitiesAsync(citiesCache, ct);
     }
 
-    private async Task SeedBrazilStatesAsync(IGeographyCache geographyCache, CancellationToken ct)
+    private async Task SeedBrazilStatesAsync(IGetStatesByCountryCache statesCache, CancellationToken ct)
     {
         if (await db.States.AnyAsync(s => s.CountryCode == "BR", ct))
         {
@@ -87,7 +91,7 @@ public sealed partial class PlatformModuleSeeder
         await db.States.AddRangeAsync(states, ct);
         await uow.SaveChangesAsync(ct);
 
-        geographyCache.Invalidate();
+        statesCache.Invalidate();
 
         logger.LogInformation("PlatformGeographySeeder (BR states) completed — 27 states seeded");
     }

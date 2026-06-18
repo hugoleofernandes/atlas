@@ -79,34 +79,36 @@ public abstract class Party : AggregateRoot, IMultiTenantEntity
     // =========================
 
     /// <summary>
-    /// Adds an email contact entry. When isPrimary is true any existing primary email is demoted.
+    /// Adds a contact entry. When isPrimary is true any existing primary contact of the same type is demoted.
     /// </summary>
-    public ContactInfo AddEmailContact(EmailAddress email, ContactType type = ContactType.Email, bool isPrimary = false)
+    public ContactInfo AddContact(ContactType type, string value, bool isPrimary = false)
     {
         if (isPrimary)
-            DemotePrimaryContacts(c => c.Email is not null);
+            DemotePrimaryContacts(type);
 
-        var contact = ContactInfo.ForEmail(Id, email, type, isPrimary);
+        var contact = ContactInfo.Create(Id, type, value, isPrimary);
         _contacts.Add(contact);
         return contact;
     }
 
     /// <summary>
-    /// Adds a phone contact entry. When isPrimary is true any existing primary phone is demoted.
+    /// Replaces the entire contact collection. Intended for flows where the caller manages
+    /// the full contact list client-side and submits it atomically with the rest of the Party.
     /// </summary>
-    public ContactInfo AddPhoneContact(PhoneNumber phone, ContactType type = ContactType.Mobile, bool isPrimary = false)
+    public void ReplaceContacts(IReadOnlyList<ContactInput> contacts)
     {
-        if (isPrimary)
-            DemotePrimaryContacts(c => c.Phone is not null);
+        foreach (var group in contacts.GroupBy(c => c.Type))
+            if (group.Count(c => c.IsPrimary) > 1)
+                throw new MultiplePrimaryContactsException(group.Key.ToString());
 
-        var contact = ContactInfo.ForPhone(Id, phone, type, isPrimary);
-        _contacts.Add(contact);
-        return contact;
+        _contacts.Clear();
+        foreach (var c in contacts)
+            _contacts.Add(ContactInfo.Create(Id, c.Type, c.Value, c.IsPrimary));
     }
 
-    private void DemotePrimaryContacts(Func<ContactInfo, bool> predicate)
+    private void DemotePrimaryContacts(ContactType type)
     {
-        foreach (var c in _contacts.Where(c => c.IsPrimary && predicate(c)))
+        foreach (var c in _contacts.Where(c => c.Type == type && c.IsPrimary))
             c.SetPrimary(false);
     }
 

@@ -4,6 +4,9 @@
 
 ✅ Every QueryHandler owns exactly one Reader — 1:1, never shared between handlers
 ✅ Every QueryHandler owns its own DTO — never reused between handlers
+✅ Every Reader uses only the DTO owned by its QueryHandler — never a DTO from another query
+✅ If a query uses an in-memory cache, that cache is owned by that query — never shared across unrelated queries
+✅ A Reader or Cache has one query concern only — never load or cache multiple unrelated lookup families in the same class
 ✅ Reader lives in `Atlas.{Module}.Infrastructure`, co-located in the handler's folder
 ✅ All readers use Dapper with raw SQL — never EF Core
 ✅ SQL columns: snake_case without quotes; multi-word columns require an explicit alias
@@ -29,7 +32,47 @@
 ├── {QueryName}Query.cs
 ├── I{QueryName}Reader.cs     ← exclusive to this handler (defined in Application)
 ├── {QueryName}Reader.cs      ← implementation in Infrastructure, same subfolder
-└── {QueryName}Dto.cs         ← exclusive to this handler
+└── {QueryName}Dto.cs         ← exclusive to this handler and its reader
+```
+
+## DTO Ownership
+
+```csharp
+// ✅ one query, one reader, one DTO
+public sealed record ListPersonsDto(Guid Id, string FullName);
+
+public interface IListPersonsReader
+{
+    Task<IReadOnlyList<ListPersonsDto>> ListAsync(CancellationToken ct);
+}
+
+// ❌ shared DTO reused by unrelated queries
+public sealed record SharedLookupDto(string Code, string Name);
+
+public interface IListPersonsReader
+{
+    Task<IReadOnlyList<SharedLookupDto>> ListAsync(CancellationToken ct);
+}
+```
+
+## Query Cache Ownership
+
+```csharp
+// ✅ one query, one cache, one reader
+public interface IGetStatesByCountryCache
+{
+    Task<IReadOnlyList<StateDto>> GetAsync(string countryCode, CancellationToken ct);
+    void Invalidate();
+}
+
+public sealed class GetStatesByCountryQueryHandler(IGetStatesByCountryCache cache) { }
+
+// ❌ shared cache/reader for unrelated queries
+public interface IGeographyCache
+{
+    Task<IReadOnlyList<StateDto>> GetStatesByCountryCodeAsync(string countryCode, CancellationToken ct);
+    Task<IReadOnlyList<CityDto>> GetCitiesByStateCodeAsync(string countryCode, string stateCode, CancellationToken ct);
+}
 ```
 
 ## Column Aliases

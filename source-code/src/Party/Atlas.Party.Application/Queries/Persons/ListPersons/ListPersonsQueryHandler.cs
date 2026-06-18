@@ -13,7 +13,7 @@ public sealed class ListPersonsQueryHandler : IListPersonsQueryHandler
         _context = context;
     }
 
-    public Task<IReadOnlyList<PersonDto>> ExecuteAsync(ListPersonsQuery query, CancellationToken ct)
+    public Task<IReadOnlyList<ListPersonsDto>> ExecuteAsync(ListPersonsQuery query, CancellationToken ct)
     {
         var tenantId = _context.TenantId!.Value;
         return _reader.ListAsync(tenantId, query.IsActive, ct);

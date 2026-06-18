@@ -5,5 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
 
-  <data name="staff_member.already_exists" xml:space="preserve"><value>Já existe um membro da equipe com este e-mail.</value></data>
+  <data name="staff_member.already_exists"     xml:space="preserve"><value>Já existe um colaborador vinculado a este participante neste tenant.</value></data>
+  <data name="staff_member.not_found"          xml:space="preserve"><value>Colaborador não encontrado.</value></data>
+  <data name="staff_member.already_terminated" xml:space="preserve"><value>Este colaborador já foi desligado.</value></data>
 </root>

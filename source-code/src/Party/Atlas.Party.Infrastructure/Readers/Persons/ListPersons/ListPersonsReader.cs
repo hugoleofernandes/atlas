@@ -1,4 +1,3 @@
-using Atlas.Party.Application.Queries.Persons;
 using Atlas.Party.Application.Queries.Persons.ListPersons;
 using Atlas.Party.Domain.Shared;
 using Atlas.Party.Infrastructure.Persistence.DbContexts;
@@ -33,7 +32,7 @@ public sealed class ListPersonsReader(PartyDbContext db) : IListPersonsReader
 
     private const string OrderBySql = "ORDER BY p.first_name ASC, p.last_name ASC";
 
-    public async Task<IReadOnlyList<PersonDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)
+    public async Task<IReadOnlyList<ListPersonsDto>> ListAsync(Guid tenantId, bool? isActive, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
 
@@ -53,7 +52,7 @@ public sealed class ListPersonsReader(PartyDbContext db) : IListPersonsReader
         var rows = await conn.QueryAsync<PersonRow>(sql.ToString(), parameters);
 
         return rows
-            .Select(r => new PersonDto(
+            .Select(r => new ListPersonsDto(
                 PartyId: r.PartyId,
                 TaxNumber: r.TaxNumber,
                 FirstName: r.FirstName,
@@ -63,7 +62,6 @@ public sealed class ListPersonsReader(PartyDbContext db) : IListPersonsReader
                 BirthDate: r.BirthDate,
                 Gender: r.Gender is null ? (Gender?)null : Enum.Parse<Gender>(r.Gender),
                 IsActive: r.IsActive,
-                Addresses: [],
                 CreatedAt: r.CreatedAt,
                 CreatedBy: r.CreatedBy,
                 CreatedByEmail: r.CreatedByEmail,

@@ -20,7 +20,19 @@ http:
           "lastName": "Silva",
           "middleName": "Souza",
           "birthDate": "1990-05-12",
-          "gender": "Female"
+          "gender": "Female",
+          "contacts": [
+            {
+              "type": "Email",
+              "value": "maria.souza@example.com",
+              "isPrimary": true
+            },
+            {
+              "type": "Mobile",
+              "value": "+5511988887777",
+              "isPrimary": true
+            }
+          ]
         }
   auth: inherit
 

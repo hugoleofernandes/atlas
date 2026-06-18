@@ -29,7 +29,8 @@ public sealed class RegisterPersonEndpoint(IRegisterPersonCommandHandler handler
             req.MiddleName,
             req.BirthDate,
             req.Gender,
-            AddressRequestMapper.ToAddressInputs(req.Addresses)
+            AddressRequestMapper.ToAddressInputs(req.Addresses),
+            ContactRequestMapper.ToContactInputs(req.Contacts)
         );
         var result = await invoker.InvokeAsync(handler, cmd, ct);
         await CreatedFromResultAsync(result, RegisterPersonResponse.From, ct);

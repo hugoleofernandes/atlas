@@ -10,6 +10,7 @@ public sealed record RegisterPersonCommand(
     string? MiddleName,
     DateOnly? BirthDate,
     Gender? Gender,
-    IReadOnlyList<AddressInput> Addresses
+    IReadOnlyList<AddressInput> Addresses,
+    IReadOnlyList<ContactInput> Contacts
 );
 

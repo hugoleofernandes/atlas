@@ -1,8 +1,6 @@
-using Atlas.Party.Application.Queries.Organizations;
 using Atlas.Party.Application.Queries.Organizations.GetOrganizationById;
 using Atlas.Party.Domain.Shared;
 using Atlas.Party.Infrastructure.Persistence.DbContexts;
-using Atlas.Party.Infrastructure.Readers.Shared;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +28,7 @@ public sealed class GetOrganizationByIdReader(PartyDbContext db) : IGetOrganizat
           AND p.party_type = 'Organization'
         """;
 
-    public async Task<OrganizationDto?> GetByIdAsync(Guid tenantId, Guid partyId, CancellationToken ct)
+    public async Task<GetOrganizationByIdDto?> GetByIdAsync(Guid tenantId, Guid partyId, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
 
@@ -42,9 +40,9 @@ public sealed class GetOrganizationByIdReader(PartyDbContext db) : IGetOrganizat
         if (row is null)
             return null;
 
-        var addresses = await AddressReaderSql.ListByPartyIdAsync(conn, partyId);
+        var addresses = (await conn.QueryAsync<GetOrganizationByIdAddressDto>(AddressesSql, new { PartyId = partyId })).ToList();
 
-        return new OrganizationDto(
+        return new GetOrganizationByIdDto(
             PartyId: row.PartyId,
             TaxNumber: row.TaxNumber,
             LegalName: row.LegalName,
@@ -75,4 +73,22 @@ public sealed class GetOrganizationByIdReader(PartyDbContext db) : IGetOrganizat
         Guid? UpdatedBy,
         string? UpdatedByEmail
     );
+
+    private const string AddressesSql = """
+        SELECT
+            id          AS AddressId,
+            type        AS Type,
+            street      AS Street,
+            number      AS Number,
+            complement  AS Complement,
+            district    AS District,
+            city        AS City,
+            state       AS State,
+            zip_code    AS ZipCode,
+            country     AS Country,
+            is_primary  AS IsPrimary
+        FROM atlas_party.party_addresses
+        WHERE party_id = @PartyId
+        ORDER BY is_primary DESC, type ASC, created_at ASC
+        """;
 }

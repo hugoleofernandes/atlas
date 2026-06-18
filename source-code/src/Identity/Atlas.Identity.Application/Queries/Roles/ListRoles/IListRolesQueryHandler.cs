@@ -3,6 +3,6 @@ using Atlas.SharedKernel.Application.Handlers;
 
 namespace Atlas.Identity.Application.Queries.Roles.ListRoles;
 
-public interface IListRolesQueryHandler : IQueryHandler<ListRolesQuery, IReadOnlyList<RoleDto>>
+public interface IListRolesQueryHandler : IQueryHandler<ListRolesQuery, IReadOnlyList<ListRolesDto>>
 {
 }

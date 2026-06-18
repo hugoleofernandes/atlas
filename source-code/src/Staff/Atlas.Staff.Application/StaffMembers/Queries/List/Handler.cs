@@ -1,24 +1,19 @@
-﻿//using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application;
+using Atlas.SharedKernel.Application.Handlers;
+using Atlas.Staff.Domain.Shared.Exceptions;
 
-//namespace Atlas.Staff.Application.StaffMembers.Queries.List;
+namespace Atlas.Staff.Application.StaffMembers.Queries.List;
 
-//public sealed class Handler
-//    : IQueryHandler<Query, PagedResult<Dto>>
-//{
-//    private readonly IListStaffMembersReader _reader;
-
-//    public Handler(IListStaffMembersReader reader)
-//    {
-//        _reader = reader;
-//    }
-
-//    public Task<PagedResult<Dto>> Handle(
-//        Query query,
-//        CancellationToken ct)
-//    {
-//        return _reader.ListAsync(
-//            query.Page,
-//            query.PageSize,
-//            ct);
-//    }
-//}
+public sealed class ListStaffMembersQueryHandler(
+    IRequestContext requestContext,
+    IListStaffMembersReader reader
+) : IListStaffMembersQueryHandler
+{
+    public async Task<IReadOnlyList<ListStaffMembersDto>> ExecuteAsync(
+        ListStaffMembersQuery query,
+        CancellationToken ct)
+    {
+        var tenantId = requestContext.TenantId ?? throw new TenantContextNotResolvedException();
+        return await reader.ListAsync(tenantId, ct);
+    }
+}
