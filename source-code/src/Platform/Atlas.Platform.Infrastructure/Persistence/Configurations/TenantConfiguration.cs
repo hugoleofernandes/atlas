@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Platform.Infrastructure.Persistence.Configurations;
 
-public sealed class TenantConfiguration : AuditableAggregateConfiguration<Tenant>
+public sealed class TenantConfiguration : AuditedAggregateConfiguration<Tenant>
 {
     protected override Guid EntityTypeId => PlatformModuleEntityTypes.Tenants.EntityType.Id;
 
-    protected override void ConfigureAuditable(EntityTypeBuilder<Tenant> b)
+    protected override void ConfigureEntity(EntityTypeBuilder<Tenant> b)
     {
         b.ToTable("tenants");
 

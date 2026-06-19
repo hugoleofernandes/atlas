@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: "{{bff_api_prefix}}/bff/v1/identity/permissions"
+  url: "{{bff_api_prefix}}/bff/v1/identity/permissions?isActive=true"
+  params:
+    - name: isActive
+      value: "true"
+      type: query
   auth: inherit
 
 settings:

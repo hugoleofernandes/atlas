@@ -3,20 +3,18 @@ using Atlas.BuildingBlocks.Permissions;
 using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 using Atlas.Identity.Contracts.Permissions;
 using Atlas.SharedKernel.Application.Handlers;
-using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
 namespace Atlas.Identity.BffApi.Endpoints.Permissions.ListPermissions;
 
 /// <summary>
-/// Returns all assignable permissions grouped by resource, with localized labels.
-/// Used by the frontend to render permission selectors when creating or editing roles.
+/// Returns permissions from the persisted catalog, with optional active-state filtering and localized labels.
 /// </summary>
 public sealed class ListPermissionsEndpoint(
     IListPermissionsQueryHandler handler,
     PermissionLabelLocalizer labelLocalizer,
     IHandlerInvoker invoker
-) : AtlasEndpoint<EmptyRequest, IReadOnlyList<PermissionItemResponse>>
+) : AtlasEndpoint<ListPermissionsRequest, IReadOnlyList<PermissionItemResponse>>
 {
     public override void Configure()
     {
@@ -25,9 +23,9 @@ public sealed class ListPermissionsEndpoint(
         Description(d => d.Produces<IReadOnlyList<PermissionItemResponse>>());
     }
 
-    public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
+    public override async Task HandleAsync(ListPermissionsRequest req, CancellationToken ct)
     {
-        var result = await invoker.InvokeAsync(handler, new ListPermissionsQuery(), ct);
+        var result = await invoker.InvokeAsync(handler, new ListPermissionsQuery(req.IsActive), ct);
 
         var response = result.Map(x => PermissionItemResponse.FromList(x, labelLocalizer));
 

@@ -17,7 +17,7 @@ http:
       {
         "name": "teste1",
         "permissionCodes": [
-          "tenant.roles.manage"
+          "staff.outbox.manage"
         ]
       }
   auth: inherit

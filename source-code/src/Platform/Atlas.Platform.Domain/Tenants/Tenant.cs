@@ -17,7 +17,7 @@ namespace Atlas.Platform.Domain.Tenants;
 /// - Does NOT send emails or notifications.
 /// - Does NOT persist data (handled by repositories/UoW).
 /// </summary>
-public sealed class Tenant : AggregateRoot, INotMultiTenant, IAuditableAggregate
+public sealed class Tenant : AggregateRoot, INotMultiTenant
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 

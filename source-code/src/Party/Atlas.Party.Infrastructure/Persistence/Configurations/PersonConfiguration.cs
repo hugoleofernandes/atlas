@@ -1,12 +1,16 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.Party.Contracts.EntityTypes;
 using Atlas.Party.Domain.Parties;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Party.Infrastructure.Persistence.Configurations;
 
-public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
+public sealed class PersonConfiguration : AuditedAggregateConfiguration<Person>
 {
-    public void Configure(EntityTypeBuilder<Person> b)
+    protected override Guid EntityTypeId => PartyModuleEntityTypes.Persons.EntityType.Id;
+
+    protected override void ConfigureEntity(EntityTypeBuilder<Person> b)
     {
         b.OwnsOne(
             x => x.Name,
@@ -25,4 +29,3 @@ public sealed class PersonConfiguration : IEntityTypeConfiguration<Person>
         b.Property(x => x.Notes).HasColumnName("notes").HasMaxLength(2000);
     }
 }
-

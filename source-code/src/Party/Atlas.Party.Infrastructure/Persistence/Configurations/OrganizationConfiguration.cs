@@ -1,12 +1,16 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.Party.Contracts.EntityTypes;
 using Atlas.Party.Domain.Parties;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Party.Infrastructure.Persistence.Configurations;
 
-public sealed class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
+public sealed class OrganizationConfiguration : AuditedAggregateConfiguration<Organization>
 {
-    public void Configure(EntityTypeBuilder<Organization> b)
+    protected override Guid EntityTypeId => PartyModuleEntityTypes.Organizations.EntityType.Id;
+
+    protected override void ConfigureEntity(EntityTypeBuilder<Organization> b)
     {
         b.Property(x => x.LegalName).HasColumnName("legal_name").HasMaxLength(200).IsRequired();
 

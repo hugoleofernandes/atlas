@@ -59,6 +59,18 @@ public sealed class PermissionCatalogReader(IdentityDbContext db) : IPermissionC
         WHERE is_active = true
         """;
 
+    private const string GetAllSql = """
+        SELECT id,
+               module_id        AS ModuleId,
+               module_name      AS ModuleName,
+               code,
+               "group"          AS Group,
+               is_manager       AS IsManager,
+               is_root          AS IsRoot,
+               is_active        AS IsActive
+        FROM atlas_identity.permissions
+        """;
+
     public async Task<PermissionRecord?> FindByCodeAsync(string code, CancellationToken ct)
     {
         var conn = db.Database.GetDbConnection();
@@ -76,6 +88,13 @@ public sealed class PermissionCatalogReader(IdentityDbContext db) : IPermissionC
     {
         var conn = db.Database.GetDbConnection();
         var results = await conn.QueryAsync<PermissionRecord>(GetByIdsSql, new { Ids = ids.ToArray() });
+        return results.ToList();
+    }
+
+    public async Task<IReadOnlyList<PermissionRecord>> GetAllAsync(CancellationToken ct)
+    {
+        var conn = db.Database.GetDbConnection();
+        var results = await conn.QueryAsync<PermissionRecord>(GetAllSql);
         return results.ToList();
     }
 

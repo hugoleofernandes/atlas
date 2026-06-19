@@ -18,6 +18,8 @@ public sealed partial class PartyModulePermissions : IModulePermissions
         Person.Update,
         Person.Deactivate,
         Person.Manage,
+        Audit.Read,
+        Audit.Manage,
         Lookups.Read,
         Organization.Read,
         Organization.Create,

@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Configurations;
 
-public sealed class UserConfiguration : AuditableAggregateConfiguration<User>
+public sealed class UserConfiguration : AuditedAggregateConfiguration<User>
 {
     protected override Guid EntityTypeId => IdentityModuleEntityTypes.Users.EntityType.Id;
 
-    protected override void ConfigureAuditable(EntityTypeBuilder<User> b)
+    protected override void ConfigureEntity(EntityTypeBuilder<User> b)
     {
         b.ToTable("users");
 

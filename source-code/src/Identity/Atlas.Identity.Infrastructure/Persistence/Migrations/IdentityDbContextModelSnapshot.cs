@@ -254,6 +254,8 @@ namespace Atlas.Identity.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_permissions_code");
 
                     b.ToTable("permissions", "atlas_identity");
+
+                    b.HasAnnotation("Audit:EntityTypeId", new Guid("00000000-0000-0000-0001-000000000004"));
                 });
 
             modelBuilder.Entity("Atlas.Identity.Domain.Roles.Role", b =>

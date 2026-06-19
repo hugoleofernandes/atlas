@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Application\Atlas.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Audit\Atlas.BuildingBlocks.Audit.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
     <ProjectReference Include="..\..\Shared\Atlas.SharedKernel\Atlas.SharedKernel.csproj" />
     <ProjectReference Include="..\Atlas.Party.Domain\Atlas.Party.Domain.csproj" />

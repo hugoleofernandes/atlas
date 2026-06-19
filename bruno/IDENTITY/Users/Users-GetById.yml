@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{bff_api_prefix}}/bff/v1/identity/users/00000000-0000-0000-0000-000000000001"
+  url: "{{bff_api_prefix}}/bff/v1/identity/users/17151360-c3a7-46bb-b3e9-17f99daf8dba"
   auth: inherit
 
 settings:

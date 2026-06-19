@@ -66,4 +66,3 @@ public sealed class Person : Party
         Notes = notes;
     }
 }
-

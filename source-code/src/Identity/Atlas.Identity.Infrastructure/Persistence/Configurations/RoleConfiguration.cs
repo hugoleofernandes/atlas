@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Configurations;
 
-public sealed class RoleConfiguration : AuditableAggregateConfiguration<Role>
+public sealed class RoleConfiguration : AuditedAggregateConfiguration<Role>
 {
     protected override Guid EntityTypeId => IdentityModuleEntityTypes.Roles.EntityType.Id;
 
-    protected override void ConfigureAuditable(EntityTypeBuilder<Role> b)
+    protected override void ConfigureEntity(EntityTypeBuilder<Role> b)
     {
         b.ToTable("roles");
         b.HasKey(x => x.Id);

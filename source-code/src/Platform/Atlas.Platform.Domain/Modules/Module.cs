@@ -15,4 +15,10 @@ public sealed class Module : AggregateRoot, INotMultiTenant
 
     public static Module Create(Guid id, string name)
         => new() { Id = id, Name = name, IsActive = true };
+
+    public void Rename(string name) => Name = name;
+
+    public void Activate() => IsActive = true;
+
+    public void Deactivate() => IsActive = false;
 }

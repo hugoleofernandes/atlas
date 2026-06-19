@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Atlas.Staff.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(StaffDbContext))]
-    [Migration("20260618115230_Initial")]
-    partial class Initial
+    [Migration("20260619124830_Initial_Staff")]
+    partial class Initial_Staff
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -313,6 +313,14 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("CreatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("created_by_email");
+
                     b.Property<string>("EmployeeNumber")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
@@ -365,6 +373,18 @@ namespace Atlas.Staff.Infrastructure.Persistence.Migrations
                     b.Property<DateOnly?>("TerminationDate")
                         .HasColumnType("date")
                         .HasColumnName("termination_date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("UpdatedByEmail")
+                        .HasColumnType("text")
+                        .HasColumnName("updated_by_email");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")

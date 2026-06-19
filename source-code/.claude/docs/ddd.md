@@ -5,11 +5,16 @@
 ✅ Need `GetByIdAsync` without loading the parent → Aggregate Root
 ✅ Need a repository for this entity → Aggregate Root (always)
 ✅ Other aggregates reference it by ID only → Aggregate Root
+✅ Every Aggregate Root must inherit from `AggregateRoot`
+✅ When creating a new aggregate root, verify the type inherits from `AggregateRoot` before writing its EF configuration
 ✅ Pure business rules belong in the domain, even when the result is exposed only by a read model
 ✅ When a business rule can be evaluated from primitive values already loaded by a query, prefer a pure domain method instead of re-implementing the rule in the reader or endpoint
+✅ Aggregate roots do not carry infrastructure-only audit-trail opt-in markers — audit registration belongs in EF mapping
+✅ Audited aggregate roots are registered for audit in Infrastructure via `AuditedAggregateConfiguration<TEntity>`, not via domain interfaces
 ❌ Never make an entity a child just because it has a uniqueness invariant with the parent — use pre-check + unique index instead
 ❌ Never embed an Aggregate Root as a child entity — reference by ID
 ❌ Never materialize an aggregate only to compute a response flag when a pure domain rule can evaluate the same decision from primitive values
+❌ Never model an Aggregate Root as a plain class or child entity base when `AggregateRoot` is the correct abstraction
 
 ## Decision Checklist
 

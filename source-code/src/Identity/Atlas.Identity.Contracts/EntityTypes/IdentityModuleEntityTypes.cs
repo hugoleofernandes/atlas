@@ -12,6 +12,7 @@ public sealed partial class IdentityModuleEntityTypes : IModuleEntityTypes
         Users.EntityType,
         Roles.EntityType,
         Invitations.EntityType,
+        Permissions.EntityType,
     ];
 
     public IReadOnlyList<AtlasEntityType> Definitions => AllDefinitions;

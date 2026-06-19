@@ -9,9 +9,13 @@
 ✅ Cross-tenant reads must use `IgnoreQueryFilters()` — the global filter is active in seeders
 ✅ Log: `started` → work → `completed — {summary}` (or `skipped - data already exists`)
 ✅ When one seed step depends on data from a prior step, return a typed output and pass it explicitly
+✅ Registry/catalog seeders may use sync semantics (create missing, reactivate existing, deactivate removed) instead of all-or-nothing skip
+✅ `PlatformModuleRegistrySeeder` is a sync-based registry seeder — never a skip-only bootstrap seeder
+✅ `PlatformEntityTypeSeeder` is a sync-based registry seeder — it depends on the module registry being synced first
 ❌ Never call `db.SaveChangesAsync()` directly — bypasses the audit pipeline
 ❌ Never guard row-by-row — if data exists at the aggregate level, skip the entire step
 ❌ Never pass cross-step data through mutable fields or generic state bags — use typed return values
+❌ Never use `AnyAsync() => skip` for global registries such as `atlas_platform.modules` and `atlas_platform.entity_types`
 
 ## Two Layers
 

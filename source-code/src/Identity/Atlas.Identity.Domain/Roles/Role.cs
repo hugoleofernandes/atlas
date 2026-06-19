@@ -8,7 +8,7 @@ namespace Atlas.Identity.Domain.Roles;
 /// A named set of permissions scoped to a tenant.
 /// Permissions are referenced by PermissionId — metadata lives in the Identity permission catalog.
 /// </summary>
-public sealed class Role : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
+public sealed class Role : AggregateRoot, IMultiTenantEntity
 {
     public Guid Id { get; private set; }
     public Guid TenantId { get; private set; }

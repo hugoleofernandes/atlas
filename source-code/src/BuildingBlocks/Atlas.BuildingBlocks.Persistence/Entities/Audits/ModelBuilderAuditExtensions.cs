@@ -1,4 +1,3 @@
-using Atlas.SharedKernel.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Atlas.BuildingBlocks.Persistence.Entities.Audits;
@@ -11,7 +10,7 @@ public static class ModelBuilderAuditExtensions
             .GetEntityTypes()
             .Where(entityType =>
                 entityType.ClrType is not null &&
-                typeof(IAuditableAggregate).IsAssignableFrom(entityType.ClrType) &&
+                entityType.FindAnnotation(AuditMetadataAnnotations.EntityTypeId) is not null &&
                 entityType.FindAnnotation(AuditMetadataAnnotations.EntityTypeId)?.Value is not Guid)
             .Select(entityType => entityType.ClrType.Name)
             .OrderBy(name => name)

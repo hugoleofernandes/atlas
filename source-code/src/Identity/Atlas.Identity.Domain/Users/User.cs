@@ -19,7 +19,7 @@ namespace Atlas.Identity.Domain.Users;
 /// - Authentication is delegated to external providers (OIDC).
 /// - The system does not manage passwords or credentials.
 /// </summary>
-public sealed class User : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
+public sealed class User : AggregateRoot, IMultiTenantEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 

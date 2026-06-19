@@ -1,0 +1,29 @@
+info:
+  name: Entries-List-AllModules-ByEntityType
+  type: http
+  seq: 3
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/audit/entries?entityTypeId=00000000-0000-0000-0004-000000000001"
+  params:
+    - name: entityTypeId
+      value: 00000000-0000-0000-0004-000000000001
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # List Audit Entries — All Modules
+  Uses the consolidated Atlas.API audit endpoint and routes by `entityTypeId`.
+
+  Example value above targets `Party.Person`:
+  `00000000-0000-0000-0004-000000000001`
+
+  Other entity type IDs can be discovered from:
+  `GET /bff/v1/platform/entity-types/lookup`

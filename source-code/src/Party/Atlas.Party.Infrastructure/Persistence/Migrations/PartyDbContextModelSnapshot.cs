@@ -384,6 +384,8 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                         .HasColumnName("trade_name");
 
                     b.HasDiscriminator().HasValue("Organization");
+
+                    b.HasAnnotation("Audit:EntityTypeId", new Guid("00000000-0000-0000-0004-000000000002"));
                 });
 
             modelBuilder.Entity("Atlas.Party.Domain.Parties.Person", b =>
@@ -399,7 +401,14 @@ namespace Atlas.Party.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("gender");
 
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("notes");
+
                     b.HasDiscriminator().HasValue("Person");
+
+                    b.HasAnnotation("Audit:EntityTypeId", new Guid("00000000-0000-0000-0004-000000000001"));
                 });
 
             modelBuilder.Entity("Atlas.Party.Domain.Parties.Party", b =>

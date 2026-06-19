@@ -4,6 +4,9 @@ using Atlas.BuildingBlocks.FastEndpoints;
 using Atlas.Identity.Application.Queries.Audit.ListEntries;
 using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.Identity.Contracts.Permissions;
+using Atlas.Party.Application.Queries.Audit.ListEntries;
+using Atlas.Party.Contracts.EntityTypes;
+using Atlas.Party.Contracts.Permissions;
 using Atlas.Platform.Application.Queries.Audit.ListEntries;
 using Atlas.Platform.Contracts.EntityTypes;
 using Atlas.Platform.Contracts.Permissions;
@@ -22,6 +25,7 @@ namespace Atlas.API.Endpoints.Audit.ListEntries;
 /// </summary>
 public sealed class ListAuditEntriesEndpoint(
     IIdentityListAuditEntriesQueryHandler identityHandler,
+    IPartyListAuditEntriesQueryHandler partyHandler,
     IStaffListAuditEntriesQueryHandler staffHandler,
     IPlatformListAuditEntriesQueryHandler platformHandler,
     IHandlerInvoker invoker,
@@ -74,11 +78,23 @@ public sealed class ListAuditEntriesEndpoint(
             entityTypeId == IdentityModuleEntityTypes.Users.EntityType.Id
             || entityTypeId == IdentityModuleEntityTypes.Roles.EntityType.Id
             || entityTypeId == IdentityModuleEntityTypes.Invitations.EntityType.Id
+            || entityTypeId == IdentityModuleEntityTypes.Permissions.EntityType.Id
         )
         {
             return new AuditTarget(
                 IdentityModulePermissions.Audit.Read,
                 (query, ct) => invoker.InvokeAsync(identityHandler, query, ct)
+            );
+        }
+
+        if (
+            entityTypeId == PartyModuleEntityTypes.Persons.EntityType.Id
+            || entityTypeId == PartyModuleEntityTypes.Organizations.EntityType.Id
+        )
+        {
+            return new AuditTarget(
+                PartyModulePermissions.Audit.Read,
+                (query, ct) => invoker.InvokeAsync(partyHandler, query, ct)
             );
         }
 

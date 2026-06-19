@@ -8,7 +8,7 @@ namespace Atlas.Staff.Domain.Entities;
 /// Represents an active employment relationship between a Party (Person) and a tenant.
 /// Carries employment data — contract type, hire/termination dates, and status lifecycle.
 /// </summary>
-public sealed class StaffMember : IAuditableAggregate
+public sealed class StaffMember : AggregateRoot
 {
     public Guid Id { get; private set; }
 
@@ -29,8 +29,6 @@ public sealed class StaffMember : IAuditableAggregate
     public DateOnly? TerminationDate { get; private set; }
     public StaffStatus Status { get; private set; }
 
-    public DateTime CreatedAt { get; private set; }
-
     private StaffMember() { }
 
     /// <summary>Legacy constructor used by the CreateStaffMemberFromInvitation outbox flow.</summary>
@@ -44,7 +42,6 @@ public sealed class StaffMember : IAuditableAggregate
         Role = role;
         IsActive = true;
         Status = StaffStatus.Active;
-        CreatedAt = DateTime.UtcNow;
     }
 
     /// <summary>Creates a new employment record linked to a Party (Person).</summary>
@@ -65,7 +62,6 @@ public sealed class StaffMember : IAuditableAggregate
             HireDate = hireDate,
             Status = StaffStatus.Active,
             IsActive = true,
-            CreatedAt = DateTime.UtcNow,
         };
     }
 

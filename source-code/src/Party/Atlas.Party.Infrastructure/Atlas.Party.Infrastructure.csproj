@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Application\Atlas.BuildingBlocks.Application.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Audit\Atlas.BuildingBlocks.Audit.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Outbox\Atlas.BuildingBlocks.Outbox.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Permissions\Atlas.BuildingBlocks.Permissions.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\Atlas.BuildingBlocks.Persistence\Atlas.BuildingBlocks.Persistence.csproj" />

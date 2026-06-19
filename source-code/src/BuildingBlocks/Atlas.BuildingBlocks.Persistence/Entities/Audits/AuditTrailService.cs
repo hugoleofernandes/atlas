@@ -1,4 +1,4 @@
-﻿using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
+using Atlas.BuildingBlocks.Persistence.Entities.Audits.Interfaces;
 using Atlas.SharedKernel.Application;
 using Atlas.SharedKernel.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +33,7 @@ public sealed class AuditTrailService : IAuditTrailService
 
         var entries = db.ChangeTracker.Entries()
             .Where(e =>
-                e.Entity is IAuditableAggregate &&
+                e.Metadata.FindAnnotation(AuditMetadataAnnotations.EntityTypeId)?.Value is Guid &&
                 e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
 
         var logs = new List<Audit>();
@@ -92,7 +92,8 @@ public sealed class AuditTrailService : IAuditTrailService
     private static string? GetPrimaryKey(EntityEntry entry)
     {
         var key = entry.Metadata.FindPrimaryKey();
-        if (key == null) return null;
+        if (key == null)
+            return null;
 
         return string.Join(",",
             key.Properties.Select(p => entry.Property(p.Name).CurrentValue));

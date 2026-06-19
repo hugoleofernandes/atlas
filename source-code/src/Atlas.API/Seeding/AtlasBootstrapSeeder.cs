@@ -3,6 +3,7 @@ using Atlas.Identity.Domain.Shared;
 using Atlas.Identity.Domain.Users;
 using Atlas.Identity.Infrastructure.Persistence.DbContexts;
 using Atlas.Identity.Infrastructure.Seeders;
+using Atlas.Party.Infrastructure.Seeders;
 using Atlas.Platform.Application.Queries.EntityTypes.Lookup;
 using Atlas.Platform.Application.Queries.Geography.GetCitiesByState;
 using Atlas.Platform.Application.Queries.Geography.GetStatesByCountry;
@@ -35,6 +36,7 @@ public sealed class AtlasBootstrapSeeder(
     PlatformModuleSeeder platformModuleSeeder,
     IdentityModuleSeeder identityModuleSeeder,
     IdentityPermissionCatalogSeeder catalogSeeder,
+    PartyModuleSeeder partyModuleSeeder,
     StaffModuleSeeder staffModuleSeeder,
     ILookupEntityTypesCache entityTypeCache,
     IGetStatesByCountryCache statesCache,
@@ -70,6 +72,7 @@ public sealed class AtlasBootstrapSeeder(
         {
             platformModuleSeeder.GetModule(),
             identityModuleSeeder.GetModule(),
+            partyModuleSeeder.GetModule(),
             staffModuleSeeder.GetModule(),
         };
 
@@ -77,6 +80,7 @@ public sealed class AtlasBootstrapSeeder(
         {
             platformModuleSeeder.GetModuleEntityTypes(),
             identityModuleSeeder.GetModuleEntityTypes(),
+            partyModuleSeeder.GetModuleEntityTypes(),
             staffModuleSeeder.GetModuleEntityTypes(),
         };
 
@@ -86,11 +90,13 @@ public sealed class AtlasBootstrapSeeder(
         {
             platformModuleSeeder.GetModulePermissions(),
             identityModuleSeeder.GetModulePermissions(),
+            partyModuleSeeder.GetModulePermissions(),
             staffModuleSeeder.GetModulePermissions(),
         };
         await catalogSeeder.SeedAsync(allPermissions, ct);
 
         await identityModuleSeeder.SeedAsync(ct);
+        await partyModuleSeeder.SeedAsync(ct);
 
         await staffModuleSeeder.SeedAsync(ct);
 

@@ -1,7 +1,7 @@
 info:
   name: Lookups-GetStatuses-En
   type: http
-  seq: 2
+  seq: 4
 
 http:
   method: get

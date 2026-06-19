@@ -1,0 +1,15 @@
+info:
+  name: Entities-Lookup-ByModule
+  type: http
+  seq: 2
+
+http:
+  method: get
+  url: "{{bff_api_prefix}}/bff/v1/platform/entity-types/lookup?moduleId=00000000-0000-0000-0000-000000000001"
+  auth: inherit
+
+settings:
+  encodeUrl: false
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

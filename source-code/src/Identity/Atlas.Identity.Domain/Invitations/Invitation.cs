@@ -13,7 +13,7 @@ namespace Atlas.Identity.Domain.Invitations;
 /// - Invitation cannot be used after expiration.
 /// - RoleId references a valid Role within the same tenant.
 /// </summary>
-public sealed class Invitation : AggregateRoot, IMultiTenantEntity, IAuditableAggregate
+public sealed class Invitation : AggregateRoot, IMultiTenantEntity
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
 

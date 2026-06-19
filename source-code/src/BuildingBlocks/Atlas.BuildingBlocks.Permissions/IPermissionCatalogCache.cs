@@ -8,9 +8,12 @@ namespace Atlas.BuildingBlocks.Permissions;
 /// </summary>
 public interface IPermissionCatalogCache
 {
+    /// <summary>Returns all permissions, active and inactive, loading from DB on first call or after invalidation.</summary>
+    Task<IReadOnlyList<PermissionRecord>> GetAllAsync(CancellationToken ct);
+
     /// <summary>Returns all active permissions, loading from DB on first call or after invalidation.</summary>
     Task<IReadOnlyList<PermissionRecord>> GetAllActiveAsync(CancellationToken ct);
 
-    /// <summary>Clears the cache. Next call to GetAllActiveAsync reloads from DB.</summary>
+    /// <summary>Clears the cache. Next call to GetAllAsync/GetAllActiveAsync reloads from DB.</summary>
     void Invalidate();
 }

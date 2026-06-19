@@ -4,7 +4,13 @@ using Atlas.Identity.Application.Queries.Permissions.ListPermissions;
 
 namespace Atlas.Identity.BffApi.Endpoints.Permissions.ListPermissions;
 
-public sealed record PermissionItemResponse(Guid ModuleId, string ModuleName, string Code, string Group, string Label)
+public sealed record PermissionItemResponse(
+    Guid ModuleId,
+    string ModuleName,
+    string Code,
+    string Group,
+    bool IsActive,
+    string Label)
 {
     public static IReadOnlyList<PermissionItemResponse> FromList(
         IReadOnlyList<PermissionItemDto> result,
@@ -16,5 +22,5 @@ public sealed record PermissionItemResponse(Guid ModuleId, string ModuleName, st
     }
 
     private static PermissionItemResponse ToResponse(PermissionItemDto dto, PermissionLabelLocalizer localizer) =>
-        new(dto.ModuleId, dto.ModuleName, dto.Code, dto.Group, localizer.Localize(dto.Code));
+        new(dto.ModuleId, dto.ModuleName, dto.Code, dto.Group, dto.IsActive, localizer.Localize(dto.Code));
 }

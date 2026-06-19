@@ -9,22 +9,38 @@ public sealed partial class PlatformModuleSeeder
 {
     private async Task SeedModulesAsync(IReadOnlyList<AtlasModule> allModules, CancellationToken ct)
     {
-        if (await db.Modules.AnyAsync(ct))
-        {
-            logger.LogInformation("PlatformModuleRegistrySeeder skipped - data already exists");
-            return;
-        }
-
         logger.LogInformation("PlatformModuleRegistrySeeder started");
+
+        var existing = await db.Modules
+            .IgnoreQueryFilters()
+            .ToListAsync(ct);
+
+        var existingById = existing.ToDictionary(x => x.Id);
 
         foreach (var module in allModules)
         {
-            db.Modules.Add(Module.Create(module.Id, module.Name));
-            logger.LogInformation("  Created {Name}", module.Name);
+            if (!existingById.TryGetValue(module.Id, out var row))
+            {
+                db.Modules.Add(Module.Create(module.Id, module.Name));
+                logger.LogInformation("  Created {Name}", module.Name);
+            }
+            else
+            {
+                row.Rename(module.Name);
+                row.Activate();
+            }
+        }
+
+        var declaredIds = allModules.Select(x => x.Id).ToHashSet();
+
+        foreach (var row in existing.Where(x => !declaredIds.Contains(x.Id)))
+        {
+            row.Deactivate();
+            logger.LogInformation("  Deactivated {Id} (removed from contracts)", row.Id);
         }
 
         await uow.SaveChangesAsync(ct);
 
-        logger.LogInformation("PlatformModuleRegistrySeeder completed - {Count} modules seeded", allModules.Count);
+        logger.LogInformation("PlatformModuleRegistrySeeder completed - {Count} modules declared", allModules.Count);
     }
 }

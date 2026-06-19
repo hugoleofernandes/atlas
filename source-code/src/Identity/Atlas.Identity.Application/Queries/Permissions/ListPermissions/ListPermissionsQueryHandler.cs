@@ -15,6 +15,11 @@ public sealed class ListPermissionsQueryHandler : IListPermissionsQueryHandler
 
     public async Task<IReadOnlyList<PermissionItemDto>> ExecuteAsync(ListPermissionsQuery query, CancellationToken ct)
     {
-        return await _reader.ListAsync(ct);
+        var all = await _reader.ListAsync(ct);
+
+        if (query.IsActive is null)
+            return all;
+
+        return all.Where(x => x.IsActive == query.IsActive.Value).ToList();
     }
 }

@@ -1,12 +1,16 @@
+using Atlas.BuildingBlocks.Persistence.Entities.Audits;
+using Atlas.Identity.Contracts.EntityTypes;
 using Atlas.Identity.Domain.Permissions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Identity.Infrastructure.Persistence.Configurations;
 
-public sealed class PermissionConfiguration : IEntityTypeConfiguration<Permission>
+public sealed class PermissionConfiguration : AuditedAggregateConfiguration<Permission>
 {
-    public void Configure(EntityTypeBuilder<Permission> b)
+    protected override Guid EntityTypeId => IdentityModuleEntityTypes.Permissions.EntityType.Id;
+
+    protected override void ConfigureEntity(EntityTypeBuilder<Permission> b)
     {
         b.ToTable("permissions");
 
@@ -44,7 +48,7 @@ public sealed class PermissionConfiguration : IEntityTypeConfiguration<Permissio
         b.HasIndex(x => x.Code)
             .IsUnique();
 
-        // Only one row may have is_root = true — enforced via partial unique index in migration.
+        // Only one row may have is_root = true - enforced via partial unique index in migration.
         // EF does not support partial unique indexes natively; add it manually in the migration.
     }
 }

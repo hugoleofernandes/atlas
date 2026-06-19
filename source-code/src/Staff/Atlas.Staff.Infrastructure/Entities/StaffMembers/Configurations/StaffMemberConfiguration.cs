@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Atlas.Staff.Infrastructure.Entities.StaffMembers.Configurations;
 
-public sealed class StaffMemberConfiguration : AuditableAggregateConfiguration<StaffMember>
+public sealed class StaffMemberConfiguration : AuditedAggregateConfiguration<StaffMember>
 {
     protected override Guid EntityTypeId => StaffModuleEntityTypes.StaffMembers.EntityType.Id;
 
-    protected override void ConfigureAuditable(EntityTypeBuilder<StaffMember> b)
+    protected override void ConfigureEntity(EntityTypeBuilder<StaffMember> b)
     {
         b.ToTable("staff_members");
 

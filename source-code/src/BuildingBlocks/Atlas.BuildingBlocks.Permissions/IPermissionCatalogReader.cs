@@ -16,5 +16,6 @@ public interface IPermissionCatalogReader
     Task<PermissionRecord?> FindByCodeAsync(string code, CancellationToken ct);
     Task<IReadOnlyList<PermissionRecord>> GetByCodesAsync(IEnumerable<string> codes, CancellationToken ct);
     Task<IReadOnlyList<PermissionRecord>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct);
+    Task<IReadOnlyList<PermissionRecord>> GetAllAsync(CancellationToken ct);
     Task<IReadOnlyList<PermissionRecord>> GetAllActiveAsync(CancellationToken ct);
 }

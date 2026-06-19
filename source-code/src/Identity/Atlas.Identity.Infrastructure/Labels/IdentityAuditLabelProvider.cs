@@ -19,6 +19,8 @@ public sealed class IdentityAuditLabelProvider : IAuditLabelProvider
             return "Role";
         if (entityTypeId == IdentityModuleEntityTypes.Invitations.EntityType.Id)
             return "Invitation";
+        if (entityTypeId == IdentityModuleEntityTypes.Permissions.EntityType.Id)
+            return "Permission";
         return null;
     }
 }
